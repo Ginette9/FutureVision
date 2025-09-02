@@ -14,11 +14,9 @@ app.use(express.json());
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('dist/static'));
   
-  // 所有非API路由都返回index.html（支持React Router）
-  app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api/') && !req.path.startsWith('/proxy') && req.path !== '/health') {
-      res.sendFile('dist/static/index.html', { root: '.' });
-    }
+  // 所有非 API 路由都返回 index.html（Express v5 用正则避免 path-to-regexp 错误）
+  app.get(/^(?!\/(api|proxy)\/|\/health).*/, (req, res) => {
+    res.sendFile('dist/static/index.html', { root: '.' });
   });
 }
 
