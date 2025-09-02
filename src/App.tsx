@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { motion } from 'framer-motion';
 import Home from "@/pages/Home";
 import ReportResult from "@/pages/ReportResult";
-// 已移除支付页
+import Pay from "@/pages/Pay";
 import LanguageSelector from '@/components/LanguageSelector';
 import { AuthContext } from '@/contexts/authContext';
 
@@ -158,7 +158,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/report" element={<ReportResult />} />
-          {/* 移除支付页路由 */}
+          <Route path="/pay" element={<Pay />} />
         </Routes>
       </main>
 

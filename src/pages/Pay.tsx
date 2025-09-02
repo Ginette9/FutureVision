@@ -15,7 +15,7 @@ export default function Pay() {
     return from && from.startsWith("/") ? from : "/report";
   }, [params]);
 
-  // 仅保留邀请码方式，不再展示其他定价/货币内容
+  // 支持邀请码直通 + PayPal
 
   useEffect(() => {
     const hasPaid = typeof window !== "undefined" && window.localStorage.getItem("hasPaid") === "1";
@@ -24,7 +24,7 @@ export default function Pay() {
     }
   }, [navigate, returnTo]);
 
-  const handlePay = useCallback(async () => {
+  const handleInvite = useCallback(async () => {
     if (processing) return;
     setProcessing(true);
     try {
@@ -45,10 +45,36 @@ export default function Pay() {
     }
   }, [processing, navigate, returnTo, inviteCode]);
 
+  const handlePayPal = useCallback(async () => {
+    if (processing) return;
+    setProcessing(true);
+    try {
+      setError("");
+      const resp = await apiPost<{ paid: boolean; orderId?: string; approvalUrl?: string }>("/api/pay/create", {
+        method: 'paypal', amount: 29, subject: 'ESG Report', currency: 'USD'
+      });
+      if (resp.paid) {
+        window.localStorage.setItem("hasPaid", "1");
+        navigate(returnTo, { replace: true });
+        return;
+      }
+      if (resp.orderId && resp.approvalUrl) {
+        localStorage.setItem('currentOrderId', resp.orderId);
+        window.location.href = resp.approvalUrl; // 跳转到PayPal授权页
+        return;
+      }
+      setError("创建支付订单失败，请稍后再试");
+    } catch (e: any) {
+      setError(e.message || '创建订单失败');
+    } finally {
+      setProcessing(false);
+    }
+  }, [processing, navigate, returnTo]);
+
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-2xl font-bold text-slate-900 mb-6">输入邀请码解锁下载</h1>
-      <p className="text-slate-600 mb-8">输入有效邀请码后将自动返回并开始生成 PDF。</p>
+      <h1 className="text-2xl font-bold text-slate-900 mb-6">解锁下载</h1>
+      <p className="text-slate-600 mb-8">使用有效邀请码，或通过 PayPal 完成支付后导出报告。</p>
 
       <div className="rounded-lg border border-slate-200 p-6 bg-white shadow-sm">
         <div className="flex items-center justify-between">
@@ -73,7 +99,7 @@ export default function Pay() {
             />
             <button
               type="button"
-              onClick={handlePay}
+              onClick={handleInvite}
               disabled={processing}
               className="inline-flex items-center justify-center rounded-md border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-50 disabled:opacity-60 disabled:cursor-not-allowed"
             >
@@ -82,6 +108,18 @@ export default function Pay() {
           </div>
           {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
           <div className="text-slate-400 text-xs mt-2">若邀请码有效，将直接解锁下载。</div>
+        </div>
+
+        {/* PayPal 支付 */}
+        <div className="mt-8">
+          <button
+            onClick={handlePayPal}
+            disabled={processing}
+            className="inline-flex items-center justify-center rounded-md bg-violet-600 px-5 py-2.5 text-white font-semibold hover:bg-violet-700 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {processing ? "处理中…" : "使用 PayPal 支付并解锁"}
+          </button>
+          <p className="text-xs text-slate-500 mt-2">支付完成后将返回本页并自动解锁。</p>
         </div>
 
 

@@ -21,7 +21,49 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-// 已移除第三方支付配置与逻辑，仅保留邀请码校验
+// ============== PayPal 配置（可选，启用即生效） ==============
+const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
+const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
+const PAYPAL_MODE = process.env.PAYPAL_MODE || 'sandbox';
+const PAYPAL_BASE_URL = PAYPAL_MODE === 'live' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com';
+
+async function getPayPalAccessToken() {
+  if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) throw new Error('paypal_not_configured');
+  const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`).toString('base64');
+  const response = await axios.post(
+    `${PAYPAL_BASE_URL}/v1/oauth2/token`,
+    'grant_type=client_credentials',
+    { headers: { 'Authorization': `Basic ${auth}`, 'Content-Type': 'application/x-www-form-urlencoded' } }
+  );
+  return response.data.access_token;
+}
+
+async function createPayPalOrder(amount, currency, subject) {
+  const accessToken = await getPayPalAccessToken();
+  const response = await axios.post(
+    `${PAYPAL_BASE_URL}/v2/checkout/orders`,
+    {
+      intent: 'CAPTURE',
+      purchase_units: [{ amount: { currency_code: currency, value: amount.toString() }, description: subject }],
+      application_context: {
+        return_url: process.env.PAYPAL_RETURN_URL || `${process.env.FRONTEND_URL || 'http://localhost:3000'}/pay`,
+        cancel_url: process.env.PAYPAL_CANCEL_URL || `${process.env.FRONTEND_URL || 'http://localhost:3000'}/pay`
+      }
+    },
+    { headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' } }
+  );
+  return response.data;
+}
+
+async function capturePayPalPayment(orderId) {
+  const accessToken = await getPayPalAccessToken();
+  const response = await axios.post(
+    `${PAYPAL_BASE_URL}/v2/checkout/orders/${orderId}/capture`,
+    {},
+    { headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' } }
+  );
+  return response.data;
+}
 
 // 代理路由
 app.get('/proxy', async (req, res) => {
@@ -76,17 +118,55 @@ const VALID_CODES = new Set((process.env.PAY_INVITE_CODES || 'FREE2025,TESTVIP,M
   .map(s => s.trim().toLowerCase())
   .filter(Boolean));
 
-// 仅校验邀请码
+// 简易订单存储（内存）
+const ORDERS = new Map(); // orderId -> { status, paypalOrderId }
+function randomOrderId() {
+  return 'ord_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+}
+
+// 创建支付或邀请码校验
 app.post('/api/pay/create', async (req, res) => {
   try {
-    const { inviteCode } = req.body || {};
+    const { inviteCode, method = 'paypal', amount = 29, subject = 'ESG Report', currency = 'USD' } = req.body || {};
     if (typeof inviteCode === 'string' && VALID_CODES.has(inviteCode.trim().toLowerCase())) {
       return res.json({ paid: true });
+    }
+    if (method === 'paypal') {
+      try {
+        const order = await createPayPalOrder(amount, currency, subject);
+        const approvalUrl = order.links.find(l => l.rel === 'approve')?.href;
+        const orderId = randomOrderId();
+        ORDERS.set(orderId, { status: 'pending', paypalOrderId: order.id });
+        return res.json({ paid: false, orderId, paypalOrderId: order.id, approvalUrl });
+      } catch (e) {
+        console.error('paypal create failed:', e?.response?.data || e.message);
+        return res.status(500).json({ paid: false, error: 'paypal_create_failed' });
+      }
     }
     return res.status(200).json({ paid: false, message: 'Invalid invite code' });
   } catch (e) {
     console.error('create pay error:', e.message);
     return res.status(500).json({ error: 'create_failed', message: e.message });
+  }
+});
+
+// PayPal 支付完成后由前端触发验证
+app.post('/api/pay/paypal/capture', async (req, res) => {
+  try {
+    const { orderId } = req.body || {};
+    if (!orderId) return res.status(400).json({ error: 'missing_orderId' });
+    const rec = ORDERS.get(orderId);
+    if (!rec) return res.status(404).json({ error: 'order_not_found' });
+    const capture = await capturePayPalPayment(rec.paypalOrderId);
+    if (capture?.status === 'COMPLETED') {
+      rec.status = 'success';
+      ORDERS.set(orderId, rec);
+      return res.json({ success: true });
+    }
+    return res.status(400).json({ success: false, status: capture?.status || 'unknown' });
+  } catch (e) {
+    console.error('paypal capture failed:', e?.response?.data || e.message);
+    return res.status(500).json({ error: 'capture_failed' });
   }
 });
 
