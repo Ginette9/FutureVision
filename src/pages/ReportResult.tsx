@@ -215,7 +215,6 @@ export default function ReportResult() {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [formData, setFormData] = useState<any>(null);
-  const [hasShownLoader, setHasShownLoader] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -223,16 +222,6 @@ export default function ReportResult() {
     if (!savedData) {
       navigate('/');
       return;
-    }
-
-    // 检查是否已经显示过loading动画
-    const reportGeneratedKey = `reportGenerated_${JSON.parse(savedData).industry.id}_${JSON.parse(savedData).country.id}`;
-    const hasGenerated = localStorage.getItem(reportGeneratedKey);
-    
-    if (hasGenerated) {
-      // 如果报告已经生成过，直接跳过loading动画
-      setHasShownLoader(true);
-      setIsLoading(false);
     }
 
     const fetchData = async () => {
@@ -258,24 +247,14 @@ export default function ReportResult() {
     fetchData();
   }, [navigate]);
 
-  // 如果数据还没加载完成，且没有显示过loading，显示加载器
-  if (!dataLoaded && !hasShownLoader) {
-    return <AIGenerationLoader formData={formData} onComplete={() => {
-      setIsLoading(false);
-      // 标记报告已生成，避免下次刷新时重复显示loading
-      const reportGeneratedKey = `reportGenerated_${formData?.industry?.id}_${formData?.country?.id}`;
-      localStorage.setItem(reportGeneratedKey, 'true');
-    }} />;
+  // 如果数据还没加载完成，显示加载器
+  if (!dataLoaded) {
+    return <AIGenerationLoader formData={formData} onComplete={() => setIsLoading(false)} />;
   }
   
   // 如果数据加载完成但加载器还在运行，继续显示加载器
-  if (isLoading && !hasShownLoader) {
-    return <AIGenerationLoader formData={formData} onComplete={() => {
-      setIsLoading(false);
-      // 标记报告已生成，避免下次刷新时重复显示loading
-      const reportGeneratedKey = `reportGenerated_${formData?.industry?.id}_${formData?.country?.id}`;
-      localStorage.setItem(reportGeneratedKey, 'true');
-    }} />;
+  if (isLoading) {
+    return <AIGenerationLoader formData={formData} onComplete={() => setIsLoading(false)} />;
   }
   
   // 如果有错误，显示错误信息
