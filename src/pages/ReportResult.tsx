@@ -92,7 +92,6 @@ export default function ReportResult() {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [formData, setFormData] = useState<any>(null);
-  const [debugInfo, setDebugInfo] = useState<{ url: string; htmlPreview: string } | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -117,12 +116,6 @@ export default function ReportResult() {
         const parsedSections = parseReportHtml(rawHtml);
         console.log('[report] sections parsed', parsedSections.map(s => ({ id: s.id, title: s.title })).slice(0, 10));
         setSections(parsedSections);
-        if (!parsedSections || parsedSections.length === 0) {
-          setDebugInfo({
-            url,
-            htmlPreview: (rawHtml || '').slice(0, 800),
-          });
-        }
         setDataLoaded(true); // 数据加载完成，但保持加载器显示
       } catch (err) {
         console.error(err);
@@ -226,15 +219,6 @@ export default function ReportResult() {
         </aside>
 
         <main className="md:w-3/4 space-y-16">
-          {debugInfo && (
-            <section className="space-y-2 p-4 border border-amber-300 bg-amber-50 rounded">
-              <h3 className="font-semibold text-amber-800">Debug（Render 环境原始HTML预览 前800字符）</h3>
-              <div className="text-xs text-amber-900 break-words whitespace-pre-wrap">
-                <div className="mb-2"><span className="font-medium">URL:</span> {debugInfo.url}</div>
-                {debugInfo.htmlPreview}
-              </div>
-            </section>
-          )}
           {formData && (
             <section id="introduction" className="space-y-4">
               <IntroductionSection

@@ -14,8 +14,9 @@ app.use(express.json());
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('dist/static'));
   
-  // 所有非 API 路由都返回 index.html（Express v5 用正则避免 path-to-regexp 错误）
-  app.get(/^(?!\/(api|proxy)\/|\/health).*/, (req, res) => {
+  // 所有非 API 路由都返回 index.html（排除 /api 与 /proxy 与 /health，允许可选的结尾或斜杠）
+  // 排除规则： /^\/(api|proxy)(\/|$)|^\/health(\/|$)/
+  app.get(/^(?!\/(api|proxy)(\/|$)|\/health(\/|$)).*/, (req, res) => {
     res.sendFile('dist/static/index.html', { root: '.' });
   });
 }
