@@ -2,11 +2,15 @@ import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 dotenv.config();
+
 const app = express();
 const PORT = Number(process.env.PORT || 3001);
 
-// 启用CORS
+// ===== 基础中间件 =====
 app.use(cors());
 app.use(express.json());
 
@@ -109,44 +113,32 @@ async function capturePayPalPayment(orderId) {
   }
 }
 
-// 代理路由
+// ===== 业务接口（代理 & 支付示例）=====
 app.get('/proxy', async (req, res) => {
   try {
     const { url } = req.query;
-    
-    if (!url) {
-      return res.status(400).json({ error: 'URL parameter is required' });
-    }
+    if (!url) return res.status(400).json({ error: 'URL parameter is required' });
 
-    //console.log('Proxying request to:', url);
-
-    const response = await axios.get(url, {
+    const response = await axios.get(String(url), {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        Accept:
+          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.9',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'DNT': '1',
-        'Connection': 'keep-alive',
-        'Upgrade-Insecure-Requests': '1',
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'none',
-        'Sec-Fetch-User': '?1',
         'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache'
+        Pragma: 'no-cache',
       },
-      timeout: 10000
+      timeout: 10000,
     });
 
-    res.set('Content-Type', 'text/html');
+    res.set('Content-Type', 'text/html; charset=utf-8');
     res.send(response.data);
-    
   } catch (error) {
     console.error('Proxy error:', error.message);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to fetch content',
-      details: error.message 
+      details: error.message,
     });
   }
 });
@@ -158,12 +150,14 @@ function randomOrderId() {
   return 'ord_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 }
 
-const VALID_CODES = new Set((process.env.PAY_INVITE_CODES || 'FREE2025,TESTVIP,MSCFV')
-  .split(',')
-  .map(s => s.trim().toLowerCase())
-  .filter(Boolean));
+const VALID_CODES = new Set(
+  (process.env.PAY_INVITE_CODES || 'FREE2025,TESTVIP,MSCFV')
+    .split(',')
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean),
+);
 
-// 创建支付订单
+// 创建支付订单（模拟）
 app.post('/api/pay/create', async (req, res) => {
   try {
     console.log('收到支付请求:', req.body);
@@ -192,7 +186,7 @@ app.post('/api/pay/create', async (req, res) => {
         message: '不支持的货币，请选择：USD, EUR, 或 GBP' 
       });
     }
-    
+
     // 邀请码直通
     if (typeof inviteCode === 'string' && VALID_CODES.has(inviteCode.trim().toLowerCase())) {
       return res.json({ paid: true, method, amount, subject });
@@ -362,7 +356,7 @@ app.post('/api/pay/stripe/webhook', async (req, res) => {
   }
 });
 
-// 查询订单状态
+// 查询订单状态（模拟）
 app.get('/api/pay/query', async (req, res) => {
   try {
     const { orderId } = req.query;
@@ -380,7 +374,7 @@ app.get('/api/pay/query', async (req, res) => {
   }
 });
 
-// 健康检查路由
+// 健康检查
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'OK', 
@@ -390,19 +384,29 @@ app.get('/health', (req, res) => {
   });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Payment server running on http://localhost:${PORT}`);
-  console.log(`Health check: http://localhost:${PORT}/health`);
-  console.log(`PayPal mode: ${PAYPAL_MODE}`);
-  console.log(`PayPal configured: ${!!PAYPAL_CLIENT_ID}`);
-  console.log(`Stripe configured: ${!!STRIPE_SECRET_KEY}`);
+// ===== 静态托管（用于线上部署）=====
+// 你的 Vite 构建命令输出到 dist/static
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const distDir = path.join(__dirname, 'dist', 'static');
+
+app.use(express.static(distDir));
+
+// SPA 回退（避免覆盖 API/代理/健康检查）
+app.get('*', (req, res, next) => {
+  if (
+    req.path.startsWith('/api') ||
+    req.path.startsWith('/proxy') ||
+    req.path.startsWith('/health')
+  ) {
+    return next();
+  }
+  res.sendFile(path.join(distDir, 'index.html'));
 });
 
-// 错误处理中间件
-app.use((err, req, res, next) => {
-  console.error('服务器错误:', err);
-  res.status(500).json({ 
-    error: 'internal_server_error', 
-    message: '服务器内部错误' 
-  });
+// ===== 启动 =====
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Proxy server running on http://localhost:${PORT}`);
+  console.log(`Health check: http://localhost:${PORT}/health`);
+  console.log(`Proxy endpoint: http://localhost:${PORT}/proxy?url=<target_url>`);
 }); 

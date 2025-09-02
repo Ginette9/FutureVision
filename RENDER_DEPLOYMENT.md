@@ -29,6 +29,8 @@
 - **Build Command**: `npm install && npm run build`
 - **Start Command**: `npm start`
 
+**注意**: 我们使用npm而不是pnpm来避免部署时的包管理器冲突。
+
 ### 3. 环境变量配置
 在Render控制台中设置以下环境变量：
 
