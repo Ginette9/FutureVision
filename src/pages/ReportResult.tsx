@@ -232,9 +232,12 @@ export default function ReportResult() {
         const productId = parsed.industry.id;
         const countryId = parsed.country.id;
         const url = buildScrapeUrl(productId, countryId);
+        console.log('[report] build url', { productId, countryId, url });
 
         const rawHtml = await scrapeUrlContent(url);
+        console.log('[report] raw html length', rawHtml?.length || 0);
         const parsedSections = parseReportHtml(rawHtml);
+        console.log('[report] sections parsed', parsedSections.map(s => ({ id: s.id, title: s.title })).slice(0, 10));
         setSections(parsedSections);
         setDataLoaded(true); // 数据加载完成，但保持加载器显示
       } catch (err) {

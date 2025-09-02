@@ -52,12 +52,16 @@ app.get('/proxy', async (req, res) => {
       timeout: 10000
     });
 
+    const length = typeof response.data === 'string' ? response.data.length : undefined;
+    console.log('[proxy] fetch ok', { url, status: response.status, contentType: response.headers['content-type'], length });
+
     res.set('Content-Type', 'text/html');
     res.send(response.data);
     
   } catch (error) {
-    console.error('Proxy error:', error.message);
-    res.status(500).json({ 
+    const status = error.response?.status;
+    console.error('[proxy] error', { url: req.query?.url, status, message: error.message });
+    res.status(status || 500).json({ 
       error: 'Failed to fetch content',
       details: error.message 
     });
