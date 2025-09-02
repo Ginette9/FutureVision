@@ -128,6 +128,10 @@ export default function Home() {
      // 模拟API请求延迟
      await new Promise(resolve => setTimeout(resolve, 1500));
      
+     // 清除之前的报告生成记录，确保新的报告会显示loading动画
+     const reportGeneratedKey = `reportGenerated_${formData.industry.id}_${formData.country.id}`;
+     localStorage.removeItem(reportGeneratedKey);
+     
      // 将表单数据存储在localStorage中供结果页面使用
      localStorage.setItem('riskAnalysisData', JSON.stringify(formData));
      
