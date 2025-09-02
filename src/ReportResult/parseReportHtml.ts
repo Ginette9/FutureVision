@@ -43,10 +43,20 @@ export interface ReportSection {
 export function parseReportHtml(html: string): ReportSection[] {
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
-  const container = doc.querySelector('div.csr-risk-results');
+  let container = doc.querySelector('div.csr-risk-results');
+  if (!container) {
+    // Render 环境可能被上游重定向到提示页，尝试宽松匹配主容器
+    container = doc.querySelector('main,div#app,div.container,div.wrapper,body');
+  }
   if (!container) return [];
 
-  const blocks = Array.from(container.querySelectorAll('div.mb-16.flex.w-full.flex-col'));
+  let blocks = Array.from(container.querySelectorAll('div.mb-16.flex.w-full.flex-col'));
+  if (blocks.length === 0) {
+    // 回退：按常见标题或 section/article 切块
+    blocks = Array.from(container.querySelectorAll('section,article,div'))
+      .filter(el => el.querySelector('h2,h3'))
+      .slice(0, 50) as HTMLElement[];
+  }
   const result: ReportSection[] = [];
 
   const categoryMapping: Record<string, string> = {

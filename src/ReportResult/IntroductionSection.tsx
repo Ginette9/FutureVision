@@ -63,12 +63,6 @@ export const IntroductionSection: React.FC<Props> = ({
   const backCfg  = cfg.back  || {};
 
   const handlePrintFullPage = useCallback(() => {
-    const hasPaid = typeof window !== 'undefined' && window.localStorage.getItem('hasPaid') === '1';
-    if (!hasPaid) {
-      const search = new URLSearchParams({ from: location.pathname }).toString();
-      navigate(`/pay?${search}`);
-      return;
-    }
     const htmlEl = document.documentElement;
     htmlEl.classList.add('print-mode');
 

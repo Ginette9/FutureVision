@@ -73,61 +73,6 @@ declare global {
  * }
  */
 
-/* ---------------- 打印专用：封面 / 尾页 / 目录 ---------------- */
-
-const PrintCover: React.FC = () => {
-  const cover = (typeof window !== 'undefined' && window.__fvPdfConfig?.cover) || {};
-  return (
-    <div
-      className="print-only print-page relative p-0 overflow-hidden [&_*]:m-0"
-      style={{
-        width: '210mm',
-        height: '297mm',
-        breakInside: 'avoid',
-        pageBreakBefore: 'always',
-        pageBreakAfter: 'always',
-      }}
-      // 将本页绑定到命名的 @page cover，获得零边距
-      data-print-page="cover"
-    >
-      {/* 背景图：使用 img 以保证打印导出显示 */}
-      <img src={CoverBg} alt="Cover background" className="absolute inset-0 w-full h-full object-cover block" />
-      {/* 左侧暗色渐变遮罩，保证文字可读性 */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/40 to-transparent" />
-
-      {/* 内容区 */}
-      <div className="relative z-10 h-full flex items-center">
-        <div className="px-12 py-10 max-w-[60%]">
-          <div className="space-y-4 text-white">
-            <div className="text-[28px] font-black leading-tight tracking-wide uppercase">
-              {cover.title || 'ESG Risk Report'}
-            </div>
-            {cover.subtitle && (
-              <div className="text-[16px] font-semibold opacity-95">{cover.subtitle}</div>
-            )}
-            {cover.clientName && (
-              <div className="text-[14px] font-medium opacity-95">{cover.clientName}</div>
-            )}
-            <div className="pt-2 text-[13px] opacity-90">
-              {cover.dateText || new Date().toLocaleDateString()}
-            </div>
-          </div>
-
-          {/* 底部 Logo 行 */}
-          <div className="mt-12 flex items-center gap-8">
-            {/* 深色背景下将 logo 反白以统一视觉 */}
-            <img src={LogoFV} alt="Future Vision" className="h-9 w-auto object-contain filter invert brightness-200 drop-shadow" />
-            <img src={LogoMSC} alt="MSC HK" className="h-9 w-auto object-contain filter invert brightness-200 drop-shadow" />
-          </div>
-
-          {cover.extraNote && (
-            <div className="mt-6 text-[12px] text-white/85">{cover.extraNote}</div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const PrintToc: React.FC<{ sections: ReportSection[] }> = ({ sections }) => {
   return (
@@ -138,74 +83,6 @@ const PrintToc: React.FC<{ sections: ReportSection[] }> = ({ sections }) => {
   );
 };
 
-const PrintBack: React.FC = () => {
-  const back = (typeof window !== 'undefined' && window.__fvPdfConfig?.back) || {};
-  return (
-    <div
-      className="print-only print-page relative overflow-hidden [&_*]:m-0"
-      style={{
-        width: '210mm',
-        height: '297mm',
-        breakInside: 'avoid',
-        pageBreakBefore: 'always',
-        pageBreakAfter: 'always',
-      }}
-      data-print-page="back"
-    >
-      {/* 背景图轻度暗化 */}
-      <img src={CoverBg} alt="Back background" className="absolute inset-0 w-full h-full object-cover block" />
-      <div className="absolute inset-0 bg-white/70" />
-
-      <div className="relative h-full grid grid-cols-2 gap-8 px-12 py-10">
-        {/* 左侧文字信息 */}
-        <div className="flex flex-col justify-center">
-          <div className="text-2xl font-extrabold text-violet-800 tracking-wide">{back.headline || 'Contact Us'}</div>
-          <div className="mt-6 space-y-2 text-[14px] text-gray-900">
-            <div>WeChat | Future_Vision_MSC</div>
-            <div>Website | {back.website || 'https://mscfv.com/futureVision/'}</div>
-            <div>Email | {back.email || 'jinxia@mscfv.com'}</div>
-            <div>Phone | {back.phone || '+86 18989485442'}</div>
-            {back.address && <div>Address | {back.address}</div>}
-          </div>
-
-          {/* 底部徽标行 */}
-          <div className="mt-10 flex items-center gap-6">
-            <img src={LogoFV} alt="Future Vision" className="h-8 w-auto object-contain" />
-            <img src={LogoMSC} alt="MSC HK" className="h-8 w-auto object-contain" />
-          </div>
-        </div>
-
-        {/* 右侧二维码区 */}
-        <div className="flex items-center justify-center">
-          <div className="grid grid-cols-3 gap-10">
-            <div className="flex flex-col items-center">
-              <div className="rounded-md bg-white p-2 shadow-sm ring-1 ring-gray-200">
-                <img src={QrOfficial} alt="Future Vision 公众号" className="h-28 w-28 object-contain" />
-              </div>
-              <div className="mt-2 text-[12px] text-gray-700">Future Vision 公众号</div>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="rounded-md bg-white p-2 shadow-sm ring-1 ring-gray-200">
-                <img src={QrAssistant} alt="Assistant 小助手" className="h-28 w-28 object-contain" />
-              </div>
-              <div className="mt-2 text-[12px] text-gray-700">Assistant 小助手</div>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="rounded-md bg-white p-2 shadow-sm ring-1 ring-gray-200">
-                <img src={QrMiniApp} alt="Future Vision 小程序" className="h-28 w-28 object-contain" />
-              </div>
-              <div className="mt-2 text-[12px] text-gray-700">Future Vision 微信小程序</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="absolute bottom-6 left-0 right-0 text-center text-[12px] text-gray-700">
-        © {new Date().getFullYear()} {back.copyrightOwner || 'Future Vision'}. All rights reserved.
-      </div>
-    </div>
-  );
-};
 
 /* ---------------- 主组件：屏幕端 / 打印端布局分流 ---------------- */
 
@@ -215,6 +92,7 @@ export default function ReportResult() {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [formData, setFormData] = useState<any>(null);
+  const [debugInfo, setDebugInfo] = useState<{ url: string; htmlPreview: string } | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -239,6 +117,12 @@ export default function ReportResult() {
         const parsedSections = parseReportHtml(rawHtml);
         console.log('[report] sections parsed', parsedSections.map(s => ({ id: s.id, title: s.title })).slice(0, 10));
         setSections(parsedSections);
+        if (!parsedSections || parsedSections.length === 0) {
+          setDebugInfo({
+            url,
+            htmlPreview: (rawHtml || '').slice(0, 800),
+          });
+        }
         setDataLoaded(true); // 数据加载完成，但保持加载器显示
       } catch (err) {
         console.error(err);
@@ -276,8 +160,7 @@ export default function ReportResult() {
 
   return (
     <>
-      {/* -------- 打印路线：封面 → 目录 → 正文 → 尾页 -------- */}
-      <PrintCover />
+      {/* -------- 打印路线：目录 → 正文 -------- */}
       <PrintToc sections={sections} />
 
       {/* 正文（打印时显示打印版组件 / 屏幕时不显示这些打印容器） */}
@@ -334,7 +217,7 @@ export default function ReportResult() {
         {disclaimerSection?.html && <DisclaimerSection />}
       </div>
 
-      <PrintBack />
+      {/* 已移除打印尾页 */}
 
       {/* -------- 屏幕路线：保持你原有的左 TOC / 右正文布局 -------- */}
       <div className="md:flex gap-10 px-4 md:px-12 py-8 font-sans text-gray-900 no-print-only">
@@ -343,6 +226,15 @@ export default function ReportResult() {
         </aside>
 
         <main className="md:w-3/4 space-y-16">
+          {debugInfo && (
+            <section className="space-y-2 p-4 border border-amber-300 bg-amber-50 rounded">
+              <h3 className="font-semibold text-amber-800">Debug（Render 环境原始HTML预览 前800字符）</h3>
+              <div className="text-xs text-amber-900 break-words whitespace-pre-wrap">
+                <div className="mb-2"><span className="font-medium">URL:</span> {debugInfo.url}</div>
+                {debugInfo.htmlPreview}
+              </div>
+            </section>
+          )}
           {formData && (
             <section id="introduction" className="space-y-4">
               <IntroductionSection
