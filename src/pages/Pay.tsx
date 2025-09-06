@@ -24,6 +24,41 @@ export default function Pay() {
     }
   }, [navigate, returnTo]);
 
+  // 处理PayPal支付完成后的回调
+  useEffect(() => {
+    const handlePayPalCallback = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+      const payerId = urlParams.get('PayerID');
+      
+      if (token && payerId) {
+        const orderId = localStorage.getItem('currentOrderId');
+        if (orderId) {
+          setProcessing(true);
+          try {
+            // 调用后端验证支付
+            const resp = await apiPost<{ success: boolean }>("/api/pay/paypal/capture", { orderId });
+            if (resp.success) {
+              window.localStorage.setItem("hasPaid", "1");
+              localStorage.removeItem('currentOrderId');
+              // 清除URL参数
+              window.history.replaceState({}, document.title, window.location.pathname);
+              navigate(returnTo, { replace: true });
+            } else {
+              setError("支付验证失败，请重试");
+            }
+          } catch (e: any) {
+            setError(e.message || '支付验证失败');
+          } finally {
+            setProcessing(false);
+          }
+        }
+      }
+    };
+
+    handlePayPalCallback();
+  }, [navigate, returnTo]);
+
   const handleInvite = useCallback(async () => {
     if (processing) return;
     setProcessing(true);
@@ -51,7 +86,7 @@ export default function Pay() {
     try {
       setError("");
       const resp = await apiPost<{ paid: boolean; orderId?: string; approvalUrl?: string }>("/api/pay/create", {
-        method: 'paypal', amount: 29, subject: 'ESG Report', currency: 'USD'
+        method: 'paypal', amount: 5000, subject: 'ESG Report', currency: 'HKD'
       });
       if (resp.paid) {
         window.localStorage.setItem("hasPaid", "1");
@@ -82,7 +117,10 @@ export default function Pay() {
             <div className="text-slate-900 font-semibold mb-1">ESG 风险分析报告</div>
             <div className="text-slate-500 text-sm">一次性购买，含封面、目录、分析、免责声明与联系页</div>
           </div>
-          {/* 已移除价格显示 */}
+          <div className="text-right">
+            <div className="text-2xl font-bold text-slate-900">HK$5,000</div>
+            <div className="text-slate-500 text-sm">固定价格</div>
+          </div>
         </div>
 
         {/* 已移除支付方式与货币选择，仅保留邀请码 */}
@@ -117,9 +155,9 @@ export default function Pay() {
             disabled={processing}
             className="inline-flex items-center justify-center rounded-md bg-violet-600 px-5 py-2.5 text-white font-semibold hover:bg-violet-700 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {processing ? "处理中…" : "使用 PayPal 支付并解锁"}
+            {processing ? "处理中…" : "使用 PayPal 支付 HK$5,000 并解锁"}
           </button>
-          <p className="text-xs text-slate-500 mt-2">支付完成后将返回本页并自动解锁。</p>
+          <p className="text-xs text-slate-500 mt-2">支付完成后将返回本页并自动解锁下载。</p>
         </div>
 
 

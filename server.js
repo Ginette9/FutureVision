@@ -127,7 +127,7 @@ function randomOrderId() {
 // 创建支付或邀请码校验
 app.post('/api/pay/create', async (req, res) => {
   try {
-    const { inviteCode, method = 'paypal', amount = 29, subject = 'ESG Report', currency = 'USD' } = req.body || {};
+    const { inviteCode, method = 'paypal', amount = 5000, subject = 'ESG Report', currency = 'HKD' } = req.body || {};
     if (typeof inviteCode === 'string' && VALID_CODES.has(inviteCode.trim().toLowerCase())) {
       return res.json({ paid: true });
     }
