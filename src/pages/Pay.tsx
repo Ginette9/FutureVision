@@ -162,7 +162,7 @@ export default function Pay() {
 
 
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate(returnTo)}
           className="mt-4 ml-3 inline-flex items-center justify-center rounded-md border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-50"
         >
           取消
