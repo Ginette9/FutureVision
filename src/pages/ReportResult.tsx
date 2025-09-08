@@ -157,6 +157,7 @@ export default function ReportResult() {
     <>
       {/* -------- 打印路线：封面 → 目录 → 正文 → 封底 -------- */}
       {/* 封面 - 第一页 */}
+      <div></div>
       <div 
         className="print-only print-page cover-page" 
         data-print-page="cover"

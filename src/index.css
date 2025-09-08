@@ -18,8 +18,8 @@
     .no-print-only{ display:none!important; }
     .print-only{ display:block!important; }
 
-    /* 内页边距：底部 20mm 为 52px 页脚留位 */
-    @page{ size:A4 portrait; margin:12mm 12mm 20mm 12mm; }
+    /* 内页边距 */
+    @page{ size:A4 portrait; }
     @page cover{ size:A4 portrait; margin:0; }
     @page back{  size:A4 portrait; margin:0; }
 
@@ -46,27 +46,6 @@
   .pdf-card__body .prose{ font-size:13px; line-height:1.5; }
 }
 
-/* ========================= */
-/*     PDF 固定页脚（新版）    */
-/* ========================= */
-
-.fv-print-footer{ display:none; }
-@media print{
-  .fv-print-footer{
-    position:fixed!important; left:0; right:0; bottom:0; height:52px;
-    background:rgba(255,255,255,.98); border-top:1px solid rgba(0,0,0,.08);
-    z-index:9999; transform:translateZ(0); will-change:transform;
-    break-inside:avoid; page-break-inside:avoid;
-  }
-  .fv-print-footer .footer-inner{
-    max-width:180mm; margin:0 auto; height:100%; padding:0 6mm; box-sizing:border-box;
-    display:flex; align-items:center; justify-content:space-between;
-  }
-  .fv-print-footer .brand{ display:inline-flex; align-items:center; gap:16px; line-height:1; }
-  .fv-print-footer .brand .sep{ width:1px; height:24px; background:rgba(0,0,0,.14); }
-  .fv-print-footer .brand .logo{ display:block; max-height:30px; width:auto; object-fit:contain; filter:saturate(.95) contrast(1.03); }
-  .fv-print-footer .page-number{ font-size:10px; color:rgba(0,0,0,.6); letter-spacing:.2px; white-space:nowrap; line-height:1; break-inside:avoid; page-break-inside:avoid; }
-}
 
 /* ===================================================== */
 /*        打印专用「封面 / 尾页」容器基础                   */
@@ -80,7 +59,7 @@
     break-inside:avoid; page-break-inside:avoid; page-break-after:always;
     padding:12mm; box-sizing:border-box; background:#fff;
     width:210mm!important;
-    min-height:calc(297mm - 12mm - 20mm - 12mm - 12mm);
+    min-height:calc(297mm - 12mm - 12mm - 12mm - 12mm);
     display:block!important; position:relative; margin:0 auto!important;
   }
 
@@ -123,39 +102,15 @@
 
   /* —— 封面：三段式网格版式 —— */
   .cover-page{
-    display:grid!important; grid-template-rows:auto 1fr auto;
-    padding:0; box-sizing:border-box; width:210mm; height:297mm;
-    color:#fff; /* 蒙层下默认白字可读，如需深字可覆盖 */
-    text-align:center;
-  }
-  .cover-brand{
-    display:flex; align-items:center; justify-content:space-between; gap:8mm;
-    margin:18mm 18mm 0 18mm;
-  }
-  .cover-brand .logo{ max-height:20mm; width:auto; object-fit:contain; display:block; filter:drop-shadow(0 0 0 rgba(0,0,0,0)); }
-  .cover-titleblock{
-    align-self:center; justify-self:center; max-width:160mm; margin:0 auto;
-    padding:0 18mm;
-  }
-  .cover-title{ font-size:30px; line-height:1.2; font-weight:800; letter-spacing:.2px; margin-bottom:6mm; }
-  .cover-sub{ font-size:14px; opacity:.95; margin-bottom:3mm; }
-  .cover-date{ font-size:12px; opacity:.9; }
-  .cover-meta{
-    align-self:end; display:flex; gap:10mm; justify-content:center; flex-wrap:wrap; font-size:11px; opacity:.95;
-    margin:0 18mm 18mm 18mm;
+    display:flex!important; flex-direction:column; align-items:center; justify-content:center;
+    padding:0; box-sizing:border-box; width:210mm; height:297mm; color:#fff; text-align:center;
   }
 
-  /* —— 尾页：信息居中 + 二维码 —— */
+  /* —— 尾页 —— */
   .back-page{
     display:flex!important; flex-direction:column; align-items:center; justify-content:center;
     padding:0; box-sizing:border-box; width:210mm; height:297mm; color:#fff; text-align:center;
   }
-  .back-title{ font-size:20px; font-weight:700; margin-bottom:6mm; padding:0 16mm; }
-  .back-lines{ font-size:12px; line-height:1.6; opacity:.95; padding:0 16mm; }
-  .back-qr{ margin-top:10mm; }
-  .back-qr img{ width:38mm; height:38mm; object-fit:contain; display:block; background:#fff; padding:2mm; border-radius:2mm; }
-  .back-qr p{ font-size:10px; opacity:.9; margin-top:3mm; }
-  .back-copy{ position:absolute; left:16mm; right:16mm; bottom:18mm; font-size:10px; opacity:.9; }
 }
 
 /* ---------- html2pdf 导出：镜像打印规则 ---------- */
@@ -168,7 +123,7 @@ html.export-pdf .no-print-only{ display:none!important; }
 html.export-pdf .print-page{
   break-inside:avoid; page-break-inside:avoid; page-break-after:always;
   padding:12mm; box-sizing:border-box; background:#fff; width:210mm!important;
-  min-height:calc(297mm - 12mm - 20mm - 12mm - 12mm);
+  min-height:calc(297mm - 12mm - 12mm - 12mm - 12mm);
   display:block!important; position:relative; margin:0 auto!important;
 }
 html.export-pdf [data-print-page="cover"].print-page,
@@ -195,26 +150,12 @@ html.export-pdf .cover-page, html.export-pdf .back-page{ position:relative!impor
 /* —— 导出下的排版镜像 —— */
 html.export-pdf .cover-page{
   display:grid!important; grid-template-rows:auto 1fr auto;
-  padding:18mm; box-sizing:border-box; width:210mm; height:297mm; color:#fff; text-align:center;
+  padding:0mm; box-sizing:border-box; width:210mm; height:297mm; color:#fff; text-align:center;
 }
-html.export-pdf .cover-brand{ display:flex; align-items:center; justify-content:space-between; gap:8mm; }
-html.export-pdf .cover-brand .logo{ max-height:20mm; width:auto; object-fit:contain; display:block; }
-html.export-pdf .cover-titleblock{ align-self:center; justify-self:center; max-width:160mm; margin:0 auto; }
-html.export-pdf .cover-title{ font-size:30px; line-height:1.2; font-weight:800; letter-spacing:.2px; margin-bottom:6mm; }
-html.export-pdf .cover-sub{ font-size:14px; opacity:.95; margin-bottom:3mm; }
-html.export-pdf .cover-date{ font-size:12px; opacity:.9; }
-html.export-pdf .cover-meta{ align-self:end; display:flex; gap:10mm; justify-content:center; flex-wrap:wrap; font-size:11px; opacity:.95; }
-
 html.export-pdf .back-page{
   display:flex!important; flex-direction:column; align-items:center; justify-content:center;
-  padding:16mm; box-sizing:border-box; width:210mm; height:297mm; color:#fff; text-align:center;
+  padding:0mm; box-sizing:border-box; width:210mm; height:297mm; color:#fff; text-align:center;
 }
-html.export-pdf .back-title{ font-size:20px; font-weight:700; margin-bottom:6mm; }
-html.export-pdf .back-lines{ font-size:12px; line-height:1.6; opacity:.95; }
-html.export-pdf .back-qr{ margin-top:10mm; }
-html.export-pdf .back-qr img{ width:38mm; height:38mm; object-fit:contain; display:block; background:#fff; padding:2mm; border-radius:2mm; }
-html.export-pdf .back-qr p{ font-size:10px; opacity:.9; margin-top:3mm; }
-html.export-pdf .back-copy{ position:absolute; left:0; right:0; bottom:18mm; font-size:10px; opacity:.9; }
 
 /* ========================= */
 /*           其他            */
