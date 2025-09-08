@@ -25,6 +25,34 @@ html, body {
   box-sizing: border-box !important;
 }
 
+/* 强制重置根元素和第一个子元素 */
+#root {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+
+#root > * {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* 打印模式下强制重置第一个元素 */
+@media print {
+  #root, #root > *, #root > * > * {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+  }
+  
+  /* 确保第一个打印页面没有上边距 */
+  .print-only:first-child,
+  .print-page:first-child {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+}
+
 /* —— 基础主题 —— */
 :root{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
@@ -111,13 +139,13 @@ html, body {
   }
 
   /* 封面和封底需要无padding以实现满版背景 */
-  [data-print-page="cover"].print-page,
-  [data-print-page="back"].print-page{
+  .print-page[data-print-page="cover"],
+  .print-page[data-print-page="back"]{
     padding:0!important; margin:0!important; border:0!important;
     width:100%!important; height:297mm!important; min-height:297mm!important;
     position:relative!important; overflow:hidden!important; isolation:isolate;
     background:transparent!important; box-sizing:border-box!important;
-    z-index:0;
+    z-index:0; top:0!important; left:0!important;
   }
 
   /* 背景层（图片） - 调整为100% 100%以完全填满页面 */
@@ -177,12 +205,13 @@ html.export-pdf [data-print-page="back"].print-page {
   min-height:297mm!important;
   height:297mm!important;
 }
-html.export-pdf [data-print-page="cover"].print-page,
-html.export-pdf [data-print-page="back"].print-page{
+html.export-pdf .print-page[data-print-page="cover"],
+html.export-pdf .print-page[data-print-page="back"]{
   padding:0!important; margin:0!important; border:0!important;
   width:100%!important; height:297mm!important; min-height:297mm!important;
   position:relative!important; overflow:hidden!important; isolation:isolate;
   background:transparent!important; box-sizing:border-box!important; z-index:0;
+  top:0!important; left:0!important;
 }
 html.export-pdf [data-print-page="cover"].print-page::before,
 html.export-pdf [data-print-page="back"].print-page::before{
