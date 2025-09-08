@@ -2,6 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 强制重置封面和封底的所有可能影响 */
+[data-print-page="cover"], [data-print-page="back"] {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  display: block !important;
+}
+
+[data-print-page="cover"] *, [data-print-page="back"] * {
+  box-sizing: border-box !important;
+}
+
+/* 确保html和body在所有情况下都没有默认边距 */
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  box-sizing: border-box !important;
+}
+
 /* —— 基础主题 —— */
 :root{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
@@ -24,9 +47,21 @@
     @page back{  size:A4 portrait; margin:0; }
 
     html,body{
-      background:#fff!important;
+      background:transparent!important;
       -webkit-print-color-adjust:exact; print-color-adjust:exact;
       margin:0!important; padding:0!important; border:0!important;
+    }
+    
+    /* 封面和封底页面需要透明背景 - 使用更兼容的方法 */
+    [data-print-page="cover"] ~ *,
+    [data-print-page="back"] ~ * {
+      background: transparent !important;
+    }
+    
+    /* 直接针对封面封底容器的父元素 */
+    .print-only[data-print-page="cover"],
+    .print-only[data-print-page="back"] {
+      background: transparent !important;
     }
   }
 }
@@ -55,9 +90,21 @@
 
 /* —— 原生打印：满幅 + 出血 + 抗白边 —— */
 @media print{
+  @page {
+    margin: 0 !important;
+    padding: 0 !important;
+    size: A4;
+  }
+  
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
   .print-page{
     break-inside:avoid; page-break-inside:avoid; page-break-after:always;
-    padding:12mm; box-sizing:border-box; background:#fff;
+    padding:12mm; box-sizing:border-box; background:transparent;
     width:210mm!important;
     min-height:calc(297mm - 12mm - 12mm - 12mm - 12mm);
     display:block!important; position:relative; margin:0 auto!important;
@@ -66,14 +113,10 @@
   /* 封面和封底需要无padding以实现满版背景 */
   [data-print-page="cover"].print-page,
   [data-print-page="back"].print-page{
-    padding:0!important;
-  }
-
-  [data-print-page="cover"].print-page,
-  [data-print-page="back"].print-page{
-    padding:0!important; width:100%!important; min-height:100vh!important; height:100vh!important;
+    padding:0!important; margin:0!important; border:0!important;
+    width:100%!important; height:297mm!important; min-height:297mm!important;
     position:relative!important; overflow:hidden!important; isolation:isolate;
-    background:transparent!important; margin:0!important;
+    background:transparent!important; box-sizing:border-box!important;
     z-index:0;
   }
 
@@ -81,14 +124,7 @@
   /* 注意：具体的背景图片在组件内联样式中设置 */
   [data-print-page="cover"].print-page::before,
   [data-print-page="back"].print-page::before{
-    content:""; position:absolute; inset:0;
-    background-position: center center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index:0; -webkit-print-color-adjust:exact; print-color-adjust:exact;
-    transform:none; transform-origin:center center;
-    backface-visibility:hidden; will-change:transform;
-    pointer-events:none;
+    display: none !important;
   }
 
   /* 移除蒙版以确保PNG图片完整显示 */
@@ -98,54 +134,66 @@
   }
 
   /* —— 内容层：始终可见 —— */
-  .cover-page,.back-page{ position:relative!important; z-index:3!important; }
+  .cover-page,.back-page{ position:relative!important; z-index:0!important; }
 
-  /* —— 封面：三段式网格版式 —— */
+  /* —— 封面 —— */
   .cover-page{
     display:flex!important; flex-direction:column; align-items:center; justify-content:center;
-    padding:0; box-sizing:border-box; width:210mm; height:297mm; color:#fff; text-align:center;
+    padding:0; box-sizing:border-box; width:100%!important; height:100vh!important; color:#fff; text-align:center;
   }
 
   /* —— 尾页 —— */
   .back-page{
     display:flex!important; flex-direction:column; align-items:center; justify-content:center;
-    padding:0; box-sizing:border-box; width:210mm; height:297mm; color:#fff; text-align:center;
+    padding:0; box-sizing:border-box; width:100%!important; height:100vh!important; color:#fff; text-align:center;
   }
 }
 
 /* ---------- html2pdf 导出：镜像打印规则 ---------- */
 html.export-pdf{
-  font-size:13px!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; background:#fff!important;
+  font-size:13px!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; background:transparent!important;
+}
+
+/* 导出模式下封面和封底需要透明背景 - 使用更兼容的方法 */
+html.export-pdf .print-only[data-print-page="cover"],
+html.export-pdf .print-only[data-print-page="back"] {
+  background: transparent !important;
 }
 html.export-pdf .print-only{ display:block!important; }
 html.export-pdf .no-print-only{ display:none!important; }
 
 html.export-pdf .print-page{
   break-inside:avoid; page-break-inside:avoid; page-break-after:always;
-  padding:12mm; box-sizing:border-box; background:#fff; width:210mm!important;
+  padding:12mm; box-sizing:border-box; background:transparent; width:210mm!important;
   min-height:calc(297mm - 12mm - 12mm - 12mm - 12mm);
+}
+
+/* 导出模式下封面和封底页面透明背景 */
+html.export-pdf [data-print-page="cover"].print-page,
+html.export-pdf [data-print-page="back"].print-page {
+  background: transparent !important;
   display:block!important; position:relative; margin:0 auto!important;
+  padding:0!important;
+  min-height:297mm!important;
+  height:297mm!important;
 }
 html.export-pdf [data-print-page="cover"].print-page,
 html.export-pdf [data-print-page="back"].print-page{
-  padding:0!important; width:100%!important; min-height:100vh!important; height:100vh!important;
+  padding:0!important; margin:0!important; border:0!important;
+  width:100%!important; height:297mm!important; min-height:297mm!important;
   position:relative!important; overflow:hidden!important; isolation:isolate;
-  background:transparent!important; margin:0!important; z-index:0;
+  background:transparent!important; box-sizing:border-box!important; z-index:0;
 }
 html.export-pdf [data-print-page="cover"].print-page::before,
 html.export-pdf [data-print-page="back"].print-page::before{
-  content:""; position:absolute; inset:0;
-  background:var(--bg-image, none) center center / cover no-repeat;
-  z-index:0; -webkit-print-color-adjust:exact; print-color-adjust:exact;
-  transform:none; transform-origin:center center;
-  backface-visibility:hidden; will-change:transform; pointer-events:none;
+  display: none !important;
 }
 /* 移除蒙版以确保PNG图片完整显示 */
 html.export-pdf [data-print-page="cover"].print-page::after,
 html.export-pdf [data-print-page="back"].print-page::after{
   display: none !important;
 }
-html.export-pdf .cover-page, html.export-pdf .back-page{ position:relative!important; z-index:3!important; }
+html.export-pdf .cover-page, html.export-pdf .back-page{ position:relative!important; z-index:0!important; }
 
 /* —— 导出下的排版镜像 —— */
 html.export-pdf .cover-page{

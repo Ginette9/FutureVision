@@ -157,16 +157,17 @@ export default function ReportResult() {
     <>
       {/* -------- 打印路线：封面 → 目录 → 正文 → 封底 -------- */}
       {/* 封面 - 第一页 */}
-      <div></div>
       <div 
         className="print-only print-page cover-page" 
         data-print-page="cover"
         style={{
+          margin: 0,
+          padding: 0,
+          border: 0,
+          width: '100%',
+          height: '100%',
           position: 'relative',
-          margin: '0 !important',
-          padding: '0 !important',
-          width: '100vw !important',
-          height: '100vh !important',
+          overflow: 'hidden'
         }}
       >
         <img 
@@ -174,12 +175,16 @@ export default function ReportResult() {
           alt="Cover" 
           style={{
             position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            zIndex: 0,
+            top: '-1px',
+            left: '-1px',
+            width: 'calc(100% + 2px)',
+            height: 'calc(100% + 2px)',
+            objectFit: 'fill',
+            margin: 0,
+            padding: 0,
+            border: 0,
+            display: 'block',
+            zIndex: 99999,
           }}
         />
       
@@ -247,11 +252,13 @@ export default function ReportResult() {
         className="print-only print-page back-page" 
         data-print-page="back"
         style={{
+          margin: 0,
+          padding: 0,
+          border: 0,
+          width: '100%',
+          height: '100%',
           position: 'relative',
-          margin: '0 !important',
-          padding: '0 !important',
-          width: '100vw !important',
-          height: '100vh !important',
+          overflow: 'hidden'
         }}
       >
         <img 
@@ -259,12 +266,16 @@ export default function ReportResult() {
           alt="Back Cover" 
           style={{
             position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            zIndex: 0,
+            top: '-1px',
+            left: '-1px',
+            width: 'calc(100% + 2px)',
+            height: 'calc(100% + 2px)',
+            objectFit: 'fill',
+            margin: 0,
+            padding: 0,
+            border: 0,
+            display: 'block',
+            zIndex: 99999,
           }}
         />
         {/* 封底内容 */}

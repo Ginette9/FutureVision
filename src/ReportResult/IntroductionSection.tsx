@@ -229,7 +229,7 @@ export const IntroductionSection: React.FC<Props> = ({
           @page cover { size: A4 portrait; margin: 0; }
           @page back  { size: A4 portrait; margin: 0; }
           html.print-mode, html.print-mode body {
-            background: #fff !important;
+            background: transparent !important;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
           }
@@ -270,7 +270,7 @@ export const IntroductionSection: React.FC<Props> = ({
         html.export-pdf {
           font-size: 13px !important;
           -webkit-print-color-adjust: exact; print-color-adjust: exact;
-          background: #fff !important;
+          background: transparent !important;
         }
         html.export-pdf * {
           transform: none !important; animation: none !important; transition: none !important;
