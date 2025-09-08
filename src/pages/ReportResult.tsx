@@ -24,6 +24,8 @@ import LogoMSC from '@/images/msc-hk-logo.png';
 import QrOfficial from '@/images/official_account_qr.png';
 import QrAssistant from '@/images/fv_assistant_qr.png';
 import QrMiniApp from '@/images/app-qr.jpg';
+import PdfCover from '@/images/pdf-cover.png';
+import PdfBack from '@/images/pdf-back.png';
 
 declare global {
   interface Window {
@@ -153,7 +155,36 @@ export default function ReportResult() {
 
   return (
     <>
-      {/* -------- 打印路线：目录 → 正文 -------- */}
+      {/* -------- 打印路线：封面 → 目录 → 正文 → 封底 -------- */}
+      {/* 封面 - 第一页 */}
+      <div 
+        className="print-only print-page cover-page" 
+        data-print-page="cover"
+        style={{
+          position: 'relative',
+          margin: '0 !important',
+          padding: '0 !important',
+          width: '100vw !important',
+          height: '100vh !important',
+        }}
+      >
+        <img 
+          src={PdfCover} 
+          alt="Cover" 
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            zIndex: 0,
+          }}
+        />
+      
+      </div>
+      
+      {/* 目录 */}
       <PrintToc sections={sections} />
 
       {/* 正文（打印时显示打印版组件 / 屏幕时不显示这些打印容器） */}
@@ -210,7 +241,33 @@ export default function ReportResult() {
         {disclaimerSection?.html && <DisclaimerSection />}
       </div>
 
-      {/* 已移除打印尾页 */}
+      {/* 封底 - 最后一页 */}
+      <div 
+        className="print-only print-page back-page" 
+        data-print-page="back"
+        style={{
+          position: 'relative',
+          margin: '0 !important',
+          padding: '0 !important',
+          width: '100vw !important',
+          height: '100vh !important',
+        }}
+      >
+        <img 
+          src={PdfBack} 
+          alt="Back Cover" 
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            zIndex: 0,
+          }}
+        />
+        {/* 封底内容 */}
+      </div>
 
       {/* -------- 屏幕路线：保持你原有的左 TOC / 右正文布局 -------- */}
       <div className="md:flex gap-10 px-4 md:px-12 py-8 font-sans text-gray-900 no-print-only">

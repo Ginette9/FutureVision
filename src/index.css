@@ -84,34 +84,38 @@
     display:block!important; position:relative; margin:0 auto!important;
   }
 
+  /* 封面和封底需要无padding以实现满版背景 */
   [data-print-page="cover"].print-page,
   [data-print-page="back"].print-page{
-    padding:0!important; width:210mm!important; min-height:297mm!important; height:297mm!important;
+    padding:0!important;
+  }
+
+  [data-print-page="cover"].print-page,
+  [data-print-page="back"].print-page{
+    padding:0!important; width:100%!important; min-height:100vh!important; height:100vh!important;
     position:relative!important; overflow:hidden!important; isolation:isolate;
-    background:transparent!important;
-    /* 出血 + 轻微放大，吃掉任何边缘毛刺 */
-    --bleed:4mm;                 /* 如仍见白边可调到 5–6mm */
-    --overscan:1.0125;           /* 1.0~1.02 之间微调 */
+    background:transparent!important; margin:0!important;
     z-index:0;
   }
 
-  /* 背景层（图片） */
+  /* 背景层（图片） - 调整为100% 100%以完全填满页面 */
+  /* 注意：具体的背景图片在组件内联样式中设置 */
   [data-print-page="cover"].print-page::before,
   [data-print-page="back"].print-page::before{
-    content:""; position:absolute; inset:calc(-1 * var(--bleed));
-    background:var(--bg-image, none) center center / cover no-repeat;
+    content:""; position:absolute; inset:0;
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
     z-index:0; -webkit-print-color-adjust:exact; print-color-adjust:exact;
-    transform:scale(var(--overscan)); transform-origin:center center;
+    transform:none; transform-origin:center center;
     backface-visibility:hidden; will-change:transform;
     pointer-events:none;
   }
 
-  /* 渐隐蒙层：提升文字可读性（顶部轻，底部略深） */
+  /* 移除蒙版以确保PNG图片完整显示 */
   [data-print-page="cover"].print-page::after,
   [data-print-page="back"].print-page::after{
-    content:""; position:absolute; inset:calc(-1 * var(--bleed));
-    background:linear-gradient(to bottom, rgba(0,0,0,.06) 0%, rgba(0,0,0,.18) 100%);
-    z-index:1; pointer-events:none; mix-blend-mode:normal;
+    display: none !important;
   }
 
   /* —— 内容层：始终可见 —— */
@@ -120,35 +124,38 @@
   /* —— 封面：三段式网格版式 —— */
   .cover-page{
     display:grid!important; grid-template-rows:auto 1fr auto;
-    padding:18mm; box-sizing:border-box; width:210mm; height:297mm;
+    padding:0; box-sizing:border-box; width:210mm; height:297mm;
     color:#fff; /* 蒙层下默认白字可读，如需深字可覆盖 */
     text-align:center;
   }
   .cover-brand{
     display:flex; align-items:center; justify-content:space-between; gap:8mm;
+    margin:18mm 18mm 0 18mm;
   }
   .cover-brand .logo{ max-height:20mm; width:auto; object-fit:contain; display:block; filter:drop-shadow(0 0 0 rgba(0,0,0,0)); }
   .cover-titleblock{
     align-self:center; justify-self:center; max-width:160mm; margin:0 auto;
+    padding:0 18mm;
   }
   .cover-title{ font-size:30px; line-height:1.2; font-weight:800; letter-spacing:.2px; margin-bottom:6mm; }
   .cover-sub{ font-size:14px; opacity:.95; margin-bottom:3mm; }
   .cover-date{ font-size:12px; opacity:.9; }
   .cover-meta{
     align-self:end; display:flex; gap:10mm; justify-content:center; flex-wrap:wrap; font-size:11px; opacity:.95;
+    margin:0 18mm 18mm 18mm;
   }
 
   /* —— 尾页：信息居中 + 二维码 —— */
   .back-page{
     display:flex!important; flex-direction:column; align-items:center; justify-content:center;
-    padding:16mm; box-sizing:border-box; width:210mm; height:297mm; color:#fff; text-align:center;
+    padding:0; box-sizing:border-box; width:210mm; height:297mm; color:#fff; text-align:center;
   }
-  .back-title{ font-size:20px; font-weight:700; margin-bottom:6mm; }
-  .back-lines{ font-size:12px; line-height:1.6; opacity:.95; }
+  .back-title{ font-size:20px; font-weight:700; margin-bottom:6mm; padding:0 16mm; }
+  .back-lines{ font-size:12px; line-height:1.6; opacity:.95; padding:0 16mm; }
   .back-qr{ margin-top:10mm; }
   .back-qr img{ width:38mm; height:38mm; object-fit:contain; display:block; background:#fff; padding:2mm; border-radius:2mm; }
   .back-qr p{ font-size:10px; opacity:.9; margin-top:3mm; }
-  .back-copy{ position:absolute; left:0; right:0; bottom:18mm; font-size:10px; opacity:.9; }
+  .back-copy{ position:absolute; left:16mm; right:16mm; bottom:18mm; font-size:10px; opacity:.9; }
 }
 
 /* ---------- html2pdf 导出：镜像打印规则 ---------- */
@@ -166,23 +173,22 @@ html.export-pdf .print-page{
 }
 html.export-pdf [data-print-page="cover"].print-page,
 html.export-pdf [data-print-page="back"].print-page{
-  padding:0!important; width:210mm!important; min-height:297mm!important; height:297mm!important;
+  padding:0!important; width:100%!important; min-height:100vh!important; height:100vh!important;
   position:relative!important; overflow:hidden!important; isolation:isolate;
-  background:transparent!important; --bleed:4mm; --overscan:1.0125; z-index:0;
+  background:transparent!important; margin:0!important; z-index:0;
 }
 html.export-pdf [data-print-page="cover"].print-page::before,
 html.export-pdf [data-print-page="back"].print-page::before{
-  content:""; position:absolute; inset:calc(-1 * var(--bleed));
+  content:""; position:absolute; inset:0;
   background:var(--bg-image, none) center center / cover no-repeat;
   z-index:0; -webkit-print-color-adjust:exact; print-color-adjust:exact;
-  transform:scale(var(--overscan)); transform-origin:center center;
+  transform:none; transform-origin:center center;
   backface-visibility:hidden; will-change:transform; pointer-events:none;
 }
+/* 移除蒙版以确保PNG图片完整显示 */
 html.export-pdf [data-print-page="cover"].print-page::after,
 html.export-pdf [data-print-page="back"].print-page::after{
-  content:""; position:absolute; inset:calc(-1 * var(--bleed));
-  background:linear-gradient(to bottom, rgba(0,0,0,.06) 0%, rgba(0,0,0,.18) 100%);
-  z-index:1; pointer-events:none; mix-blend-mode:normal;
+  display: none !important;
 }
 html.export-pdf .cover-page, html.export-pdf .back-page{ position:relative!important; z-index:3!important; }
 
