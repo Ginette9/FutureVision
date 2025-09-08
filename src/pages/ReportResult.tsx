@@ -194,57 +194,74 @@ export default function ReportResult() {
       <PrintToc sections={sections} />
 
       {/* 正文（打印时显示打印版组件 / 屏幕时不显示这些打印容器） */}
-      <div className="print-only print-page">
-        {formData && (
-          <section id="introduction" className="space-y-4">
-            <IntroductionSection
-              productNames={[formData.industry.name]}
-              countryNames={[formData.country.name]}
-              pdfLink={``}
-              introHtml={introSection?.html}
-            />
-          </section>
-        )}
+      <div className="print-only print-page" style={{
+        padding: '0',
+        margin: '0',
+        width: '210mm',
+        minHeight: '297mm',
+        background: 'white',
+        position: 'relative',
+        boxSizing: 'border-box'
+      }}>
+        {/* 内容包装器 - 强制设置边距 */}
+        <div style={{
+          padding: '20mm 12mm',
+          boxSizing: 'border-box',
+          width: '100%',
+          minHeight: '100%',
+          position: 'relative'
+        }}>
+          {formData && (
+            <section id="introduction" className="space-y-4">
+              <IntroductionSection
+                productNames={[formData.industry.name]}
+                countryNames={[formData.country.name]}
+                pdfLink={``}
+                introHtml={introSection?.html}
+              />
+            </section>
+          )}
 
-        {payAttentionSection?.html && <PayAttentionSection html={payAttentionSection.html} />}
+          {payAttentionSection?.html && <PayAttentionSection html={payAttentionSection.html} />}
 
-        {riskAnalysisSection?.categories && (
-          <section id="risk-analysis" className="space-y-4">
-            <h2 className="text-3xl font-black uppercase text-violet-800 scale-y-[0.9] tracking-wide">{riskAnalysisSection.title}</h2>
+          {riskAnalysisSection?.categories && (
+            <section id="risk-analysis" className="space-y-4">
+              <h2 className="text-3xl font-black uppercase text-violet-800 scale-y-[0.9] tracking-wide">{riskAnalysisSection.title}</h2>
 
-            <p className="text-base">
-              Below you will find the results of the risk analysis based on your submitted answers.
-              Would you like to switch your product or country?{' '}
-              <br />
-              <a className="text-blue-700 underline hover:no-underline" target="_blank" href="/">
-                Fill out the ESG Risk Form again
-              </a>
-            </p>
+              <p className="text-base">
+                Below you will find the results of the risk analysis based on your submitted answers.
+                Would you like to switch your product or country?{' '}
+                <br />
+                <a className="text-blue-700 underline hover:no-underline" target="_blank" href="/">
+                  Fill out the ESG Risk Form again
+                </a>
+              </p>
 
-            <p className="font-semibold text-black">
-              {riskAnalysisSection.categories.reduce(
-                (sum, cat) =>
-                  sum +
-                  cat.themes.reduce(
-                    (tSum, theme) => tSum + (theme.riskCount ?? theme.risks.length),
-                    0
-                  ),
-                0
-              )}{' '}
-              risks found
-            </p>
+              <p className="font-semibold text-black">
+                {riskAnalysisSection.categories.reduce(
+                  (sum, cat) =>
+                    sum +
+                    cat.themes.reduce(
+                      (tSum, theme) => tSum + (theme.riskCount ?? theme.risks.length),
+                      0
+                    ),
+                  0
+                )}{' '}
+                risks found
+              </p>
 
-            {/* 打印版 */}
-            <ReportSectionPrint categories={riskAnalysisSection.categories} />
-          </section>
-        )}
+              {/* 打印版 */}
+              <ReportSectionPrint categories={riskAnalysisSection.categories} />
+            </section>
+          )}
 
-        {csrSection?.html && <CSRSection html={csrSection.html} />}
-        {csrLabelsSection?.html && <CsrLabelsSection html={csrLabelsSection.html} />}
-        {dueDiligenceSection?.html && <DueDiligenceSection />}
-        {aboutMvoSection?.html && <AboutMvoSection />}
-        {contactSection?.html && <ContactSection />}
-        {disclaimerSection?.html && <DisclaimerSection />}
+          {csrSection?.html && <CSRSection html={csrSection.html} />}
+          {csrLabelsSection?.html && <CsrLabelsSection html={csrLabelsSection.html} />}
+          {dueDiligenceSection?.html && <DueDiligenceSection />}
+          {aboutMvoSection?.html && <AboutMvoSection />}
+          {contactSection?.html && <ContactSection />}
+          {disclaimerSection?.html && <DisclaimerSection />}
+        </div>
       </div>
 
       {/* 封底 - 最后一页 */}
