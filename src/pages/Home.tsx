@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import RiskForm from '@/components/RiskForm';
+import LogoCarousel from '@/components/LogoCarousel';
 import { getCountryId, getProductId } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -231,12 +232,8 @@ export default function Home() {
        
        {/* 信任标志 */}
        <div className="mt-20">
-         <p className="text-center text-sm text-slate-500 dark:text-slate-400 mb-6">受到全球企业的信任</p>
-         <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-70">
-           {[1, 2, 3, 4, 5].map((i) => (
-             <div key={i} className="h-8 md:h-10 bg-slate-200 dark:bg-slate-700 rounded-md w-24 md:w-32"></div>
-           ))}
-         </div>
+         <p className="text-center text-sm text-slate-500 dark:text-slate-400 mb-8">受到全球企业的信任</p>
+         <LogoCarousel />
        </div>
      </div>
      
