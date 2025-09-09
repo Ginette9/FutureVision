@@ -215,7 +215,7 @@ export default function App() {
                 <ul className="space-y-2 text-slate-400" style={{fontSize: '12px', letterSpacing: '-0.01em'}}>
                   <li className="flex items-center">
                     <i className="fa-solid fa-envelope mr-2 text-blue-400"></i>
-                    jinvis@mschv.com
+                    jinxia@mscfv.com
                   </li>
                   <li className="flex items-center">
                     <i className="fa-solid fa-phone mr-2 text-blue-400"></i>
