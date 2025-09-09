@@ -90,10 +90,11 @@ const PrintToc: React.FC<{ sections: ReportSection[] }> = ({ sections }) => {
 
 export default function ReportResult() {
   const [sections, setSections] = useState<ReportSection[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [formData, setFormData] = useState<any>(null);
+  const [shouldShowLoader, setShouldShowLoader] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -101,6 +102,15 @@ export default function ReportResult() {
     if (!savedData) {
       navigate('/');
       return;
+    }
+
+    // 检查是否应该显示AI加载器（只有从首页跳转时才显示）
+    const showLoader = sessionStorage.getItem('showAILoader') === 'true';
+    if (showLoader) {
+      setShouldShowLoader(true);
+      setIsLoading(true);
+      // 清除标记，避免刷新页面时重复显示
+      sessionStorage.removeItem('showAILoader');
     }
 
     const fetchData = async () => {
@@ -118,24 +128,25 @@ export default function ReportResult() {
         const parsedSections = parseReportHtml(rawHtml);
         console.log('[report] sections parsed', parsedSections.map(s => ({ id: s.id, title: s.title })).slice(0, 10));
         setSections(parsedSections);
-        setDataLoaded(true); // 数据加载完成，但保持加载器显示
+        setDataLoaded(true);
+        
+        // 如果不需要显示加载器，直接设置为加载完成
+        if (!showLoader) {
+          setIsLoading(false);
+        }
       } catch (err) {
         console.error(err);
         setErrorMsg('Failed to load report content.');
-        setDataLoaded(true); // 即使出错也要标记数据加载完成
+        setDataLoaded(true);
+        setIsLoading(false);
       }
     };
 
     fetchData();
   }, [navigate]);
 
-  // 如果数据还没加载完成，显示加载器
-  if (!dataLoaded) {
-    return <AIGenerationLoader formData={formData} onComplete={() => setIsLoading(false)} />;
-  }
-  
-  // 如果数据加载完成但加载器还在运行，继续显示加载器
-  if (isLoading) {
+  // 只有在需要显示加载器且数据未加载完成时才显示加载器
+  if (shouldShowLoader && (!dataLoaded || isLoading)) {
     return <AIGenerationLoader formData={formData} onComplete={() => setIsLoading(false)} />;
   }
   

@@ -124,14 +124,14 @@ export const IntroductionSection: React.FC<Props> = ({
   );
 
   return (
-    <section id="introduction" className="space-y-8">
+    <section id="introduction" className="space-y-8 pt-16">
       {/* —— 正文 —— */}
       <div ref={sectionRef}>
         <div className="grid grid-cols-1 pb-20 pt-6 md:grid-cols-2 md:flex-row">
           {/* Return Button（打印/导出时隐藏） */}
           <div className="col-span-1 md:col-span-2">
             <button
-              onClick={() => window.history.back()}
+              onClick={() => navigate('/')}
               className="no-print-only mb-8 flex cursor-pointer items-center justify-center rounded py-2 text-sm font-semibold uppercase text-violet-800 transition-colors hover:border-purple-900 hover:text-purple-900"
             >
               <span className="mr-4 mt-1">

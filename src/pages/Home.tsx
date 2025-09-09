@@ -28,7 +28,7 @@ export const getIndustries = (t: (key: string) => string | string[]) => {
 };
 
 // 获取当前语言的地区数据
-export const getCountries = (t: (key: string) => string) => {
+export const getCountries = (t: (key: string) => string | string[]) => {
   const countryList = t("countries") as unknown as string[];
   return countryList.map(country => {   
     const countryId = getCountryId(country);
@@ -44,14 +44,17 @@ export const getCountries = (t: (key: string) => string) => {
 type FormData = z.infer<typeof contactSchema> & {
   industry: { id: string; name: string } | null;
   country: { id: string; name: string } | null;
+  position: string;
+  organization: string;
+  phone: string;
 };
 
 export default function Home() {
  const navigate = useNavigate();
  const { t, language } = useLanguage();
  const [isLoading, setIsLoading] = useState(false);
- const [industries, setIndustries] = useState([]);
- const [countries, setCountries] = useState([]);
+ const [industries, setIndustries] = useState<Array<{ id: string; name: string }>>([]);
+ const [countries, setCountries] = useState<Array<{ id: string; name: string }>>([]);
  
  // 根据语言更新行业和地区数据
  useEffect(() => {
@@ -63,6 +66,9 @@ export default function Home() {
     country: null,
     name: '',
     email: '',
+    position: '',
+    organization: '',
+    phone: '',
   });
  const [isVisible, setIsVisible] = useState(false);
 
@@ -82,17 +88,17 @@ export default function Home() {
    setFormData(prev => ({ ...prev, [name]: value }));
  };
 
- const handleSelectChange = (field: 'industry' | 'country', selectedId: string) => {
-  if (field === 'industry') {
-    const selected = industries.find((i) => i.id === selectedId);
+ const handleSelectChange = (name: string, value: string) => {
+  if (name === 'industry') {
+    const selected = industries.find((i) => i.id === value);
     if (selected) {
       setFormData((prev) => ({
         ...prev,
         industry: { id: selected.id, name: selected.name },
       }));
     }
-  } else if (field === 'country') {
-    const selected = countries.find((r) => r.id === selectedId);
+  } else if (name === 'country') {
+    const selected = countries.find((r) => r.id === value);
     if (selected) {
       setFormData((prev) => ({
         ...prev,
@@ -134,6 +140,9 @@ export default function Home() {
      
      // 将表单数据存储在localStorage中供结果页面使用
      localStorage.setItem('riskAnalysisData', JSON.stringify(formData));
+     
+     // 设置标记表示从首页跳转，用于控制AI加载器显示
+     sessionStorage.setItem('showAILoader', 'true');
      
      // 导航到结果页面
      navigate('/report');
