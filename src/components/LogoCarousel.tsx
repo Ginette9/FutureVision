@@ -32,43 +32,50 @@ const LogoCarousel: React.FC = () => {
   const secondRowRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
-    const firstRow = firstRowRef.current;
-    const secondRow = secondRowRef.current;
-    if (!firstRow || !secondRow) return;
-    
     let animationId: number;
     let firstRowPosition = 0;
     let secondRowPosition = 0;
     const scrollSpeed = 1.2;
     
     const animate = () => {
-      // 第一排向右滑动
-      firstRowPosition += scrollSpeed;
-      if (firstRowPosition >= firstRow.scrollWidth / 2) {
-        firstRowPosition = 0;
-      }
-      firstRow.scrollLeft = firstRowPosition;
+      const firstRow = firstRowRef.current;
+      const secondRow = secondRowRef.current;
       
-      // 第二排反向滑动（从右向左）
-      secondRowPosition += scrollSpeed;
-      if (secondRowPosition >= secondRow.scrollWidth / 2) {
-        secondRowPosition = 0;
+      if (firstRow) {
+        // 第一排向右滑动
+        firstRowPosition += scrollSpeed;
+        const maxScroll = firstRow.scrollWidth - firstRow.clientWidth;
+        if (maxScroll > 0) {
+          if (firstRowPosition >= maxScroll) {
+            firstRowPosition = 0;
+          }
+          firstRow.scrollLeft = firstRowPosition;
+        }
       }
-      // 反向滚动：从最大值开始减去当前位置
-      secondRow.scrollLeft = secondRow.scrollWidth / 2 - secondRowPosition;
+      
+      if (secondRow) {
+        // 第二排反向滑动（从右向左）
+        secondRowPosition += scrollSpeed;
+        const maxScrollSecond = secondRow.scrollWidth - secondRow.clientWidth;
+        if (maxScrollSecond > 0) {
+          if (secondRowPosition >= maxScrollSecond) {
+            secondRowPosition = 0;
+          }
+          // 反向滚动：从最大值开始减去当前位置
+          secondRow.scrollLeft = maxScrollSecond - secondRowPosition;
+        }
+      }
       
       animationId = requestAnimationFrame(animate);
     };
     
-    // 添加短暂延迟确保DOM完全渲染后开始动画
-    const startAnimation = () => {
+    // 延迟启动，确保DOM完全渲染
+    const timer = setTimeout(() => {
       animationId = requestAnimationFrame(animate);
-    };
-    
-    const timeoutId = setTimeout(startAnimation, 100);
+    }, 100);
     
     return () => {
-      clearTimeout(timeoutId);
+      clearTimeout(timer);
       cancelAnimationFrame(animationId);
     };
   }, []);
@@ -87,7 +94,11 @@ const LogoCarousel: React.FC = () => {
   }) => (
     <div 
       ref={scrollRef}
-      className="flex gap-6 md:gap-8 overflow-hidden"
+      className="flex gap-6 md:gap-8 overflow-x-scroll scrollbar-hide"
+      style={{
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none'
+      }}
     >
       {rowLogos.map((logo, index) => (
         <div
