@@ -162,76 +162,86 @@ export default function App() {
         </Routes>
       </main>
 
-      {/* 屏幕端页脚（打印隐藏）——原样保留 */}
-      <footer className="no-print-only bg-slate-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center mb-4">
-                <img
-                  src="https://lf-code-agent.coze.cn/obj/x-ai-cn/238114214402/attachment/白字透明logo_20250728174823.png"
-                  alt="Logo"
-                  className="h-8 mr-2"
-                />
+      {/* 页脚 */}
+        <footer className="bg-slate-900 text-white py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row gap-6">
+              {/* 第一列：About Future Vision - 3.5列宽度 */}
+              <div className="md:w-[29.17%]" style={{letterSpacing: '-0.03em'}}>
+                <div className="flex items-center mb-10"></div>
+                <h3 className="font-semibold mb-4" style={{fontSize: '12px', letterSpacing: '-0.01em'}}>About Future Vision</h3>
+                <p className="text-slate-400 mb-3" style={{fontSize: '8px', letterSpacing: '-0.01em'}}>Your 1st Intelligent Consultant</p>
+                <p className="text-slate-400 mb-4" style={{fontSize: '8px', letterSpacing: '-0.01em'}}>For Global Business Sustainable Growth</p>
+                <ul className="space-y-2 text-slate-400" style={{fontSize: '8px', letterSpacing: '-0.01em'}}>
+                  <li>- International Market Expansion</li>
+                  <li>- Global ESG Risk Management</li>
+                  <li>- Sustainable Development Strategy</li>
+                  <li>- ESG Rating Enhancement</li>
+                </ul>
               </div>
-              <p className="text-slate-400 text-sm">
-                提供专业的企业出海风险评估与分析服务，助力企业成功开拓国际市场。
-              </p>
-            </div>
 
-            <div>
-              <h3 className="text-lg font-semibold mb-4">服务</h3>
-              <ul className="space-y-2 text-slate-400">
-                <li><a href="#" className="hover:text-white transition-colors">风险评估</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">市场分析</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">合规咨询</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">战略规划</a></li>
-              </ul>
-            </div>
+              {/* 第二列：Locations - 6.5列宽度 */}
+              <div className="md:w-[58.97%]" style={{fontSize: '1px', letterSpacing: '-0.03em'}}>
+                <div className="flex items-center mb-10"></div>
+                <h3 className="font-semibold mb-4" style={{fontSize: '6px', letterSpacing: '-0.01em'}}>Locations</h3>
+                <ul className="space-y-3 text-slate-400 leading-tight" style={{fontSize: '6px', letterSpacing: '-0.02em'}}>
+                  <li>
+                    <strong className="text-slate-300" style={{fontSize: '6px'}}>Hongkong:</strong><br />
+                    Room 1318-19, Hollywood Plaza 610 Nathan Road, Mong Kok, Kowloon
+                  </li>
+                  <li>
+                    <strong className="text-slate-300" style={{fontSize: '6px'}}>Beijing:</strong><br />
+                    Room 1805, Capital Mansion 6 Xinyuan South Road, Chaoyang District
+                  </li>
+                  <li>
+                    <strong className="text-slate-300" style={{fontSize: '6px'}}>Shanghai:</strong><br />
+                    42/F, Magnolia Plaza, 501 East Da Ming Road, Hongkou District
+                  </li>
+                  <li>
+                    <strong className="text-slate-300" style={{fontSize: '6px'}}>Hangzhou:</strong><br />
+                    Room 2402, Guangfu International Center Hongning Road, Xiaoshan District
+                  </li>
+                  <li>
+                    <strong className="text-slate-300" style={{fontSize: '6px'}}>Shenyang:</strong><br />
+                    3/F, Li Shi Economic Zone Committee Bldg Zhangwu Road, Shenfu New District
+                  </li>
+                </ul>
+              </div>
 
-            <div>
-              <h3 className="text-lg font-semibold mb-4">关于我们</h3>
-              <ul className="space-y-2 text-slate-400">
-                <li><a href="#" className="hover:text-white transition-colors">公司简介</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">专家团队</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">客户案例</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">联系我们</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold mb-4">联系方式</h3>
-              <ul className="space-y-2 text-slate-400">
-                <li className="flex items-center">
-                  <i className="fa-solid fa-envelope mr-2 text-blue-400"></i>
-                  <a href="mailto:contact@globalrisk.com" className="hover:text-white transition-colors">jinxia@mscfv.com</a>
-                </li>
-                <li className="flex items-center">
-                  <i className="fa-solid fa-phone mr-2 text-blue-400"></i>
-                  <a href="tel:+8610123456789" className="hover:text-white transition-colors">+86 18989485442</a>
-                </li>
-              </ul>
-              <div className="flex space-x-4 mt-4">
-                <a href="#" className="text-slate-400 hover:text-white transition-colors">
+              {/* 第三列：联系方式 - 2列宽度 */}
+              <div className="md:w-[16.67%]">
+                <div className="flex items-center mb-10"></div>
+                <h3 className="font-semibold mb-4" style={{fontSize: '12px', letterSpacing: '-0.01em'}}>Contacts</h3>
+                <ul className="space-y-2 text-slate-400" style={{fontSize: '8px', letterSpacing: '-0.01em'}}>
+                  <li className="flex items-center">
+                    <i className="fa-solid fa-envelope mr-2 text-blue-400"></i>
+                    jinvis@mschv.com
+                  </li>
+                  <li className="flex items-center">
+                    <i className="fa-solid fa-phone mr-2 text-blue-400"></i>
+                    +86 18989485442
+                  </li>
+                  <li className="flex items-center">
+                    <i className="fa-brands fa-weixin mr-2 text-blue-400"></i>
+                    kickufo
+                  </li>
+                </ul>
+                <div className="flex space-x-4 mt-4">
+                <a href="https://www.linkedin.com/in/xia-jin-25267620" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
                   <i className="fa-brands fa-linkedin"></i>
                 </a>
-                <a href="#" className="text-slate-400 hover:text-white transition-colors">
-                  <i className="fa-brands fa-twitter"></i>
-                </a>
-                <a href="#" className="text-slate-400 hover:text-white transition-colors">
+                <a href="https://www.facebook.com/jin.xia.452318" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
                   <i className="fa-brands fa-facebook"></i>
+                </a>
+                <a href="https://x.com/kickufo" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
+                  <i className="fa-brands fa-x-twitter"></i>
                 </a>
               </div>
             </div>
           </div>
 
-          <div className="border-t border-slate-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-slate-500 text-sm">© {new Date().getFullYear()} GlobalRisk. 保留所有权利。</p>
-            <div className="flex space-x-6 mt-4 md:mt-0">
-              <a href="#" className="text-slate-500 hover:text-white text-sm transition-colors">隐私政策</a>
-              <a href="#" className="text-slate-500 hover:text-white text-sm transition-colors">服务条款</a>
-              <a href="#" className="text-slate-500 hover:text-white text-sm transition-colors">Cookie政策</a>
-            </div>
+          <div className="border-t border-slate-800 mt-8 pt-8 text-center">
+            <p className="text-slate-500 text-sm">MSC HK © 2024</p>
           </div>
         </div>
       </footer>
