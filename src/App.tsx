@@ -169,10 +169,10 @@ export default function App() {
               {/* 第一列：About Future Vision - 3.5列宽度 */}
               <div className="md:w-[29.17%]" style={{letterSpacing: '-0.03em'}}>
                 <div className="flex items-center mb-10"></div>
-                <h3 className="font-semibold mb-4" style={{fontSize: '12px', letterSpacing: '-0.01em'}}>About Future Vision</h3>
-                <p className="text-slate-400 mb-3" style={{fontSize: '8px', letterSpacing: '-0.01em'}}>Your 1st Intelligent Consultant</p>
-                <p className="text-slate-400 mb-4" style={{fontSize: '8px', letterSpacing: '-0.01em'}}>For Global Business Sustainable Growth</p>
-                <ul className="space-y-2 text-slate-400" style={{fontSize: '8px', letterSpacing: '-0.01em'}}>
+                <h3 className="font-semibold mb-4" style={{fontSize: '13px', letterSpacing: '-0.01em'}}>About Future Vision</h3>
+                <p className="text-slate-400 mb-3" style={{fontSize: '12px', letterSpacing: '-0.01em'}}>Your 1st Intelligent Consultant</p>
+                <p className="text-slate-400 mb-4" style={{fontSize: '12px', letterSpacing: '-0.01em'}}>For Global Business Sustainable Growth</p>
+                <ul className="space-y-2 text-slate-400" style={{fontSize: '12px', letterSpacing: '-0.01em'}}>
                   <li>- International Market Expansion</li>
                   <li>- Global ESG Risk Management</li>
                   <li>- Sustainable Development Strategy</li>
@@ -183,26 +183,26 @@ export default function App() {
               {/* 第二列：Locations - 6.5列宽度 */}
               <div className="md:w-[58.97%]" style={{fontSize: '1px', letterSpacing: '-0.03em'}}>
                 <div className="flex items-center mb-10"></div>
-                <h3 className="font-semibold mb-4" style={{fontSize: '6px', letterSpacing: '-0.01em'}}>Locations</h3>
-                <ul className="space-y-3 text-slate-400 leading-tight" style={{fontSize: '6px', letterSpacing: '-0.02em'}}>
+                <h3 className="font-semibold mb-4" style={{fontSize: '13px', letterSpacing: '-0.01em'}}>Locations</h3>
+                <ul className="space-y-3 text-slate-400 leading-tight" style={{fontSize: '12px', letterSpacing: '-0.02em'}}>
                   <li>
-                    <strong className="text-slate-300" style={{fontSize: '6px'}}>Hongkong:</strong><br />
+                    <strong className="text-slate-300" style={{fontSize: '12px'}}>Hongkong:</strong><br />
                     Room 1318-19, Hollywood Plaza 610 Nathan Road, Mong Kok, Kowloon
                   </li>
                   <li>
-                    <strong className="text-slate-300" style={{fontSize: '6px'}}>Beijing:</strong><br />
+                    <strong className="text-slate-300" style={{fontSize: '12px'}}>Beijing:</strong><br />
                     Room 1805, Capital Mansion 6 Xinyuan South Road, Chaoyang District
                   </li>
                   <li>
-                    <strong className="text-slate-300" style={{fontSize: '6px'}}>Shanghai:</strong><br />
+                    <strong className="text-slate-300" style={{fontSize: '12px'}}>Shanghai:</strong><br />
                     42/F, Magnolia Plaza, 501 East Da Ming Road, Hongkou District
                   </li>
                   <li>
-                    <strong className="text-slate-300" style={{fontSize: '6px'}}>Hangzhou:</strong><br />
+                    <strong className="text-slate-300" style={{fontSize: '12px'}}>Hangzhou:</strong><br />
                     Room 2402, Guangfu International Center Hongning Road, Xiaoshan District
                   </li>
                   <li>
-                    <strong className="text-slate-300" style={{fontSize: '6px'}}>Shenyang:</strong><br />
+                    <strong className="text-slate-300" style={{fontSize: '12px'}}>Shenyang:</strong><br />
                     3/F, Li Shi Economic Zone Committee Bldg Zhangwu Road, Shenfu New District
                   </li>
                 </ul>
@@ -211,8 +211,8 @@ export default function App() {
               {/* 第三列：联系方式 - 2列宽度 */}
               <div className="md:w-[16.67%]">
                 <div className="flex items-center mb-10"></div>
-                <h3 className="font-semibold mb-4" style={{fontSize: '12px', letterSpacing: '-0.01em'}}>Contacts</h3>
-                <ul className="space-y-2 text-slate-400" style={{fontSize: '8px', letterSpacing: '-0.01em'}}>
+                <h3 className="font-semibold mb-4" style={{fontSize: '13px', letterSpacing: '-0.01em'}}>Contacts</h3>
+                <ul className="space-y-2 text-slate-400" style={{fontSize: '12px', letterSpacing: '-0.01em'}}>
                   <li className="flex items-center">
                     <i className="fa-solid fa-envelope mr-2 text-blue-400"></i>
                     jinvis@mschv.com
