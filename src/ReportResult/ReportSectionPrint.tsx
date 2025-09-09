@@ -8,29 +8,29 @@ interface Props {
 // 打印专用：不包含任何折叠/交互，全部内容展开，版式更紧凑，避免分页硬切
 const ReportSectionPrint: React.FC<Props> = ({ categories }) => {
   return (
-    <section id="risk-analysis" className="space-y-8">
+    <section id="risk-analysis" className="space-y-6">
       {categories.map((category) => (
-        <div key={category.categoryTitle} className="space-y-4 break-inside-avoid">
-          <h2 className="text-xl font-extrabold uppercase text-violet-800 tracking-wide">
+        <div key={category.categoryTitle} className="space-y-4">
+          <h2 className="text-xl font-extrabold uppercase text-violet-800 tracking-wide break-after-avoid">
             {category.categoryTitle}
           </h2>
 
-          <div className="space-y-6">
+          <div className="space-y-4">
             {category.themes.map((theme, idx) => (
-              <article key={idx} className="space-y-3 break-inside-avoid">
-                <h3 className="text-base font-semibold text-gray-900">
+              <article key={idx} className="space-y-3">
+                <h3 className="text-base font-semibold text-gray-900 break-after-avoid">
                   {theme.themeName}
                 </h3>
 
                 {/* Risks */}
                 <div className="space-y-2">
-                  <p className="text-sm font-semibold text-violet-800">
+                  <p className="text-sm font-semibold text-violet-800 break-after-avoid">
                     {(theme.riskCount ?? theme.risks.length)} risk{(theme.riskCount ?? theme.risks.length) !== 1 ? 's' : ''}
                   </p>
                   {theme.risks.length > 0 ? (
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       {theme.risks.map((risk, i) => (
-                        <div key={i} className="rounded-md border border-purple-200 p-3 break-inside-avoid">
+                        <div key={i} className="rounded-md border border-purple-200 p-3 break-inside-avoid-page">
                           {risk.rawHtml ? (
                             <div dangerouslySetInnerHTML={{ __html: risk.rawHtml }} />
                           ) : (
@@ -63,13 +63,13 @@ const ReportSectionPrint: React.FC<Props> = ({ categories }) => {
 
                 {/* Recommendations */}
                 <div className="space-y-2">
-                  <p className="text-sm font-semibold text-blue-700">
+                  <p className="text-sm font-semibold text-blue-700 break-after-avoid">
                     {(theme.recommendationCount ?? theme.recommendations.length)} recommendation{(theme.recommendationCount ?? theme.recommendations.length) !== 1 ? 's' : ''}
                   </p>
                   {theme.recommendations.length > 0 ? (
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       {theme.recommendations.map((rec, i) => (
-                        <div key={i} className="rounded-md border border-blue-200 p-3 break-inside-avoid">
+                        <div key={i} className="rounded-md border border-blue-200 p-3 break-inside-avoid-page">
                           {rec.rawHtml ? (
                             <div dangerouslySetInnerHTML={{ __html: rec.rawHtml }} />
                           ) : (

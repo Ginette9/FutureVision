@@ -204,17 +204,8 @@ export default function ReportResult() {
       {/* 目录 */}
       <PrintToc sections={sections} />
 
-      {/* 正文（打印时显示打印版组件 / 屏幕时不显示这些打印容器） */}
-      <div className="print-only print-page" style={{
-        padding: '0',
-        margin: '0',
-        width: '210mm',
-        minHeight: '297mm',
-        background: 'white',
-        position: 'relative',
-        boxSizing: 'border-box'
-      }}>
-        {/* 内容包装器 - 强制设置边距 */}
+      {/* 正文分页 - Introduction页面 */}
+      <div className="print-only print-page">
         <div style={{
           padding: '20mm 12mm',
           boxSizing: 'border-box',
@@ -232,10 +223,20 @@ export default function ReportResult() {
               />
             </section>
           )}
-
           {payAttentionSection?.html && <PayAttentionSection html={payAttentionSection.html} />}
+        </div>
+      </div>
 
-          {riskAnalysisSection?.categories && (
+      {/* 正文分页 - Risk Analysis页面 */}
+      {riskAnalysisSection?.categories && (
+        <div className="print-only print-page">
+          <div style={{
+            padding: '20mm 12mm',
+            boxSizing: 'border-box',
+            width: '100%',
+            minHeight: '100%',
+            position: 'relative'
+          }}>
             <section id="risk-analysis" className="space-y-4">
               <h2 className="text-3xl font-black uppercase text-violet-800 scale-y-[0.9] tracking-wide">{riskAnalysisSection.title}</h2>
 
@@ -264,8 +265,19 @@ export default function ReportResult() {
               {/* 打印版 */}
               <ReportSectionPrint categories={riskAnalysisSection.categories} />
             </section>
-          )}
+          </div>
+        </div>
+      )}
 
+      {/* 正文分页 - 其他章节页面 */}
+      <div className="print-only print-page">
+        <div style={{
+          padding: '20mm 12mm',
+          boxSizing: 'border-box',
+          width: '100%',
+          minHeight: '100%',
+          position: 'relative'
+        }}>
           {csrSection?.html && <CSRSection html={csrSection.html} />}
           {csrLabelsSection?.html && <CsrLabelsSection html={csrLabelsSection.html} />}
           {dueDiligenceSection?.html && <DueDiligenceSection />}

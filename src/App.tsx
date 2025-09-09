@@ -163,7 +163,7 @@ export default function App() {
       </main>
 
       {/* 页脚 */}
-        <footer className="bg-slate-900 text-white py-16">
+        <footer className="no-print bg-slate-900 text-white py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row gap-6">
               {/* 第一列：About Future Vision - 3.5列宽度 */}

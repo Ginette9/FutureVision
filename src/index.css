@@ -73,6 +73,7 @@ html, body {
   .prose p,.prose ul,.prose ol{ margin:1rem 0; line-height:1.5; }
 
   @media print{
+    .no-print{ display:none!important; }
     .no-print-only{ display:none!important; }
     .print-only{ display:block!important; }
 
@@ -114,6 +115,16 @@ html, body {
   .pdf-card{ page-break-inside:avoid; break-inside:avoid; border-color:rgba(0,0,0,.1); }
   .pdf-card__logo img.pdf-logo{ max-height:80px; }
   .pdf-card__body .prose{ font-size:13px; line-height:1.5; }
+  
+  /* 优化分页控制 */
+  .break-after-avoid{ page-break-after:avoid; break-after:avoid; }
+  .break-inside-avoid-page{ page-break-inside:avoid; break-inside:avoid-page; }
+  
+  /* 允许合理的分页 */
+  .space-y-2 > *:not(:first-child){ page-break-before:auto; }
+  .space-y-3 > *:not(:first-child){ page-break-before:auto; }
+  .space-y-4 > *:not(:first-child){ page-break-before:auto; }
+  .space-y-6 > *:not(:first-child){ page-break-before:auto; }
 }
 
 
@@ -150,11 +161,16 @@ html, body {
   }
   
   .print-page{
-    break-inside:avoid; page-break-inside:avoid; page-break-after:always;
+    page-break-after:always; break-after:page;
     padding:0!important; box-sizing:border-box; background:transparent;
     width:210mm!important;
-    min-height:297mm;
+    min-height:200mm; /* 减少最小高度，允许更灵活的分页 */
     display:block!important; position:relative; margin:0 auto!important;
+  }
+  
+  /* 最后一页不强制分页 */
+  .print-page:last-child{
+    page-break-after:auto; break-after:auto;
   }
 }
 
@@ -235,13 +251,27 @@ html.export-pdf .print-only[data-print-page="back"] {
   background: transparent !important;
 }
 html.export-pdf .print-only{ display:block!important; }
+html.export-pdf .no-print{ display:none!important; }
 html.export-pdf .no-print-only{ display:none!important; }
 
 html.export-pdf .print-page{
-  break-inside:avoid; page-break-inside:avoid; page-break-after:always;
+  page-break-after:always; break-after:page;
   padding:12mm; box-sizing:border-box; background:transparent; width:210mm!important;
-  min-height:calc(297mm - 12mm - 12mm - 12mm - 12mm);
+  min-height:calc(200mm - 24mm); /* 减少最小高度，允许更灵活的分页 */
 }
+
+/* 导出模式下最后一页不强制分页 */
+html.export-pdf .print-page:last-child{
+  page-break-after:auto; break-after:auto;
+}
+
+/* 导出模式下的分页控制 */
+html.export-pdf .break-after-avoid{ page-break-after:avoid; break-after:avoid; }
+html.export-pdf .break-inside-avoid-page{ page-break-inside:avoid; break-inside:avoid-page; }
+html.export-pdf .space-y-2 > *:not(:first-child){ page-break-before:auto; }
+html.export-pdf .space-y-3 > *:not(:first-child){ page-break-before:auto; }
+html.export-pdf .space-y-4 > *:not(:first-child){ page-break-before:auto; }
+html.export-pdf .space-y-6 > *:not(:first-child){ page-break-before:auto; }
 
 /* 导出模式下封面和封底页面透明背景 */
 html.export-pdf [data-print-page="cover"].print-page,
@@ -311,4 +341,5 @@ html.export-pdf th,html.export-pdf td{ page-break-inside:avoid!important; break-
 html.export-pdf .prose :where(h1){ font-size:1.45rem!important; }
 html.export-pdf .prose :where(h2){ font-size:1.2rem!important; }
 html.export-pdf .prose :where(h3){ font-size:1.05rem!important; }
+.exporting .no-print{ display:none!important; }
 .exporting .no-print-only{ display:none!important; }
