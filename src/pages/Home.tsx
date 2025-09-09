@@ -232,7 +232,7 @@ export default function Home() {
        
        {/* 信任标志 */}
        <div className="mt-20">
-         <p className="text-center text-sm text-slate-500 dark:text-slate-400 mb-8">受到全球企业的信任</p>
+         <h3 className="text-center text-lg font-semibold text-slate-700 dark:text-slate-300 mb-10 tracking-wide">Trusted Worldwide by Businesses</h3>
          <LogoCarousel />
        </div>
      </div>

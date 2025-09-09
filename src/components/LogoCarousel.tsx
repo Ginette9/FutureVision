@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 // 导入所有logo图片
 import logoBMW from '@/images/logo-BMW.png';
@@ -28,156 +28,101 @@ const logos = [
 ];
 
 const LogoCarousel: React.FC = () => {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const isDragging = useRef(false);
-  const startX = useRef(0);
-  const scrollLeft = useRef(0);
-  const isAutoScrolling = useRef(true);
+  const firstRowRef = useRef<HTMLDivElement>(null);
+  const secondRowRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
-    const scrollContainer = scrollRef.current;
-    if (!scrollContainer) return;
+    const firstRow = firstRowRef.current;
+    const secondRow = secondRowRef.current;
+    if (!firstRow || !secondRow) return;
     
     let animationId: number;
-    let scrollPosition = 0;
-    const scrollSpeed = 1.5; // 提高滚动速度
+    let firstRowPosition = 0;
+    let secondRowPosition = 0;
+    const scrollSpeed = 1.2;
     
     const animate = () => {
-      if (isAutoScrolling.current && !isDragging.current) {
-        scrollPosition += scrollSpeed;
-        
-        // 当滚动到一半时重置位置，实现无缝循环
-        if (scrollPosition >= scrollContainer.scrollWidth / 2) {
-          scrollPosition = 0;
-        }
-        
-        scrollContainer.scrollLeft = scrollPosition;
+      // 第一排向右滑动
+      firstRowPosition += scrollSpeed;
+      if (firstRowPosition >= firstRow.scrollWidth / 2) {
+        firstRowPosition = 0;
       }
+      firstRow.scrollLeft = firstRowPosition;
+      
+      // 第二排反向滑动（从右向左）
+      secondRowPosition += scrollSpeed;
+      if (secondRowPosition >= secondRow.scrollWidth / 2) {
+        secondRowPosition = 0;
+      }
+      // 反向滚动：从最大值开始减去当前位置
+      secondRow.scrollLeft = secondRow.scrollWidth / 2 - secondRowPosition;
+      
       animationId = requestAnimationFrame(animate);
     };
     
-    animationId = requestAnimationFrame(animate);
-    
-    // 鼠标悬停时暂停滚动
-    const handleMouseEnter = () => {
-      isAutoScrolling.current = false;
+    // 添加短暂延迟确保DOM完全渲染后开始动画
+    const startAnimation = () => {
+      animationId = requestAnimationFrame(animate);
     };
     
-    const handleMouseLeave = () => {
-      if (!isDragging.current) {
-        isAutoScrolling.current = true;
-      }
-    };
-    
-    // 鼠标拖拽事件
-    const handleMouseDown = (e: MouseEvent) => {
-      isDragging.current = true;
-      isAutoScrolling.current = false;
-      startX.current = e.pageX - scrollContainer.offsetLeft;
-      scrollLeft.current = scrollContainer.scrollLeft;
-      scrollContainer.style.cursor = 'grabbing';
-    };
-    
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging.current) return;
-      e.preventDefault();
-      const x = e.pageX - scrollContainer.offsetLeft;
-      const walk = (x - startX.current) * 2; // 滚动速度倍数
-      scrollContainer.scrollLeft = scrollLeft.current - walk;
-    };
-    
-    const handleMouseUp = () => {
-      isDragging.current = false;
-      scrollContainer.style.cursor = 'grab';
-      // 延迟恢复自动滚动
-      setTimeout(() => {
-        if (!isDragging.current) {
-          isAutoScrolling.current = true;
-        }
-      }, 2000);
-    };
-    
-    // 触摸事件支持
-    const handleTouchStart = (e: TouchEvent) => {
-      isDragging.current = true;
-      isAutoScrolling.current = false;
-      startX.current = e.touches[0].pageX - scrollContainer.offsetLeft;
-      scrollLeft.current = scrollContainer.scrollLeft;
-    };
-    
-    const handleTouchMove = (e: TouchEvent) => {
-      if (!isDragging.current) return;
-      const x = e.touches[0].pageX - scrollContainer.offsetLeft;
-      const walk = (x - startX.current) * 2;
-      scrollContainer.scrollLeft = scrollLeft.current - walk;
-    };
-    
-    const handleTouchEnd = () => {
-      isDragging.current = false;
-      setTimeout(() => {
-        if (!isDragging.current) {
-          isAutoScrolling.current = true;
-        }
-      }, 2000);
-    };
-    
-    scrollContainer.addEventListener('mouseenter', handleMouseEnter);
-    scrollContainer.addEventListener('mouseleave', handleMouseLeave);
-    scrollContainer.addEventListener('mousedown', handleMouseDown);
-    scrollContainer.addEventListener('mousemove', handleMouseMove);
-    scrollContainer.addEventListener('mouseup', handleMouseUp);
-    scrollContainer.addEventListener('touchstart', handleTouchStart);
-    scrollContainer.addEventListener('touchmove', handleTouchMove);
-    scrollContainer.addEventListener('touchend', handleTouchEnd);
+    const timeoutId = setTimeout(startAnimation, 100);
     
     return () => {
+      clearTimeout(timeoutId);
       cancelAnimationFrame(animationId);
-      scrollContainer.removeEventListener('mouseenter', handleMouseEnter);
-      scrollContainer.removeEventListener('mouseleave', handleMouseLeave);
-      scrollContainer.removeEventListener('mousedown', handleMouseDown);
-      scrollContainer.removeEventListener('mousemove', handleMouseMove);
-      scrollContainer.removeEventListener('mouseup', handleMouseUp);
-      scrollContainer.removeEventListener('touchstart', handleTouchStart);
-      scrollContainer.removeEventListener('touchmove', handleTouchMove);
-      scrollContainer.removeEventListener('touchend', handleTouchEnd);
     };
   }, []);
   
-  // 创建双倍logo数组以实现无缝滚动
-  const doubleLogos = [...logos, ...logos];
+  // 将logo分成两组
+  const firstRowLogos = logos.slice(0, Math.ceil(logos.length / 2));
+  const secondRowLogos = logos.slice(Math.ceil(logos.length / 2));
+  
+  // 创建双倍数组以实现无缝滚动
+  const doubleFirstRow = [...firstRowLogos, ...firstRowLogos];
+  const doubleSecondRow = [...secondRowLogos, ...secondRowLogos];
+  
+  const LogoRow = ({ logos: rowLogos, scrollRef }: { 
+    logos: typeof doubleFirstRow, 
+    scrollRef: React.RefObject<HTMLDivElement>
+  }) => (
+    <div 
+      ref={scrollRef}
+      className="flex gap-6 md:gap-8 overflow-hidden"
+    >
+      {rowLogos.map((logo, index) => (
+        <div
+          key={`${logo.alt}-${index}`}
+          className="flex-shrink-0 bg-white rounded-lg shadow-md p-3 flex items-center justify-center"
+          style={{
+            minWidth: '120px',
+            width: '120px',
+            height: '80px',
+          }}
+        >
+          <img
+            src={logo.src}
+            alt={logo.alt}
+            className="max-w-full max-h-full object-contain opacity-90"
+            style={{
+              mixBlendMode: 'multiply',
+              filter: 'contrast(1.1) brightness(0.9)'
+            }}
+          />
+        </div>
+      ))}
+    </div>
+  );
   
   return (
-    <div className="w-full">
-      <div 
-         ref={scrollRef}
-         className="flex gap-8 md:gap-12 overflow-hidden select-none"
-         style={{ 
-           scrollBehavior: 'auto',
-           cursor: 'grab'
-         }}
-       >
-        {doubleLogos.map((logo, index) => (
-          <div
-            key={`${logo.alt}-${index}`}
-            className="flex-shrink-0 bg-white rounded-lg shadow-md p-4 flex items-center justify-center transition-transform duration-300 hover:scale-105 hover:shadow-lg"
-            style={{
-              minWidth: '140px',
-              width: '140px',
-              height: '90px',
-            }}
-          >
-            <img
-              src={logo.src}
-              alt={logo.alt}
-              className="max-w-full max-h-full object-contain opacity-80 hover:opacity-100 transition-all duration-300"
-              style={{
-                mixBlendMode: 'multiply',
-                filter: 'contrast(1.1) brightness(0.9)'
-              }}
-            />
-          </div>
-        ))}
-      </div>
+    <div className="w-full space-y-4">
+      <LogoRow 
+        logos={doubleFirstRow} 
+        scrollRef={firstRowRef}
+      />
+      <LogoRow 
+        logos={doubleSecondRow} 
+        scrollRef={secondRowRef}
+      />
     </div>
   );
 };
