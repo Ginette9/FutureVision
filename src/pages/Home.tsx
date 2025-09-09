@@ -155,7 +155,7 @@ export default function Home() {
  };
 
  return (
-   <div className="min-h-screen bg-gradient-to-br from-purple-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:to-indigo-950 py-16 px-4 sm:px-6 lg:px-8">
+   <div className="min-h-screen bg-gradient-to-br from-purple-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:to-indigo-950 pt-24 pb-16 px-4 sm:px-6 lg:px-8">
      {/* 装饰元素 */}
      <div className="fixed top-0 left-0 w-full h-full overflow-hidden -z-10">
        <div className="absolute top-20 left-10 w-64 h-64 bg-purple-400/10 dark:bg-purple-600/20 rounded-full blur-3xl"></div>

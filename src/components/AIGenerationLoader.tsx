@@ -220,7 +220,7 @@ const AIGenerationLoader: React.FC<AIGenerationLoaderProps> = ({
   return (
     <div
       ref={containerRef}
-      className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4"
+      className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center pt-20 pb-4 px-4"
     >
       <div className="max-w-2xl w-full bg-white rounded-2xl shadow-2xl p-8">
         {/* 头部 */}
