@@ -219,7 +219,11 @@ export default function App() {
                   </li>
                   <li className="flex items-center">
                     <i className="fa-solid fa-phone mr-2 text-blue-400"></i>
-                    +86 18989485442
+                    +86 189 8948 5442
+                  </li>
+                  <li className="flex items-center">
+                    <i className="fa-brands fa-whatsapp mr-2 text-blue-400"></i>
+                    +852 4609 1687
                   </li>
                   <li className="flex items-center">
                     <i className="fa-brands fa-weixin mr-2 text-blue-400"></i>
