@@ -41,7 +41,7 @@ export const ContactSection: React.FC = () => {
     <div className="space-y-8">
       {/* 简洁标题区域 */}
       <div className="flex items-center space-x-4 py-4">
-        <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center">
+        <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl flex items-center justify-center">
           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
@@ -66,7 +66,7 @@ export const ContactSection: React.FC = () => {
                 {/* 服务场景标签 */}
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-2 h-6 bg-gradient-to-b from-indigo-600 to-purple-600 rounded-full"></div>
+                    <div className="w-2 h-6 bg-gradient-to-b from-blue-600 to-cyan-600 rounded-full"></div>
                     <h3 className="text-lg font-light text-gray-900">Service Scenarios</h3>
                   </div>
                   
@@ -98,27 +98,27 @@ export const ContactSection: React.FC = () => {
       </div>
 
       {/* 快速联系方式 */}
-      <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-8">
+      <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-8">
         <div className="text-center space-y-6">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto">
+          <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
             </svg>
           </div>
           
-          <div>
-            <h3 className="text-xl font-light text-gray-900 mb-2">Need Immediate Assistance?</h3>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+          <div className="space-y-3">
+            <h3 className="text-2xl font-light text-gray-900">Need Immediate Assistance?</h3>
+            <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">
               Our ESG experts are ready to help you navigate sustainability challenges and unlock growth opportunities.
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
+          <div className="grid sm:grid-cols-3 gap-4 max-w-4xl mx-auto mt-8">
             <a
               href="mailto:jinxia@mscfv.com"
-              className="flex items-center justify-center space-x-2 px-4 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
+              className="flex items-center justify-center space-x-3 px-6 py-4 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
               <span>ESG Risk</span>
@@ -126,9 +126,9 @@ export const ContactSection: React.FC = () => {
             
             <a
               href="mailto:jacobtomas@msc-world.com"
-              className="flex items-center justify-center space-x-2 px-4 py-3 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors"
+              className="flex items-center justify-center space-x-3 px-6 py-4 bg-cyan-600 text-white font-medium rounded-xl hover:bg-cyan-700 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
               </svg>
               <span>Growth Strategy</span>
@@ -136,9 +136,9 @@ export const ContactSection: React.FC = () => {
             
             <a
               href="mailto:leon@msc-world.com"
-              className="flex items-center justify-center space-x-2 px-4 py-3 bg-teal-600 text-white font-medium rounded-lg hover:bg-teal-700 transition-colors"
+              className="flex items-center justify-center space-x-3 px-6 py-4 bg-blue-500 text-white font-medium rounded-xl hover:bg-blue-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
               <span>Partnership</span>

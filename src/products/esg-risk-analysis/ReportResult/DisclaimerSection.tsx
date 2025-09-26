@@ -37,7 +37,7 @@ export const DisclaimerSection: React.FC = () => {
     <div className="space-y-8">
       {/* 简洁标题区域 */}
       <div className="flex items-center space-x-4 py-4">
-        <div className="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-700 rounded-xl flex items-center justify-center">
+        <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center">
           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
@@ -52,16 +52,16 @@ export const DisclaimerSection: React.FC = () => {
       <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
         <div className="space-y-6">
           {/* 重要提醒 */}
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+          <div className="bg-orange-50 border border-orange-200 rounded-xl p-6">
             <div className="flex items-start space-x-4">
-              <div className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-amber-800 mb-2">Important Notice</h3>
-                <p className="text-amber-700 text-sm leading-relaxed">
+                <h3 className="text-lg font-semibold text-orange-800 mb-2">Important Notice</h3>
+                <p className="text-orange-700 text-sm leading-relaxed">
                   This ESG Risk Check is provided for informational purposes only. Users assume sole responsibility for all outcomes arising from its application. For material business decisions, consultation with accredited ESG specialists is strongly advised.
                 </p>
               </div>
@@ -71,7 +71,7 @@ export const DisclaimerSection: React.FC = () => {
           {/* 详细免责声明 */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="w-2 h-8 bg-gradient-to-b from-indigo-600 to-purple-600 rounded-full"></div>
+              <div className="w-2 h-8 bg-gradient-to-b from-orange-500 to-amber-500 rounded-full"></div>
               <h3 className="text-xl font-medium text-gray-900">Legal Disclaimer</h3>
             </div>
             
