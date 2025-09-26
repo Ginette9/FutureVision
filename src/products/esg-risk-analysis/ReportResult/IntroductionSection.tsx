@@ -124,101 +124,84 @@ export const IntroductionSection: React.FC<Props> = ({
   );
 
   return (
-    <section id="introduction" className="space-y-8 pt-16">
-      {/* —— 正文 —— */}
-      <div ref={sectionRef}>
-        <div className="grid grid-cols-1 pb-20 pt-6 md:grid-cols-2 md:flex-row">
-          {/* Return Button（打印/导出时隐藏） */}
-          <div className="col-span-1 md:col-span-2">
-            <button
-              onClick={() => navigate('/')}
-              className="no-print-only mb-8 flex cursor-pointer items-center justify-center rounded py-2 text-sm font-semibold uppercase text-violet-800 transition-colors hover:border-purple-900 hover:text-purple-900"
-            >
-              <span className="mr-4 mt-1">
-                {/* icon */}
-                <svg width="13" height="13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <g clipPath="url(#clip0)">
-                    <path d="M6.5 12 1 6.5m0 0L6.5 1M1 6.5h11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </g>
-                  <defs>
-                    <clipPath id="clip0">
-                      <path fill="#fff" d="M13 13H0V0h13z" />
-                    </clipPath>
-                  </defs>
-                </svg>
-              </span>
-              <span>Return to Form</span>
-            </button>
-          </div>
+    <section id="introduction" className="space-y-8">
+      {/* 简洁标题区域 */}
+      <div className="flex items-center space-x-4 py-4">
+        <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center">
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <div>
+          <h2 className="text-3xl font-light text-gray-900">ESG Risk Analysis Report</h2>
+          <p className="text-gray-600 mt-1">Comprehensive risk assessment and recommendations</p>
+        </div>
+      </div>
 
-          {/* Title */}
-          <div className="col-span-1 md:col-span-2">
-            <h1 className="mb-10 text-4xl font-black uppercase text-violet-800 lg:text-5xl scale-y-[0.9] tracking-wide print:text-2xl print:tracking-normal">
-              Your results
-            </h1>
-          </div>
-
-          {/* Product */}
-          <div className="col-span-1 pb-4 md:pb-0">
-            <p className="mb-2 font-bold">Your selected products</p>
-            <ul className="list-inside list-disc">
-              {productNames.map((name, i) => (
-                <li key={i} className="pl-4">{name}</li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Country */}
-          <div className="col-span-1 pb-4 md:pb-0">
-            <p className="mb-2 font-bold">Your selected countries</p>
-            <ul className="list-inside list-disc">
-              {countryNames.map((name, i) => (
-                <li key={i} className="pl-4">{name}</li>
-              ))}
-            </ul>
-          </div>
-
-          {/* 导出按钮区：左“整页导出（推荐）”，右“仅导出本节（可选）” */}
-          <div className="col-span-1 md:col-span-2">
-            <div className="mt-10 flex flex-wrap items-center gap-6">
-              <button
-                onClick={handlePrintFullPage}
-                className="no-print-only inline-flex items-center gap-2 rounded-full border border-violet-300 px-3.5 py-2 text-xs font-semibold text-violet-800 transition hover:bg-violet-50"
-              >
-                {/* download icon */}
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 text-violet-800">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                       strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
-                    <path strokeLinecap="round" strokeLinejoin="round"
-                          d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/>
-                  </svg>
-                </span>
-                <span>Download as PDF</span>
-              </button>
-
-              {/* 原外链模板 */}
-              <a
-                href={pdfLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="no-print-only text-violet-800 underline hover:no-underline"
-              >
-                Open template PDF
-              </a>
+      {/* 分析概要卡片 */}
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-light text-gray-900">Industry Focus</h3>
+              <p className="text-gray-600 text-sm">Target sectors analyzed</p>
             </div>
           </div>
-        </div>
-
-        {/* Introduction 内容 */}
-        {intro_prose && (
-          <div className="space-y-6">
-            <h2 className="text-3xl font-black uppercase text-violet-800 tracking-wide print:text-xl print:tracking-normal">
-              Introduction
-            </h2>
-            <div className="prose max-w-none text-[15px] leading-loose" dangerouslySetInnerHTML={{ __html: intro_prose }} />
+          <div className="space-y-2">
+            {productNames.map((product, index) => (
+              <div key={index} className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <span className="text-gray-700 font-medium">{product}</span>
+              </div>
+            ))}
           </div>
-        )}
+        </div>
+        
+        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-light text-gray-900">Geographic Scope</h3>
+              <p className="text-gray-600 text-sm">Markets under review</p>
+            </div>
+          </div>
+          <div className="space-y-2">
+            {countryNames.map((country, index) => (
+              <div key={index} className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                <span className="text-gray-700 font-medium">{country}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
+
+      {/* 详细介绍内容 */}
+      {intro_prose && (
+        <div className="bg-white rounded-xl border border-gray-200 p-8">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-light text-gray-900">Detailed Analysis</h2>
+          </div>
+          <div 
+            className="prose prose-lg max-w-none text-gray-700 leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: intro_prose }}
+          />
+        </div>
+      )}
 
       {/* 打印导出相关样式（保留你现有的） */}
       <style>{`

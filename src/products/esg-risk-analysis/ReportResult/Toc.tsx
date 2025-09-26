@@ -47,28 +47,28 @@ export default function Toc({ sections }: { sections: ReportSection[] }) {
   }, [sections]);
 
   return (
-    <nav className="sticky top-20 py-6 pr-4 space-y-6 text-sm">
-      <h2 className="text-xl font-black uppercase text-violet-800 tracking-wide">
-        Table of Contents
-      </h2>
-      <ul className="space-y-5 pl-2 border-l-2 border-purple-200">
-        {sections.map((sec) => {
+    <nav className="space-y-3">
+      <div className="flex items-center space-x-2 mb-4">
+        <div className="w-6 h-6 bg-indigo-600 rounded-lg flex items-center justify-center">
+          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+          </svg>
+        </div>
+        <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Navigation</span>
+      </div>
+      
+      <ul className="space-y-2">
+        {sections.map((sec, index) => {
           const isActive = sec.id === activeId;
           return (
-            <li key={sec.id} className="relative pl-6">
-              <span
-                className={cn(
-                  'absolute left-0 top-1.5 h-2.5 w-2.5 rounded-full transition-colors duration-200',
-                  isActive ? 'bg-purple-700' : 'bg-slate-300'
-                )}
-              />
+            <li key={sec.id}>
               <a
                 href={`#${sec.id}`}
                 className={cn(
-                  'transition-all duration-200 font-medium',
+                  'group flex items-center px-4 py-3 text-sm rounded-xl transition-all duration-300 border',
                   isActive
-                    ? 'text-violet-800 font-bold'
-                    : 'text-gray-500 hover:text-violet-800'
+                    ? 'bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 font-semibold border-gray-200 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-transparent hover:border-gray-200 hover:shadow-sm'
                 )}
                 onClick={(e) => {
                   e.preventDefault();
@@ -87,7 +87,21 @@ export default function Toc({ sections }: { sections: ReportSection[] }) {
                   }
                 }}
               >
-                {sec.title}
+                <div className="flex items-center space-x-3 flex-1">
+                  <div className={cn(
+                    'w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-colors',
+                    isActive 
+                      ? 'bg-indigo-600 text-white' 
+                      : 'bg-gray-100 text-gray-500 group-hover:bg-gray-200'
+                  )}>
+                    {index + 1}
+                  </div>
+                  <span className="flex-1 leading-tight">{sec.title}</span>
+                </div>
+                
+                {isActive && (
+                  <div className="w-2 h-2 bg-indigo-600 rounded-full flex-shrink-0"></div>
+                )}
               </a>
             </li>
           );

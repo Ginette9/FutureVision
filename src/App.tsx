@@ -1,11 +1,17 @@
 import { Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { motion } from 'framer-motion';
-import Home from "@/pages/Home";
-import ReportResult from "@/pages/ReportResult";
-import Pay from "@/pages/Pay";
-import LanguageSelector from '@/components/LanguageSelector';
-import { AuthContext } from '@/contexts/authContext';
+import Home from "./pages/Home";
+import ESGRiskAnalysis from "./products/esg-risk-analysis/ESGRiskAnalysis";
+import Services from "./pages/Services";
+import Products from "./pages/Products";
+import Insights from "./pages/Insights";
+import Cases from "./pages/Cases";
+import About from "./pages/About";
+import ReportResult from "./products/esg-risk-analysis/ReportResult";
+import Pay from "./products/esg-risk-analysis/Pay";
+import Navigation from './components/Navigation';
+import { AuthContext } from './contexts/authContext';
 
 /* 使用 src/images 中的本地图，确保打包后地址正确 */
 // 已移除封面/尾页资源
@@ -131,35 +137,21 @@ export default function App() {
   return (
     <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, logout }}>
       {/* 顶部导航（打印隐藏） */}
-      <motion.header
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: showHeader ? 0 : -100, opacity: showHeader ? 1 : 0 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className="no-print-only fixed top-0 left-0 right-0 z-40 w-full bg-gradient-to-r from-indigo-600 to-purple-600 shadow-lg"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <img
-                src="https://lf-code-agent.coze.cn/obj/x-ai-cn/238114214402/attachment/白字透明logo_20250728174823.png"
-                alt="Logo"
-                className="h-8 mr-2"
-              />
-            </div>
-            <div className="flex items-center space-x-4">
-              <LanguageSelector />
-            </div>
-          </div>
-        </div>
-      </motion.header>
+      <Navigation />
 
       {/* 主内容 */}
-      <main className="pt-20 min-h-screen">
+      <main className="min-h-screen">
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/report" element={<ReportResult />} />
-          <Route path="/pay" element={<Pay />} />
-        </Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/esg-risk-analysis" element={<ESGRiskAnalysis />} />
+              <Route path="/insights" element={<Insights />} />
+              <Route path="/cases" element={<Cases />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/report" element={<ReportResult />} />
+              <Route path="/pay" element={<Pay />} />
+            </Routes>
       </main>
 
       {/* 页脚 */}
