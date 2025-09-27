@@ -6,6 +6,7 @@ import { ReportSection } from './parseReportHtml';
 
 export default function Toc({ sections }: { sections: ReportSection[] }) {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [isScrolling, setIsScrolling] = useState(false);
 
   useEffect(() => {
     const isElementVisible = (el: Element | null) => {
@@ -16,20 +17,54 @@ export default function Toc({ sections }: { sections: ReportSection[] }) {
       return !inPrintOnly && htmlEl.offsetParent !== null;
     };
 
+    // 防抖函数，避免频繁更新
+    let updateTimeout: number | null = null;
+    const debouncedUpdate = (newActiveId: string) => {
+      if (updateTimeout) clearTimeout(updateTimeout);
+      updateTimeout = setTimeout(() => {
+        setActiveId(newActiveId);
+      }, 50); // 50ms防抖延迟
+    };
+
     const observer = new IntersectionObserver(
       (entries) => {
-        const visibleSections = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio); // prioritize deeper visibility
+        // 如果正在进行点击跳转，暂时不更新activeId
+        if (isScrolling) return;
 
-        if (visibleSections.length > 0) {
-          const topMost = visibleSections[0];
-          setActiveId(topMost.target.id);
+        // 获取所有可见的板块
+        const visibleSections = entries.filter((entry) => entry.isIntersecting);
+        
+        if (visibleSections.length === 0) return;
+
+        // 如果只有一个可见板块，直接设置为活跃
+        if (visibleSections.length === 1) {
+          debouncedUpdate(visibleSections[0].target.id);
+          return;
         }
+
+        // 多个板块可见时，选择最合适的活跃板块
+        const bestSection = visibleSections.reduce((best, current) => {
+          const bestRect = best.boundingClientRect;
+          const currentRect = current.boundingClientRect;
+          
+          // 优先选择顶部最接近视窗顶部的板块
+          const bestDistance = Math.abs(bestRect.top);
+          const currentDistance = Math.abs(currentRect.top);
+          
+          // 如果当前板块更接近顶部，或者相同距离但有更高的可见比例
+          if (currentDistance < bestDistance || 
+              (Math.abs(currentDistance - bestDistance) < 50 && current.intersectionRatio > best.intersectionRatio)) {
+            return current;
+          }
+          
+          return best;
+        });
+
+        debouncedUpdate(bestSection.target.id);
       },
       {
-        rootMargin: '0% 0% -60% 0%', // 提前触发，调整体验
-        threshold: 0.1,
+        rootMargin: '-10% 0% -60% 0%', // 优化检测区域：顶部10%，底部60%
+        threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], // 更密集的阈值检测
       }
     );
 
@@ -43,8 +78,11 @@ export default function Toc({ sections }: { sections: ReportSection[] }) {
       .filter(Boolean) as Element[];
     targets.forEach((el) => observer.observe(el!));
 
-    return () => observer.disconnect();
-  }, [sections]);
+    return () => {
+      if (updateTimeout) clearTimeout(updateTimeout);
+      observer.disconnect();
+    };
+  }, [sections, isScrolling]);
 
   return (
     <nav className="space-y-3">
@@ -78,12 +116,29 @@ export default function Toc({ sections }: { sections: ReportSection[] }) {
                     const htmlEl = el as HTMLElement;
                     return !inPrintOnly && htmlEl.offsetParent !== null;
                   }) as HTMLElement | undefined;
+                  
                   if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    // 立即更新 activeId，避免短暂未高亮
+                    // 立即设置目标为活跃状态
                     setActiveId(sec.id);
+                    setIsScrolling(true);
+                    
+                    // 计算目标位置，向下偏移以避免标题被遮挡
+                    const targetRect = target.getBoundingClientRect();
+                    const offsetTop = window.pageYOffset + targetRect.top - 100; // 向下偏移100px
+                    
+                    // 平滑滚动到调整后的位置
+                    window.scrollTo({
+                      top: offsetTop,
+                      behavior: 'smooth'
+                    });
+                    
                     // 同步更新 URL hash（不触发默认跳转）
                     history.replaceState(null, '', `#${sec.id}`);
+                    
+                    // 延迟重新启用自动高亮检测
+                    setTimeout(() => {
+                      setIsScrolling(false);
+                    }, 600); // 进一步减少延迟时间，提高响应速度
                   }
                 }}
               >

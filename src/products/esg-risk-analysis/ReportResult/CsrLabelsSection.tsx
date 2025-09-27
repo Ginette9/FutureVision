@@ -35,7 +35,7 @@ export const CsrLabelsSection: React.FC<{ html: string }> = ({ html }) => {
           const proseHTML = card.querySelector('div.prose')?.innerHTML?.trim() || '';
 
           return (
-            <div key={idx} className="group bg-white border border-gray-200 rounded-xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 hover:border-cyan-300">
+            <div key={idx} className="group bg-white border border-gray-200 rounded-xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 hover:border-gray-300">
               <div className="flex flex-col md:flex-row gap-6 items-start">
                 {/* Logo区域 */}
                 <div className="flex-shrink-0 w-full md:w-48 flex justify-center md:justify-start">

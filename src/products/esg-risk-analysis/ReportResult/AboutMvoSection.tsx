@@ -48,7 +48,7 @@ export const AboutMvoSection: React.FC = () => {
         {cards.map((card, idx) => (
           <div
             key={idx}
-            className="group bg-white border border-gray-200 rounded-xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 hover:border-blue-300"
+            className="group bg-white border border-gray-200 rounded-xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 hover:border-gray-300"
           >
             <div className="flex flex-col lg:flex-row gap-8 items-start">
               {/* Logo区域 */}
