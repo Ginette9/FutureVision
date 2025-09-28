@@ -137,7 +137,9 @@ export default function App() {
   return (
     <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, logout }}>
       {/* 顶部导航（打印隐藏） */}
-      <Navigation />
+      <div className="no-print">
+        <Navigation />
+      </div>
 
       {/* 主内容 */}
       <main className="min-h-screen">

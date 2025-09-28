@@ -4,6 +4,7 @@ import AIGenerationLoader from '@/components/AIGenerationLoader';
 
 import { parseReportHtml, ReportSection } from './ReportResult/parseReportHtml';
 import Toc from './ReportResult/Toc';
+import PrintToc from './ReportResult/PrintToc';
 import PrintReportSection from './ReportResult/PrintReportSection';
 import ReportSectionBlock from './ReportResult/ReportSection';
 import ReportSectionPrint from './ReportResult/ReportSectionPrint';
@@ -52,12 +53,8 @@ declare global {
   }
 }
 
-const PrintToc: React.FC<{ sections: ReportSection[] }> = ({ sections }) => {
-  return (
-    <div className="print-only print-page">
-      <Toc sections={sections} />
-    </div>
-  );
+const PrintTocComponent: React.FC<{ sections: ReportSection[] }> = ({ sections }) => {
+  return <PrintToc sections={sections} />;
 };
 
 function ReportResult() {
@@ -171,7 +168,7 @@ function ReportResult() {
       </div>
 
       {/* 打印目录页 */}
-      <PrintToc sections={sections} />
+      <PrintTocComponent sections={sections} />
 
       {/* 打印内容页 - 介绍部分 */}
       {formData && (

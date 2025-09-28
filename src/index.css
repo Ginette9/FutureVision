@@ -114,11 +114,22 @@ html, body {
       --tw-gradient-to: #dcfce7 !important;
     }
 
-    /* 内页边距 */
-    @page{ size:A4 portrait; }
-    @page cover{ size:A4 portrait; margin:0; }
-    @page back{  size:A4 portrait; margin:0; }
-
+    /* PDF页码样式 - 已删除页码显示 */
+    @page {
+      size: A4 portrait;
+      margin: 12mm;
+    }
+    
+    @page cover {
+      size: A4 portrait;
+      margin: 0;
+    }
+    
+    @page back {
+      size: A4 portrait;
+      margin: 0;
+    }
+    
     html,body{
       background:transparent!important;
       -webkit-print-color-adjust:exact; print-color-adjust:exact;
@@ -483,7 +494,24 @@ html.export-pdf .back-page{
 /*           其他            */
 /* ========================= */
 
+/* 原生打印：满幅 + 出血 + 抗白边 */
 @media print{
+  @page {
+    margin: 0 !important;
+    padding: 0 !important;
+    size: A4;
+  }
+  
+  @page cover{ size:A4 portrait; margin:0; }
+  @page back{  size:A4 portrait; margin:0; }
+  
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
   html.print-mode{ font-size:13px!important; }
   html.print-mode *{ transform:none!important; animation:none!important; transition:none!important; box-shadow:none!important; filter:none!important; }
   html.print-mode .fixed,html.print-mode .sticky{ position:static!important; top:auto!important; inset:auto!important; }
