@@ -167,20 +167,23 @@ const ExpandableThemeBlock: React.FC<{ theme: ThemeEntry }> = ({ theme }) => {
           </div>
           <div className="space-y-4">
             {theme.risks.map((risk, idx) => (
-              <div key={idx} className="bg-white rounded-xl p-5 border border-red-200 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-start gap-4">
-                  <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-sm font-bold text-white">{idx + 1}</span>
-                  </div>
-                  <div className="flex-1">
-                    <div className="space-y-3">
-                      <h6 className="text-base font-semibold text-gray-900 leading-tight">{risk.riskTitle}</h6>
-                      <p className="text-sm text-gray-700 leading-relaxed">{risk.riskDescription}</p>
+                <div key={idx} className="bg-white rounded-xl p-5 border border-red-200 shadow-sm hover:shadow-md transition-shadow">
+                  {risk.rawHtml ? (
+                    <div dangerouslySetInnerHTML={{ __html: risk.rawHtml }} />
+                  ) : (
+                    <div className="flex items-start gap-4">
+                      <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                        <span className="text-sm font-bold text-white">{idx + 1}</span>
+                      </div>
+                      <div className="flex-1">
+                        <div className="space-y-3">
+                          <p className="text-sm text-gray-700 leading-relaxed">{risk.riskDescription}</p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
       )}
@@ -196,19 +199,23 @@ const ExpandableThemeBlock: React.FC<{ theme: ThemeEntry }> = ({ theme }) => {
             <h5 className="text-lg font-semibold text-green-900">建议措施</h5>
           </div>
           <div className="space-y-4">
-            {theme.recommendations.map((recommendation, idx) => (
-              <div key={idx} className="bg-white rounded-xl p-5 border border-green-200 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-start gap-4">
-                  <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-sm font-bold text-white">{idx + 1}</span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm text-gray-900 leading-relaxed">{recommendation.recommendationText}</p>
-                  </div>
+              {theme.recommendations.map((recommendation, idx) => (
+                <div key={idx} className="bg-white rounded-xl p-5 border border-green-200 shadow-sm hover:shadow-md transition-shadow">
+                  {recommendation.rawHtml ? (
+                    <div dangerouslySetInnerHTML={{ __html: recommendation.rawHtml }} />
+                  ) : (
+                    <div className="flex items-start gap-4">
+                      <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                        <span className="text-sm font-bold text-white">{idx + 1}</span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-900 leading-relaxed">{recommendation.recommendationText}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
         </div>
       )}
     </div>

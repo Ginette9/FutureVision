@@ -4,6 +4,7 @@ import AIGenerationLoader from '@/components/AIGenerationLoader';
 
 import { parseReportHtml, ReportSection } from './ReportResult/parseReportHtml';
 import Toc from './ReportResult/Toc';
+import PrintReportSection from './ReportResult/PrintReportSection';
 import ReportSectionBlock from './ReportResult/ReportSection';
 import ReportSectionPrint from './ReportResult/ReportSectionPrint';
 import { scrapeUrlContent, buildScrapeUrl } from '@/lib/utils';
@@ -172,17 +173,17 @@ function ReportResult() {
       {/* 打印目录页 */}
       <PrintToc sections={sections} />
 
-      {/* 打印内容页 - 介绍和注意事项 */}
-      <div className="print-only print-page">
-        <div style={{
-          padding: '20mm 12mm',
-          boxSizing: 'border-box',
-          width: '100%',
-          minHeight: '100%',
-          position: 'relative'
-        }}>
-          {formData && (
-            <section id="introduction" className="space-y-4">
+      {/* 打印内容页 - 介绍部分 */}
+      {formData && (
+        <div className="print-only print-page print-intro-section">
+          <div style={{
+            padding: '15mm 12mm',
+            boxSizing: 'border-box',
+            width: '100%',
+            minHeight: '100%',
+            position: 'relative'
+          }}>
+            <section id="introduction" className="space-y-6">
               <IntroductionSection
                 productNames={[formData.industry.name]}
                 countryNames={[formData.country.name]}
@@ -190,69 +191,195 @@ function ReportResult() {
                 introHtml={introSection?.html}
               />
             </section>
-          )}
-          {payAttentionSection?.html && <PayAttentionSection html={payAttentionSection.html} />}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* 打印内容页 - 风险分析 */}
-      {riskAnalysisSection?.categories && (
-        <div className="print-only print-page">
+      {/* 打印内容页 - 注意事项部分 */}
+      {payAttentionSection?.html && (
+        <div className="print-only print-page print-attention-section">
           <div style={{
-            padding: '20mm 12mm',
+            padding: '15mm 12mm',
             boxSizing: 'border-box',
             width: '100%',
             minHeight: '100%',
             position: 'relative'
           }}>
-            <section id="risk-analysis" className="space-y-4">
-              <h2 className="text-3xl font-black uppercase text-violet-800 scale-y-[0.9] tracking-wide">{riskAnalysisSection.title}</h2>
-
-              <p className="text-base">
-                Below you will find the results of the risk analysis based on your submitted answers.
-                Would you like to switch your product or country?{' '}
-                <br />
-                <a className="text-blue-700 underline hover:no-underline" target="_blank" href="/">
-                  Fill out the ESG Risk Form again
-                </a>
-              </p>
-
-              <p className="font-semibold text-black">
-                {riskAnalysisSection.categories.reduce(
-                  (sum, cat) =>
-                    sum +
-                    cat.themes.reduce(
-                      (tSum, theme) => tSum + (theme.riskCount ?? theme.risks.length),
-                      0
-                    ),
-                  0
-                )}{' '}
-                risks found
-              </p>
-
-              <ReportSectionPrint categories={riskAnalysisSection.categories} />
+            <section className="space-y-4">
+              <PayAttentionSection html={payAttentionSection.html} />
             </section>
           </div>
         </div>
       )}
 
-      {/* 打印内容页 - 其他部分 */}
-      <div className="print-only print-page">
-        <div style={{
-          padding: '20mm 12mm',
-          boxSizing: 'border-box',
-          width: '100%',
-          minHeight: '100%',
-          position: 'relative'
-        }}>
-          {csrSection?.html && <CSRSection html={csrSection.html} />}
-          {csrLabelsSection?.html && <CsrLabelsSection html={csrLabelsSection.html} />}
-          {dueDiligenceSection?.html && <DueDiligenceSection />}
-          {aboutMvoSection?.html && <AboutMvoSection />}
-          {contactSection?.html && <ContactSection />}
-          {disclaimerSection?.html && <DisclaimerSection />}
+      {/* 打印内容页 - 风险分析 */}
+      {riskAnalysisSection?.categories && (
+        <div className="print-only print-page print-risk-section">
+          <div style={{
+            padding: '15mm 12mm',
+            boxSizing: 'border-box',
+            width: '100%',
+            minHeight: '100%',
+            position: 'relative'
+          }}>
+            <section id="risk-analysis-print" className="space-y-6">
+              <div className="mb-6">
+                {/* 统一的标题区域样式 */}
+                <div className="flex items-center space-x-4 py-4 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-red-600 to-orange-600 rounded-xl flex items-center justify-center">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="text-3xl font-light text-gray-900">{riskAnalysisSection.title}</h2>
+                    <p className="text-gray-600 mt-1">Comprehensive risk assessment and recommendations</p>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 rounded-lg p-4 mb-4">
+                  <p className="text-sm text-gray-700 mb-3">
+                    Below you will find the results of the risk analysis based on your submitted answers.
+                    Would you like to switch your product or country?
+                  </p>
+                  <a className="text-blue-700 underline hover:no-underline text-sm" target="_blank" href="/">
+                    Fill out the ESG Risk Form again
+                  </a>
+                </div>
+
+                <div className="bg-red-50 rounded-lg p-4 mb-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">Risk Summary</h3>
+                      <p className="text-gray-600 text-sm">Total risks identified in your analysis</p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-red-600">
+                        {riskAnalysisSection.categories.reduce(
+                          (sum, cat) =>
+                            sum +
+                            cat.themes.reduce(
+                              (tSum, theme) => tSum + (theme.riskCount ?? theme.risks.length),
+                              0
+                            ),
+                          0
+                        )}
+                      </div>
+                      <div className="text-sm text-gray-500">risks found</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="print-risk-analysis page-break-inside-avoid">
+                <PrintReportSection categories={riskAnalysisSection.categories} />
+              </div>
+            </section>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* 打印内容页 - CSR部分 */}
+      {csrSection?.html && (
+        <div className="print-only print-page print-csr-section">
+          <div style={{
+            padding: '15mm 12mm',
+            boxSizing: 'border-box',
+            width: '100%',
+            minHeight: '100%',
+            position: 'relative'
+          }}>
+            <section className="page-break-inside-avoid">
+              <CSRSection html={csrSection.html} />
+            </section>
+          </div>
+        </div>
+      )}
+
+      {/* 打印内容页 - CSR标签部分 */}
+      {csrLabelsSection?.html && (
+        <div className="print-only print-page print-csr-labels-section">
+          <div style={{
+            padding: '15mm 12mm',
+            boxSizing: 'border-box',
+            width: '100%',
+            minHeight: '100%',
+            position: 'relative'
+          }}>
+            <section className="page-break-inside-avoid">
+              <CsrLabelsSection html={csrLabelsSection.html} />
+            </section>
+          </div>
+        </div>
+      )}
+
+      {/* 打印内容页 - 尽职调查部分 */}
+      {dueDiligenceSection?.html && (
+        <div className="print-only print-page print-due-diligence-section">
+          <div style={{
+            padding: '15mm 12mm',
+            boxSizing: 'border-box',
+            width: '100%',
+            minHeight: '100%',
+            position: 'relative'
+          }}>
+            <section className="page-break-inside-avoid">
+              <DueDiligenceSection />
+            </section>
+          </div>
+        </div>
+      )}
+
+      {/* 打印内容页 - 关于MVO部分 */}
+      {aboutMvoSection?.html && (
+        <div className="print-only print-page print-about-mvo-section">
+          <div style={{
+            padding: '15mm 12mm',
+            boxSizing: 'border-box',
+            width: '100%',
+            minHeight: '100%',
+            position: 'relative'
+          }}>
+            <section className="page-break-inside-avoid">
+              <AboutMvoSection />
+            </section>
+          </div>
+        </div>
+      )}
+
+      {/* 打印内容页 - 联系方式部分 */}
+      {contactSection?.html && (
+        <div className="print-only print-page print-contact-section">
+          <div style={{
+            padding: '15mm 12mm',
+            boxSizing: 'border-box',
+            width: '100%',
+            minHeight: '100%',
+            position: 'relative'
+          }}>
+            <section className="page-break-inside-avoid">
+              <ContactSection />
+            </section>
+          </div>
+        </div>
+      )}
+
+      {/* 打印内容页 - 免责声明部分 */}
+      {disclaimerSection?.html && (
+        <div className="print-only print-page print-disclaimer-section">
+          <div style={{
+            padding: '15mm 12mm',
+            boxSizing: 'border-box',
+            width: '100%',
+            minHeight: '100%',
+            position: 'relative'
+          }}>
+            <section className="page-break-inside-avoid">
+              <DisclaimerSection />
+            </section>
+          </div>
+        </div>
+      )}
 
       {/* 打印尾页 */}
       <div 
@@ -288,7 +415,7 @@ function ReportResult() {
       </div>
 
       {/* 屏幕显示内容 */}
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 screen-only">
         {/* 页面头部 */}
         <div className="bg-white shadow-sm border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
@@ -303,11 +430,8 @@ function ReportResult() {
               </div>
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
                 <button 
-                  onClick={() => {
-                    alert('导出文件功能正在测试中');
-                  }}
-                  disabled
-                  className="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-400 bg-gray-100 cursor-not-allowed"
+                  onClick={() => window.print()}
+                  className="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
@@ -418,10 +542,6 @@ function ReportResult() {
                     </div>
 
                     <ReportSectionBlock categories={riskAnalysisSection.categories} />
-
-                    <div className="hidden">
-                      <ReportSectionPrint categories={riskAnalysisSection.categories} />
-                    </div>
                   </section>
                 )}
 

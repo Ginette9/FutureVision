@@ -76,6 +76,43 @@ html, body {
     .no-print{ display:none!important; }
     .no-print-only{ display:none!important; }
     .print-only{ display:block!important; }
+    
+    /* 在打印时隐藏屏幕显示的内容 */
+    .screen-only{ display:none!important; }
+    
+    /* 优化PDF中卡片的打印样式 */
+    .bg-gradient-to-br {
+      background: linear-gradient(to bottom right, var(--tw-gradient-from), var(--tw-gradient-to)) !important;
+    }
+    
+    .shadow-sm {
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+    }
+    
+    .hover\:shadow-md:hover {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    }
+    
+    .rounded-xl {
+      border-radius: 0.75rem !important;
+    }
+    
+    /* 确保渐变背景在PDF中正确显示 */
+    .from-red-50 {
+      --tw-gradient-from: #fef2f2 !important;
+    }
+    
+    .to-red-100 {
+      --tw-gradient-to: #fee2e2 !important;
+    }
+    
+    .from-green-50 {
+      --tw-gradient-from: #f0fdf4 !important;
+    }
+    
+    .to-green-100 {
+      --tw-gradient-to: #dcfce7 !important;
+    }
 
     /* 内页边距 */
     @page{ size:A4 portrait; }
@@ -119,12 +156,33 @@ html, body {
   /* 优化分页控制 */
   .break-after-avoid{ page-break-after:avoid; break-after:avoid; }
   .break-inside-avoid-page{ page-break-inside:avoid; break-inside:avoid-page; }
+  .page-break-after-avoid{ page-break-after:avoid; break-after:avoid; }
+  .page-break-inside-avoid{ page-break-inside:avoid; break-inside:avoid; }
   
   /* 允许合理的分页 */
   .space-y-2 > *:not(:first-child){ page-break-before:auto; }
   .space-y-3 > *:not(:first-child){ page-break-before:auto; }
   .space-y-4 > *:not(:first-child){ page-break-before:auto; }
   .space-y-6 > *:not(:first-child){ page-break-before:auto; }
+  .space-y-8 > *:not(:first-child){ page-break-before:auto; }
+  
+  /* 各个打印页面的特定样式 */
+  .print-intro-section {
+    background: white !important;
+  }
+  
+  .print-risk-section {
+    background: white !important;
+  }
+  
+  .print-other-sections {
+    background: white !important;
+  }
+  
+  .print-other-sections .space-y-8 > section {
+    margin-bottom: 20px !important;
+    page-break-inside: avoid !important;
+  }
 }
 
 
@@ -138,7 +196,7 @@ html, body {
 @media print{
   @page {
     size: A4;
-    margin: 20mm 12mm;
+    margin: 15mm 12mm;
   }
   
   @page cover {
@@ -162,15 +220,55 @@ html, body {
   
   .print-page{
     page-break-after:always; break-after:page;
-    padding:0!important; box-sizing:border-box; background:transparent;
+    padding:0!important; box-sizing:border-box; background:white;
     width:210mm!important;
-    min-height:200mm; /* 减少最小高度，允许更灵活的分页 */
+    min-height:267mm; /* A4高度减去页边距 */
     display:block!important; position:relative; margin:0 auto!important;
   }
   
   /* 最后一页不强制分页 */
   .print-page:last-child{
     page-break-after:auto; break-after:auto;
+  }
+  
+  /* 优化打印版本的风险分析部分 */
+  .print-risk-analysis {
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+  }
+  
+  .print-risk-analysis h2 {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #1e40af !important;
+    margin-bottom: 8px !important;
+    page-break-after: avoid !important;
+  }
+  
+  .print-risk-analysis h3 {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #374151 !important;
+    margin-bottom: 6px !important;
+    page-break-after: avoid !important;
+  }
+  
+  .print-risk-analysis .risk-item {
+    border: 1px solid #e5e7eb !important;
+    border-radius: 4px !important;
+    padding: 8px !important;
+    margin-bottom: 6px !important;
+    page-break-inside: avoid !important;
+    background: #f9fafb !important;
+  }
+  
+  .print-risk-analysis .recommendation-item {
+    border: 1px solid #dbeafe !important;
+    border-radius: 4px !important;
+    padding: 8px !important;
+    margin-bottom: 6px !important;
+    page-break-inside: avoid !important;
+    background: #eff6ff !important;
   }
 }
 
@@ -256,8 +354,8 @@ html.export-pdf .no-print-only{ display:none!important; }
 
 html.export-pdf .print-page{
   page-break-after:always; break-after:page;
-  padding:12mm; box-sizing:border-box; background:transparent; width:210mm!important;
-  min-height:calc(200mm - 24mm); /* 减少最小高度，允许更灵活的分页 */
+  padding:12mm; box-sizing:border-box; background:white; width:210mm!important;
+  min-height:calc(267mm - 24mm); /* A4高度减去页边距 */
 }
 
 /* 导出模式下最后一页不强制分页 */
@@ -272,6 +370,76 @@ html.export-pdf .space-y-2 > *:not(:first-child){ page-break-before:auto; }
 html.export-pdf .space-y-3 > *:not(:first-child){ page-break-before:auto; }
 html.export-pdf .space-y-4 > *:not(:first-child){ page-break-before:auto; }
 html.export-pdf .space-y-6 > *:not(:first-child){ page-break-before:auto; }
+
+/* 导出模式下的风险分析样式 */
+html.export-pdf .print-risk-analysis {
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+}
+
+html.export-pdf .print-risk-analysis h2 {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #1e40af !important;
+  margin-bottom: 12px !important;
+  page-break-after: avoid !important;
+}
+
+html.export-pdf .print-risk-analysis h3 {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #374151 !important;
+  margin-bottom: 8px !important;
+  page-break-after: avoid !important;
+}
+
+html.export-pdf .print-risk-analysis h4 {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  margin-bottom: 6px !important;
+  page-break-after: avoid !important;
+}
+
+/* 优化PDF中的风险和建议卡片样式 */
+html.export-pdf .print-risk-analysis .bg-red-50 {
+  background: #fef2f2 !important;
+  border: 1px solid #fecaca !important;
+}
+
+html.export-pdf .print-risk-analysis .bg-blue-50 {
+  background: #eff6ff !important;
+  border: 1px solid #dbeafe !important;
+}
+
+html.export-pdf .print-risk-analysis .bg-red-600 {
+  background: #dc2626 !important;
+}
+
+html.export-pdf .print-risk-analysis .bg-blue-600 {
+  background: #2563eb !important;
+}
+
+html.export-pdf .print-risk-analysis .bg-gray-600 {
+  background: #4b5563 !important;
+}
+
+/* 确保分页控制 */
+html.export-pdf .page-break-inside-avoid {
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+}
+
+html.export-pdf .print-risk-analysis .space-y-3 > * + * {
+  margin-top: 8px !important;
+}
+
+html.export-pdf .print-risk-analysis .space-y-6 > * + * {
+  margin-top: 16px !important;
+}
+
+html.export-pdf .print-risk-analysis .space-y-8 > * + * {
+  margin-top: 20px !important;
+}
 
 /* 导出模式下封面和封底页面透明背景 */
 html.export-pdf [data-print-page="cover"].print-page,
