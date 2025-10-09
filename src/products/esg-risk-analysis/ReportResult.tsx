@@ -69,7 +69,7 @@ function ReportResult() {
   useEffect(() => {
     const savedData = localStorage.getItem('riskAnalysisData');
     if (!savedData) {
-      navigate('/');
+      navigate('/esg-risk-analysis');
       return;
     }
 
@@ -97,9 +97,10 @@ function ReportResult() {
           setDataLoaded(true);
         }
 
-        if (showLoader) {
-          setIsLoading(false);
-        }
+        // 移除：避免在数据加载完毕时提前隐藏 Loader，由 AIGenerationLoader 完成后再隐藏
+        // if (showLoader) {
+        //   setIsLoading(false);
+        // }
       } catch (error) {
         console.error('Error loading report data:', error);
         setErrorMsg('Failed to load report data');
@@ -115,7 +116,7 @@ function ReportResult() {
   if (shouldShowLoader && (!dataLoaded || isLoading)) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <AIGenerationLoader />
+        <AIGenerationLoader formData={formData} onComplete={() => setIsLoading(false)} />
       </div>
     );
   }
@@ -239,7 +240,7 @@ function ReportResult() {
                     Below you will find the results of the risk analysis based on your submitted answers.
                     Would you like to switch your product or country?
                   </p>
-                  <a className="text-blue-700 underline hover:no-underline text-sm" target="_blank" href="/">
+                  <a className="text-blue-700 underline hover:no-underline text-sm" target="_blank" href="/esg-risk-analysis">
                     Fill out the ESG Risk Form again
                   </a>
                 </div>
@@ -437,7 +438,7 @@ function ReportResult() {
                   <span className="sm:hidden">Print</span>
                 </button>
                 <button 
-                  onClick={() => navigate('/')}
+                  onClick={() => navigate('/esg-risk-analysis')}
                   className="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   <span className="hidden sm:inline">New Analysis</span>

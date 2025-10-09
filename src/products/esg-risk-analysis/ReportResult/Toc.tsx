@@ -23,47 +23,55 @@ export default function Toc({ sections }: { sections: ReportSection[] }) {
       if (updateTimeout) clearTimeout(updateTimeout);
       updateTimeout = setTimeout(() => {
         setActiveId(newActiveId);
-      }, 50); // 50ms防抖延迟
+      }, 20); // 缩短到 20ms，提高慢速滚动响应
     };
 
     const observer = new IntersectionObserver(
       (entries) => {
         // 如果正在进行点击跳转，暂时不更新activeId
         if (isScrolling) return;
-
+    
         // 获取所有可见的板块
         const visibleSections = entries.filter((entry) => entry.isIntersecting);
         
         if (visibleSections.length === 0) return;
-
+    
         // 如果只有一个可见板块，直接设置为活跃
         if (visibleSections.length === 1) {
           debouncedUpdate(visibleSections[0].target.id);
           return;
         }
-
-        // 多个板块可见时，选择最合适的活跃板块
-        const bestSection = visibleSections.reduce((best, current) => {
-          const bestRect = best.boundingClientRect;
-          const currentRect = current.boundingClientRect;
-          
-          // 优先选择顶部最接近视窗顶部的板块
-          const bestDistance = Math.abs(bestRect.top);
-          const currentDistance = Math.abs(currentRect.top);
-          
-          // 如果当前板块更接近顶部，或者相同距离但有更高的可见比例
-          if (currentDistance < bestDistance || 
-              (Math.abs(currentDistance - bestDistance) < 50 && current.intersectionRatio > best.intersectionRatio)) {
-            return current;
+    
+        // 优先选择刚进入视窗顶部区域的板块（更符合用户直觉）
+        // 动态计算 nearTop 上界，覆盖视窗顶部 40% 或最多 300px
+        const viewportH = window.innerHeight || document.documentElement.clientHeight || 800;
+        const nearTopUpper = Math.min(viewportH * 0.4, 300);
+        const nearTopLower = -Math.min(viewportH * 0.25, 180);
+        const nearTop = visibleSections
+          .filter((e) => e.boundingClientRect.top >= nearTopLower && e.boundingClientRect.top <= nearTopUpper)
+          .sort((a, b) => Math.abs(a.boundingClientRect.top) - Math.abs(b.boundingClientRect.top));
+        if (nearTop.length > 0) {
+          debouncedUpdate(nearTop[0].target.id);
+          return;
+        }
+    
+        // 未命中 nearTop 时，优先选择已进入视窗(top>=0)且可见比例最高的板块
+        const positiveTop = visibleSections.filter((e) => e.boundingClientRect.top >= 0);
+        const candidates = positiveTop.length > 0 ? positiveTop : visibleSections;
+        const bestSection = candidates.reduce((best, current) => {
+          if (current.intersectionRatio !== best.intersectionRatio) {
+            return current.intersectionRatio > best.intersectionRatio ? current : best;
           }
-          
-          return best;
+          // 比例相同则选择更接近视窗顶部的板块
+          const bestTop = Math.abs(best.boundingClientRect.top);
+          const currentTop = Math.abs(current.boundingClientRect.top);
+          return currentTop < bestTop ? current : best;
         });
-
+    
         debouncedUpdate(bestSection.target.id);
       },
       {
-        rootMargin: '-10% 0% -60% 0%', // 优化检测区域：顶部10%，底部60%
+        rootMargin: '12% 0% -60% 0%', // 扩大顶部 12%，让慢速滑入更早进入观察范围
         threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], // 更密集的阈值检测
       }
     );
