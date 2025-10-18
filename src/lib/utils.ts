@@ -840,7 +840,7 @@ export const scrapeUrlContent = async (targetUrl: string, retryCount = 3): Promi
   // absolute 情况：  http://<host>:3001/proxy?url=...
   const proxyUrl = new URL(type === 'same-origin' ? base : `${base}/proxy`, window.location.origin);
   proxyUrl.searchParams.set('url', targetUrl); // 只包一层 encode（不会产生 %255B%255D）
-  console.log('[scrape] request', { proxy: proxyUrl.toString(), targetUrl });
+  // console.log('[scrape] request', { proxy: proxyUrl.toString(), targetUrl });
 
   // 简单超时控制
   const timeoutMs = 15000;
@@ -862,7 +862,7 @@ export const scrapeUrlContent = async (targetUrl: string, retryCount = 3): Promi
     }
 
     const html = await resp.text();
-    console.log('[scrape] response', { ok: resp.ok, status: resp.status, length: html.length });
+    // console.log('[scrape] response', { ok: resp.ok, status: resp.status, length: html.length });
     if (!html || html.length < 100) {
       throw new Error('Empty or invalid content received');
     }
