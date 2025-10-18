@@ -14,7 +14,8 @@ async function initDatabase() {
     });
     
     // 读取数据库文件
-    const response = await fetch('/src/data/csr_database.db');
+    // 在生产环境中，数据库文件应该从 public 目录访问
+    const response = await fetch('/csr_database.db');
     const arrayBuffer = await response.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
     
