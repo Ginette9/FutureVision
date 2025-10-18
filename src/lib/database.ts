@@ -14,7 +14,7 @@ async function initDatabase() {
     });
     
     // 读取数据库文件
-    const response = await fetch('/src/data/csr_database.db');
+    const response = await fetch('/csr_database.db');
     const arrayBuffer = await response.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
     

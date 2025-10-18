@@ -8,7 +8,7 @@
     "dev:server": "node server.js",
     "dev": "pnpm dev:client",
     "build:client": "vite build --outDir dist/static",
-    "build": "rm -rf dist && pnpm build:client && cp package.json dist && touch dist/build.flag"
+    "build": "rm -rf dist && pnpm build:client && cp package.json dist && cp public/csr_database.db dist/static/csr_database.db && touch dist/build.flag"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.3.0",
