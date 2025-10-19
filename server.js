@@ -14,6 +14,11 @@ app.use(express.json());
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('dist/static'));
   
+  // 特殊处理数据库文件
+  app.get('/csr_database.db', (req, res) => {
+    res.sendFile('dist/static/csr_database.db', { root: '.' });
+  });
+  
   // 所有非 API 路由都返回 index.html（排除 /api 与 /proxy 与 /health，允许可选的结尾或斜杠）
   // 排除规则： /^\/(api|proxy)(\/|$)|^\/health(\/|$)/
   app.get(/^(?!\/(api|proxy)(\/|$)|\/health(\/|$)).*/, (req, res) => {
@@ -193,4 +198,4 @@ app.use((err, req, res, next) => {
     error: 'internal_server_error', 
     message: '服务器内部错误' 
   });
-}); 
+});

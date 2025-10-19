@@ -207,8 +207,51 @@ const ReportSection: React.FC<Props> = ({ countryName, industryName }) => {
     );
   }
 
+  // 计算总风险数量
+  const totalRisks = categories.reduce(
+    (sum, cat) =>
+      sum +
+      cat.themes.reduce(
+        (tSum, theme) => tSum + theme.riskCount,
+        0
+      ),
+    0
+  );
+
   return (
     <div className="space-y-8">
+      {/* 返回链接和风险统计部分 */}
+      <div className="space-y-4">
+        <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+          <p className="text-gray-700 mb-4 text-sm sm:text-base">
+            Below you will find the results of the risk analysis based on your submitted answers.
+            Would you like to switch your product or country?
+          </p>
+          <a 
+            className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium text-sm sm:text-base" 
+            href="/esg-risk-analysis"
+          >
+            <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Fill out the ESG Risk Form again
+          </a>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-gradient-to-r from-red-50 to-orange-50 rounded-lg p-4 sm:p-6 gap-4">
+          <div className="min-w-0">
+            <h3 className="text-lg font-semibold text-gray-900">Risk Summary</h3>
+            <p className="text-gray-600 text-sm sm:text-base">Total risks identified in your analysis</p>
+          </div>
+          <div className="text-center sm:text-right flex-shrink-0">
+            <div className="text-2xl sm:text-3xl font-bold text-red-600">
+              {totalRisks}
+            </div>
+            <div className="text-sm text-gray-500">risks found</div>
+          </div>
+        </div>
+      </div>
+
       {categories.map((category, categoryIndex) => (
         <div key={categoryIndex} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="relative bg-white p-6">

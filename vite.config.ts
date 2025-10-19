@@ -13,4 +13,20 @@ function getPlugins() {
 
 export default defineConfig({
   plugins: getPlugins(),
+  build: {
+    outDir: 'dist/static',
+    assetsDir: '.',
+    rollupOptions: {
+      output: {
+        assetFileNames: (assetInfo) => {
+          // 保持数据库文件在根目录
+          if (assetInfo.name === 'csr_database.db') {
+            return '[name][extname]';
+          }
+          return 'assets/[name]-[hash][extname]';
+        }
+      }
+    }
+  },
+  publicDir: 'public'
 });
