@@ -11,9 +11,9 @@ export default function Services() {
 
   const services = [
     {
-      category: "跨国公司",
-      title: "跨国企业ESG管理",
-      description: "为跨国公司提供专业的ESG风险管理和可持续发展解决方案",
+      category: "跨国企业",
+      title: "全球化运营ESG风险管理",
+      description: "为跨国企业提供专业的ESG风险管理和可持续发展解决方案",
       services: [
         "ESG出海风险管理",
         "可持续战略",
@@ -26,7 +26,7 @@ export default function Services() {
     },
     {
       category: "上市公司",
-      title: "上市公司ESG提升",
+      title: "可持续增长战略与ESG评级提升",
       description: "为上市公司提供ESG评级提升和可持续发展战略服务",
       services: [
         "可持续战略",
@@ -39,7 +39,7 @@ export default function Services() {
     },
     {
       category: "中小企业",
-      title: "中小企业出海服务",
+      title: "简便可行的产品出海策略",
       description: "为中小企业提供全方位的海外市场拓展支持",
       services: [
         "海外产品销售代理",
@@ -65,7 +65,7 @@ export default function Services() {
           专业服务
         </h1>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-          为不同规模的企业提供专业的出海服务和ESG风险管理解决方案
+          融合可持续发展理念、管理咨询方法与AI技术，为更多企业解锁全球增长机会
         </p>
       </motion.div>
 
@@ -86,7 +86,7 @@ export default function Services() {
                   <div className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">
                     {service.category}
                   </div>
-                  <h3 className="text-2xl font-medium text-gray-900">
+                  <h3 className="text-xl font-medium text-gray-900 leading-tight">
                     {service.title}
                   </h3>
                 </div>
@@ -135,11 +135,11 @@ export default function Services() {
           viewport={{ once: true }}
           className="text-center bg-gray-50 p-12"
         >
-          <h2 className="text-3xl font-light text-gray-900 mb-6">
-            需要定制化服务？
+          <h2 className="text-2xl font-light text-gray-900 mb-6 max-w-lg mx-auto">
+            需要了解更多？
           </h2>
-          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            我们的专业团队将根据您的具体需求，为您量身定制最适合的ESG解决方案
+          <p className="text-lg text-gray-600 mb-8 max-w-xl mx-auto">
+            请联系我们的专业团队，获得专业的ESG风险管理解决方案
           </p>
           <button 
             onClick={() => setIsContactModalOpen(true)}

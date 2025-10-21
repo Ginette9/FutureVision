@@ -16,7 +16,7 @@ export default function Knowledge() {
 
   const categories = [
     { id: 'weekly', name: '每周要闻' },
-    { id: 'industry', name: '行业必读' },
+    { id: 'industry', name: '必读报告' },
     { id: 'courses', name: '课程资源' }
   ];
 

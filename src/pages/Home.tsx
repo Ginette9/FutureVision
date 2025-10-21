@@ -2,6 +2,9 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ContactModal from '../components/ContactModal';
+import graphGlobal from '../images/graph-global.png';
+import graphListed from '../images/graph-listed.png';
+import graphSme from '../images/graph-sme.png';
 
 export default function NewHome() {
   const [isVisible, setIsVisible] = useState(false);
@@ -22,23 +25,26 @@ export default function NewHome() {
   const coreServices = [
     {
       id: 1,
-      title: '跨国企业ESG管理',
-      description: '为跨国公司提供专业的ESG风险管理和可持续发展解决方案',
-      icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+      title: '跨国企业',
+      subtitle: '全球化运营ESG风险管理',
+      description: '为中企出海提供全球环境、社会与治理全面风险评估、监控预警与在地化管理，帮助企业规避ESG冲突事件，避免重大财务和声誉损失。',
+      image: graphGlobal,
       link: '/services'
     },
     {
       id: 2,
-      title: '上市公司ESG提升',
-      description: '为上市公司提供ESG评级提升和可持续发展战略服务',
-      icon: 'M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3',
+      title: '上市公司',
+      subtitle: '可持续增长战略与ESG评级提升',
+      description: '帮助企业规避供应链风险，从ESG评级提升及践行ESG行动中获得转型机遇并提升社会影响力。',
+      image: graphListed,
       link: '/services'
     },
     {
       id: 3,
-      title: '中小企业出海服务',
-      description: '为中小企业提供全方位的海外市场拓展支持',
-      icon: 'M13 10V3L4 14h7v7l9-11h-7z',
+      title: '中小企业',
+      subtitle: '简便可行的产品出海策略',
+      description: '帮助中小企业提炼ESG议题成就，获得差异化竞争优势，提高产品出海成功率。',
+      image: graphSme,
       link: '/services'
     }
   ];
@@ -48,26 +54,20 @@ export default function NewHome() {
     {
       id: 1,
       title: '每周要闻',
-      description: '最新ESG政策动态和行业资讯',
+      description: '全球最新ESG政策动态、行业资讯',
       link: '/knowledge'
     },
     {
       id: 2,
-      title: '行业必读',
-      description: '各行业ESG实践指南和深度分析',
+      title: '必读报告',
+      description: '全球可持续发展领域最新重磅报告',
       link: '/knowledge'
     },
     {
       id: 3,
       title: '课程资源',
-      description: '系统性ESG能力建设培训课程',
+      description: '全球可靠来源公开发布的可持续发展领域最新课程与行业指引',
       link: '/knowledge'
-    },
-    {
-      id: 4,
-      title: '成功案例',
-      description: '真实项目案例分享和经验总结',
-      link: '/cases'
     }
   ];
 
@@ -114,23 +114,17 @@ export default function NewHome() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <h1 className="text-4xl lg:text-6xl font-light text-gray-900 mb-6 leading-tight">
-                智能全球化
-                <span className="block font-normal text-gray-700">ESG咨询服务</span>
+              <h1 className="text-3xl lg:text-5xl font-light text-gray-900 mb-6 leading-tight">
+                企业全球环境与社会
+                <span className="block font-normal text-gray-700">冲突风险管理</span>
               </h1>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-lg">
-                为中国企业出海提供专业的ESG风险管理、合规咨询和战略支持服务，助力企业在全球市场中可持续发展。
+              <p className="text-lg lg:text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl">
+                为中企出海提供全球ESG风险全面评估、监控预警与在地化管理，帮助企业规避ESG冲突事件，避免重大财务和声誉损失。
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   to="/esg-risk-analysis/intro"
                   className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300"
-                >
-                  开始风险评估
-                </Link>
-                <Link
-                  to="/services"
-                  className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-gray-900 border border-gray-300 hover:border-gray-400 transition-colors duration-300"
                 >
                   了解服务
                 </Link>
@@ -166,10 +160,10 @@ export default function NewHome() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-4">
-              我们的核心服务
+              我们的专注领域
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              提供全方位的ESG解决方案，助力企业实现可持续发展目标
+              融合可持续发展理念、管理咨询方法与AI技术，为更多企业解锁全球增长机会
             </p>
           </motion.div>
 
@@ -181,22 +175,27 @@ export default function NewHome() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="bg-white p-8 hover:shadow-lg transition-shadow duration-300"
+                className="bg-white p-8 hover:shadow-lg transition-shadow duration-300 flex flex-col h-full"
               >
-                <div className="w-12 h-12 mb-6">
-                  <svg className="w-full h-full text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={service.icon} />
-                  </svg>
+                <div className="w-16 h-16 mb-6 flex items-center justify-center bg-gray-50 rounded-lg">
+                  <img 
+                    src={service.image} 
+                    alt={service.title}
+                    className="w-12 h-12 object-cover rounded"
+                  />
                 </div>
-                <h3 className="text-xl font-medium text-gray-900 mb-4">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
                   {service.title}
                 </h3>
-                <p className="text-gray-600 mb-6 leading-relaxed">
+                <h4 className="text-lg font-medium text-gray-700 mb-4">
+                  {service.subtitle}
+                </h4>
+                <p className="text-gray-600 mb-6 leading-relaxed flex-grow">
                   {service.description}
                 </p>
                 <Link
                   to={service.link}
-                  className="inline-flex items-center text-gray-900 hover:text-gray-700 font-medium transition-colors duration-300"
+                  className="inline-flex items-center text-gray-900 hover:text-gray-700 font-medium transition-colors duration-300 mt-auto"
                 >
                   了解更多
                   <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -209,7 +208,7 @@ export default function NewHome() {
         </div>
       </section>
 
-      {/* 专家资源 */}
+      {/* 独家洞察 */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -220,59 +219,10 @@ export default function NewHome() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-4">
-              专业资源
+              独家洞察
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              汇聚行业专家和优质资源，为您的企业发展提供全方位支持
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {expertResources.map((resource, index) => (
-              <motion.div
-                key={resource.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="text-center p-6 border border-gray-200 hover:border-gray-300 transition-colors duration-300"
-              >
-                <h3 className="text-lg font-medium text-gray-900 mb-3">
-                  {resource.title}
-                </h3>
-                <p className="text-gray-600 mb-4 text-sm leading-relaxed">
-                  {resource.description}
-                </p>
-                <Link
-                  to={resource.link}
-                  className="inline-flex items-center text-gray-900 hover:text-gray-700 text-sm font-medium transition-colors duration-300"
-                >
-                  了解详情
-                  <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 洞察与观点 */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-4">
-              洞察与观点
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              深度分析行业趋势，分享专业见解和实践经验
+              独家数据+可持续发展视角分析方法，洞悉未来商业增长机遇及风险
             </p>
           </motion.div>
 
@@ -323,6 +273,76 @@ export default function NewHome() {
                     </Link>
                   </div>
                 </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 知识中心 */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-4">
+              知识中心
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              实时监控，汇聚全球最新资讯与情报的集成资料平台
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {expertResources.map((resource, index) => (
+              <motion.div
+                key={resource.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="flex flex-col h-full text-center p-8 bg-white rounded-xl border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-300 group"
+              >
+                {/* 调整图标为黑白灰风格，统一大小 */}
+                <div className="mb-6 flex justify-center">
+                  <div className="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center group-hover:bg-gray-100 transition-all duration-300">
+                    {index === 0 && (
+                      <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                    )}
+                    {index === 1 && (
+                      <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    )}
+                    {index === 2 && (
+                      <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                    )}
+                  </div>
+                </div>
+                
+                <h3 className="text-lg font-medium text-gray-900 mb-3">
+                  {resource.title}
+                </h3>
+                <p className="text-gray-600 mb-6 text-sm leading-relaxed flex-grow">
+                  {resource.description}
+                </p>
+                <Link
+                  to={resource.link}
+                  className="inline-flex items-center justify-center text-gray-900 hover:text-gray-700 text-sm font-medium transition-colors duration-300 mt-auto"
+                >
+                  了解详情
+                  <svg className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
               </motion.div>
             ))}
           </div>

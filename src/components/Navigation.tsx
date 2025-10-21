@@ -9,13 +9,13 @@ const Navigation = () => {
 
   const navItems = [
     { name: '首页', path: '/' },
-    { name: '服务', path: '/services' },
+    { name: '专业服务', path: '/services' },
     // { name: '产品', path: '/products', subItems: [
     //   { name: 'ESG风险分析', path: '/esg-risk-analysis' }
     // ]},
-    { name: '洞察', path: '/insights' },
-    { name: '知识', path: '/knowledge' },
-    { name: '案例', path: '/cases' },
+    { name: '独家洞察', path: '/insights' },
+    { name: '知识中心', path: '/knowledge' },
+    { name: '成功案例', path: '/cases' },
     { name: '关于我们', path: '/about' },
   ];
 
@@ -33,23 +33,23 @@ const Navigation = () => {
           {/* Logo - 左侧 */}
           <Link to="/" className="flex items-center space-x-3 mr-16">
             <img
-              src="/src/images/future-vision-logo_graph.jpeg"
+              src="/src/images/future-vision-logo-graph.png"
               alt="Future Vision Logo"
               className="h-12 w-auto"
             />
             <div className="hidden sm:block">
               <h1 className="text-2xl font-light text-gray-900 tracking-tight">Future Vision</h1>
-              <p className="text-sm text-gray-500 font-light">企业第一款全球可持续增长智慧顾问</p>
+              <p className="text-sm text-gray-500 font-light">洞悉未来商业增长</p>
             </div>
           </Link>
 
           {/* Desktop Navigation - 中间 */}
-          <div className="hidden md:flex items-center space-x-12 flex-1">
+          <div className="hidden md:flex items-center justify-center space-x-16 flex-1">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`relative text-sm font-medium tracking-wide transition-colors duration-300 ${
+                className={`relative text-sm font-medium tracking-wide transition-colors duration-300 whitespace-nowrap ${
                   isActive(item.path)
                     ? 'text-gray-900'
                     : 'text-gray-600 hover:text-gray-900'
@@ -71,14 +71,7 @@ const Navigation = () => {
           {/* Right side items */}
           <div className="flex items-center space-x-6 ml-auto">
             <LanguageSelector />
-            
-            {/* CTA Button */}
-            <Link
-              to="/esg-risk-analysis/intro"
-              className="hidden sm:inline-flex items-center px-6 py-2.5 text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300 rounded-none"
-            >
-              风险分析
-            </Link>
+        
 
             {/* Mobile menu button */}
             <button
