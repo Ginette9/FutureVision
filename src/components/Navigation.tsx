@@ -33,7 +33,7 @@ const Navigation = () => {
           {/* Logo - 左侧 */}
           <Link to="/" className="flex items-center space-x-3 mr-16">
             <img
-              src="/src/images/future-vision-logo-graph.png"
+              src="/images/future-vision-logo-graph.png"
               alt="Future Vision Logo"
               className="h-12 w-auto"
             />
