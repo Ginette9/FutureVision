@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import ContactModal from '../components/ContactModal';
 
 export default function NewHome() {
   const [isVisible, setIsVisible] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   // 添加滚动动画效果
   useEffect(() => {
@@ -20,22 +22,22 @@ export default function NewHome() {
   const coreServices = [
     {
       id: 1,
-      title: 'ESG风险评估',
-      description: '全面评估企业ESG风险，提供专业的风险管理建议',
+      title: '跨国企业ESG管理',
+      description: '为跨国公司提供专业的ESG风险管理和可持续发展解决方案',
       icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
       link: '/services'
     },
     {
       id: 2,
-      title: '合规咨询服务',
-      description: '专业的国际合规法律支持和政策解读',
+      title: '上市公司ESG提升',
+      description: '为上市公司提供ESG评级提升和可持续发展战略服务',
       icon: 'M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3',
       link: '/services'
     },
     {
       id: 3,
-      title: '战略咨询',
-      description: '定制化的ESG战略规划和实施方案',
+      title: '中小企业出海服务',
+      description: '为中小企业提供全方位的海外市场拓展支持',
       icon: 'M13 10V3L4 14h7v7l9-11h-7z',
       link: '/services'
     }
@@ -45,27 +47,27 @@ export default function NewHome() {
   const expertResources = [
     {
       id: 1,
-      title: 'ESG专家咨询',
-      description: '一对一ESG战略咨询服务',
-      link: '/services'
+      title: '每周要闻',
+      description: '最新ESG政策动态和行业资讯',
+      link: '/knowledge'
     },
     {
       id: 2,
-      title: '合规法律顾问',
-      description: '专业的国际合规法律支持',
-      link: '/services'
+      title: '行业必读',
+      description: '各行业ESG实践指南和深度分析',
+      link: '/knowledge'
     },
     {
       id: 3,
-      title: '市场研究报告',
-      description: '定制化的市场分析和研究',
-      link: '/insights'
+      title: '课程资源',
+      description: '系统性ESG能力建设培训课程',
+      link: '/knowledge'
     },
     {
       id: 4,
-      title: '培训课程',
-      description: '系统性的ESG能力建设培训',
-      link: '/insights'
+      title: '成功案例',
+      description: '真实项目案例分享和经验总结',
+      link: '/cases'
     }
   ];
 
@@ -121,7 +123,7 @@ export default function NewHome() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
-                  to="/esg-risk-analysis"
+                  to="/esg-risk-analysis/intro"
                   className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300"
                 >
                   开始风险评估
@@ -344,21 +346,27 @@ export default function NewHome() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                to="/esg-risk-analysis"
+                to="/esg-risk-analysis/intro"
                 className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-gray-900 bg-white hover:bg-gray-100 transition-colors duration-300"
               >
                 免费风险评估
               </Link>
-              <Link
-                to="/services"
+              <button
+                onClick={() => setIsContactModalOpen(true)}
                 className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-white border border-gray-600 hover:border-gray-500 transition-colors duration-300"
               >
                 联系我们
-              </Link>
+              </button>
             </div>
           </motion.div>
         </div>
       </section>
+      
+      {/* Contact Modal */}
+      <ContactModal 
+        isOpen={isContactModalOpen} 
+        onClose={() => setIsContactModalOpen(false)} 
+      />
     </div>
   );
 }

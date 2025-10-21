@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { motion } from 'framer-motion';
 import Home from "./pages/Home";
@@ -7,6 +7,7 @@ import ESGRiskAnalysisNew from "./products/esg-risk-analysis/ESGRiskAnalysisNew"
 import Services from "./pages/Services";
 import Products from "./pages/Products";
 import Insights from "./pages/Insights";
+import Knowledge from "./pages/Knowledge";
 import Cases from "./pages/Cases";
 import About from "./pages/About";
 import ReportResult from "./products/esg-risk-analysis/ReportResult";
@@ -115,6 +116,12 @@ export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showHeader, setShowHeader] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const location = useLocation();
+
+  // 页面跳转时自动滚动到顶部
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   // 屏幕端：滚动时隐藏/显示顶部导航
   useEffect(() => {
@@ -150,8 +157,9 @@ export default function App() {
               <Route path="/services" element={<Services />} />
               <Route path="/products" element={<Products />} />
               <Route path="/esg-risk-analysis" element={<ESGRiskAnalysis />} />
-              <Route path="/esg-risk-analysis/new" element={<ESGRiskAnalysisNew />} />
+              <Route path="/esg-risk-analysis/intro" element={<ESGRiskAnalysisNew />} />
               <Route path="/insights" element={<Insights />} />
+              <Route path="/knowledge" element={<Knowledge />} />
               <Route path="/cases" element={<Cases />} />
               <Route path="/about" element={<About />} />
               <Route path="/report/api" element={<ReportResult />} />

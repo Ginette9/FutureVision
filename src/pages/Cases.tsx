@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import ContactModal from '../components/ContactModal';
 
 export default function Cases() {
   const [selectedCase, setSelectedCase] = useState<number | null>(null);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   const cases = [
     {
@@ -254,11 +256,20 @@ export default function Cases() {
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
             让我们的专业团队为您量身定制ESG解决方案
           </p>
-          <button className="inline-flex items-center px-8 py-3 text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300 font-medium">
+          <button 
+            onClick={() => setIsContactModalOpen(true)}
+            className="inline-flex items-center px-8 py-3 text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300 font-medium"
+          >
             联系我们
           </button>
         </motion.div>
       </div>
+      
+      {/* Contact Modal */}
+      <ContactModal 
+        isOpen={isContactModalOpen} 
+        onClose={() => setIsContactModalOpen(false)} 
+      />
     </div>
   );
 }

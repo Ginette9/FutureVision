@@ -38,9 +38,15 @@ importers:
       jspdf:
         specifier: ^3.0.1
         version: 3.0.1
+      jspdf-autotable:
+        specifier: ^5.0.2
+        version: 5.0.2(jspdf@3.0.1)
       node-sqlite3-wasm:
         specifier: ^0.8.50
         version: 0.8.50
+      nodemailer:
+        specifier: ^7.0.9
+        version: 7.0.9
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -1210,6 +1216,11 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
 
+  jspdf-autotable@5.0.2:
+    resolution: {integrity: sha512-YNKeB7qmx3pxOLcNeoqAv3qTS7KuvVwkFe5AduCawpop3NOkBUtqDToxNc225MlNecxT4kP2Zy3z/y/yvGdXUQ==}
+    peerDependencies:
+      jspdf: ^2 || ^3
+
   jspdf@3.0.1:
     resolution: {integrity: sha512-qaGIxqxetdoNnFQQXxTKUD9/Z7AloLaw94fFsOiJMxbfYdBbrBuhWmbzI8TVjrw7s3jBY1PFHofBKMV/wZPapg==}
 
@@ -1322,6 +1333,10 @@ packages:
 
   node-sqlite3-wasm@0.8.50:
     resolution: {integrity: sha512-6gZLL2j8LDeh9SgZT0vglfILfyXocHxFTOfAdDTX0vikY59E3ZnL7WB2a5kszumvpVAlVdc5bYVR8hnSgYpXwA==}
+
+  nodemailer@7.0.9:
+    resolution: {integrity: sha512-9/Qm0qXIByEP8lEV2qOqcAW7bRpL8CR9jcTwk3NBnHJNmP9fIJ86g2fgmIXqHY+nj55ZEMwWqYAT2QTDpRUYiQ==}
+    engines: {node: '>=6.0.0'}
 
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
@@ -2981,6 +2996,10 @@ snapshots:
 
   json5@2.2.3: {}
 
+  jspdf-autotable@5.0.2(jspdf@3.0.1):
+    dependencies:
+      jspdf: 3.0.1
+
   jspdf@3.0.1:
     dependencies:
       '@babel/runtime': 7.27.1
@@ -3076,6 +3095,8 @@ snapshots:
   node-releases@2.0.19: {}
 
   node-sqlite3-wasm@0.8.50: {}
+
+  nodemailer@7.0.9: {}
 
   normalize-path@3.0.0: {}
 

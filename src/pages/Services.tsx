@@ -1,20 +1,15 @@
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import ContactModal from '../components/ContactModal';
 
 export default function Services() {
   const { t } = useLanguage();
+  const navigate = useNavigate();
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   const services = [
-    {
-      category: "中小企业",
-      title: "中小企业出海服务",
-      description: "为中小企业提供全方位的海外市场拓展支持",
-      services: [
-        "海外产品销售代理",
-        "产品出海策略",
-        "全球资源链接"
-      ]
-    },
     {
       category: "跨国公司",
       title: "跨国企业ESG管理",
@@ -25,7 +20,9 @@ export default function Services() {
         "企业智能情报系统",
         "全球资源链接",
         "MSCI评级提升"
-      ]
+      ],
+      buttonText: "了解详情",
+      action: () => navigate('/esg-risk-analysis/intro')
     },
     {
       category: "上市公司",
@@ -36,7 +33,22 @@ export default function Services() {
         "企业智能情报系统",
         "全球资源链接",
         "MSCI评级提升"
-      ]
+      ],
+      buttonText: "了解详情",
+      action: () => window.open('https://mscfv.com/futureVision/', '_blank')
+    },
+    {
+      category: "中小企业",
+      title: "中小企业出海服务",
+      description: "为中小企业提供全方位的海外市场拓展支持",
+      services: [
+        "海外产品销售代理",
+        "产品出海策略",
+        "全球资源链接"
+      ],
+      buttonText: "即将推出",
+      action: null,
+      disabled: true
     }
   ];
 
@@ -66,7 +78,7 @@ export default function Services() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.2 }}
-              className="bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-300"
+              className="bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-300 flex flex-col"
             >
               {/* Card Header */}
               <div className="p-8 border-b border-gray-100">
@@ -84,9 +96,9 @@ export default function Services() {
               </div>
 
               {/* Services List */}
-              <div className="p-8">
+              <div className="p-8 flex-1 flex flex-col">
                 <h4 className="font-medium text-gray-900 mb-6">服务内容</h4>
-                <ul className="space-y-4">
+                <ul className="space-y-4 flex-1">
                   {service.services.map((item, idx) => (
                     <li key={idx} className="flex items-start text-gray-600">
                       <div className="w-1.5 h-1.5 bg-gray-900 rounded-full mt-2 mr-3 flex-shrink-0"></div>
@@ -96,8 +108,16 @@ export default function Services() {
                 </ul>
 
                 <div className="mt-8">
-                  <button className="w-full py-3 px-6 text-gray-900 border border-gray-300 hover:border-gray-400 transition-colors duration-300 font-medium">
-                    了解详情
+                  <button 
+                    className={`w-full py-3 px-6 font-medium transition-colors duration-300 ${
+                      service.disabled 
+                        ? 'text-gray-400 border border-gray-200 cursor-not-allowed bg-gray-50' 
+                        : 'text-gray-900 border border-gray-300 hover:border-gray-400'
+                    }`}
+                    onClick={service.action || undefined}
+                    disabled={service.disabled}
+                  >
+                    {service.buttonText}
                   </button>
                 </div>
               </div>
@@ -121,11 +141,20 @@ export default function Services() {
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
             我们的专业团队将根据您的具体需求，为您量身定制最适合的ESG解决方案
           </p>
-          <button className="inline-flex items-center px-8 py-3 text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300 font-medium">
+          <button 
+            onClick={() => setIsContactModalOpen(true)}
+            className="inline-flex items-center px-8 py-3 text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300 font-medium"
+          >
             联系我们
           </button>
         </motion.div>
       </div>
+      
+      {/* Contact Modal */}
+      <ContactModal 
+        isOpen={isContactModalOpen} 
+        onClose={() => setIsContactModalOpen(false)} 
+      />
     </div>
   );
 }

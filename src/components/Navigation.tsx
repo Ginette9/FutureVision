@@ -10,10 +10,11 @@ const Navigation = () => {
   const navItems = [
     { name: '首页', path: '/' },
     { name: '服务', path: '/services' },
-    { name: '产品', path: '/products', subItems: [
-      { name: 'ESG风险分析', path: '/esg-risk-analysis' }
-    ]},
+    // { name: '产品', path: '/products', subItems: [
+    //   { name: 'ESG风险分析', path: '/esg-risk-analysis' }
+    // ]},
     { name: '洞察', path: '/insights' },
+    { name: '知识', path: '/knowledge' },
     { name: '案例', path: '/cases' },
     { name: '关于我们', path: '/about' },
   ];
@@ -28,22 +29,22 @@ const Navigation = () => {
   return (
     <nav className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
+        <div className="flex items-center h-20">
+          {/* Logo - 左侧 */}
+          <Link to="/" className="flex items-center space-x-3 mr-16">
             <img
-              src="https://lf-code-agent.coze.cn/obj/x-ai-cn/238114214402/attachment/白字透明logo_20250728174823.png"
+              src="/src/images/future-vision-logo_graph.jpeg"
               alt="Future Vision Logo"
               className="h-12 w-auto"
             />
             <div className="hidden sm:block">
               <h1 className="text-2xl font-light text-gray-900 tracking-tight">Future Vision</h1>
-              <p className="text-sm text-gray-500 font-light">智能全球化咨询</p>
+              <p className="text-sm text-gray-500 font-light">企业第一款全球可持续增长智慧顾问</p>
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-12">
+          {/* Desktop Navigation - 中间 */}
+          <div className="hidden md:flex items-center space-x-12 flex-1">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -68,12 +69,12 @@ const Navigation = () => {
           </div>
 
           {/* Right side items */}
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-6 ml-auto">
             <LanguageSelector />
             
             {/* CTA Button */}
             <Link
-              to="/esg-risk-analysis"
+              to="/esg-risk-analysis/intro"
               className="hidden sm:inline-flex items-center px-6 py-2.5 text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300 rounded-none"
             >
               风险分析
@@ -124,7 +125,7 @@ const Navigation = () => {
               
               {/* Mobile CTA */}
               <Link
-                to="/esg-risk-analysis"
+                to="/esg-risk-analysis/intro"
                 onClick={() => setIsMenuOpen(false)}
                 className="block py-3 px-6 text-base font-medium text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300 text-center mt-6"
               >

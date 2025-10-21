@@ -18,6 +18,7 @@ import { DueDiligenceSection } from './ReportResultNew/DueDiligenceSection';
 import { AboutMvoSection } from './ReportResultNew/AboutMvoSection';
 import { ContactSection } from './ReportResultNew/ContactSection';
 import { DisclaimerSection } from './ReportResultNew/DisclaimerSection';
+import PDFReportGenerator from '@/components/PDFReportGenerator';
 
 // 打印封面/尾页所需静态资源（通过打包器处理路径）
 import CoverBg from '@/images/bg.jpg';
@@ -437,6 +438,15 @@ function ReportResultNew() {
                   <span className="hidden sm:inline">Print Report</span>
                   <span className="sm:hidden">Print</span>
                 </button>
+                {/* 暂时隐藏PDF导出功能 - 待调试完成后恢复 */}
+                {false && formData && (
+                  <PDFReportGenerator 
+                    countryId={formData.country.id}
+                    industryId={formData.industry.id}
+                    countryName={formData.country.name}
+                    industryName={formData.industry.name}
+                  />
+                )}
                 <button 
                   onClick={() => navigate('/esg-risk-analysis')}
                   className="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"

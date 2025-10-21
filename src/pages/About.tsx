@@ -1,9 +1,13 @@
 import { motion } from 'framer-motion';
+import { useState } from 'react';
+import ContactModal from '../components/ContactModal';
 
 export default function About() {
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  
   const team = [
     {
-      name: '金夏',
+      name: '金霞',
       position: '创始人 & CEO',
       description: '拥有15年国际商务和ESG咨询经验，曾服务于多家世界500强企业',
       linkedin: 'https://www.linkedin.com/in/xia-jin-25267620'
@@ -329,11 +333,20 @@ export default function About() {
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
             与我们一起推动全球商业的可持续发展
           </p>
-          <button className="inline-flex items-center px-8 py-3 text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300 font-medium">
+          <button 
+            onClick={() => setIsContactModalOpen(true)}
+            className="inline-flex items-center px-8 py-3 text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300 font-medium"
+          >
             联系我们
           </button>
         </motion.div>
       </div>
+      
+      {/* Contact Modal */}
+      <ContactModal 
+        isOpen={isContactModalOpen} 
+        onClose={() => setIsContactModalOpen(false)} 
+      />
     </div>
   );
 }
