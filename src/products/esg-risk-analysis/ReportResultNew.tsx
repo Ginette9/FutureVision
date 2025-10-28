@@ -438,8 +438,8 @@ function ReportResultNew() {
                   <span className="hidden sm:inline">Print Report</span>
                   <span className="sm:hidden">Print</span>
                 </button>
-                {/* 暂时隐藏PDF导出功能 - 待调试完成后恢复 */}
-                {false && formData && (
+                {/* PDF导出功能已恢复 */}
+                {formData && (
                   <PDFReportGenerator 
                     countryId={formData.country.id}
                     industryId={formData.industry.id}
