@@ -735,7 +735,9 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                        pdf.setTextColor(colors.text);
                        
                        checkPageBreak(lineHeight);
-                       pdf.text(element.content, currentX, currentY);
+                       // 在checkPageBreak后重新获取正确的X位置
+                       const xPos = getColumnX();
+                       pdf.text(element.content, xPos, currentY);
                        currentY += lineHeight * 0.6; // 标题下方间距
                        currentX = getColumnX(); // 重置X位置
                        
@@ -879,7 +881,9 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                         const boldLines = pdf.splitTextToSize(element.content, columnWidth - 5);
                         boldLines.forEach((line: string) => {
                           checkPageBreak(lineHeight);
-                          pdf.text(line, currentX, currentY);
+                          // 在checkPageBreak后重新获取正确的X位置
+                          const xPos = getColumnX();
+                          pdf.text(line, xPos, currentY);
                           currentY += lineHeight;
                         });
                         currentX = getColumnX(); // 重置X位置
@@ -931,10 +935,10 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                         if (currentX + wordWidth > getColumnX() + columnWidth - 5) {
                           checkPageBreak(lineHeight);
                           currentY += lineHeight;
-                          currentX = getColumnX();
+                          currentX = getColumnX(); // 在checkPageBreak后重新获取正确的列X位置
                         }
                         
-                        // 渲染单词
+                        // 渲染单词 - 确保使用正确的列位置
                         pdf.text(word + ' ', currentX, currentY);
                         currentX += wordWidth;
                       }
@@ -1062,7 +1066,9 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                        pdf.setTextColor(colors.text);
                        
                        checkPageBreak(lineHeight);
-                       pdf.text(element.content, currentX, currentY);
+                       // 在checkPageBreak后重新获取正确的X位置
+                       const xPos = getColumnX();
+                       pdf.text(element.content, xPos, currentY);
                        currentY += lineHeight * 0.6; // 标题下方间距
                        currentX = getColumnX(); // 重置X位置
                        
@@ -1206,7 +1212,9 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                       const boldLines = pdf.splitTextToSize(element.content, columnWidth - 5);
                       boldLines.forEach((line: string) => {
                         checkPageBreak(lineHeight);
-                        pdf.text(line, currentX, currentY);
+                        // 在checkPageBreak后重新获取正确的X位置
+                        const xPos = getColumnX();
+                        pdf.text(line, xPos, currentY);
                         currentY += lineHeight;
                       });
                       currentX = getColumnX(); // 重置X位置
@@ -1257,12 +1265,12 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                         
                         // 检查是否需要换行
                         if (currentX + wordWidth > getColumnX() + columnWidth - 5) {
-                          currentY += lineHeight;
-                          currentX = getColumnX();
                           checkPageBreak(lineHeight);
+                          currentY += lineHeight;
+                          currentX = getColumnX(); // 在checkPageBreak后重新获取正确的列X位置
                         }
                         
-                        // 渲染单词
+                        // 渲染单词 - 确保使用正确的列位置
                         pdf.text(word + ' ', currentX, currentY);
                         currentX += wordWidth;
                       }
