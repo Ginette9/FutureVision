@@ -567,7 +567,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
             currentY = margin;
             categoryStartY = margin;
             // 重新设置正文字体，避免使用页脚字体
-            pdf.setFontSize(9);
+            pdf.setFontSize(8); // 统一为8号字体
             pdf.setFont('helvetica', 'normal');
             pdf.setTextColor(colors.text);
           }
@@ -581,7 +581,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
           currentColumn = 0;
           currentY = margin;
           // 重新设置正文字体，避免使用页脚字体
-          pdf.setFontSize(9);
+          pdf.setFontSize(8); // 统一为8号字体
           pdf.setFont('helvetica', 'normal');
           pdf.setTextColor(colors.text);
         }
@@ -601,7 +601,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
           pdf.addPage();
           currentY = margin;
           // 重新设置正文字体，避免使用页脚字体
-          pdf.setFontSize(9);
+          pdf.setFontSize(8); // 统一为8号字体
           pdf.setFont('helvetica', 'normal');
           pdf.setTextColor(colors.text);
         }
@@ -710,7 +710,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
               const parsedContent = parseHtmlContent(risk.content_html || risk.content, risk.classification, countryName, industryName);
               checkPageBreak(lineHeight * 4);
               
-              pdf.setFontSize(9);
+              pdf.setFontSize(8); // 统一为8号字体
               pdf.setFont('helvetica', 'normal');
               pdf.setTextColor(colors.text);
               
@@ -730,15 +730,16 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                          currentX = getColumnX();
                        }
                        currentY += lineHeight * 1.2; // 增加上方间距
-                       pdf.setFontSize(9);
+                       pdf.setFontSize(8); // 缩小Sources标题字号从9到8
                        pdf.setFont('helvetica', 'bold');
+                      pdf.setFontSize(8); // 设置粗体字号为8
                        pdf.setTextColor(colors.text);
                        
                        checkPageBreak(lineHeight);
                        // 在checkPageBreak后重新获取正确的X位置
                        const xPos = getColumnX();
                        pdf.text(element.content, xPos, currentY);
-                       currentY += lineHeight * 0.6; // 标题下方间距
+                       currentY += lineHeight * 1.0; // 增加标题下方间距
                        currentX = getColumnX(); // 重置X位置
                        
                        // 恢复正文字体
@@ -758,26 +759,44 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                          }
                          
                          pdf.setFont('helvetica', 'normal');
+                         pdf.setFontSize(8); // 设置Sources链接字号为8
                          pdf.setTextColor(colors.text);
                          
+                         // 优化bullet point间距：在bullet和文字之间添加适当空隙
+                         const contentWithSpacing = element.content.replace('• ', '•  '); // 增加一个空格
+                         
                          // 使用splitTextToSize处理长文本自动换行
-                         const listLines = pdf.splitTextToSize(element.content, columnWidth - 10);
+                         const listLines = pdf.splitTextToSize(contentWithSpacing, columnWidth - 10);
+                         
+                         // 计算bullet point的宽度，用于换行后的缩进对齐
+                         const bulletWidth = pdf.getTextWidth('•  ');
+                         
                          listLines.forEach((line: string, lineIndex: number) => {
                            checkPageBreak(lineHeight);
                            
-                           // 渲染文本 - 在checkPageBreak后重新获取正确的X位置
-                           const xPos = getColumnX() + (lineIndex === 0 ? 0 : 5);
+                           // 渲染文本 - 换行后的内容与第一行文字对齐
+                           const xPos = getColumnX() + (lineIndex === 0 ? 0 : bulletWidth);
                            pdf.text(line, xPos, currentY);
                            
-                           // 为每一行都添加下划线（超链接效果）
-                           const lineWidth = pdf.getTextWidth(line);
+                           // 为每一行都添加下划线（超链接效果），但排除bullet point
+                           let underlineStartX = xPos;
+                           let underlineText = line;
+                           
+                           // 如果是第一行且包含bullet point，跳过bullet point部分（包括额外空格）
+                           if (lineIndex === 0 && line.startsWith('•  ')) {
+                             const bulletWidth = pdf.getTextWidth('•  '); // 包括额外空格的宽度
+                             underlineStartX = xPos + bulletWidth;
+                             underlineText = line.substring(3); // 移除 '•  '
+                           }
+                           
+                           const underlineWidth = pdf.getTextWidth(underlineText);
                            pdf.setDrawColor(colors.text);
                            pdf.setLineWidth(0.2);
-                           pdf.line(xPos, currentY + 1, xPos + lineWidth, currentY + 1);
+                           pdf.line(underlineStartX, currentY + 1, underlineStartX + underlineWidth, currentY + 1);
                            
                            // 为每一行都添加可点击链接
                            if (element.url) {
-                             pdf.link(xPos, currentY - 6, lineWidth, 8, { url: element.url });
+                             pdf.link(xPos, currentY - 6, pdf.getTextWidth(line), 8, { url: element.url });
                            }
                            
                            currentY += lineHeight;
@@ -789,8 +808,9 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                            currentY += lineHeight * 0.1;
                          }
                        } else {
-                         // 内联渲染超链接
+                         // 内联渲染超链接 - 优化布局，减少不必要的空行
                          pdf.setFont('helvetica', 'normal');
+                         pdf.setFontSize(8); // 设置Sources链接字号为8
                          pdf.setTextColor(colors.text);
                          
                          const linkText = element.content;
@@ -817,16 +837,19 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                            pdf.link(currentX, currentY - 6, textWidth, 8, { url: element.url });
                          }
                          
-                         // 更新X位置，包括超链接文本和后续空格
+                         // 更新X位置，包括超链接文本
                          currentX += textWidth;
                          
-                         // 如果不是最后一个元素，添加空格
+                         // 优化空格处理：只在必要时添加空格，避免多余的空行
                          if (i < parsedContent.elements.length - 1) {
                            const nextElement = parsedContent.elements[i + 1];
-                           // 只有当下一个元素是文本或其他内联元素时才添加空格
+                           // 当下一个元素是文本、链接或其他内联元素时才添加空格
                            if (nextElement.type === 'text' || nextElement.type === 'link') {
                              pdf.text(' ', currentX, currentY);
                              currentX += spaceWidth;
+                           } else {
+                             // 如果下一个元素是块级元素（如tag、bold等），不添加额外空格
+                             // 让块级元素自己处理换行和间距
                            }
                          }
                        }
@@ -844,6 +867,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                         
                         pdf.setFontSize(7);
                         pdf.setFont('helvetica', 'bold');
+                        pdf.setFontSize(8); // 设置粗体字号为8
                         pdf.setTextColor(element.tagColor || '#6B7280');
                         
                         // 绘制标签背景
@@ -862,7 +886,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                         currentY += lineHeight * 0.2;
                         
                         // 恢复正文字体
-                        pdf.setFontSize(9);
+                        pdf.setFontSize(8); // 缩小字体从9到8
                         pdf.setFont('helvetica', 'normal');
                         pdf.setTextColor(colors.text);
                         break;
@@ -894,7 +918,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                         }
                         
                         // 恢复正文字体
-                        pdf.setFontSize(9);
+                        pdf.setFontSize(8); // 缩小字体从9到8
                         pdf.setFont('helvetica', 'normal');
                         pdf.setTextColor(colors.text);
                         break;
@@ -909,11 +933,16 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                         currentY += lineHeight * 0.2; // 列表前间距
                       }
                       
-                      const listLines = pdf.splitTextToSize(`• ${element.content}`, columnWidth - 10);
+                      // 优化bullet point间距：在bullet和文字之间添加适当空隙
+                      const listLines = pdf.splitTextToSize(`•  ${element.content}`, columnWidth - 10); // 增加一个空格
+                      
+                      // 计算bullet point的宽度，用于换行后的缩进对齐
+                      const bulletWidth = pdf.getTextWidth('•  ');
+                      
                       listLines.forEach((line: string, lineIndex: number) => {
                         checkPageBreak(lineHeight);
-                        // 在checkPageBreak后重新获取正确的X位置
-                        const xPos = getColumnX() + (lineIndex === 0 ? 0 : 5);
+                        // 换行后的内容与第一行文字对齐
+                        const xPos = getColumnX() + (lineIndex === 0 ? 0 : bulletWidth);
                         pdf.text(line, xPos, currentY);
                         currentY += lineHeight;
                       });
@@ -1041,7 +1070,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
               const parsedContent = parseHtmlContent(recommendation.content_html || recommendation.content, recommendation.classification, countryName, industryName);
               checkPageBreak(lineHeight * 4);
               
-              pdf.setFontSize(9);
+              pdf.setFontSize(8); // 统一为8号字体
               pdf.setFont('helvetica', 'normal');
               pdf.setTextColor(colors.text);
               
@@ -1061,7 +1090,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                          currentX = getColumnX();
                        }
                        currentY += lineHeight * 1.2; // 增加上方间距
-                       pdf.setFontSize(9);
+                       pdf.setFontSize(8); // 缩小Sources标题字号从9到8
                        pdf.setFont('helvetica', 'bold');
                        pdf.setTextColor(colors.text);
                        
@@ -1069,7 +1098,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                        // 在checkPageBreak后重新获取正确的X位置
                        const xPos = getColumnX();
                        pdf.text(element.content, xPos, currentY);
-                       currentY += lineHeight * 0.6; // 标题下方间距
+                       currentY += lineHeight * 1.0; // 增加标题下方间距
                        currentX = getColumnX(); // 重置X位置
                        
                        // 恢复正文字体
@@ -1091,24 +1120,41 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                          pdf.setFont('helvetica', 'normal');
                          pdf.setTextColor(colors.text);
                          
+                         // 优化bullet point间距：在bullet和文字之间添加适当空隙
+                         const contentWithSpacing = element.content.replace('• ', '•  '); // 增加一个空格
+                         
                          // 使用splitTextToSize处理长文本自动换行
-                         const listLines = pdf.splitTextToSize(element.content, columnWidth - 10);
+                         const listLines = pdf.splitTextToSize(contentWithSpacing, columnWidth - 10);
+                         
+                         // 计算bullet point的宽度，用于换行后的缩进对齐
+                         const bulletWidth = pdf.getTextWidth('•  ');
+                         
                          listLines.forEach((line: string, lineIndex: number) => {
                            checkPageBreak(lineHeight);
                            
-                           // 渲染文本 - 在checkPageBreak后重新获取正确的X位置
-                           const xPos = getColumnX() + (lineIndex === 0 ? 0 : 5);
+                           // 渲染文本 - 换行后的内容与第一行文字对齐
+                           const xPos = getColumnX() + (lineIndex === 0 ? 0 : bulletWidth);
                            pdf.text(line, xPos, currentY);
                            
-                           // 为每一行都添加下划线（超链接效果）
-                           const lineWidth = pdf.getTextWidth(line);
+                           // 为每一行都添加下划线（超链接效果），但排除bullet point
+                           let underlineStartX = xPos;
+                           let underlineText = line;
+                           
+                           // 如果是第一行且包含bullet point，跳过bullet point部分（包括额外空格）
+                           if (lineIndex === 0 && line.startsWith('•  ')) {
+                             const bulletWidth = pdf.getTextWidth('•  '); // 包括额外空格的宽度
+                             underlineStartX = xPos + bulletWidth;
+                             underlineText = line.substring(3); // 移除 '•  '
+                           }
+                           
+                           const underlineWidth = pdf.getTextWidth(underlineText);
                            pdf.setDrawColor(colors.text);
                            pdf.setLineWidth(0.2);
-                           pdf.line(xPos, currentY + 1, xPos + lineWidth, currentY + 1);
+                           pdf.line(underlineStartX, currentY + 1, underlineStartX + underlineWidth, currentY + 1);
                            
                            // 为每一行都添加可点击链接
                            if (element.url) {
-                             pdf.link(xPos, currentY - 6, lineWidth, 8, { url: element.url });
+                             pdf.link(xPos, currentY - 6, pdf.getTextWidth(line), 8, { url: element.url });
                            }
                            
                            currentY += lineHeight;
@@ -1120,8 +1166,9 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                            currentY += lineHeight * 0.1;
                          }
                        } else {
-                         // 内联渲染超链接
+                         // 内联渲染超链接 - 优化布局，减少不必要的空行
                          pdf.setFont('helvetica', 'normal');
+                         pdf.setFontSize(8); // 设置Sources链接字号为8
                          pdf.setTextColor(colors.text);
                          
                          const linkText = element.content;
@@ -1148,16 +1195,19 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                            pdf.link(currentX, currentY - 6, textWidth, 8, { url: element.url });
                          }
                          
-                         // 更新X位置，包括超链接文本和后续空格
+                         // 更新X位置，包括超链接文本
                          currentX += textWidth;
                          
-                         // 如果不是最后一个元素，添加空格
+                         // 优化空格处理：只在必要时添加空格，避免多余的空行
                          if (i < parsedContent.elements.length - 1) {
                            const nextElement = parsedContent.elements[i + 1];
-                           // 只有当下一个元素是文本或其他内联元素时才添加空格
+                           // 当下一个元素是文本、链接或其他内联元素时才添加空格
                            if (nextElement.type === 'text' || nextElement.type === 'link') {
                              pdf.text(' ', currentX, currentY);
                              currentX += spaceWidth;
+                           } else {
+                             // 如果下一个元素是块级元素（如tag、bold等），不添加额外空格
+                             // 让块级元素自己处理换行和间距
                            }
                          }
                        }
@@ -1193,7 +1243,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                       currentY += lineHeight * 0.2;
                       
                       // 恢复正文字体
-                      pdf.setFontSize(9);
+                      pdf.setFontSize(8); // 缩小字体从9到8
                       pdf.setFont('helvetica', 'normal');
                       pdf.setTextColor(colors.text);
                       break;
@@ -1225,7 +1275,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                       }
                       
                       // 恢复正文字体
-                      pdf.setFontSize(9);
+                      pdf.setFontSize(8); // 缩小字体从9到8
                       pdf.setFont('helvetica', 'normal');
                       pdf.setTextColor(colors.text);
                       break;
@@ -1240,11 +1290,16 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                         currentY += lineHeight * 0.2; // 列表前间距
                       }
                       
-                      const listLines = pdf.splitTextToSize(`• ${element.content}`, columnWidth - 10);
+                      // 优化bullet point间距：在bullet和文字之间添加适当空隙
+                      const listLines = pdf.splitTextToSize(`•  ${element.content}`, columnWidth - 10); // 增加一个空格
+                      
+                      // 计算bullet point的宽度，用于换行后的缩进对齐
+                      const bulletWidth = pdf.getTextWidth('•  ');
+                      
                       listLines.forEach((line: string, lineIndex: number) => {
                         checkPageBreak(lineHeight);
-                        // 在checkPageBreak后重新获取正确的X位置
-                        const xPos = getColumnX() + (lineIndex === 0 ? 0 : 5);
+                        // 换行后的内容与第一行文字对齐
+                        const xPos = getColumnX() + (lineIndex === 0 ? 0 : bulletWidth);
                         pdf.text(line, xPos, currentY);
                         currentY += lineHeight;
                       });
