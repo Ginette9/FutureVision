@@ -1,44 +1,24 @@
 import { motion } from 'framer-motion';
-
-interface InsightItem {
-  id: number;
-  title: string;
-  summary: string;
-  date: string;
-  category: string;
-  readTime: string;
-  featured?: boolean;
-}
+import { useState } from 'react';
+import { getAllInsightReports, InsightReport } from '../data/insightReports';
+import InsightReportDetail from '../components/InsightReportDetail';
 
 export default function Insights() {
-  // 只保留独家洞察报告
-  const insights: InsightItem[] = [
-    {
-      id: 1,
-      title: '2024年全球ESG风险趋势报告',
-      summary: '深度分析全球ESG风险发展趋势，为企业出海提供战略指导',
-      date: '2024-01-15',
-      category: '市场分析',
-      readTime: '15分钟',
-      featured: true
-    },
-    {
-      id: 2,
-      title: '中小企业出海合规指南',
-      summary: '针对中小企业的海外合规要求和最佳实践',
-      date: '2024-01-10',
-      category: '合规指导',
-      readTime: '12分钟'
-    },
-    {
-      id: 3,
-      title: 'MSCI ESG评级提升策略',
-      summary: '系统性提升企业MSCI ESG评级的方法论和实施路径',
-      date: '2024-01-05',
-      category: 'ESG评级',
-      readTime: '20分钟'
-    }
-  ];
+  const [selectedReport, setSelectedReport] = useState<InsightReport | null>(null);
+  const [isReportDetailOpen, setIsReportDetailOpen] = useState(false);
+
+  // 获取所有独家洞察报告
+  const insights = getAllInsightReports();
+
+  const handleReportClick = (report: InsightReport) => {
+    setSelectedReport(report);
+    setIsReportDetailOpen(true);
+  };
+
+  const handleCloseReportDetail = () => {
+    setIsReportDetailOpen(false);
+    setSelectedReport(null);
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -84,13 +64,22 @@ export default function Insights() {
                 insight.featured ? 'md:col-span-2 lg:col-span-1' : ''
               }`}
             >
+              {insight.coverImage && (
+                <div className="h-48 overflow-hidden">
+                  <img 
+                    src={insight.coverImage} 
+                    alt={insight.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
               <div className="p-8">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1">
-                    {insight.category}
+                    {insight.industry}
                   </span>
                   <span className="text-sm text-gray-400">
-                    {insight.readTime}
+                    {insight.pages}页
                   </span>
                 </div>
                 
@@ -103,10 +92,13 @@ export default function Insights() {
                 </p>
                 
                 <div className="flex items-center justify-between">
-                  <time className="text-sm text-gray-500">
-                    {formatDate(insight.date)}
-                  </time>
-                  <button className="text-gray-900 hover:text-gray-600 transition-colors duration-300 font-medium">
+                    <time className="text-sm text-gray-500">
+                      {formatDate(insight.date)}
+                    </time>
+                  <button 
+                    onClick={() => handleReportClick(insight)}
+                    className="text-gray-900 hover:text-gray-600 transition-colors duration-300 font-medium"
+                  >
                     阅读更多 →
                   </button>
                 </div>
@@ -141,6 +133,15 @@ export default function Insights() {
           </div>
         </motion.div>
       </div>
+
+      {/* 报告详情弹窗 */}
+      {selectedReport && (
+        <InsightReportDetail
+          report={selectedReport}
+          isOpen={isReportDetailOpen}
+          onClose={handleCloseReportDetail}
+        />
+      )}
     </div>
   );
 }

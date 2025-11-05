@@ -2,7 +2,7 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 /* ========= 新增：后端基址解析，优先同源 /proxy，次选 LAN:3001 ========= */
-function getBackendBase(): { type: 'same-origin' | 'absolute', base: string } {
+export function getBackendBase(): { type: 'same-origin' | 'absolute', base: string } {
   // 1) 显式配置优先（可选）：在 .env 里设置 VITE_BACKEND_BASE，例如：
   //    http://192.168.x.x:3001 或 https://your-domain/proxy
   //    线上反向代理时尤其好用

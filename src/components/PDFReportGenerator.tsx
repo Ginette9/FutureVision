@@ -4,8 +4,17 @@ import {
   getRiskIdsByCountryAndIndustry, 
   getRisksByIds, 
   getAdviceIdsByCountryAndIndustry, 
-  getAdviceByIds 
+  getAdviceByIds,
+  getOrganizationIdsByCountryAndIndustry,
+  getOrganizationsByIds,
+  getConsiderationIdsByCountryAndIndustry,
+  getConsiderationsByIds,
+  getInitiativeIdsByCountryAndIndustry,
+  getInitiativesByIds
 } from '../lib/database';
+import { scrapeUrlContent, buildScrapeUrl, getBackendBase } from '../lib/utils';
+import { parseReportHtml } from '../products/esg-risk-analysis/ReportResultNew/parseReportHtml';
+import { dueDiligenceHtml, aboutMvoHtml, contactHtml, disclaimerHtml } from '../products/esg-risk-analysis/ReportResultNew/sectionsContent';
 
 interface RiskItem {
   id: number;
@@ -40,6 +49,42 @@ interface ThemeData {
 interface CategoryData {
   categoryTitle: string;
   themes: ThemeData[];
+}
+
+interface OrganizationData {
+  id: number;
+  name: string;
+  intro: string;
+  logo: string;
+  link: string;
+  classification: string;
+  intro_html: string;
+}
+
+interface SectionData {
+  organizations: OrganizationData[];
+  considerations: Array<{
+    id: number;
+    content: string;
+    classification: string;
+    content_html: string;
+  }>;
+  initiatives: Array<{
+    id: number;
+    name: string;
+    intro: string;
+    logo: string;
+    link: string;
+    classification: string;
+    intro_html: string;
+  }>;
+  introSection: { html: string };
+  payAttentionSection: { html: string };
+  csrLabelsSection: { html: string };
+  dueDiligenceSection: { html: string };
+  aboutMvoSection: { html: string };
+  contactSection: { html: string };
+  disclaimerSection: { html: string };
 }
 
 interface PDFReportGeneratorProps {
@@ -119,6 +164,79 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
     }
   };
 
+  // 获取其他板块数据（Introduction动态对齐网页）
+  const fetchOtherSectionsData = async () => {
+    try {
+      // 获取组织数据 (CSR Section)
+      const organizationIds = await getOrganizationIdsByCountryAndIndustry(countryName, industryName);
+      const organizations = organizationIds.length > 0 ? await getOrganizationsByIds(organizationIds) : [];
+
+      // 获取考虑因素数据 (Pay Attention Section)
+      const considerationIds = await getConsiderationIdsByCountryAndIndustry(countryName, industryName);
+      const considerations = considerationIds ? await getConsiderationsByIds(considerationIds) : [];
+
+      // 获取倡议数据 (CSR Labels Section)
+      const initiativeIds = await getInitiativeIdsByCountryAndIndustry(countryName, industryName);
+      const initiatives = initiativeIds.length > 0 ? await getInitiativesByIds(initiativeIds) : [];
+
+      // Introduction section - 通过抓取并解析网页，保持与网页一致
+      let introContent = '';
+      try {
+        const url = buildScrapeUrl(String(industryId), String(countryId));
+        const htmlContent = await scrapeUrlContent(url);
+        if (htmlContent) {
+          const sections = parseReportHtml(htmlContent);
+          const intro = sections.find(s => s.id === 'introduction');
+          if (intro && intro.html) {
+            introContent = intro.html;
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to fetch introduction from web, fallback to static');
+        introContent = `
+          <div>
+            <h2>Executive Summary</h2>
+            <p>This comprehensive ESG risk analysis provides detailed insights into environmental, social, and governance factors specific to your selected country and industry combination. Our analysis covers key risk areas, regulatory considerations, and actionable recommendations to help you navigate the complex ESG landscape.</p>
+            <p>The report includes risk assessments, compliance guidelines, industry-specific considerations, and strategic recommendations tailored to your operational context.</p>
+          </div>
+        `;
+      }
+
+      // 使用共享模块中的固定内容，确保与网页一致
+      const dueDiligenceContent = dueDiligenceHtml;
+      const aboutMvoContent = aboutMvoHtml;
+      const contactContent = contactHtml;
+      const disclaimerContent = disclaimerHtml;
+
+      return {
+        organizations,
+        considerations,
+        initiatives,
+        introSection: { html: introContent },
+        payAttentionSection: { html: '' }, // Will be generated from considerations
+        csrLabelsSection: { html: '' }, // Will be generated from initiatives
+        dueDiligenceSection: { html: dueDiligenceContent },
+        aboutMvoSection: { html: aboutMvoContent },
+        contactSection: { html: contactContent },
+        disclaimerSection: { html: disclaimerContent }
+      };
+    } catch (error) {
+      console.error('Failed to fetch other sections data:', error);
+      return {
+        organizations: [],
+        considerations: [],
+        initiatives: [],
+        introSection: { html: '' },
+        payAttentionSection: { html: '' },
+        csrLabelsSection: { html: '' },
+        dueDiligenceSection: { html: '' },
+        aboutMvoSection: { html: '' },
+        contactSection: { html: '' },
+        disclaimerSection: { html: '' }
+      };
+    }
+  };
+
   // 清理HTML文本
   const cleanText = (htmlText: string): string => {
     return htmlText
@@ -129,6 +247,21 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
       .replace(/&gt;/g, '>')
       .replace(/&quot;/g, '"')
       .trim();
+  };
+
+  // 按文本移除指定的标题标签（用于去掉意外的“Introduction”行）
+  const stripHeadingByText = (html: string, headingText: string): string => {
+    if (!html) return html;
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+    const headings = temp.querySelectorAll('h1,h2,h3,h4,h5,h6');
+    headings.forEach(h => {
+      const t = (h.textContent || '').trim().toLowerCase();
+      if (t === headingText.toLowerCase()) {
+        h.remove();
+      }
+    });
+    return temp.innerHTML;
   };
 
   // HTML内容解析和处理函数
@@ -158,7 +291,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
     tempDiv.innerHTML = processedHtml;
     
     const elements: Array<{
-      type: 'text' | 'bold' | 'list' | 'tag' | 'link' | 'sources',
+      type: 'text' | 'bold' | 'list' | 'tag' | 'link' | 'sources' | 'linebreak',
       content: string,
       tagColor?: string,
       tagText?: string,
@@ -199,6 +332,21 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
           return;
         }
         
+        // 处理段落与换行（用于保留文本分段）
+        if (element.tagName === 'P') {
+          // 递归处理段落内部内容
+          for (const child of Array.from(element.childNodes)) {
+            parseNode(child);
+          }
+          // 在段落结束处插入换行标记
+          elements.push({ type: 'linebreak', content: '' });
+          return;
+        }
+        if (element.tagName === 'BR') {
+          elements.push({ type: 'linebreak', content: '' });
+          return;
+        }
+
         // 处理超链接
         if (element.tagName === 'A') {
           const linkText = element.textContent?.trim();
@@ -508,6 +656,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
     
     try {
       const categories = await fetchReportData();
+      const sectionsData = await fetchOtherSectionsData();
       
       if (categories.length === 0) {
         alert('没有找到相关数据，无法生成报告');
@@ -538,29 +687,180 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
       let currentY = margin;
       let currentColumn = 0;
       let categoryStartY = margin;
+
+      // 读取本地 logo 缓存映射（由脚本生成），优先使用本地文件路径
+      let logoCacheMap: Record<string, string> | null = null;
+      const loadLogoCache = async (): Promise<Record<string, string>> => {
+        if (logoCacheMap) return logoCacheMap;
+        try {
+          const resp = await fetch('/images/reports/logo-cache.json', { cache: 'no-store' });
+          if (resp.ok) {
+            logoCacheMap = await resp.json();
+          } else {
+            logoCacheMap = {};
+          }
+        } catch {
+          logoCacheMap = {};
+        }
+        return logoCacheMap!;
+      };
+
+      // 工具：将图片URL转换为DataURL，便于jsPDF嵌入
+      const toDataUrl = async (url: string): Promise<string | null> => {
+        try {
+          if (!url) return null;
+          // 优先映射为本地缓存路径
+          const cache = await loadLogoCache();
+          if (cache[url]) {
+            url = cache[url];
+          }
+          // 外链通过代理拉取，避免跨域与混合内容
+          let fetchUrl = url;
+          if (/^https?:\/\//.test(url)) {
+            const { type, base } = getBackendBase();
+            const proxyBase = type === 'same-origin' ? `${base}/image` : `${base}/proxy/image`;
+            const u = new URL(proxyBase, window.location.origin);
+            u.searchParams.set('url', url);
+            fetchUrl = u.toString();
+          }
+          const res = await fetch(fetchUrl, { cache: 'no-store' });
+          if (!res.ok) return null;
+          const blob = await res.blob();
+          // 将 blob 转为 dataURL；若为 SVG/WEBP，则转为 PNG
+          const rawDataUrl: string | null = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(String(reader.result));
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+          if (!rawDataUrl) return null;
+          const isSvg = blob.type.includes('image/svg');
+          const isWebp = blob.type.includes('image/webp');
+          if (isSvg || isWebp) {
+            try {
+              return await new Promise<string>((resolve2) => {
+                const img = new Image();
+                img.onload = () => {
+                  const canvas = document.createElement('canvas');
+                  // 目标尺寸按卡片预期比例，避免过大
+                  const targetW = 140; // 提高分辨率，PDF里再缩放
+                  const aspect = img.width > 0 ? img.height / img.width : 0.75;
+                  const targetH = Math.max(100, Math.floor(targetW * aspect));
+                  canvas.width = targetW;
+                  canvas.height = targetH;
+                  const ctx = canvas.getContext('2d');
+                  if (!ctx) {
+                    resolve2(rawDataUrl);
+                    return;
+                  }
+                  ctx.clearRect(0, 0, targetW, targetH);
+                  ctx.drawImage(img, 0, 0, targetW, targetH);
+                  const pngUrl = canvas.toDataURL('image/png');
+                  resolve2(pngUrl);
+                };
+                img.onerror = () => resolve2(rawDataUrl);
+                img.src = rawDataUrl;
+              });
+            } catch {
+              return rawDataUrl;
+            }
+          }
+          return rawDataUrl;
+        } catch (e) {
+          return null;
+        }
+      };
+
+      // 预加载组织logo，构建映射
+      const resolveLogoUrl = (raw?: string): string | null => {
+        if (!raw) return null;
+        if (/^https?:\/\//.test(raw)) return raw;
+        if (raw.startsWith('/')) return raw;
+        // 尝试常见位置：/images/ 与原字符串
+        return `/images/${raw}`;
+      };
+
+      const orgLogoInfoMap: Record<number, { dataUrl: string; w: number; h: number } | null> = {};
+      if (sectionsData && sectionsData.organizations) {
+        await Promise.all(sectionsData.organizations.map(async (o) => {
+          const url = resolveLogoUrl(o.logo) || '';
+          const dataUrl = url ? await toDataUrl(url) : null;
+          if (dataUrl) {
+            // 读取原始像素尺寸，用于保持等比缩放
+            let iw = 0, ih = 0;
+            await new Promise<void>((resolve) => {
+              const img = new Image();
+              img.onload = () => { iw = img.naturalWidth || img.width || 0; ih = img.naturalHeight || img.height || 0; resolve(); };
+              img.onerror = () => resolve();
+              img.src = dataUrl;
+            });
+            if (!iw || !ih) { iw = 140; ih = 100; }
+            orgLogoInfoMap[o.id] = { dataUrl, w: iw, h: ih };
+          } else {
+            orgLogoInfoMap[o.id] = null;
+          }
+        }));
+      }
+
+      // 预加载倡议（Labels/Initiatives）logo，构建映射
+      const initiativeLogoInfoMap: Record<number, { dataUrl: string; w: number; h: number } | null> = {};
+      if (sectionsData && sectionsData.initiatives) {
+        await Promise.all(sectionsData.initiatives.map(async (it) => {
+          const url = resolveLogoUrl(it.logo) || '';
+          const dataUrl = url ? await toDataUrl(url) : null;
+          if (dataUrl) {
+            let iw = 0, ih = 0;
+            await new Promise<void>((resolve) => {
+              const img = new Image();
+              img.onload = () => { iw = img.naturalWidth || img.width || 0; ih = img.naturalHeight || img.height || 0; resolve(); };
+              img.onerror = () => resolve();
+              img.src = dataUrl;
+            });
+            if (!iw || !ih) { iw = 140; ih = 100; }
+            initiativeLogoInfoMap[it.id] = { dataUrl, w: iw, h: ih };
+          } else {
+            initiativeLogoInfoMap[it.id] = null;
+          }
+        }));
+      }
+
+      // 添加封面页
+      try {
+        const coverImg = new Image();
+        coverImg.src = '/src/images/pdf-cover-new.png';
+        await new Promise((resolve, reject) => {
+          coverImg.onload = resolve;
+          coverImg.onerror = reject;
+        });
+        pdf.addImage(coverImg, 'PNG', 0, 0, pageWidth, pageHeight);
+      } catch (error) {
+        console.warn('封面图片加载失败，跳过封面页');
+      }
+
+      // 添加新页面开始内容
+      pdf.addPage();
+      currentY = margin;
       
-      // 添加页脚函数
+      // 添加页脚函数：彻底不绘制任何内容，避免出现“乱码”或额外标记
       const addFooter = () => {
-        const footerY = pageHeight - 10;
-        pdf.setFontSize(8);
-        pdf.setTextColor(colors.lightText);
-        pdf.setFont('helvetica', 'normal');
-        pdf.text('Future Vision', margin, footerY);
-        pdf.text('www.mscfv.com', pageWidth - margin - 30, footerY);
+        // no-op: 保持页面底部完全空白
       };
       
       // 添加标题 - 移除，因为参考样例中没有总标题
       // 直接从第一个议题开始
       
-      // 检查换页
+      // 单/双列模式控制：风险板块采用双列，其余板块采用单列
+      let singleColumnMode = false;
+
+      // 检查换页（支持单列模式：不做列切换，直接换页）
       const checkPageBreak = (additionalHeight: number = 0) => {
         if (currentY + additionalHeight > pageHeight - margin - 15) {
-          if (currentColumn === 0) {
-            // 从左列切换到右列
+          if (!singleColumnMode && currentColumn === 0) {
+            // 双列：从左列切换到右列
             currentColumn = 1;
             currentY = categoryStartY;
           } else {
-            // 从右列切换到新页面
+            // 单列或双列右列：直接换页
             addFooter();
             pdf.addPage();
             currentColumn = 0;
@@ -591,6 +891,1339 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         return currentColumn === 0 ? margin : margin * 2 + columnWidth;
       };
       
+      // 辅助函数：将十六进制颜色转换为RGB
+      const hexToRgb = (hex: string) => {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16)
+        } : null;
+      };
+
+      // 规范化文本：清除不可见空格/软连字符，统一连字符/空格，避免PDF排版异常
+      const normalizeText = (input: string): string => {
+        if (!input) return '';
+        return input
+          // 将各种空格归一化为普通空格
+          .replace(/[\u00A0\u202F\u2000-\u200B]/g, ' ')
+          // 将软连字符和非断行连字符替换为普通连字符
+          .replace(/[\u00AD\u2010\u2011]/g, '-')
+          // 统一中文全角连字符等为半角
+          .replace(/[\uFF0D]/g, '-')
+          // 收敛连续空格
+          .replace(/\s{2,}/g, ' ')
+          .trim();
+      };
+
+      // 渲染组织卡片（修复：logo显示、正文链接行内与可点击、分页）
+      const renderOrganizationCard = (org: OrganizationData) => {
+        const parsed = parseHtmlContent(org.intro_html, org.classification, countryName, industryName);
+        // 标题回退策略：优先 org.name；否则取首个粗体；否则从链接域名；再否则“Untitled”
+        const deriveTitle = (): string => {
+          const primary = (org.name || '').trim();
+          if (primary) return primary;
+          const bold = parsed.elements?.find(e => e.type === 'bold' && e.content.trim());
+          if (bold) return bold.content.trim();
+          const url = (org.link || '').trim();
+          if (url) {
+            try { const u = new URL(url); return u.hostname; } catch {}
+            return url;
+          }
+          return 'Untitled';
+        };
+        const titleText = deriveTitle();
+        const headerHeight = 34;
+        const horizontalPadding = 15;
+        const contentWidth = pageWidth - margin * 2 - horizontalPadding * 2;
+        const cardPaddingTop = 10;
+        const cardPaddingBottom = 12;
+        const contentMarginX = margin + horizontalPadding;
+
+        // 将正文合并为“段落+链接位置”，列表保持单独行
+        const blocks: Array<{
+          kind: 'paragraph' | 'list' | 'bold';
+          content: string;
+          indent?: number;
+          links?: Array<{ text: string; url: string }>;
+        }> = [];
+
+        if (parsed.elements && parsed.elements.length > 0) {
+          let paraText = '';
+          let paraLinks: Array<{ text: string; url: string }> = [];
+          const flushPara = () => {
+            if (paraText.trim()) {
+              blocks.push({ kind: 'paragraph', content: paraText.trim(), indent: 0, links: paraLinks.slice() });
+            }
+            paraText = '';
+            paraLinks = [];
+          };
+
+          parsed.elements.forEach((el) => {
+            if (el.type === 'list') {
+              flushPara();
+              blocks.push({ kind: 'list', content: normalizeText(el.content), indent: 5 });
+            } else if (el.type === 'bold') {
+              flushPara();
+              blocks.push({ kind: 'bold', content: normalizeText(el.content) });
+            } else if (el.type === 'linebreak') {
+              // 段落边界：遇到换行标记立即换段
+              flushPara();
+            } else if (el.type === 'link') {
+              if (paraText && !/\s$/.test(paraText)) paraText += ' ';
+              paraText += normalizeText(el.content);
+              const url = (el as any).url || '';
+              if (url) paraLinks.push({ text: normalizeText(el.content), url });
+              paraText += ' ';
+            } else {
+              if (paraText && !/\s$/.test(paraText)) paraText += ' ';
+              paraText += normalizeText(el.content);
+            }
+          });
+          // 在入块前统一规范化段落文本
+          paraText = normalizeText(paraText);
+          flushPara();
+        }
+
+        let pointer = 0;
+        let firstPage = true;
+
+        while (pointer < blocks.length || firstPage) {
+          const headerH = firstPage ? headerHeight : 0;
+          // 当页面可用高度过小时，先分页
+          let availableHeight = pageHeight - margin - 15 - currentY - cardPaddingTop - cardPaddingBottom - headerH;
+          if (availableHeight < 20) {
+            // 页面底部空间不足，在绘制标题前先分页，但保持这是卡片的首页
+            addFooter();
+            pdf.addPage();
+            currentY = margin;
+            // 保持 firstPage = true，确保新页仍绘制标题与logo
+            firstPage = true;
+            availableHeight = pageHeight - margin - 15 - currentY - cardPaddingTop - cardPaddingBottom - headerH;
+          }
+
+          // 预估本页高度：按块拆分后估计行数（使用一致的字体设置，避免误差）
+          let consumedHeight = 0;
+          let count = 0; // 本页将渲染的行计数
+          const tempPdf = new jsPDF();
+          // 简单估算：每个块拆成行数
+          for (let bi = pointer; bi < blocks.length; bi++) {
+            const b = blocks[bi];
+            let lines: string[] = [];
+            if (b.kind === 'list') {
+              tempPdf.setFontSize(10);
+              tempPdf.setFont('helvetica', 'normal');
+              lines = tempPdf.splitTextToSize(`• ${b.content}`, contentWidth - (b.indent || 0)) as string[];
+            } else if (b.kind === 'bold') {
+              tempPdf.setFontSize(10);
+              tempPdf.setFont('helvetica', 'bold');
+              lines = tempPdf.splitTextToSize(b.content, contentWidth) as string[];
+            } else {
+              tempPdf.setFontSize(10);
+              tempPdf.setFont('helvetica', 'normal');
+              lines = tempPdf.splitTextToSize(b.content, contentWidth) as string[];
+            }
+            const needH = lines.length * 7; // 每行约7mm高度
+            if (consumedHeight + needH > availableHeight) break;
+            consumedHeight += needH;
+            count += lines.length;
+            // 为简化估算：一旦超过高度，停止
+          }
+          // 预留1行安全余量，避免绘制时出现轻微溢出
+          consumedHeight = Math.min(consumedHeight, Math.max(0, availableHeight - 7));
+
+          // 如果由于页底空间太小导致本页无法容纳任何正文，则先换页
+          if (count === 0 && pointer < blocks.length) {
+            // 当前页无法容纳任何正文，在标题尚未绘制前先换到新页，仍保留为首页
+            addFooter();
+            pdf.addPage();
+            currentY = margin;
+            firstPage = true;
+            continue;
+          }
+
+          // 绘制卡片背景（按页分段）
+          pdf.setFillColor(255, 255, 255);
+          pdf.setDrawColor(229, 231, 235);
+          pdf.setLineWidth(0.5);
+          const rectHeight = headerH + consumedHeight + cardPaddingTop + cardPaddingBottom;
+          pdf.roundedRect(margin, currentY, pageWidth - margin * 2, rectHeight, 3, 3, 'FD');
+
+          // 首页绘制标题与装饰
+          if (firstPage) {
+            // 左侧logo：固定容器，等比居中，避免变形
+            const logoX = margin + 8;
+            const logoY = currentY + 8;
+            const logoW = 28;
+            const logoH = 22;
+            const info = orgLogoInfoMap[org.id];
+            if (info && info.dataUrl) {
+              try {
+                const ratio = info.w > 0 ? info.h / info.w : 0.75;
+                let drawW = logoW;
+                let drawH = drawW * ratio;
+                if (drawH > logoH) {
+                  drawH = logoH;
+                  drawW = drawH / (ratio || 0.75);
+                }
+                const cx = logoX + (logoW - drawW) / 2;
+                const cy = logoY + (logoH - drawH) / 2;
+                const isPng = info.dataUrl.startsWith('data:image/png');
+                pdf.setFillColor(249, 250, 251);
+                pdf.roundedRect(logoX, logoY, logoW, logoH, 3, 3, 'F');
+                pdf.addImage(info.dataUrl, isPng ? 'PNG' : 'JPEG', cx, cy, drawW, drawH);
+              } catch (e) {
+                pdf.setFillColor(249, 250, 251);
+                pdf.roundedRect(logoX, logoY, logoW, logoH, 3, 3, 'F');
+              }
+            } else {
+              pdf.setFillColor(249, 250, 251);
+              pdf.roundedRect(logoX, logoY, logoW, logoH, 3, 3, 'F');
+            }
+
+            const nameX = margin + 45;
+            const nameY = currentY + cardPaddingTop + 12;
+            pdf.setFillColor(16, 185, 129);
+            pdf.roundedRect(nameX, nameY - 5, 2, 10, 1, 1, 'F');
+            pdf.setFontSize(12);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(17, 24, 39);
+            const titleLink = (org.link || (parsed.elements?.find(e => e.type === 'link' && (e as any).url)?.url as string) || '').trim();
+            // 标题统一黑色加粗；若存在链接，仅添加可点击区域，不改变样式
+            pdf.setTextColor(17, 24, 39);
+            pdf.text(titleText, nameX + 8, nameY);
+            const nameWidth = pdf.getTextWidth(titleText);
+            if (titleLink) {
+              pdf.link(nameX + 8, nameY - 5, nameWidth, 8, { url: titleLink });
+            }
+          }
+
+          // 渲染正文块（段落行内分段渲染链接，避免重叠）
+          let bodyY = currentY + headerH + cardPaddingTop;
+          let nextPointer = pointer;
+          for (let bi = pointer; bi < blocks.length; bi++) {
+            const b = blocks[bi];
+            if (bodyY + 7 > currentY + rectHeight) break; // 超出本页卡片高度则停止
+
+            if (b.kind === 'bold') {
+              pdf.setFontSize(10);
+              pdf.setFont('helvetica', 'bold');
+              pdf.setTextColor(17, 24, 39);
+              const lines = pdf.splitTextToSize(normalizeText(b.content), contentWidth) as string[];
+              lines.forEach((ln) => {
+                pdf.text(ln, contentMarginX, bodyY);
+                bodyY += 7;
+              });
+              continue;
+            }
+
+            if (b.kind === 'list') {
+              pdf.setFontSize(10);
+              pdf.setFont('helvetica', 'normal');
+              const lines = pdf.splitTextToSize(`• ${normalizeText(b.content)}`, contentWidth - (b.indent || 0)) as string[];
+              pdf.setTextColor(75, 85, 99);
+              lines.forEach((ln) => {
+                pdf.text(ln, contentMarginX + (b.indent || 0), bodyY);
+                bodyY += 7;
+              });
+              continue;
+            }
+
+            // 段落：行内分段渲染链接
+            pdf.setFontSize(10);
+            pdf.setFont('helvetica', 'normal');
+            const lines = pdf.splitTextToSize(normalizeText(b.content), contentWidth) as string[];
+            lines.forEach((ln) => {
+              let cursorX = contentMarginX + (b.indent || 0);
+              let rest = ln;
+              // 查找本行包含的链接文本位置
+              const positions: Array<{ start: number; len: number; url: string }> = [];
+              (b.links || []).forEach(l => {
+                const normText = normalizeText(l.text);
+                const idx = ln.indexOf(normText);
+                if (idx >= 0) positions.push({ start: idx, len: l.text.length, url: l.url });
+              });
+              if (positions.length === 0) {
+                pdf.setTextColor(75, 85, 99);
+                pdf.text(ln, cursorX, bodyY);
+              } else {
+                // 按出现顺序渲染分段
+                positions.sort((a, b) => a.start - b.start);
+                let from = 0;
+                positions.forEach(p => {
+                  const pre = ln.slice(from, p.start);
+                  if (pre) {
+                    pdf.setTextColor(75, 85, 99);
+                    pdf.text(pre, cursorX, bodyY);
+                    cursorX += pdf.getTextWidth(pre);
+                  }
+                  const mid = ln.slice(p.start, p.start + p.len);
+                  if (mid) {
+                    pdf.setTextColor(59, 130, 246);
+                    pdf.text(mid, cursorX, bodyY);
+                    const lw = pdf.getTextWidth(mid);
+                    pdf.setDrawColor(59, 130, 246);
+                    pdf.line(cursorX, bodyY + 1, cursorX + lw, bodyY + 1);
+                    pdf.link(cursorX, bodyY - 5, lw, 8, { url: p.url });
+                    cursorX += lw;
+                  }
+                  from = p.start + p.len;
+                });
+                const tail = ln.slice(from);
+                if (tail) {
+                  pdf.setTextColor(75, 85, 99);
+                  pdf.text(tail, cursorX, bodyY);
+                }
+              }
+              bodyY += 7;
+            });
+            nextPointer = bi + 1; // 记录下一个待渲染块位置
+          }
+
+          // 更新位置与状态
+          currentY = currentY + rectHeight;
+          pointer = nextPointer; // 跳到下一未渲染块
+          if (pointer < blocks.length) {
+            addFooter();
+            pdf.addPage();
+            currentY = margin;
+            firstPage = false;
+          } else {
+            // 完成卡片，添加间距
+            currentY += 12;
+            break;
+          }
+        }
+      };
+
+      // 渲染倡议卡片（统一与组织卡片：左侧logo、黑色加粗标题、段落与行内链接、分页）
+      const renderInitiativeCard = (initiative: any) => {
+        const parsed = parseHtmlContent(initiative.intro_html, initiative.classification, countryName, industryName);
+        const deriveTitle = (): string => {
+          const primary = (initiative.name || '').trim();
+          if (primary) return primary;
+          const bold = parsed.elements?.find(e => e.type === 'bold' && e.content.trim());
+          if (bold) return bold.content.trim();
+          const url = (initiative.link || '').trim();
+          if (url) { try { const u = new URL(url); return u.hostname; } catch {} return url; }
+          return 'Untitled';
+        };
+        const titleText = deriveTitle();
+        const headerHeight = 34;
+        const horizontalPadding = 15;
+        const contentWidth = pageWidth - margin * 2 - horizontalPadding * 2;
+        const cardPaddingTop = 10;
+        const cardPaddingBottom = 12;
+        const contentMarginX = margin + horizontalPadding;
+
+        const blocks: Array<{ kind: 'paragraph' | 'list' | 'bold'; content: string; indent?: number; links?: Array<{ text: string; url: string }>; }> = [];
+        if (parsed.elements && parsed.elements.length > 0) {
+          let paraText = '';
+          let paraLinks: Array<{ text: string; url: string }> = [];
+          const flushPara = () => {
+            if (paraText.trim()) {
+              blocks.push({ kind: 'paragraph', content: paraText.trim(), indent: 0, links: paraLinks.slice() });
+            }
+            paraText = '';
+            paraLinks = [];
+          };
+          parsed.elements.forEach((el) => {
+            if (el.type === 'list') {
+              flushPara();
+              blocks.push({ kind: 'list', content: el.content, indent: 5 });
+            } else if (el.type === 'bold') {
+              flushPara();
+              blocks.push({ kind: 'bold', content: el.content });
+            } else if (el.type === 'linebreak') {
+              flushPara();
+            } else if (el.type === 'link') {
+              if (paraText && !/\s$/.test(paraText)) paraText += ' ';
+              paraText += el.content;
+              const url = (el as any).url || '';
+              if (url) paraLinks.push({ text: el.content, url });
+              paraText += ' ';
+            } else {
+              if (paraText && !/\s$/.test(paraText)) paraText += ' ';
+              paraText += el.content;
+            }
+          });
+          flushPara();
+        }
+
+        let pointer = 0;
+        let firstPage = true;
+        while (pointer < blocks.length || firstPage) {
+          const headerH = firstPage ? headerHeight : 0;
+          let availableHeight = pageHeight - margin - 15 - currentY - cardPaddingTop - cardPaddingBottom - headerH;
+          if (availableHeight < 20) {
+            addFooter();
+            pdf.addPage();
+            currentY = margin;
+            firstPage = true; // 保持首页以绘制标题与logo
+            availableHeight = pageHeight - margin - 15 - currentY - cardPaddingTop - cardPaddingBottom - headerH;
+          }
+
+          let consumedHeight = 0;
+          let countLines = 0;
+          const tempPdf = new jsPDF();
+          for (let bi = pointer; bi < blocks.length; bi++) {
+            const b = blocks[bi];
+            let lines: string[] = [];
+            if (b.kind === 'list') {
+              tempPdf.setFontSize(10);
+              tempPdf.setFont('helvetica', 'normal');
+              lines = tempPdf.splitTextToSize(`• ${b.content}`, contentWidth - (b.indent || 0)) as string[];
+            } else if (b.kind === 'bold') {
+              tempPdf.setFontSize(10);
+              tempPdf.setFont('helvetica', 'bold');
+              lines = tempPdf.splitTextToSize(b.content, contentWidth) as string[];
+            } else {
+              tempPdf.setFontSize(10);
+              tempPdf.setFont('helvetica', 'normal');
+              lines = tempPdf.splitTextToSize(b.content, contentWidth) as string[];
+            }
+            const needH = lines.length * 7;
+            if (consumedHeight + needH > availableHeight) break;
+            consumedHeight += needH;
+            countLines += lines.length;
+          }
+          consumedHeight = Math.min(consumedHeight, Math.max(0, availableHeight - 7));
+
+          if (countLines === 0 && pointer < blocks.length) {
+            addFooter();
+            pdf.addPage();
+            currentY = margin;
+            firstPage = true;
+            continue;
+          }
+
+          // 背景（分段）
+          pdf.setFillColor(255, 255, 255);
+          pdf.setDrawColor(229, 231, 235);
+          pdf.setLineWidth(0.5);
+          const rectHeight = headerH + consumedHeight + cardPaddingTop + cardPaddingBottom;
+          pdf.roundedRect(margin, currentY, pageWidth - margin * 2, rectHeight, 3, 3, 'FD');
+
+          // 首页：左侧logo + 标题（黑色加粗，可点击但不改变样式）
+          if (firstPage) {
+            const logoX = margin + 8;
+            const logoY = currentY + 8;
+            const logoW = 28;
+            const logoH = 22;
+            const info = initiativeLogoInfoMap[initiative.id];
+            if (info && info.dataUrl) {
+              try {
+                const ratio = info.w > 0 ? info.h / info.w : 0.75;
+                let drawW = logoW;
+                let drawH = drawW * ratio;
+                if (drawH > logoH) { drawH = logoH; drawW = drawH / (ratio || 0.75); }
+                const cx = logoX + (logoW - drawW) / 2;
+                const cy = logoY + (logoH - drawH) / 2;
+                const isPng = info.dataUrl.startsWith('data:image/png');
+                pdf.setFillColor(249, 250, 251);
+                pdf.roundedRect(logoX, logoY, logoW, logoH, 3, 3, 'F');
+                pdf.addImage(info.dataUrl, isPng ? 'PNG' : 'JPEG', cx, cy, drawW, drawH);
+              } catch {
+                pdf.setFillColor(249, 250, 251);
+                pdf.roundedRect(logoX, logoY, logoW, logoH, 3, 3, 'F');
+              }
+            } else {
+              pdf.setFillColor(249, 250, 251);
+              pdf.roundedRect(logoX, logoY, logoW, logoH, 3, 3, 'F');
+            }
+
+            const nameX = margin + 45;
+            const nameY = currentY + cardPaddingTop + 12;
+            pdf.setFillColor(16, 185, 129);
+            pdf.roundedRect(nameX, nameY - 5, 2, 10, 1, 1, 'F');
+            pdf.setFontSize(12);
+            pdf.setFont('helvetica', 'bold');
+            const titleLink = (initiative.link || (parsed.elements?.find(e => e.type === 'link' && (e as any).url)?.url as string) || '').trim();
+            pdf.setTextColor(17, 24, 39);
+            pdf.text(titleText, nameX + 8, nameY);
+            const nameWidth = pdf.getTextWidth(titleText);
+            if (titleLink) {
+              pdf.link(nameX + 8, nameY - 5, nameWidth, 8, { url: titleLink });
+            }
+          }
+
+          // 正文块渲染（与组织卡片一致：粗体、列表、段落内联链接）
+          let bodyY = currentY + headerH + cardPaddingTop;
+          let nextPointer = pointer;
+          for (let bi = pointer; bi < blocks.length; bi++) {
+            const b = blocks[bi];
+            if (bodyY + 7 > currentY + rectHeight) break;
+
+            if (b.kind === 'bold') {
+              pdf.setFontSize(10);
+              pdf.setFont('helvetica', 'bold');
+              pdf.setTextColor(17, 24, 39);
+              const lines = pdf.splitTextToSize(b.content, contentWidth) as string[];
+              lines.forEach((ln) => { pdf.text(ln, contentMarginX, bodyY); bodyY += 7; });
+              continue;
+            }
+
+            if (b.kind === 'list') {
+              pdf.setFontSize(10);
+              pdf.setFont('helvetica', 'normal');
+              const lines = pdf.splitTextToSize(`• ${b.content}`, contentWidth - (b.indent || 0)) as string[];
+              pdf.setTextColor(75, 85, 99);
+              lines.forEach((ln) => { pdf.text(ln, contentMarginX + (b.indent || 0), bodyY); bodyY += 7; });
+              continue;
+            }
+
+            // 段落：行内渲染链接
+            pdf.setFontSize(10);
+            pdf.setFont('helvetica', 'normal');
+            const lines = pdf.splitTextToSize(b.content, contentWidth) as string[];
+            lines.forEach((ln) => {
+              let cursorX = contentMarginX + (b.indent || 0);
+              const positions: Array<{ start: number; len: number; url: string }> = [];
+              (b.links || []).forEach(l => { const idx = ln.indexOf(l.text); if (idx >= 0) positions.push({ start: idx, len: l.text.length, url: l.url }); });
+              if (positions.length === 0) {
+                pdf.setTextColor(75, 85, 99);
+                pdf.text(ln, cursorX, bodyY);
+              } else {
+                positions.sort((a, b) => a.start - b.start);
+                let from = 0;
+                positions.forEach(p => {
+                  const pre = ln.slice(from, p.start);
+                  if (pre) { pdf.setTextColor(75, 85, 99); pdf.text(pre, cursorX, bodyY); cursorX += pdf.getTextWidth(pre); }
+                  const mid = ln.slice(p.start, p.start + p.len);
+                  if (mid) {
+                    pdf.setTextColor(59, 130, 246);
+                    pdf.text(mid, cursorX, bodyY);
+                    const lw = pdf.getTextWidth(mid);
+                    pdf.setDrawColor(59, 130, 246);
+                    pdf.line(cursorX, bodyY + 1, cursorX + lw, bodyY + 1);
+                    pdf.link(cursorX, bodyY - 5, lw, 8, { url: p.url });
+                    cursorX += lw;
+                  }
+                  from = p.start + p.len;
+                });
+                const tail = ln.slice(from);
+                if (tail) { pdf.setTextColor(75, 85, 99); pdf.text(tail, cursorX, bodyY); }
+              }
+              bodyY += 7;
+            });
+            nextPointer = bi + 1;
+          }
+
+          currentY = currentY + rectHeight;
+          pointer = nextPointer;
+          if (pointer < blocks.length) {
+            addFooter();
+            pdf.addPage();
+            currentY = margin;
+            firstPage = false;
+          } else {
+            currentY += 12;
+            break;
+          }
+        }
+      };
+        
+
+      // 主题配色映射（近似网页主题色）
+      const getSectionTheme = (title: string) => {
+        const themes: Record<string, { titleBg: [number, number, number]; accent: [number, number, number]; cardBg: [number, number, number]; cardBorder: [number, number, number] }> = {
+          'ESG Risk Analysis Report': { titleBg: [239, 246, 255], accent: [79, 70, 229], cardBg: [239, 246, 255], cardBorder: [219, 234, 254] }, // indigo/blue
+          'Important to Consider': { titleBg: [255, 247, 237], accent: [245, 158, 11], cardBg: [255, 247, 237], cardBorder: [254, 215, 165] }, // amber/orange
+          'Risk Analysis': { titleBg: [254, 242, 242], accent: [220, 38, 38], cardBg: [254, 242, 242], cardBorder: [254, 202, 202] }, // red
+          'Relevant Organizations': { titleBg: [236, 253, 245], accent: [5, 150, 105], cardBg: [236, 253, 245], cardBorder: [209, 250, 229] }, // emerald/teal
+          'ESG Labels & Supply Chain Initiatives Guidelines': { titleBg: [236, 254, 255], accent: [8, 145, 178], cardBg: [236, 254, 255], cardBorder: [207, 250, 254] }, // cyan/blue
+          'Due Diligence': { titleBg: [240, 253, 250], accent: [13, 148, 136], cardBg: [240, 253, 250], cardBorder: [204, 251, 241] }, // teal
+          'About Us': { titleBg: [245, 243, 255], accent: [147, 51, 234], cardBg: [245, 243, 255], cardBorder: [233, 213, 255] }, // purple/blue
+          'Contact Information': { titleBg: [239, 246, 255], accent: [37, 99, 235], cardBg: [239, 246, 255], cardBorder: [219, 234, 254] }, // blue/cyan
+          'Disclaimer': { titleBg: [249, 250, 251], accent: [245, 158, 11], cardBg: [249, 250, 251], cardBorder: [229, 231, 235] } // gray + orange accent
+        };
+        return themes[title] || { titleBg: [240, 248, 255], accent: [59, 130, 246], cardBg: [249, 250, 251], cardBorder: [229, 231, 235] };
+      };
+
+      // 渲染板块标题的函数（支持副标题并扩大背景高度，避免溢出）
+      const renderSectionTitle = (title: string, subtitle?: string) => {
+        const bgHeight = subtitle ? 30 : 20;
+        checkPageBreak(bgHeight + 10);
+        const theme = getSectionTheme(title);
+        
+        // 背景块
+        pdf.setFillColor(theme.titleBg[0], theme.titleBg[1], theme.titleBg[2]);
+        pdf.rect(margin - 5, currentY - 5, pageWidth - margin * 2 + 10, bgHeight, 'F');
+        
+        // 左侧装饰线
+        pdf.setFillColor(theme.accent[0], theme.accent[1], theme.accent[2]);
+        pdf.rect(margin - 5, currentY - 5, 3, bgHeight, 'F');
+        
+        // 标题
+        pdf.setFontSize(18);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(31, 41, 55);
+        pdf.text(title, margin + 10, currentY + 8);
+        
+        // 副标题（统一灰色小字）
+        if (subtitle) {
+          pdf.setFontSize(10);
+          pdf.setFont('helvetica', 'normal');
+          pdf.setTextColor(75, 85, 99);
+          pdf.text(subtitle, margin + 10, currentY + 16);
+        }
+        
+        currentY += bgHeight + 5; // 背景后增加留白
+      };
+
+      // 专门的Introduction板块渲染函数
+      const renderIntroductionSection = (content: string) => {
+        // 1. 标题区域 - 统一风格的板块标题 + 副标题
+        renderSectionTitle('ESG Risk Analysis Report', 'Comprehensive risk assessment and recommendations');
+        
+        // 2. 两个概要卡片区域
+        checkPageBreak(80);
+        
+        const cardWidth = (pageWidth - margin * 2 - 10) / 2; // 两个卡片平分宽度，中间留10px间距
+        const innerPadding = 14;   // 统一左右内边距
+        const bulletIndent = 6;    // 圆点到文本的缩进
+        const lineGap = 6;         // 换行间距，保持紧凑
+
+        // 文本换行：确保考虑左右内边距与缩进
+        pdf.setFontSize(10);
+        pdf.setFont('helvetica', 'normal');
+        const maxLineWidth = cardWidth - innerPadding * 2 - bulletIndent - 2;
+        const industryLines: string[] = (pdf.splitTextToSize(industryName, maxLineWidth) as string[]);
+        const countryLines: string[] = (pdf.splitTextToSize(countryName, maxLineWidth) as string[]);
+
+        // 计算卡片高度：标题+副标题+列表行
+        const baseHeight = 40; // 标题区高度
+        const card1Height = baseHeight + industryLines.length * lineGap;
+        const card2Height = baseHeight + countryLines.length * lineGap;
+        const cardHeight = Math.max(card1Height, card2Height);
+
+        // Industry Focus 卡片
+        pdf.setFillColor(249, 250, 251); // bg-gray-50
+        pdf.setDrawColor(229, 231, 235); // border-gray-200
+        pdf.setLineWidth(0.5);
+        pdf.roundedRect(margin, currentY, cardWidth, cardHeight, 3, 3, 'FD');
+
+        // Industry Focus 标题
+        pdf.setFontSize(12);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(17, 24, 39);
+        pdf.text('Industry Focus', margin + innerPadding, currentY + 15);
+
+        // Industry Focus 副标题
+        pdf.setFontSize(9);
+        pdf.setTextColor(75, 85, 99);
+        pdf.text('Target sectors analyzed', margin + innerPadding, currentY + 22);
+
+        // Industry Focus 列表项（自动换行）
+        pdf.setFontSize(10);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(55, 65, 81);
+        // 列表项前缀圆点（仅首行）
+        pdf.setFillColor(59, 130, 246);
+        pdf.circle(margin + innerPadding, currentY + 35, 1, 'F');
+        const indTextX = margin + innerPadding + bulletIndent;
+        const indTextY = currentY + 37;
+        industryLines.forEach((line: string, idx: number) => {
+          pdf.text(line, indTextX, indTextY + idx * lineGap);
+        });
+
+        // Geographic Scope 卡片
+        const card2X = margin + cardWidth + 10;
+        pdf.setFillColor(249, 250, 251);
+        pdf.setDrawColor(229, 231, 235);
+        pdf.roundedRect(card2X, currentY, cardWidth, cardHeight, 3, 3, 'FD');
+
+        // Geographic Scope 标题
+        pdf.setFontSize(12);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(17, 24, 39);
+        pdf.text('Geographic Scope', card2X + innerPadding, currentY + 15);
+
+        // Geographic Scope 副标题
+        pdf.setFontSize(9);
+        pdf.setTextColor(75, 85, 99);
+        pdf.text('Markets under review', card2X + innerPadding, currentY + 22);
+
+        // Geographic Scope 列表项（自动换行）
+        pdf.setFontSize(10);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(55, 65, 81);
+        // 灰色圆点（仅首行）
+        pdf.setFillColor(100, 116, 139);
+        pdf.circle(card2X + innerPadding, currentY + 35, 1, 'F');
+        const countryTextX = card2X + innerPadding + bulletIndent;
+        const countryTextY = currentY + 37;
+        countryLines.forEach((line: string, idx: number) => {
+          pdf.text(line, countryTextX, countryTextY + idx * lineGap);
+        });
+
+        currentY += cardHeight + 15;
+        
+        // 3. 详细分析内容区域
+        checkPageBreak(40);
+        
+        // 内容卡片背景
+        pdf.setFillColor(255, 255, 255);
+        pdf.setDrawColor(229, 231, 235);
+        pdf.setLineWidth(0.5);
+        
+        // 先计算内容高度来确定卡片大小（去除误入的“Introduction”标题）
+        const introCleaned = stripHeadingByText(content, 'Introduction');
+        const parsed = parseHtmlContent(introCleaned, 'general', countryName, industryName);
+        let contentHeight = 40; // 基础高度（标题区域）
+        
+        if (parsed.elements && parsed.elements.length > 0) {
+          parsed.elements.forEach(element => {
+            const lines = pdf.splitTextToSize(element.content, pageWidth - margin * 2 - 32);
+            contentHeight += lines.length * 5 + 3;
+          });
+        }
+        
+        pdf.roundedRect(margin, currentY, pageWidth - margin * 2, Math.min(contentHeight + 20, 200), 3, 3, 'FD');
+        
+        // Detailed Analysis 左侧圆点（替代图标）
+        pdf.setFillColor(59, 130, 246);
+        pdf.circle(margin + 20, currentY + 20, 2, 'F');
+        
+        // Detailed Analysis 标题
+        pdf.setFontSize(14);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(17, 24, 39);
+        pdf.text('Detailed Analysis', margin + 26, currentY + 22);
+        
+        currentY += 35;
+        
+        // 渲染详细内容
+        if (parsed.elements && parsed.elements.length > 0) {
+          parsed.elements.forEach(element => {
+            checkPageBreak(10);
+            
+            switch (element.type) {
+              case 'text':
+                pdf.setFontSize(10);
+                pdf.setFont('helvetica', 'normal');
+                pdf.setTextColor(55, 65, 81); // text-gray-700
+                const lines = pdf.splitTextToSize(element.content, pageWidth - margin * 2 - 32);
+                pdf.text(lines, margin + 16, currentY);
+                currentY += lines.length * 5;
+                break;
+              case 'bold':
+                pdf.setFontSize(10);
+                pdf.setFont('helvetica', 'bold');
+                pdf.setTextColor(55, 65, 81);
+                const boldLines = pdf.splitTextToSize(element.content, pageWidth - margin * 2 - 32);
+                pdf.text(boldLines, margin + 16, currentY);
+                currentY += boldLines.length * 5;
+                break;
+              case 'list':
+                pdf.setFontSize(10);
+                pdf.setFont('helvetica', 'normal');
+                pdf.setTextColor(55, 65, 81);
+                const listLines = pdf.splitTextToSize(`• ${element.content}`, pageWidth - margin * 2 - 37);
+                pdf.text(listLines, margin + 21, currentY);
+                currentY += listLines.length * 5;
+                break;
+              case 'link':
+                pdf.setFontSize(10);
+                pdf.setFont('helvetica', 'normal');
+                pdf.setTextColor(59, 130, 246);
+                const linkLines = pdf.splitTextToSize(element.content, pageWidth - margin * 2 - 32);
+                pdf.text(linkLines, margin + 16, currentY);
+                if (element.url) {
+                  const textWidth = pdf.getTextWidth(element.content);
+                  pdf.setDrawColor(59, 130, 246);
+                  pdf.line(margin + 16, currentY + 1, margin + 16 + textWidth, currentY + 1);
+                }
+                currentY += linkLines.length * 5;
+                break;
+            }
+            currentY += 3;
+          });
+        }
+        
+        currentY += 20; // 底部间距
+      };
+
+      // 专门的Pay Attention板块渲染函数（卡片式）
+      const renderPayAttentionSection = (considerations: SectionData['considerations']) => {
+        // 标题区：统一板块标题风格 + 副标题（移除不稳定图标）
+        renderSectionTitle('Important to Consider', 'Critical factors for your ESG risk assessment');
+        const theme = getSectionTheme('Important to Consider');
+
+        // 渲染每条提示为卡片
+        considerations.forEach((c, idx) => {
+          // 解析内容，识别标题与正文
+          const parsed = parseHtmlContent(c.content_html || c.content, c.classification, countryName, industryName);
+          let titleText = '';
+          let bodyElements: typeof parsed.elements = [];
+          if (parsed.elements && parsed.elements.length > 0) {
+            const firstBoldIndex = parsed.elements.findIndex(e => e.type === 'bold');
+            if (firstBoldIndex >= 0) {
+              titleText = parsed.elements[firstBoldIndex].content;
+              bodyElements = parsed.elements.slice(firstBoldIndex + 1);
+            } else {
+              titleText = parsed.elements[0].content;
+              bodyElements = parsed.elements.slice(1);
+            }
+          }
+
+          // 统一内边距与图标样式
+          const innerPadding = 18;     // 左右内边距（更舒适的留白）
+          const bulletIndent = 10;     // 蓝色圆点到文本的缩进
+          const titleLineGap = 7;      // 标题行距估算（与渲染一致）
+          const bodyLineGap = 5;       // 正文行距估算（与渲染一致）
+
+          // 预估卡片高度（考虑左右内边距与缩进）
+          const titleWidth = pageWidth - margin * 2 - innerPadding * 2 - bulletIndent;
+          // 先设置标题字体再测量
+          pdf.setFontSize(14);
+          pdf.setFont('helvetica', 'bold');
+          const titleLines: string[] = (pdf.splitTextToSize(titleText, titleWidth) as string[]);
+          let bodyHeight = 0;
+          // 先设置正文字体再测量
+          pdf.setFontSize(10);
+          pdf.setFont('helvetica', 'normal');
+          bodyElements.forEach(el => {
+            const contentWidthBase = pageWidth - margin * 2 - innerPadding * 2;
+            const width = el.type === 'list' ? (contentWidthBase - bulletIndent) : contentWidthBase;
+            const prefix = el.type === 'list' ? '• ' : '';
+            const lines: string[] = (pdf.splitTextToSize(prefix + el.content, width) as string[]);
+            bodyHeight += lines.length * bodyLineGap + 2;
+          });
+          const cardHeight = 24 + titleLines.length * titleLineGap + bodyHeight + 14; // 顶部+标题+正文+底部
+          checkCardPageBreak(cardHeight + 10);
+
+          // 卡片背景
+          pdf.setFillColor(theme.cardBg[0], theme.cardBg[1], theme.cardBg[2]);
+          pdf.setDrawColor(theme.cardBorder[0], theme.cardBorder[1], theme.cardBorder[2]);
+          pdf.setLineWidth(0.5);
+          pdf.roundedRect(margin, currentY, pageWidth - margin * 2, cardHeight, 6, 6, 'FD');
+
+          // 左侧蓝色圆点（替换原粉色编号方块）
+          pdf.setFillColor(theme.accent[0], theme.accent[1], theme.accent[2]);
+          pdf.circle(margin + innerPadding, currentY + 22, 2, 'F');
+
+          // 标题文本（与圆点对齐）
+          pdf.setFontSize(14);
+          pdf.setFont('helvetica', 'bold');
+          pdf.setTextColor(17, 24, 39);
+          const titleTextX = margin + innerPadding + bulletIndent;
+          // 手动逐行渲染以确保与高度计算一致
+          titleLines.forEach((line: string, i: number) => {
+            pdf.text(line, titleTextX, currentY + 22 + i * titleLineGap);
+          });
+
+          // 正文（统一字体与左右内边距）
+          let bodyY = currentY + 22 + titleLines.length * titleLineGap + 8;
+          bodyElements.forEach(el => {
+            pdf.setFontSize(10);
+            pdf.setFont('helvetica', el.type === 'bold' ? 'bold' : 'normal');
+            pdf.setTextColor(55, 65, 81);
+            const contentWidthBase = pageWidth - margin * 2 - innerPadding * 2;
+            const width = el.type === 'list' ? (contentWidthBase - bulletIndent) : contentWidthBase;
+            const prefix = el.type === 'list' ? '• ' : '';
+            const lines: string[] = (pdf.splitTextToSize(prefix + el.content, width) as string[]);
+            const textX = titleTextX; // 与标题左对齐
+            // 逐行渲染，行距与测量保持一致
+            lines.forEach((line: string, j: number) => {
+              pdf.text(line, textX, bodyY + j * bodyLineGap);
+            });
+            bodyY += lines.length * bodyLineGap + 2;
+          });
+
+          currentY += cardHeight + 10; // 卡片间距
+        });
+      };
+
+      // 渲染板块内容的函数
+      const renderSectionContent = (title: string, content: string, subtitle?: string) => {
+        if (!content) return;
+        
+        // 使用新的标题渲染函数（带副标题）
+        renderSectionTitle(title, subtitle);
+        
+        // 解析并渲染HTML内容（合并链接至段落，避免“链接单独成行”）
+        const parsed = parseHtmlContent(content, 'general', countryName, industryName);
+        if (parsed.elements && parsed.elements.length > 0) {
+          const contentWidth = pageWidth - margin * 2;
+          type Block = {
+            kind: 'paragraph' | 'list' | 'bold' | 'tag' | 'sources';
+            content: string;
+            indent?: number;
+            links?: Array<{ text: string; url: string }>;
+            tagColor?: string;
+          };
+          const blocks: Block[] = [];
+          let paraText = '';
+          let paraLinks: Array<{ text: string; url: string }> = [];
+          const flushPara = () => {
+            if (paraText.trim()) {
+              blocks.push({ kind: 'paragraph', content: normalizeText(paraText.trim()), indent: 0, links: paraLinks.slice() });
+            }
+            paraText = '';
+            paraLinks = [];
+          };
+
+          parsed.elements.forEach((el) => {
+            if (el.type === 'list') {
+              flushPara();
+              blocks.push({ kind: 'list', content: normalizeText(el.content), indent: 5 });
+            } else if (el.type === 'bold') {
+              flushPara();
+              blocks.push({ kind: 'bold', content: normalizeText(el.content) });
+            } else if (el.type === 'linebreak') {
+              flushPara();
+            } else if (el.type === 'link') {
+              if (paraText && !/\s$/.test(paraText)) paraText += ' ';
+              const norm = normalizeText(el.content);
+              paraText += norm;
+              const url = (el as any).url || '';
+              if (url) paraLinks.push({ text: norm, url });
+              paraText += ' ';
+            } else if (el.type === 'tag') {
+              flushPara();
+              blocks.push({ kind: 'tag', content: el.content, tagColor: (el as any).tagColor });
+            } else if (el.type === 'sources') {
+              flushPara();
+              blocks.push({ kind: 'sources', content: el.content });
+            } else {
+              if (paraText && !/\s$/.test(paraText)) paraText += ' ';
+              paraText += normalizeText(el.content);
+            }
+          });
+          flushPara();
+
+          // 逐块渲染，段落内按行分段渲染链接文本
+          blocks.forEach((b) => {
+            checkPageBreak(10);
+            switch (b.kind) {
+              case 'bold': {
+                pdf.setFontSize(10);
+                pdf.setFont('helvetica', 'bold');
+                pdf.setTextColor(colors.text);
+                const lines = pdf.splitTextToSize(normalizeText(b.content), contentWidth) as string[];
+                lines.forEach((ln) => {
+                  pdf.text(ln, margin, currentY);
+                  currentY += 5;
+                });
+                break;
+              }
+              case 'list': {
+                pdf.setFontSize(10);
+                pdf.setFont('helvetica', 'normal');
+                pdf.setTextColor(colors.text);
+                const lines = pdf.splitTextToSize(`• ${normalizeText(b.content)}`, contentWidth - (b.indent || 0)) as string[];
+                lines.forEach((ln) => {
+                  pdf.text(ln, margin + (b.indent || 0), currentY);
+                  currentY += 5;
+                });
+                break;
+              }
+              case 'tag': {
+                pdf.setFontSize(9);
+                pdf.setFont('helvetica', 'bold');
+                const tagWidth = pdf.getTextWidth(b.content) + 8;
+                const tagHeight = 12;
+                if (b.tagColor) {
+                  const rgb = hexToRgb(b.tagColor);
+                  if (rgb) pdf.setFillColor(rgb.r, rgb.g, rgb.b);
+                } else {
+                  pdf.setFillColor(107, 114, 128);
+                }
+                pdf.roundedRect(margin, currentY - 8, tagWidth, tagHeight, 2, 2, 'F');
+                pdf.setTextColor(255, 255, 255);
+                pdf.text(b.content, margin + 4, currentY - 1);
+                currentY += 8;
+                break;
+              }
+              case 'sources': {
+                pdf.setFontSize(11);
+                pdf.setFont('helvetica', 'bold');
+                pdf.setTextColor(colors.text);
+                pdf.text(b.content, margin, currentY);
+                currentY += 8;
+                break;
+              }
+              case 'paragraph':
+              default: {
+                pdf.setFontSize(10);
+                pdf.setFont('helvetica', 'normal');
+                const lines = pdf.splitTextToSize(normalizeText(b.content), contentWidth) as string[];
+                lines.forEach((ln) => {
+                  let cursorX = margin + (b.indent || 0);
+                  const positions: Array<{ start: number; len: number; url: string }> = [];
+                  (b.links || []).forEach(l => {
+                    const normText = normalizeText(l.text);
+                    const idx = ln.indexOf(normText);
+                    if (idx >= 0) positions.push({ start: idx, len: normText.length, url: l.url });
+                  });
+                  if (positions.length === 0) {
+                    pdf.setTextColor(colors.text);
+                    pdf.text(ln, cursorX, currentY);
+                  } else {
+                    positions.sort((a, c) => a.start - c.start);
+                    let from = 0;
+                    positions.forEach(p => {
+                      const pre = ln.slice(from, p.start);
+                      if (pre) {
+                        pdf.setTextColor(colors.text);
+                        pdf.text(pre, cursorX, currentY);
+                        cursorX += pdf.getTextWidth(pre);
+                      }
+                      const mid = ln.slice(p.start, p.start + p.len);
+                      if (mid) {
+                        pdf.setTextColor(59, 130, 246);
+                        pdf.text(mid, cursorX, currentY);
+                        const lw = pdf.getTextWidth(mid);
+                        pdf.setDrawColor(59, 130, 246);
+                        pdf.line(cursorX, currentY + 1, cursorX + lw, currentY + 1);
+                        pdf.link(cursorX, currentY - 4, lw, 7, { url: p.url });
+                        cursorX += lw;
+                      }
+                      from = p.start + p.len;
+                    });
+                    const tail = ln.slice(from);
+                    if (tail) {
+                      pdf.setTextColor(colors.text);
+                      pdf.text(tail, cursorX, currentY);
+                    }
+                  }
+                  currentY += 5;
+                });
+                break;
+              }
+            }
+            currentY += 3; // 元素间距
+          });
+        } else {
+          // 如果没有解析到元素，直接渲染纯文本
+          const cleanedText = cleanText(content);
+          if (cleanedText) {
+            pdf.setFontSize(10);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(colors.text);
+            const lines = pdf.splitTextToSize(cleanedText, pageWidth - margin * 2);
+            pdf.text(lines, margin, currentY);
+            currentY += lines.length * 5;
+          }
+        }
+        
+        currentY += 10; // 板块间距
+      };
+
+      // 渲染板块为「卡片式」的函数（仿照网页卡片样式）
+      const renderSectionCardContent = (title: string, content: string, subtitle?: string) => {
+        if (!content) return;
+
+        // 标题区：统一板块标题风格 + 副标题
+        renderSectionTitle(title, subtitle);
+        const theme = getSectionTheme(title);
+
+        // 解析HTML并构建块（与普通渲染保持一致，支持段落内联链接）
+        const parsed = parseHtmlContent(content, 'general', countryName, industryName);
+        type Block = {
+          kind: 'paragraph' | 'list' | 'bold' | 'tag' | 'sources';
+          content: string;
+          indent?: number;
+          links?: Array<{ text: string; url: string }>;
+          tagColor?: string;
+        };
+        const blocks: Block[] = [];
+        if (parsed.elements && parsed.elements.length > 0) {
+          let paraText = '';
+          let paraLinks: Array<{ text: string; url: string }> = [];
+          const flushPara = () => {
+            if (paraText.trim()) {
+              blocks.push({ kind: 'paragraph', content: normalizeText(paraText.trim()), indent: 0, links: paraLinks.slice() });
+            }
+            paraText = '';
+            paraLinks = [];
+          };
+          parsed.elements.forEach((el) => {
+            if (el.type === 'list') {
+              flushPara();
+              blocks.push({ kind: 'list', content: normalizeText(el.content), indent: 10 });
+            } else if (el.type === 'bold') {
+              flushPara();
+              blocks.push({ kind: 'bold', content: normalizeText(el.content) });
+            } else if (el.type === 'linebreak') {
+              flushPara();
+            } else if (el.type === 'link') {
+              if (paraText && !/\s$/.test(paraText)) paraText += ' ';
+              const norm = normalizeText(el.content);
+              paraText += norm;
+              const url = (el as any).url || '';
+              if (url) paraLinks.push({ text: norm, url });
+              paraText += ' ';
+            } else if (el.type === 'tag') {
+              flushPara();
+              blocks.push({ kind: 'tag', content: el.content, tagColor: (el as any).tagColor });
+            } else if (el.type === 'sources') {
+              flushPara();
+              blocks.push({ kind: 'sources', content: el.content });
+            } else {
+              if (paraText && !/\s$/.test(paraText)) paraText += ' ';
+              paraText += normalizeText(el.content);
+            }
+          });
+          flushPara();
+        } else {
+          // 没有元素时，作为一个段落处理
+          const cleanedText = cleanText(content);
+          if (cleanedText) {
+            blocks.push({ kind: 'paragraph', content: cleanedText });
+          }
+        }
+
+        // 计算卡片高度
+        const innerPadding = 18;
+        const bulletIndent = 10;
+        const bodyLineGap = 5;
+        const contentWidthBase = pageWidth - margin * 2 - innerPadding * 2;
+        let bodyHeight = 0;
+        blocks.forEach((b) => {
+          switch (b.kind) {
+            case 'bold': {
+              pdf.setFontSize(10);
+              pdf.setFont('helvetica', 'bold');
+              const lines = pdf.splitTextToSize(normalizeText(b.content), contentWidthBase) as string[];
+              bodyHeight += lines.length * bodyLineGap + 3;
+              break;
+            }
+            case 'list': {
+              pdf.setFontSize(10);
+              pdf.setFont('helvetica', 'normal');
+              const lines = pdf.splitTextToSize(`• ${normalizeText(b.content)}`, contentWidthBase - (b.indent || bulletIndent)) as string[];
+              bodyHeight += lines.length * bodyLineGap + 3;
+              break;
+            }
+            case 'tag': {
+              // 标签：固定高度估算
+              bodyHeight += 12 + 3;
+              break;
+            }
+            case 'sources': {
+              // 来源标题：单行估算
+              bodyHeight += 8 + 3;
+              break;
+            }
+            case 'paragraph':
+            default: {
+              pdf.setFontSize(10);
+              pdf.setFont('helvetica', 'normal');
+              const lines = pdf.splitTextToSize(normalizeText(b.content), contentWidthBase) as string[];
+              bodyHeight += lines.length * bodyLineGap + 3;
+              break;
+            }
+          }
+        });
+        const cardHeight = 16 + bodyHeight + 14; // 顶部+正文+底部留白
+        checkCardPageBreak(cardHeight + 10);
+
+        // 卡片背景
+        pdf.setFillColor(theme.cardBg[0], theme.cardBg[1], theme.cardBg[2]);
+        pdf.setDrawColor(theme.cardBorder[0], theme.cardBorder[1], theme.cardBorder[2]);
+        pdf.setLineWidth(0.5);
+        pdf.roundedRect(margin, currentY, pageWidth - margin * 2, cardHeight, 6, 6, 'FD');
+
+        // 卡片正文渲染（保持与普通渲染一致的文本/链接风格）
+        let bodyY = currentY + 16;
+        blocks.forEach((b) => {
+          switch (b.kind) {
+            case 'bold': {
+              pdf.setFontSize(10);
+              pdf.setFont('helvetica', 'bold');
+              pdf.setTextColor(colors.text);
+              const lines = pdf.splitTextToSize(normalizeText(b.content), contentWidthBase) as string[];
+              lines.forEach((ln) => {
+                pdf.text(ln, margin + innerPadding, bodyY);
+                bodyY += bodyLineGap;
+              });
+              bodyY += 3;
+              break;
+            }
+            case 'list': {
+              pdf.setFontSize(10);
+              pdf.setFont('helvetica', 'normal');
+              pdf.setTextColor(colors.text);
+              const lines = pdf.splitTextToSize(`• ${normalizeText(b.content)}`, contentWidthBase - (b.indent || bulletIndent)) as string[];
+              lines.forEach((ln) => {
+                pdf.text(ln, margin + innerPadding + (b.indent || bulletIndent), bodyY);
+                bodyY += bodyLineGap;
+              });
+              bodyY += 3;
+              break;
+            }
+            case 'tag': {
+              pdf.setFontSize(9);
+              pdf.setFont('helvetica', 'bold');
+              const tagWidth = pdf.getTextWidth(b.content) + 8;
+              const tagHeight = 12;
+              if (b.tagColor) {
+                const rgb = hexToRgb(b.tagColor);
+                if (rgb) pdf.setFillColor(rgb.r, rgb.g, rgb.b);
+              } else {
+                pdf.setFillColor(107, 114, 128);
+              }
+              pdf.roundedRect(margin + innerPadding, bodyY - 8, tagWidth, tagHeight, 2, 2, 'F');
+              pdf.setTextColor(255, 255, 255);
+              pdf.text(b.content, margin + innerPadding + 4, bodyY - 1);
+              bodyY += 8 + 3;
+              break;
+            }
+            case 'sources': {
+              pdf.setFontSize(11);
+              pdf.setFont('helvetica', 'bold');
+              pdf.setTextColor(colors.text);
+              pdf.text(b.content, margin + innerPadding, bodyY);
+              bodyY += 8 + 3;
+              break;
+            }
+            case 'paragraph':
+            default: {
+              pdf.setFontSize(10);
+              pdf.setFont('helvetica', 'normal');
+              const lines = pdf.splitTextToSize(normalizeText(b.content), contentWidthBase) as string[];
+              lines.forEach((ln) => {
+                let cursorX = margin + innerPadding + (b.indent || 0);
+                const positions: Array<{ start: number; len: number; url: string }> = [];
+                (b.links || []).forEach(l => {
+                  const normText = normalizeText(l.text);
+                  const idx = ln.indexOf(normText);
+                  if (idx >= 0) positions.push({ start: idx, len: normText.length, url: l.url });
+                });
+                if (positions.length === 0) {
+                  pdf.setTextColor(colors.text);
+                  pdf.text(ln, cursorX, bodyY);
+                } else {
+                  positions.sort((a, c) => a.start - c.start);
+                  let from = 0;
+                  positions.forEach(p => {
+                    const pre = ln.slice(from, p.start);
+                    if (pre) {
+                      pdf.setTextColor(colors.text);
+                      pdf.text(pre, cursorX, bodyY);
+                      cursorX += pdf.getTextWidth(pre);
+                    }
+                    const mid = ln.slice(p.start, p.start + p.len);
+                    if (mid) {
+                      pdf.setTextColor(59, 130, 246);
+                      pdf.text(mid, cursorX, bodyY);
+                      const lw = pdf.getTextWidth(mid);
+                      pdf.setDrawColor(59, 130, 246);
+                      pdf.line(cursorX, bodyY + 1, cursorX + lw, bodyY + 1);
+                      pdf.link(cursorX, bodyY - 4, lw, 7, { url: p.url });
+                      cursorX += lw;
+                    }
+                    from = p.start + p.len;
+                  });
+                  const tail = ln.slice(from);
+                  if (tail) {
+                    pdf.setTextColor(colors.text);
+                    pdf.text(tail, cursorX, bodyY);
+                  }
+                }
+                bodyY += bodyLineGap;
+              });
+              bodyY += 3;
+              break;
+            }
+          }
+        });
+
+        // 移动整体Y用于下一个板块或卡片
+        currentY += cardHeight + 10;
+      };
+
+      // 渲染“About Us”板块为两个带logo的卡片（MSC 与 Future Vision）
+      const renderAboutUsCards = async (aboutHtml: string) => {
+        // 标题区
+        renderSectionTitle('About Us', 'Who we are and what we do');
+
+        // 拆分原始HTML到两个介绍块
+        const paras = aboutHtml.match(/<p[\s\S]*?<\/p>/g) || [];
+        const mscBlock = [paras[0] || '', paras[1] || ''].filter(Boolean).join('');
+        const fvBlock = [paras[2] || '', paras[3] || ''].filter(Boolean).join('');
+        const linksPara = paras[4] || '';
+        const mscLinkMatch = linksPara.match(/href="([^"]*msc-world\.cn[^"]*)"/i);
+        const fvLinkMatch = linksPara.match(/href="([^"]*mscfv\.com[^"]*)"/i);
+        const mscLink = mscLinkMatch ? mscLinkMatch[1] : 'https://www.msc-world.cn/';
+        const fvLink = fvLinkMatch ? fvLinkMatch[1] : 'https://mscfv.com/futureVision/';
+
+        // 去掉尾部的链接段落，改为仅在标题上提供可点击链接
+        const mscHtml = mscBlock;
+        const fvHtml = fvBlock;
+
+        // 预加载两个logo为 DataURL（填充到倡议logo映射）
+        const toInfo = async (url: string) => {
+          const dataUrl = await toDataUrl(url);
+          if (!dataUrl) return null;
+          let iw = 0, ih = 0;
+          await new Promise<void>((resolve) => {
+            const img = new Image();
+            img.onload = () => { iw = img.naturalWidth || img.width || 140; ih = img.naturalHeight || img.height || 100; resolve(); };
+            img.onerror = () => resolve();
+            img.src = dataUrl;
+          });
+          return { dataUrl, w: iw || 140, h: ih || 100 } as { dataUrl: string; w: number; h: number };
+        };
+        const mscInfo = await toInfo('/src/images/msc-hk-logo.png');
+        const fvInfo = await toInfo('/src/images/future-vision-logo.png');
+        const MSC_ID = -1001;
+        const FV_ID = -1002;
+        if (mscInfo) (initiativeLogoInfoMap as any)[MSC_ID] = mscInfo;
+        if (fvInfo) (initiativeLogoInfoMap as any)[FV_ID] = fvInfo;
+
+        // 构造两个“倡议”对象以复用渲染函数（左侧logo + 标题 + 正文）
+        const mscItem = {
+          id: MSC_ID,
+          name: 'Maker Sustainability Consulting',
+          intro_html: mscHtml,
+          logo: '/src/images/msc-hk-logo.png',
+          link: mscLink,
+          classification: 'general'
+        };
+        const fvItem = {
+          id: FV_ID,
+          name: 'Future Vision',
+          intro_html: fvHtml,
+          logo: '/src/images/future-vision-logo.png',
+          link: fvLink,
+          classification: 'general'
+        };
+
+        // 依次渲染两个卡片
+        renderInitiativeCard(mscItem);
+        renderInitiativeCard(fvItem);
+      };
+
+      // 渲染其他板块内容 - 按照网页顺序：Introduction -> Pay Attention -> Risk Analysis -> CSR -> CSR Labels -> Due Diligence -> About Us -> Contact -> Disclaimer
+      if (sectionsData) {
+        // 1. Introduction Section - 使用专门的渲染函数
+        renderIntroductionSection(sectionsData.introSection.html);
+
+        // 引言结束后强制新开一页，保证每个板块从新页开始
+        addFooter();
+        pdf.addPage();
+        currentY = margin + 20;
+        
+        // 2. Pay Attention Section（卡片式渲染）
+        if (sectionsData.considerations && sectionsData.considerations.length > 0) {
+          renderPayAttentionSection(sectionsData.considerations);
+        }
+      }
+
+      // 3. Risk Analysis Section - 添加新页面开始Risk Analysis
+      addFooter();
+      pdf.addPage();
+      currentY = margin;
+      currentColumn = 0;
+      categoryStartY = margin;
+
+        // 添加Risk Analysis板块标题
+        renderSectionTitle('Risk Analysis', 'Risk categories and detailed ESG evaluations');
+      currentY += 5; // 标题与摘要卡片之间增加一点留白
+
       // 处理每个类别
       categories.forEach((category, categoryIndex) => {
         if (categoryIndex >= 4) return;
@@ -1375,8 +3008,97 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         }
       });
       
-      // 添加最后一页的页脚
-      addFooter();
+      // 4. 在Risk Analysis结束后添加剩余板块（切换为单列模式）
+      if (sectionsData) {
+        // 添加新页面开始其他板块
+        addFooter();
+        pdf.addPage();
+        currentY = margin;
+        singleColumnMode = true;
+        currentColumn = 0;
+        categoryStartY = margin;
+        
+        // 4. CSR Section (基于organizations数据)
+        if (sectionsData.organizations && sectionsData.organizations.length > 0) {
+          currentY = margin + 20;
+          currentColumn = 0;
+          categoryStartY = margin + 20;
+          renderSectionTitle('Relevant Organizations', 'Key stakeholders and regulatory bodies');
+          
+          const orgsSorted = sectionsData.organizations.slice().sort((a, b) => {
+            const ai = orgLogoInfoMap[a.id];
+            const bi = orgLogoInfoMap[b.id];
+            const ahas = !!(ai && ai.dataUrl);
+            const bhas = !!(bi && bi.dataUrl);
+            if (ahas === bhas) return 0;
+            return ahas ? -1 : 1; // 有logo的优先
+          });
+          orgsSorted.forEach(org => {
+            renderOrganizationCard(org);
+          });
+        }
+        
+        // 5. CSR Labels Section (基于initiatives数据)
+        if (sectionsData.initiatives && sectionsData.initiatives.length > 0) {
+          pdf.addPage();
+          currentY = margin + 20;
+          currentColumn = 0;
+          categoryStartY = margin + 20;
+          renderSectionTitle('ESG Labels & Supply Chain Initiatives Guidelines', 'Standards, certifications, and initiatives');
+          
+          const initsSorted = sectionsData.initiatives.slice().sort((a, b) => {
+            const ai = initiativeLogoInfoMap[a.id];
+            const bi = initiativeLogoInfoMap[b.id];
+            const ahas = !!(ai && ai.dataUrl);
+            const bhas = !!(bi && bi.dataUrl);
+            if (ahas === bhas) return 0;
+            return ahas ? -1 : 1;
+          });
+          initsSorted.forEach(initiative => {
+            renderInitiativeCard(initiative);
+          });
+        }
+        
+        // 6. Due Diligence Section（卡片式）
+        pdf.addPage();
+        currentY = margin + 20;
+        renderSectionCardContent('Due Diligence', sectionsData.dueDiligenceSection.html, 'Methodology and verification framework');
+        
+        // 7. About Us Section（两个logo卡片）
+        pdf.addPage();
+        currentY = margin + 20;
+        await renderAboutUsCards(sectionsData.aboutMvoSection.html);
+        
+        // 8. Contact Section（卡片式）
+        pdf.addPage();
+        currentY = margin + 20;
+        renderSectionCardContent('Contact Information', sectionsData.contactSection.html, 'Reach out for tailored ESG advisory');
+        
+        // 9. Disclaimer Section（卡片式）
+        pdf.addPage();
+        currentY = margin + 20;
+        renderSectionCardContent('Disclaimer', sectionsData.disclaimerSection.html, 'Terms of use and legal considerations');
+      }
+      
+      // 添加尾页
+      try {
+        pdf.addPage();
+        const backImg = new Image();
+        backImg.src = '/src/images/pdf-back-new.png';
+        await new Promise((resolve, reject) => {
+          backImg.onload = resolve;
+          backImg.onerror = reject;
+        });
+        pdf.addImage(backImg, 'PNG', 0, 0, pageWidth, pageHeight);
+      } catch (error) {
+        console.warn('尾页图片加载失败，跳过尾页');
+        // 如果尾页图片加载失败，添加最后一页的页脚
+        addFooter();
+      }
+      
+      // 如果成功添加了尾页，就不需要再添加页脚了
+      // 添加最后一页的页脚 - 只在没有尾页时执行
+      // addFooter();
       
       // 保存PDF
       const fileName = `ESG_Risk_Report_${industryName}_${countryName}_${new Date().toISOString().split('T')[0]}.pdf`;

@@ -27,8 +27,8 @@ import LogoMSC from '@/images/msc-hk-logo.png';
 import QrOfficial from '@/images/official_account_qr.png';
 import QrAssistant from '@/images/fv_assistant_qr.png';
 import QrMiniApp from '@/images/app-qr.jpg';
-import PdfCover from '@/images/pdf-cover.png';
-import PdfBack from '@/images/pdf-back.png';
+import PdfCover from '@/images/pdf-cover-new.png';
+import PdfBack from '@/images/pdf-back-new.png';
 
 declare global {
   interface Window {
@@ -129,7 +129,7 @@ function ReportResultNew() {
   const csrSection = sections.find((s) => s.id === 'relevant-organizations');
   const csrLabelsSection = sections.find((s) => s.id === 'esg-labels-supply-chain-initiatives-guidelines');
   const dueDiligenceSection = sections.find((s) => s.id === 'due-diligence');
-  const aboutMvoSection = sections.find((s) => s.id === 'about-msc-hk');
+  const aboutMvoSection = sections.find((s) => s.id === 'about-us');
   const contactSection = sections.find((s) => s.id === 'contact');
   const disclaimerSection = sections.find((s) => s.id === 'disclaimer');
   const riskAnalysisSection = sections.find((s) => s.id === 'risk-analysis');
@@ -331,7 +331,7 @@ function ReportResultNew() {
 
       {/* 打印内容页 - 关于MVO部分 */}
       {aboutMvoSection?.html && (
-        <div className="print-only print-page print-about-mvo-section">
+        <div className="print-only print-page print-about-us-section">
           <div style={{
             padding: '15mm 12mm',
             boxSizing: 'border-box',
@@ -550,7 +550,7 @@ function ReportResultNew() {
                 )}
                 
                 {aboutMvoSection?.html && (
-                  <section id="about-msc-hk" className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8">
+                  <section id="about-us" className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8">
                     <AboutMvoSection />
                   </section>
                 )}

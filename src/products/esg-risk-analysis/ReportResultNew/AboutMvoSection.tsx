@@ -5,7 +5,7 @@ import MscLogo from '@/images/msc-hk-logo.png';
 import FutureVisionLogo from '@/images/future-vision-logo.png';
 
 export const AboutMvoSection: React.FC = () => {
-  const sectionTitle = 'About MSC HK';
+  const sectionTitle = 'About Us';
 
   // 卡片内容数组
   const cards = [

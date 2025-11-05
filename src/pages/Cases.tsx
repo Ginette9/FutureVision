@@ -251,7 +251,7 @@ export default function Cases() {
           className="text-center bg-gray-50 p-12"
         >
           <h2 className="text-3xl font-light text-gray-900 mb-6">
-            开始您的成功故事
+            和我们一起，开启您的成功故事
           </h2>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
             让我们的专业团队为您量身定制ESG解决方案

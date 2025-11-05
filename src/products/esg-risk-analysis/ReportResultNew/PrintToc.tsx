@@ -23,7 +23,7 @@ const PrintToc: React.FC<PrintTocProps> = ({ sections }) => {
       'relevant-organizations': 'Stakeholder mapping and engagement',
       'esg-labels': 'Sustainability standards and certifications',
       'due-diligence': 'Compliance verification and audit processes',
-      'about-msc-hk': 'Company profile and expertise overview',
+      'about-us': 'Company profile and expertise overview',
       'contact': 'Professional consultation and support services',
       'disclaimer': 'Terms of use and legal considerations'
     };

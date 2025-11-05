@@ -2,6 +2,8 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ContactModal from '../components/ContactModal';
+import InsightReportDetail from '../components/InsightReportDetail';
+import { getLatestInsightReports, InsightReport } from '../data/insightReports';
 import graphGlobal from '../images/graph-global.png';
 import graphListed from '../images/graph-listed.png';
 import graphSme from '../images/graph-sme.png';
@@ -9,6 +11,26 @@ import graphSme from '../images/graph-sme.png';
 export default function NewHome() {
   const [isVisible, setIsVisible] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<InsightReport | null>(null);
+  const [isReportDetailOpen, setIsReportDetailOpen] = useState(false);
+
+  const handleContactClick = () => {
+    setIsContactModalOpen(true);
+  };
+
+  const handleCloseContactModal = () => {
+    setIsContactModalOpen(false);
+  };
+
+  const handleReportClick = (report: InsightReport) => {
+    setSelectedReport(report);
+    setIsReportDetailOpen(true);
+  };
+
+  const handleCloseReportDetail = () => {
+    setIsReportDetailOpen(false);
+    setSelectedReport(null);
+  };
 
   // 添加滚动动画效果
   useEffect(() => {
@@ -27,7 +49,7 @@ export default function NewHome() {
       id: 1,
       title: '跨国企业',
       subtitle: '全球化运营ESG风险管理',
-      description: '为中企出海提供全球环境、社会与治理全面风险评估、监控预警与在地化管理，帮助企业规避ESG冲突事件，避免重大财务和声誉损失。',
+      description: '帮助出海企业识别、预防和解决全球市场的环境、社会与治理风险，构建安全、稳健、可持续的供应链与运营体系，获得监管安全与长期增长的确定性。',
       image: graphGlobal,
       link: '/services'
     },
@@ -35,7 +57,7 @@ export default function NewHome() {
       id: 2,
       title: '上市公司',
       subtitle: '可持续增长战略与ESG评级提升',
-      description: '帮助企业规避供应链风险，从ESG评级提升及践行ESG行动中获得转型机遇并提升社会影响力。',
+      description: '通过构建可持续增长战略、升级ESG治理体系，提升上市公司稳健增长能力与长期估值韧性，提升市场信任与品牌溢价。',
       image: graphListed,
       link: '/services'
     },
@@ -43,7 +65,7 @@ export default function NewHome() {
       id: 3,
       title: '中小企业',
       subtitle: '简便可行的产品出海策略',
-      description: '帮助中小企业提炼ESG议题成就，获得差异化竞争优势，提高产品出海成功率。',
+      description: '帮助中小企业提炼产品及服务的可持续价值并形成出海差异化竞争力，提供海外渠道落地与代理销售服务，显著提升出海成功率与利润空间。',
       image: graphSme,
       link: '/services'
     }
@@ -53,8 +75,8 @@ export default function NewHome() {
   const expertResources = [
     {
       id: 1,
-      title: '每周要闻',
-      description: '全球最新ESG政策动态、行业资讯',
+      title: '全球要闻',
+      description: '全球最新可持续发展动态',
       link: '/knowledge'
     },
     {
@@ -66,42 +88,13 @@ export default function NewHome() {
     {
       id: 3,
       title: '课程资源',
-      description: '全球可靠来源公开发布的可持续发展领域最新课程与行业指引',
+      description: '可持续发展领域最新课程、工具与指引',
       link: '/knowledge'
     }
   ];
 
-  // 独家洞察数据
-  const insights = [
-    {
-      id: 1,
-      title: '2024年全球ESG监管趋势报告',
-      summary: '深度分析全球主要经济体ESG监管政策变化趋势',
-      date: '2024-01-20',
-      category: '政策解读',
-      readTime: '15分钟',
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop',
-      featured: true
-    },
-    {
-      id: 2,
-      title: '中小企业出海ESG合规指南',
-      summary: '针对中小企业的实用ESG合规操作手册',
-      date: '2024-01-18',
-      category: '实操指南',
-      readTime: '12分钟',
-      image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&fit=crop'
-    },
-    {
-      id: 3,
-      title: '供应链透明度最佳实践',
-      summary: '全球领先企业供应链透明度管理案例分析',
-      date: '2024-01-15',
-      category: '案例研究',
-      readTime: '18分钟',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=250&fit=crop'
-    }
-  ];
+  // 独家洞察数据 - 使用新的数据结构
+  const insights = getLatestInsightReports(3);
 
   return (
     <div className="min-h-screen bg-white">
@@ -238,7 +231,7 @@ export default function NewHome() {
               >
                 <div className="aspect-video bg-gray-100 overflow-hidden">
                   <img
-                    src={insight.image}
+                    src={insight.coverImage}
                     alt={insight.title}
                     className="w-full h-full object-cover"
                   />
@@ -262,15 +255,15 @@ export default function NewHome() {
                     <span className="text-xs text-gray-500">
                       {insight.date}
                     </span>
-                    <Link
-                      to="/insights"
+                    <button
+                      onClick={() => handleReportClick(insight)}
                       className="inline-flex items-center text-gray-900 hover:text-gray-700 text-sm font-medium transition-colors duration-300"
                     >
                       阅读更多
                       <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
-                    </Link>
+                    </button>
                   </div>
                 </div>
               </motion.div>
@@ -387,6 +380,15 @@ export default function NewHome() {
         isOpen={isContactModalOpen} 
         onClose={() => setIsContactModalOpen(false)} 
       />
+
+      {/* 报告详情弹窗 */}
+      {selectedReport && (
+        <InsightReportDetail
+          report={selectedReport}
+          isOpen={isReportDetailOpen}
+          onClose={handleCloseReportDetail}
+        />
+      )}
     </div>
   );
 }

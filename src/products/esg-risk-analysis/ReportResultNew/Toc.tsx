@@ -9,6 +9,11 @@ export default function Toc({ sections }: { sections: ReportSection[] }) {
   const [isScrolling, setIsScrolling] = useState(false);
 
   useEffect(() => {
+    const getHeaderOffset = () => {
+      const nav = document.querySelector('nav.sticky.top-0') as HTMLElement | null;
+      return (nav?.offsetHeight || 0) + 12; // 顶部导航高度 + 适当间距
+    };
+
     const isElementVisible = (el: Element | null) => {
       if (!el) return false;
       // 排除打印专用节点或隐藏节点
@@ -20,8 +25,8 @@ export default function Toc({ sections }: { sections: ReportSection[] }) {
     // 防抖函数，避免频繁更新
     let updateTimeout: number | null = null;
     const debouncedUpdate = (newActiveId: string) => {
-      if (updateTimeout) clearTimeout(updateTimeout);
-      updateTimeout = setTimeout(() => {
+      if (updateTimeout) window.clearTimeout(updateTimeout);
+      updateTimeout = window.setTimeout(() => {
         setActiveId(newActiveId);
       }, 20); // 缩短到 20ms，提高慢速滚动响应
     };
@@ -71,8 +76,9 @@ export default function Toc({ sections }: { sections: ReportSection[] }) {
         debouncedUpdate(bestSection.target.id);
       },
       {
-        rootMargin: '12% 0% -60% 0%', // 扩大顶部 12%，让慢速滑入更早进入观察范围
-        threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], // 更密集的阈值检测
+        // 根据实际导航高度动态调整顶部 rootMargin，避免高亮基准被顶部遮挡影响
+        rootMargin: `${-getHeaderOffset()}px 0% -60% 0%`,
+        threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
       }
     );
 
@@ -87,7 +93,7 @@ export default function Toc({ sections }: { sections: ReportSection[] }) {
     targets.forEach((el) => observer.observe(el!));
 
     return () => {
-      if (updateTimeout) clearTimeout(updateTimeout);
+      if (updateTimeout) window.clearTimeout(updateTimeout);
       observer.disconnect();
     };
   }, [sections, isScrolling]);
@@ -129,24 +135,43 @@ export default function Toc({ sections }: { sections: ReportSection[] }) {
                     // 立即设置目标为活跃状态
                     setActiveId(sec.id);
                     setIsScrolling(true);
-                    
-                    // 计算目标位置，向下偏移以避免标题被遮挡
-                    const targetRect = target.getBoundingClientRect();
-                    const offsetTop = window.pageYOffset + targetRect.top - 100; // 向下偏移100px
-                    
-                    // 平滑滚动到调整后的位置
-                    window.scrollTo({
-                      top: offsetTop,
-                      behavior: 'smooth'
-                    });
+                    const headerOffset = (() => {
+                      const nav = document.querySelector('nav.sticky.top-0') as HTMLElement | null;
+                      return (nav?.offsetHeight || 0) + 12;
+                    })();
+
+                    // 临时设置 scroll-margin-top，保障 scrollIntoView 定位正确
+                    const prevScrollMarginTop = (target as HTMLElement).style.scrollMarginTop;
+                    (target as HTMLElement).style.scrollMarginTop = `${headerOffset}px`;
+
+                    // 使用 scrollIntoView 与 scroll-margin-top，减少因布局变化引起的漂移
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     
                     // 同步更新 URL hash（不触发默认跳转）
                     history.replaceState(null, '', `#${sec.id}`);
                     
-                    // 延迟重新启用自动高亮检测
-                    setTimeout(() => {
-                      setIsScrolling(false);
-                    }, 600); // 进一步减少延迟时间，提高响应速度
+                    // 监测滚动是否已结束，替代固定延时，避免漂移期间提前切换
+                    const start = performance.now();
+                    let lastY = window.scrollY;
+                    let stableCount = 0;
+                    const maxWait = 1800; // ms
+                    const checkSettled = () => {
+                      const y = window.scrollY;
+                      if (Math.abs(y - lastY) < 1) {
+                        stableCount += 1;
+                      } else {
+                        stableCount = 0;
+                      }
+                      lastY = y;
+                      if (stableCount >= 6 || performance.now() - start > maxWait) {
+                        setIsScrolling(false);
+                        // 恢复原有 scroll-margin-top，避免影响后续布局
+                        (target as HTMLElement).style.scrollMarginTop = prevScrollMarginTop;
+                        return;
+                      }
+                      requestAnimationFrame(checkSettled);
+                    };
+                    requestAnimationFrame(checkSettled);
                   }
                 }}
               >

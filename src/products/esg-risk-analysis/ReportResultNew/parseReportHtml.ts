@@ -3,7 +3,7 @@ const specialTitleMap: Record<string, string> = {
   'Important to know': 'Important to consider',
   'CSR labels, supply chain initiatives & guidelines': 'ESG labels, supply chain initiatives & guidelines',
   'CSR organizations': 'Relevant organizations',
-  'About MVO Nederland': 'About MSC HK',
+  'About MVO Nederland': 'About Us',
   // 如有更多特殊替换可继续添加
 };
 

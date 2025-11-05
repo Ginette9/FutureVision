@@ -116,6 +116,36 @@ app.get('/proxy', async (req, res) => {
   }
 });
 
+// 图片代理（返回二进制，解决跨域与混合内容问题）
+app.get('/proxy/image', async (req, res) => {
+  try {
+    const { url } = req.query;
+    if (!url) {
+      return res.status(400).json({ error: 'URL parameter is required' });
+    }
+
+    const response = await axios.get(url, {
+      responseType: 'arraybuffer',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      },
+      timeout: 10000
+    });
+
+    const contentType = response.headers['content-type'] || 'application/octet-stream';
+    res.set('Content-Type', contentType);
+    res.set('Access-Control-Allow-Origin', '*');
+    res.send(Buffer.from(response.data));
+  } catch (error) {
+    const status = error.response?.status;
+    console.error('[proxy-image] error', { url: req.query?.url, status, message: error.message });
+    res.status(status || 500).json({ error: 'proxy_image_failed', message: error.message });
+  }
+});
+
 // 已移除订单数据库，仅保留邀请码白名单
 
 const VALID_CODES = new Set((process.env.PAY_INVITE_CODES || 'FREE2025,TESTVIP,MSCFV')

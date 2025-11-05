@@ -7,6 +7,7 @@
     "dev:client": "vite --host --port 3000",
     "dev:server": "node server.js",
     "dev": "pnpm dev:client",
+    "fetch:logos": "node scripts/download-logos.js",
     "build:client": "vite build --outDir dist/static",
     "build": "rm -rf dist && pnpm build:client && cp package.json dist && cp public/csr_database.db dist/static/csr_database.db && touch dist/build.flag"
   },
