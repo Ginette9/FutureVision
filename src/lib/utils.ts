@@ -819,6 +819,18 @@ export const getProductId = (productName: string): string => {
   return product?.url || "";
 };
 
+// 通过国家ID获取英文国家名
+export const getCountryNameById = (countryId: string): string => {
+  const entry = countryIdData.find(item => item.country_id === countryId);
+  return entry?.Country || "";
+};
+
+// 通过产品ID获取英文产品名（行业名）
+export const getProductNameById = (productId: string): string => {
+  const entry = productIdData.find(item => item.url === productId);
+  return entry?.product || "";
+};
+
 // 构建爬取URL
 /* ========= 修改 1：构建上游 URL —— 只编码一次 ========= */
 export const buildScrapeUrl = (productId: string, countryId: string): string => {

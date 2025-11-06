@@ -24,7 +24,7 @@ export default function ReportPurchaseModal({ isOpen, onClose, report }: ReportP
     company: '',
     position: '',
     phone: '',
-    message: `我对《${report.title}》报告感兴趣，希望了解更多详情和购买方式。`
+    message: `报告可免费获取。我希望了解《${report.title}》的解读/定制服务，请联系我。`
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -47,12 +47,10 @@ export default function ReportPurchaseModal({ isOpen, onClose, report }: ReportP
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       // 这里应该调用实际的API来发送邮件或保存联系信息
-      console.log('Report Purchase Contact:', {
+      console.log('Report Contact:', {
         ...formData,
         reportId: report.id,
-        reportTitle: report.title,
-        reportPrice: report.price,
-        currency: report.currency
+        reportTitle: report.title
       });
       
       setSubmitStatus('success');
@@ -67,7 +65,7 @@ export default function ReportPurchaseModal({ isOpen, onClose, report }: ReportP
           company: '',
           position: '',
           phone: '',
-          message: `我对《${report.title}》报告感兴趣，希望了解更多详情和购买方式。`
+          message: `报告可免费获取。我希望了解《${report.title}》的解读/定制服务，请联系我。`
         });
       }, 3000);
       
@@ -107,11 +105,9 @@ export default function ReportPurchaseModal({ isOpen, onClose, report }: ReportP
               {/* Header */}
               <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-                    {report.isPurchasable ? '购买报告' : '获取报告'}
-                  </h2>
+                  <h2 className="text-2xl font-semibold text-gray-900 mb-2">联系解读/定制服务</h2>
                   <p className="text-gray-600">
-                    填写联系信息，我们将尽快与您取得联系
+                    报告免费下载；填写信息，我们将尽快与您取得联系
                   </p>
                 </div>
                 <button
@@ -138,14 +134,6 @@ export default function ReportPurchaseModal({ isOpen, onClose, report }: ReportP
                   <div>
                     <span className="font-medium">议题：</span>{report.topic}
                   </div>
-                  {report.isPurchasable && report.price && (
-                    <div>
-                      <span className="font-medium">价格：</span>
-                      <span className="text-lg font-semibold text-gray-900">
-                        ¥{report.price.toLocaleString()}
-                      </span>
-                    </div>
-                  )}
                 </div>
                 {report.contactInfo && (
                   <div className="mt-3 pt-3 border-t border-gray-200">

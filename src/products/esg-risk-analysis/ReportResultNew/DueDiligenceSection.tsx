@@ -1,27 +1,12 @@
 import React, { useMemo } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { getSectionsContent } from './sectionsContent';
 
 export const DueDiligenceSection: React.FC = () => {
-  const sectionTitle = 'Due diligence';
+  const { language } = useLanguage();
+  const sectionTitle = language === 'zh-CN' ? '尽职调查' : 'Due diligence';
 
-  const rawHtml = `
-    <p><strong>About due diligence</strong></p>
-    <p>
-      Customers, governments and civil society organisations increasingly expect companies to do business with respect for people and planet. Companies are demanded to identify, prevent and reduce ESG risks in their supply chain; both upstream and downstream. This is also called 'due diligence' or 'ESG risk management' and can consist of the following steps:
-    </p>
-    <ol>
-      <li>The formulation of an ESG strategy.</li>
-      <li>Mapping your value chain.</li>
-      <li>Performing a risk assessment and prioritizing the risks.</li>
-      <li>Collaborating with value chain partners to address risks, as well as monitoring and communicating about your policies and progress.</li>
-    </ol>
-    <p>
-      Due diligence is becoming mandatory through legislation, varying per country. It is essential to integrate it throughout your organization: your management systems, policies and procedures.
-    </p>
-    <p><strong>OECD Guidelines and UN Guiding Principles as a basis</strong></p>
-    <p>
-      The <a href="https://www.oecd-ilibrary.org/finance-and-investment/oecd-guidelines-for-multinational-enterprises-on-responsible-business-conduct_81f92357-en" target="_blank"><strong><span style="text-decoration: underline;">OECD Guidelines</span></strong></a> and the <a href="https://www.ohchr.org/sites/default/files/documents/publications/guidingprinciplesbusinesshr_en.pdf" target="_blank"><strong><span style="text-decoration: underline;">UN Guiding Principles</span></strong></a> are the most widely accepted international guidelines that explain to companies how to perform CSR due diligence in their value chains. The OECD Guidelines are endorsed by 35 governments worldwide and offer a framework for companies to deal with sustainability issues such as child labour, environment and corruption. These governments expect companies with international business activities to operate in accordance with them. The recommendations of the OECD guidelines apply where local rules and regulations, or enforcement of these, do not suffice. It is important that companies know the social and environmental risks in their value chain, and take mitigating measures. Stakeholders can report suspected violations of the OECD guidelines to the National Contact Point in their respective country. The UN Guiding Principles distinguish the state's duty to protect human rights, the responsibility of companies to respect human rights, as well as the provision of access to effective remedy. Based on these three pillars of the UNGPs, more than twenty national action plans on business and human rights (NAPs) have been developed so far.
-    </p>
-  `;
+  const rawHtml = getSectionsContent(language).dueDiligenceHtml;
 
   const proseHTML = useMemo(() => {
     let s = rawHtml;
@@ -99,10 +84,12 @@ export const DueDiligenceSection: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-emerald-800">OECD Guidelines</h3>
+            <h3 className="text-lg font-semibold text-emerald-800">{language === 'zh-CN' ? 'OECD 指南' : 'OECD Guidelines'}</h3>
           </div>
           <p className="text-emerald-700 text-sm leading-relaxed">
-            Endorsed by 35 governments worldwide, providing a comprehensive framework for companies to address sustainability issues including child labor, environment, and corruption.
+            {language === 'zh-CN'
+              ? '获得全球 35 个政府认可，为企业处理童工、环境与腐败等可持续议题提供全面框架。'
+              : 'Endorsed by 35 governments worldwide, providing a comprehensive framework for companies to address sustainability issues including child labor, environment, and corruption.'}
           </p>
         </div>
 
@@ -113,10 +100,12 @@ export const DueDiligenceSection: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-teal-800">UN Guiding Principles</h3>
+            <h3 className="text-lg font-semibold text-teal-800">{language === 'zh-CN' ? '联合国指导原则' : 'UN Guiding Principles'}</h3>
           </div>
           <p className="text-teal-700 text-sm leading-relaxed">
-            Three pillars framework: state duty to protect human rights, corporate responsibility to respect human rights, and access to effective remedy.
+            {language === 'zh-CN'
+              ? '三大支柱框架：国家保护人权的义务、企业尊重人权的责任以及有效救济途径。'
+              : 'Three pillars framework: state duty to protect human rights, corporate responsibility to respect human rights, and access to effective remedy.'}
           </p>
         </div>
       </div>

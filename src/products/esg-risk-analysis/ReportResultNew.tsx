@@ -8,7 +8,8 @@ import PrintToc from './ReportResultNew/PrintToc';
 import PrintReportSection from './ReportResultNew/PrintReportSection';
 import ReportSectionBlock from './ReportResultNew/ReportSection';
 import ReportSectionPrint from './ReportResultNew/ReportSectionPrint';
-import { scrapeUrlContent, buildScrapeUrl } from '@/lib/utils';
+import { scrapeUrlContent, buildScrapeUrl, getCountryNameById, getProductNameById } from '@/lib/utils';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 import { IntroductionSection } from './ReportResultNew/IntroductionSection';
 import { PayAttentionSection } from './ReportResultNew/PayAttentionSection';
@@ -66,6 +67,7 @@ function ReportResultNew() {
   const [formData, setFormData] = useState<any>(null);
   const [shouldShowLoader, setShouldShowLoader] = useState(false);
   const navigate = useNavigate();
+  const { language, t } = useLanguage();
 
   useEffect(() => {
     const savedData = localStorage.getItem('riskAnalysisData');
@@ -123,6 +125,45 @@ function ReportResultNew() {
   }
 
   if (errorMsg) return <div className="p-10 text-red-600">{errorMsg}</div>;
+
+  // 使用英文名进行数据库查询（界面显示根据当前语言本地化名称）
+  const englishCountryName = formData ? getCountryNameById(String(formData.country.id)) : '';
+  const englishIndustryName = formData ? getProductNameById(String(formData.industry.id)) : '';
+
+  // 通过翻译资源将 ID 映射到中文名称（保证从英文模式进入后切换到中文也能正确显示）
+  const ensureArray = (val: string | string[]) => {
+    if (Array.isArray(val)) return val;
+    try {
+      const parsed = JSON.parse(String(val));
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const enCountries = ensureArray(t('countries'));
+  const zhCountries = ensureArray(t('countries.zh'));
+  // 使用“industries/industries.zh”而不是“products/products.zh”作为行业翻译来源
+  const enIndustries = ensureArray(t('industries'));
+  const zhIndustries = ensureArray(t('industries.zh'));
+
+  const countryIdx = englishCountryName ? enCountries.findIndex((n) => n === englishCountryName) : -1;
+  const productIdx = englishIndustryName ? enIndustries.findIndex((n) => n === englishIndustryName) : -1;
+
+  const zhCountryName = formData ? (
+    countryIdx >= 0 && zhCountries.length === enCountries.length
+      ? zhCountries[countryIdx]
+      : formData.country.name
+  ) : '';
+
+  const zhIndustryName = formData ? (
+    productIdx >= 0 && zhIndustries.length === enIndustries.length
+      ? zhIndustries[productIdx]
+      : formData.industry.name
+  ) : '';
+
+  const displayCountryName = formData ? (language === 'zh-CN' ? zhCountryName : englishCountryName) : '';
+  const displayIndustryName = formData ? (language === 'zh-CN' ? zhIndustryName : englishIndustryName) : '';
 
   const introSection = sections.find((s) => s.id === 'introduction');
   const payAttentionSection = sections.find((s) => s.id === 'important-to-consider');
@@ -184,10 +225,9 @@ function ReportResultNew() {
           }}>
             <section id="introduction" className="space-y-6">
               <IntroductionSection
-                productNames={[formData.industry.name]}
-                countryNames={[formData.country.name]}
+                productNames={[displayIndustryName]}
+                countryNames={[displayCountryName]}
                 pdfLink={``}
-                introHtml={introSection?.html}
               />
             </section>
           </div>
@@ -205,7 +245,10 @@ function ReportResultNew() {
             position: 'relative'
           }}>
             <section className="space-y-4">
-              <PayAttentionSection html={payAttentionSection.html} />
+              <PayAttentionSection 
+                countryName={englishCountryName} 
+                industryName={englishIndustryName} 
+              />
             </section>
           </div>
         </div>
@@ -289,7 +332,10 @@ function ReportResultNew() {
             position: 'relative'
           }}>
             <section className="page-break-inside-avoid">
-              <CSRSection html={csrSection.html} />
+              <CSRSection 
+                countryName={englishCountryName} 
+                industryName={englishIndustryName} 
+              />
             </section>
           </div>
         </div>
@@ -306,7 +352,10 @@ function ReportResultNew() {
             position: 'relative'
           }}>
             <section className="page-break-inside-avoid">
-              <CsrLabelsSection html={csrLabelsSection.html} />
+              <CsrLabelsSection 
+                countryName={englishCountryName} 
+                industryName={englishIndustryName} 
+              />
             </section>
           </div>
         </div>
@@ -423,7 +472,7 @@ function ReportResultNew() {
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 truncate">ESG Risk Analysis Report</h1>
                 {formData && (
                   <p className="mt-1 sm:mt-2 text-base sm:text-lg text-gray-600 truncate">
-                    {formData.industry.name} • {formData.country.name}
+                    {displayIndustryName} • {displayCountryName}
                   </p>
                 )}
               </div>
@@ -443,8 +492,8 @@ function ReportResultNew() {
                   <PDFReportGenerator 
                     countryId={formData.country.id}
                     industryId={formData.industry.id}
-                    countryName={formData.country.name}
-                    industryName={formData.industry.name}
+                    countryName={englishCountryName}
+                    industryName={englishIndustryName}
                   />
                 )}
                 <button 
@@ -482,8 +531,8 @@ function ReportResultNew() {
                 {formData && (
                   <section id="introduction" className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8">
                     <IntroductionSection
-                      productNames={[formData.industry.name]}
-                      countryNames={[formData.country.name]}
+                      productNames={[displayIndustryName]}
+                      countryNames={[displayCountryName]}
                       pdfLink={``}
                     />
                   </section>
@@ -493,8 +542,8 @@ function ReportResultNew() {
                 {formData && (
                   <section id="important-to-consider" className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8">
                     <PayAttentionSection 
-                      countryName={formData.country.name} 
-                      industryName={formData.industry.name} 
+                      countryName={englishCountryName} 
+                      industryName={englishIndustryName} 
                     />
                   </section>
                 )}
@@ -518,8 +567,8 @@ function ReportResultNew() {
                     </div>
 
                     <ReportSectionBlock 
-                      countryName={formData.country.name} 
-                      industryName={formData.industry.name} 
+                      countryName={englishCountryName} 
+                      industryName={englishIndustryName} 
                     />
                   </section>
                 )}
@@ -528,8 +577,8 @@ function ReportResultNew() {
                 {formData && (
                   <section id="relevant-organizations" className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8">
                     <CSRSection 
-                      countryName={formData.country.name} 
-                      industryName={formData.industry.name} 
+                      countryName={englishCountryName} 
+                      industryName={englishIndustryName} 
                     />
                   </section>
                 )}
@@ -537,8 +586,8 @@ function ReportResultNew() {
                 {formData && (
                   <section id="esg-labels-supply-chain-initiatives-guidelines" className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8">
                     <CsrLabelsSection 
-                      countryName={formData.country.name} 
-                      industryName={formData.industry.name} 
+                      countryName={englishCountryName} 
+                      industryName={englishIndustryName} 
                     />
                   </section>
                 )}

@@ -14,7 +14,8 @@ import {
 } from '../lib/database';
 import { scrapeUrlContent, buildScrapeUrl, getBackendBase } from '../lib/utils';
 import { parseReportHtml } from '../products/esg-risk-analysis/ReportResultNew/parseReportHtml';
-import { dueDiligenceHtml, aboutMvoHtml, contactHtml, disclaimerHtml } from '../products/esg-risk-analysis/ReportResultNew/sectionsContent';
+import { getSectionsContent } from '../products/esg-risk-analysis/ReportResultNew/sectionsContent';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface RiskItem {
   id: number;
@@ -103,6 +104,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
   className = "" 
 }) => {
   const [isGenerating, setIsGenerating] = useState(false);
+  const { language } = useLanguage();
 
   // 获取报告数据
   const fetchReportData = async (): Promise<CategoryData[]> => {
@@ -202,11 +204,12 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         `;
       }
 
-      // 使用共享模块中的固定内容，确保与网页一致
-      const dueDiligenceContent = dueDiligenceHtml;
-      const aboutMvoContent = aboutMvoHtml;
-      const contactContent = contactHtml;
-      const disclaimerContent = disclaimerHtml;
+      // 使用共享模块中的固定内容，确保与网页一致，且跟随语言切换
+      const fixed = getSectionsContent(language);
+      const dueDiligenceContent = fixed.dueDiligenceHtml;
+      const aboutMvoContent = fixed.aboutMvoHtml;
+      const contactContent = fixed.contactHtml;
+      const disclaimerContent = fixed.disclaimerHtml;
 
       return {
         organizations,

@@ -13,6 +13,13 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
   const [activeTab, setActiveTab] = useState<'overview' | 'contents' | 'samples'>('overview');
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
+  const formatYearMonth = (dateString: string) => {
+    const d = new Date(dateString);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    return `${y}年${m}月`;
+  };
+
   const handleContactPurchase = () => {
     setIsContactModalOpen(true);
   };
@@ -62,19 +69,11 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
               <div className="p-6">
                 {/* Title and Meta */}
                 <div className="mb-6">
-                  <div className="flex items-center gap-4 mb-3">
-                    <span className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
-                      {report.category}
-                    </span>
-                    <span className="text-sm text-gray-500">{report.date}</span>
-                    <span className="text-sm text-gray-500">{report.readTime}</span>
-                  </div>
-                  
                   <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
                     {report.title}
                   </h1>
                   
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
                     <div>
                       <span className="text-sm text-gray-500">行业</span>
                       <p className="font-medium">{report.industry}</p>
@@ -88,10 +87,12 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                       <p className="font-medium">{report.pages}页</p>
                     </div>
                     <div>
-                      <span className="text-sm text-gray-500">价格</span>
-                      <p className="font-medium">
-                        {report.isPurchasable ? `¥${report.price}` : '免费'}
-                      </p>
+                      <span className="text-sm text-gray-500">来源</span>
+                      <p className="font-medium">{report.source || '未来视界研究院'}</p>
+                    </div>
+                    <div>
+                      <span className="text-sm text-gray-500">发布时间</span>
+                      <p className="font-medium">{formatYearMonth(report.date)}</p>
                     </div>
                   </div>
                 </div>
@@ -129,99 +130,40 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                           {report.detailedSummary || report.summary}
                         </p>
                       </div>
-
-                      {report.keyFindings && (
-                        <div>
-                          <h3 className="text-lg font-semibold mb-3">主要发现</h3>
-                          <ul className="space-y-2">
-                            {report.keyFindings.map((finding, index) => (
-                              <li key={index} className="flex items-start">
-                                <span className="flex-shrink-0 w-2 h-2 bg-gray-400 rounded-full mt-2 mr-3"></span>
-                                <span className="text-gray-700">{finding}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-
-                      {report.methodology && (
-                        <div>
-                          <h3 className="text-lg font-semibold mb-3">研究方法</h3>
-                          <p className="text-gray-700 leading-relaxed">{report.methodology}</p>
-                        </div>
-                      )}
-
-                      {report.targetAudience && (
-                        <div>
-                          <h3 className="text-lg font-semibold mb-3">目标受众</h3>
-                          <p className="text-gray-700 leading-relaxed">{report.targetAudience}</p>
-                        </div>
-                      )}
                     </div>
                   )}
 
                   {activeTab === 'contents' && (
                     <div>
-                      <h3 className="text-lg font-semibold mb-4">目录结构</h3>
-                      <div className="space-y-2">
-                        {report.tableOfContents.map((item) => (
-                          <div key={item.id}>
-                            <div className={`flex justify-between items-center py-2 ${
-                              item.level === 1 ? 'font-medium' : 'ml-4 text-sm text-gray-600'
-                            }`}>
-                              <span>{item.title}</span>
-                              <span className="text-gray-500">第{item.pageNumber}页</span>
-                            </div>
-                            {item.children && (
-                              <div className="ml-4">
-                                {item.children.map((child) => (
-                                  <div key={child.id} className="flex justify-between items-center py-1 text-sm text-gray-600">
-                                    <span>{child.title}</span>
-                                    <span className="text-gray-500">第{child.pageNumber}页</span>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        ))}
+                      <div className="rounded-lg border bg-gray-50 p-2">
+                        <img
+                          src={(report as any).tocImageUrl || report.coverImage}
+                          alt="目录结构"
+                          className="w-full object-contain max-h-96"
+                        />
                       </div>
                     </div>
                   )}
 
                   {activeTab === 'samples' && (
                     <div>
-                      <h3 className="text-lg font-semibold mb-4">示例页面</h3>
-                      <div className="space-y-4">
-                        {report.samplePages.map((page) => (
-                          <div key={page.id} className="border border-gray-200 rounded-lg p-4">
-                            <div className="flex justify-between items-start mb-2">
-                              <h4 className="font-medium">{page.title}</h4>
-                              <span className="text-sm text-gray-500">第{page.pageNumber}页</span>
-                            </div>
-                            <p className="text-gray-700 text-sm mb-3">{page.content}</p>
-                            <div className="flex items-center">
-                              <span className={`px-2 py-1 text-xs rounded-full ${
-                                page.type === 'text' ? 'bg-blue-100 text-blue-800' :
-                                page.type === 'chart' ? 'bg-green-100 text-green-800' :
-                                page.type === 'table' ? 'bg-yellow-100 text-yellow-800' :
-                                'bg-purple-100 text-purple-800'
-                              }`}>
-                                {page.type === 'text' ? '文本' :
-                                 page.type === 'chart' ? '图表' :
-                                 page.type === 'table' ? '表格' : '信息图'}
-                              </span>
-                            </div>
-                            {page.imageUrl && (
-                              <div className="mt-3">
-                                <img
-                                  src={page.imageUrl}
-                                  alt={page.title}
-                                  className="w-full h-32 object-cover rounded border"
-                                />
-                              </div>
-                            )}
-                          </div>
-                        ))}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {report.samplePages.filter(p => p.imageUrl).length > 0 ? (
+                          report.samplePages.filter(p => p.imageUrl).map((page) => (
+                            <img
+                              key={page.id}
+                              src={page.imageUrl as string}
+                              alt={page.title}
+                              className="w-full object-cover rounded border max-h-64"
+                            />
+                          ))
+                        ) : (
+                          <img
+                            src={report.coverImage}
+                            alt="示例页面"
+                            className="w-full object-contain rounded border max-h-96 bg-gray-50"
+                          />
+                        )}
                       </div>
                     </div>
                   )}
@@ -229,9 +171,7 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
 
                 {/* Action Buttons */}
                 <div className="flex justify-between items-center mt-6 pt-6 border-t border-gray-200">
-                  <div className="text-sm text-gray-500">
-                    {report.isPurchasable ? '完整报告需要购买' : '完整报告免费获取'}
-                  </div>
+                  <div className="text-sm text-gray-500">报告免费下载；如需解读/定制，请联系我们。</div>
                   <div className="flex gap-3">
                     <button
                       onClick={onClose}
@@ -243,7 +183,7 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                       onClick={handleContactPurchase}
                       className="px-6 py-2 bg-gray-900 text-white hover:bg-gray-800 transition-colors duration-200 rounded"
                     >
-                      {report.isPurchasable ? '联系购买' : '获取报告'}
+                      联系解读/定制
                     </button>
                   </div>
                 </div>

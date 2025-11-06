@@ -1,28 +1,57 @@
 import initSqlJs from 'sql.js';
+import enDbUrl from '@/data/csr_database.db?url';
+import cnDbUrl from '@/data/csr_database_CN.db?url';
 
-// 数据库实例缓存
-let db: any = null;
+// 缓存 SQL.js 和两个数据库实例（英文库用于ID映射，本地化库用于内容）
+let SQLLib: any = null;
+let dbEnglish: any = null;
+let dbLocalized: any = null;
+let dbLocalizedLang: 'en-US' | 'zh-CN' | null = null;
 
-// 初始化数据库连接
-async function initDatabase() {
-  if (db) return db;
-  
+async function loadSQL() {
+  if (SQLLib) return SQLLib;
+  SQLLib = await initSqlJs({ locateFile: (file: string) => `https://sql.js.org/dist/${file}` });
+  return SQLLib;
+}
+
+// 英文库（用于 applicability_grouped 的 ID 映射）
+async function initDatabaseEnglish() {
+  if (dbEnglish) return dbEnglish;
   try {
-    // 初始化 SQL.js
-    const SQL = await initSqlJs({
-      locateFile: (file: string) => `https://sql.js.org/dist/${file}`
-    });
-    
-    // 读取数据库文件
-    const response = await fetch('/csr_database.db');
-    const arrayBuffer = await response.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
-    
-    // 创建数据库实例
-    db = new SQL.Database(uint8Array);
-    return db;
+    const SQL = await loadSQL();
+    const res = await fetch(enDbUrl);
+    const uint8 = new Uint8Array(await res.arrayBuffer());
+    dbEnglish = new SQL.Database(uint8);
+    return dbEnglish;
   } catch (error) {
-    console.error('Failed to initialize database:', error);
+    console.error('Failed to initialize English database:', error);
+    throw error;
+  }
+}
+
+// 本地化库（中文或英文，用于根据 ID 获取内容）
+async function initDatabaseLocalized() {
+  try {
+    const SQL = await loadSQL();
+    const lang = (typeof window !== 'undefined' && (window as any).__fvLanguage) || localStorage.getItem('language') || 'en-US';
+
+    // 若已初始化但语言不同，重新加载对应语言的数据库
+    if (dbLocalized && dbLocalizedLang === lang) {
+      return dbLocalized;
+    }
+    if (dbLocalized && dbLocalizedLang !== lang) {
+      try { if (typeof dbLocalized.close === 'function') dbLocalized.close(); } catch {}
+      dbLocalized = null;
+    }
+
+    const url = lang === 'zh-CN' ? cnDbUrl : enDbUrl;
+    const res = await fetch(url);
+    const uint8 = new Uint8Array(await res.arrayBuffer());
+    dbLocalized = new SQL.Database(uint8);
+    dbLocalizedLang = lang as 'en-US' | 'zh-CN';
+    return dbLocalized;
+  } catch (error) {
+    console.error('Failed to initialize localized database:', error);
     throw error;
   }
 }
@@ -33,9 +62,9 @@ export async function getConsiderationsByIds(considerationIds: string): Promise<
   content: string;
   classification: string;
   content_html: string;
-}>> {
+  }>> {
   try {
-    const database = await initDatabase();
+    const database = await initDatabaseLocalized();
     
     // 解析 consideration_ids (格式: "1,2,3")
     const ids = considerationIds.split(',').map(id => id.trim()).filter(id => id);
@@ -78,7 +107,7 @@ export async function getConsiderationIdsByCountryAndIndustry(
   industryName: string
 ): Promise<string> {
   try {
-    const database = await initDatabase();
+    const database = await initDatabaseEnglish();
     
     const query = `
       SELECT consideration_ids 
@@ -109,7 +138,7 @@ export async function getInitiativeIdsByCountryAndIndustry(
   industryName: string
 ): Promise<string[]> {
   try {
-    const database = await initDatabase();
+    const database = await initDatabaseEnglish();
     
     const query = `
       SELECT initiative_ids 
@@ -146,13 +175,13 @@ export async function getInitiativesByIds(ids: string[]): Promise<Array<{
   link: string;
   classification: string;
   intro_html: string;
-}>> {
+  }>> {
   try {
     if (ids.length === 0) {
       return [];
     }
     
-    const database = await initDatabase();
+    const database = await initDatabaseLocalized();
     
     // 构建 SQL 查询
     const placeholders = ids.map(() => '?').join(',');
@@ -191,7 +220,7 @@ export async function getOrganizationIdsByCountryAndIndustry(
   industryName: string
 ): Promise<string[]> {
   try {
-    const database = await initDatabase();
+    const database = await initDatabaseEnglish();
     const stmt = database.prepare(`
       SELECT organization_ids 
       FROM applicability_grouped 
@@ -225,11 +254,11 @@ export async function getOrganizationsByIds(ids: string[]): Promise<Array<{
   link: string;
   classification: string;
   intro_html: string;
-}>> {
+  }>> {
   try {
     if (ids.length === 0) return [];
     
-    const database = await initDatabase();
+    const database = await initDatabaseLocalized();
     const placeholders = ids.map(() => '?').join(',');
     const stmt = database.prepare(`
       SELECT id, name, intro, logo, link, classification, intro_html
@@ -263,10 +292,11 @@ export async function getOrganizationsByIds(ids: string[]): Promise<Array<{
 
 // 清理数据库连接
 export function closeDatabase() {
-  if (db) {
-    db.close();
-    db = null;
-  }
+  try { if (dbEnglish && typeof dbEnglish.close === 'function') dbEnglish.close(); } catch {}
+  try { if (dbLocalized && typeof dbLocalized.close === 'function') dbLocalized.close(); } catch {}
+  dbEnglish = null;
+  dbLocalized = null;
+  dbLocalizedLang = null;
 }
 
 // 根据国家和行业获取 risk_ids
@@ -275,7 +305,7 @@ export async function getRiskIdsByCountryAndIndustry(
   industryName: string
 ): Promise<string[]> {
   try {
-    const database = await initDatabase();
+    const database = await initDatabaseEnglish();
     
     const query = `
       SELECT risk_ids 
@@ -312,9 +342,9 @@ export async function getRisksByIds(ids: string[]): Promise<Array<{
   content_html: string;
   issue_name?: string;
   sub_issue_name?: string;
-}>> {
+  }>> {
   try {
-    const database = await initDatabase();
+    const database = await initDatabaseLocalized();
     
     if (ids.length === 0) {
       return [];
@@ -371,7 +401,7 @@ export async function getAdviceIdsByCountryAndIndustry(
   industryName: string
 ): Promise<string[]> {
   try {
-    const database = await initDatabase();
+    const database = await initDatabaseEnglish();
     
     const query = `
       SELECT advice_ids 
@@ -408,9 +438,9 @@ export async function getAdviceByIds(ids: string[]): Promise<Array<{
   content_html: string;
   issue_name?: string;
   sub_issue_name?: string;
-}>> {
+  }>> {
   try {
-    const database = await initDatabase();
+    const database = await initDatabaseLocalized();
     
     if (ids.length === 0) {
       return [];

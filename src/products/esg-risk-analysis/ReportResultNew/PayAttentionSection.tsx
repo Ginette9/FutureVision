@@ -1,4 +1,5 @@
 import React, { useMemo, useEffect, useState } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { getConsiderationIdsByCountryAndIndustry, getConsiderationsByIds } from '@/lib/database';
 
 type CardData = {
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export const PayAttentionSection: React.FC<Props> = ({ countryName, industryName }) => {
+  const { language } = useLanguage();
   const [cards, setCards] = useState<CardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -71,7 +73,11 @@ export const PayAttentionSection: React.FC<Props> = ({ countryName, industryName
     }
   }, [countryName, industryName]);
 
-  const introParagraph = "Below are important considerations specific to your selected country and industry combination. These factors should be carefully evaluated in your ESG risk assessment.";
+  const sectionTitle = language === 'zh-CN' ? '重要注意事项' : 'Important to Consider';
+  const sectionSubtitle = language === 'zh-CN' ? 'ESG 风险评估中的关键考量' : 'Critical factors for your ESG risk assessment';
+  const introParagraph = language === 'zh-CN'
+    ? '以下是与您选择的国家和行业组合相关的关键注意事项。这些因素需要在您的 ESG 风险评估中进行仔细考量。'
+    : 'Below are important considerations specific to your selected country and industry combination. These factors should be carefully evaluated in your ESG risk assessment.';
 
   // 没有数据时兜底
   if (!introParagraph && (!cards || cards.length === 0)) {
@@ -88,8 +94,8 @@ export const PayAttentionSection: React.FC<Props> = ({ countryName, industryName
           </svg>
         </div>
         <div>
-          <h2 className="text-3xl font-light text-gray-900">Important to Consider</h2>
-          <p className="text-gray-600 mt-1">Critical factors for your ESG risk assessment</p>
+          <h2 className="text-3xl font-light text-gray-900">{sectionTitle}</h2>
+          <p className="text-gray-600 mt-1">{sectionSubtitle}</p>
         </div>
       </div>
 

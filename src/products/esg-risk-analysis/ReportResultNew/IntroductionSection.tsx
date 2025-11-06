@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 interface Props {
   productNames: string[];
@@ -39,9 +40,11 @@ export const IntroductionSection: React.FC<Props> = ({
   const sectionRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const { language } = useLanguage();
+  const isZh = language === 'zh-CN';
 
   // 固定的详细分析内容
-  const intro_prose = `
+  const intro_prose_en = `
     <div class="mb-16 flex w-full flex-col"> 
       <div class="flex flex-col gap-2"> 
         <div x-data="{ 
@@ -69,6 +72,32 @@ export const IntroductionSection: React.FC<Props> = ({
       </div> 
     </div>
   `;
+  const intro_prose_zh = `
+    <div class="mb-16 flex w-full flex-col">
+      <div class="flex flex-col gap-2">
+        <div class="flex flex-col rounded-sm py-4">
+          <div class="lg:item-center pdf-layout-wrap flex flex-col gap-6 lg:max-w-full lg:flex-row">
+            <div class="no-pdf-block"></div>
+          </div>
+          <div class="lg:item-center flex flex-col gap-6 self-start lg:max-w-full lg:flex-row">
+            <div class="flex gap-6 pt-4">
+              <div class="prose lg:prose-lg hyphens-none">
+                <p>本报告基于您选择的产品和/或目标地区，提供 CSR 风险检查的系统化分析。分析旨在帮助识别供应链中的潜在环境与社会风险，并提出实操性的缓释建议。</p>
+                <ul>
+                  <li>风险条目按随机顺序呈现</li>
+                  <li>风险分为四类主题：公平商业实践、人权与伦理、劳动权利、环境</li>
+                  <li>每项风险均附带可落实的缓释建议，便于制定改进措施</li>
+                  <li>我们持续更新风险数据库，但个别类别可能暂未收录公开来源；这并不代表该类别不存在风险</li>
+                  <li>风险数量不代表优先级或严重程度。建议结合供应商访谈与尽职调查，进行更全面的风险识别</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  const intro_prose = isZh ? intro_prose_zh : intro_prose_en;
 
   const filename = useMemo(() => {
     const prods = productNames?.length ? productNames.join('_') : 'products';
@@ -152,8 +181,8 @@ export const IntroductionSection: React.FC<Props> = ({
           </svg>
         </div>
         <div>
-          <h2 className="text-3xl font-light text-gray-900">ESG Risk Analysis Report</h2>
-          <p className="text-gray-600 mt-1">Comprehensive risk assessment and recommendations</p>
+          <h2 className="text-3xl font-light text-gray-900">{isZh ? 'ESG 风险分析报告' : 'ESG Risk Analysis Report'}</h2>
+          <p className="text-gray-600 mt-1">{isZh ? '全面的风险评估与建议' : 'Comprehensive risk assessment and recommendations'}</p>
         </div>
       </div>
 
@@ -167,8 +196,8 @@ export const IntroductionSection: React.FC<Props> = ({
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-light text-gray-900">Industry Focus</h3>
-              <p className="text-gray-600 text-sm">Target sectors analyzed</p>
+              <h3 className="text-lg font-light text-gray-900">{isZh ? '行业焦点' : 'Industry Focus'}</h3>
+              <p className="text-gray-600 text-sm">{isZh ? '目标行业分析' : 'Target sectors analyzed'}</p>
             </div>
           </div>
           <div className="space-y-2">
@@ -189,8 +218,8 @@ export const IntroductionSection: React.FC<Props> = ({
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-light text-gray-900">Geographic Scope</h3>
-              <p className="text-gray-600 text-sm">Markets under review</p>
+              <h3 className="text-lg font-light text-gray-900">{isZh ? '地理范围' : 'Geographic Scope'}</h3>
+              <p className="text-gray-600 text-sm">{isZh ? '重点审查市场' : 'Markets under review'}</p>
             </div>
           </div>
           <div className="space-y-2">
@@ -212,7 +241,7 @@ export const IntroductionSection: React.FC<Props> = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h2 className="text-xl font-light text-gray-900">Detailed Analysis</h2>
+          <h2 className="text-xl font-light text-gray-900">{isZh ? '详细分析' : 'Detailed Analysis'}</h2>
         </div>
         <div 
           className="prose prose-lg max-w-none text-gray-700 leading-relaxed"

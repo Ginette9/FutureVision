@@ -15,28 +15,60 @@ const contactSchema = z.object({
 });
 
 // 获取当前语言的行业数据
-export const getIndustries = (t: (key: string) => string | string[]) => {
-  const industryList = t("industries") as string[];
-  return industryList.map(industry => {
-    const industryId = getProductId(industry);
-      
+export const getIndustries = (
+  t: (key: string) => string | string[],
+  language?: string
+) => {
+  const ensureArray = (val: string | string[]) => {
+    if (Array.isArray(val)) return val;
+    try {
+      const parsed = JSON.parse(String(val));
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const enList = ensureArray(t('industries'));
+  const zhList = language === 'zh-CN' ? ensureArray(t('industries.zh')) : [];
+  const displayList = language === 'zh-CN' && zhList.length === enList.length ? zhList : enList;
+
+  return displayList.map((label, idx) => {
+    const enName = enList[idx] ?? label;
+    const industryId = getProductId(enName);
     return {
       id: industryId,
-      name: industry,
-      industryId: industryId // 添加国家ID映射
+      name: label,
+      industryId
     };
   });
 };
 
 // 获取当前语言的地区数据
-export const getCountries = (t: (key: string) => string | string[]) => {
-  const countryList = t("countries") as unknown as string[];
-  return countryList.map(country => {   
-    const countryId = getCountryId(country);
-      
+export const getCountries = (
+  t: (key: string) => string | string[],
+  language?: string
+) => {
+  const ensureArray = (val: string | string[]) => {
+    if (Array.isArray(val)) return val;
+    try {
+      const parsed = JSON.parse(String(val));
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const enList = ensureArray(t('countries'));
+  const zhList = language === 'zh-CN' ? ensureArray(t('countries.zh')) : [];
+  const displayList = language === 'zh-CN' && zhList.length === enList.length ? zhList : enList;
+
+  return displayList.map((label, idx) => {
+    const enName = enList[idx] ?? label;
+    const countryId = getCountryId(enName);
     return {
       id: countryId,
-      name: country,
+      name: label,
       countryId
     };
   });
@@ -59,8 +91,8 @@ export default function ESGRiskAnalysis() {
  
  // 根据语言更新行业和地区数据
  useEffect(() => {
-   setIndustries(getIndustries(t));
-   setCountries(getCountries(t));
+   setIndustries(getIndustries(t, language));
+   setCountries(getCountries(t, language));
  }, [language, t]);
   const [formData, setFormData] = useState<FormData>({
     industry: null,

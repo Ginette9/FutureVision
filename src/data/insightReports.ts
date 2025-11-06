@@ -11,6 +11,8 @@ export interface InsightReport {
   date: string; // 发布日期
   category: string; // 分类
   readTime: string; // 阅读时间
+  source?: string; // 来源
+  keywords?: string[]; // 关键词（可选）
   featured?: boolean; // 是否为精选报告
   
   // 报告内容
@@ -59,261 +61,72 @@ export interface ContactInfo {
 // 示例报告数据
 export const insightReports: InsightReport[] = [
   {
-    id: 'esg-trends-2024',
-    title: '2024年全球ESG监管趋势报告',
-    industry: '跨行业',
-    topic: 'ESG监管政策',
-    pages: 45,
-    summary: '深度分析全球主要经济体ESG监管政策变化趋势，为企业合规提供前瞻性指导',
-    date: '2024-01-20',
-    category: '政策解读',
-    readTime: '15分钟',
-    featured: true,
-    coverImage: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop',
-    
-    tableOfContents: [
-      {
-        id: 'toc-1',
-        title: '执行摘要',
-        pageNumber: 3,
-        level: 1
-      },
-      {
-        id: 'toc-2',
-        title: '全球ESG监管概览',
-        pageNumber: 5,
-        level: 1,
-        children: [
-          {
-            id: 'toc-2-1',
-            title: '欧盟CSRD指令解读',
-            pageNumber: 7,
-            level: 2
-          },
-          {
-            id: 'toc-2-2',
-            title: '美国SEC气候披露规则',
-            pageNumber: 12,
-            level: 2
-          }
-        ]
-      },
-      {
-        id: 'toc-3',
-        title: '亚太地区ESG政策动态',
-        pageNumber: 18,
-        level: 1
-      },
-      {
-        id: 'toc-4',
-        title: '企业应对策略建议',
-        pageNumber: 35,
-        level: 1
-      }
-    ],
-    
-    samplePages: [
-      {
-        id: 'sample-1',
-        pageNumber: 3,
-        title: '执行摘要',
-        content: '2024年全球ESG监管呈现加速收紧趋势，欧盟CSRD、美国SEC新规等重磅政策相继落地...',
-        type: 'text'
-      },
-      {
-        id: 'sample-2',
-        pageNumber: 15,
-        title: '全球ESG监管时间线',
-        content: '展示2024-2026年全球主要ESG监管政策实施时间表',
-        imageUrl: '/images/reports/esg-timeline-chart.png',
-        type: 'chart'
-      },
-      {
-        id: 'sample-3',
-        pageNumber: 28,
-        title: '行业影响分析矩阵',
-        content: '不同行业受ESG监管影响程度的量化分析表格',
-        type: 'table'
-      }
-    ],
-    
-    detailedSummary: '本报告基于对全球50+个国家和地区ESG监管政策的深度研究，结合500+家企业的实践案例，系统分析了2024年ESG监管的五大趋势：强制性披露要求扩大、供应链尽职调查加强、气候风险评估标准化、社会责任指标细化、以及数字化监管工具普及。报告为不同规模和行业的企业提供了具体的合规路径和风险防控建议。',
-    
-    keyFindings: [
-      '全球已有32个国家和地区实施或计划实施强制性ESG披露要求',
-      '供应链ESG尽职调查将成为2024年监管重点，影响80%的跨国企业',
-      '中小企业ESG合规成本预计增长35%，但可通过数字化工具有效降低',
-      '亚太地区ESG监管政策趋向与欧美标准接轨，为企业提供更统一的合规框架'
-    ],
-    
-    methodology: '本研究采用定量与定性相结合的研究方法，包括政策文本分析、专家访谈、企业调研和案例研究。数据来源包括各国监管机构官方文件、国际组织报告、企业年报和第三方ESG评级数据。',
-    
-    targetAudience: '企业ESG负责人、合规官员、可持续发展经理、投资机构ESG分析师、政策制定者',
-    
+    id: 'global-esg-conflicts-2025',
+    title: '企业出海非常规风险：全球ESG冲突事件洞察（全球篇）',
+    industry: '泛行业',
+    topic: 'ESG',
+    pages: 144,
+    summary:
+      '综合分析2005-2024年全球企业在海外投资与经营中的ESG冲突事件，呈现全球图景与对中国企业的影响，揭示风险分布不均与行业差异，为企业出海提供关键情报与策略建议。',
+    detailedSummary:
+      `本报告综合分析了2005至2024年间全球企业在海外投资和经营过程中遭遇的社会与环境冲突事件（ESG冲突事件），并探讨了这些事件的全球图景和对中国企业的影响。报告指出，全球对外直接投资（FDI Outward）存量增长与ESG冲突事件数量呈正相关，且增长速度远超投资存量增速。报告通过数据分析发现，不同国家和行业的企业在出海过程中遭遇的ESG风险存在显著差异，且这些风险并非均匀分布。工业、非必需消费品和原材料行业面临的ESG冲突事件数量最多，而医疗健康、通信和公用事业等行业相对较少。
+
+报告强调，中国企业在全球化进程中面临的ESG风险不容忽视。中国企业在出海前对目标国家的社会、环境与治理风险普遍预计不足，缺少预案，导致在处理冲突事件时表现不佳。此外，中国企业在海外遭遇的社会与环境冲突事件数量与全球对外直接投资总额呈正相关，并未显示出因是中国企业而受到普遍歧视的现象。
+
+报告还分析了各大洲企业出海遭遇的社会与环境冲突事件概况，发现亚洲地区发生的ESG冲突事件数量最多，其次是欧洲和大洋洲、拉丁美洲和加勒比地区、中东和北非、非洲其他地区和北美。不同地区的企业在面对ESG冲突事件时的回应率也有所不同，欧洲和大洋洲企业的回应率最高，而亚洲和中东和北非地区的企业回应率最低。
+
+最后，报告总结了全球各地企业面对社会与环境冲突事件的回应率，并指出企业回应率反映了不同国家、不同行业出海企业对于非常规风险的重视程度。报告旨在为中国企业出海提供非常规风险关键情报和对策建议，助力企业顺利出海，实现可持续发展。`,
+    date: '2025-10-01',
+    category: '独家洞察',
+    readTime: '—',
+    source: 'Future Vision',
+    coverImage: '/images/pdf-cover.png',
+    tableOfContents: [],
+    samplePages: [],
     isPurchasable: true,
-    price: 2980,
-    currency: 'CNY',
-    contactInfo: {
-      email: 'reports@futurevision.com',
-      phone: '+86-400-123-4567',
-      wechat: 'FV_ESG_Reports',
-      contactPerson: '李经理',
-      department: '研究咨询部'
-    }
+    currency: 'CNY'
   },
-  
   {
-    id: 'sme-overseas-compliance-2024',
-    title: '中小企业出海ESG合规指南',
-    industry: '制造业',
-    topic: '出海合规',
-    pages: 32,
-    summary: '针对中小企业的实用ESG合规操作手册，提供可落地的合规方案和成本控制策略',
-    date: '2024-01-18',
-    category: '实操指南',
-    readTime: '12分钟',
-    coverImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&fit=crop',
-    
-    tableOfContents: [
-      {
-        id: 'sme-toc-1',
-        title: '中小企业出海ESG挑战',
-        pageNumber: 2,
-        level: 1
-      },
-      {
-        id: 'sme-toc-2',
-        title: '分阶段合规实施路径',
-        pageNumber: 8,
-        level: 1
-      },
-      {
-        id: 'sme-toc-3',
-        title: '成本控制与资源优化',
-        pageNumber: 18,
-        level: 1
-      },
-      {
-        id: 'sme-toc-4',
-        title: '实用工具与模板',
-        pageNumber: 25,
-        level: 1
-      }
-    ],
-    
-    samplePages: [
-      {
-        id: 'sme-sample-1',
-        pageNumber: 5,
-        title: 'ESG合规成本分析',
-        content: '中小企业ESG合规的典型成本构成和预算规划建议',
-        type: 'chart'
-      },
-      {
-        id: 'sme-sample-2',
-        pageNumber: 12,
-        title: '三阶段实施计划',
-        content: '基础合规→标准化管理→持续改进的渐进式实施方案',
-        type: 'infographic'
-      }
-    ],
-    
-    detailedSummary: '专为年营收1-10亿元的中小制造企业设计的ESG合规实操指南。基于100+家成功出海中小企业的实践经验，提供从合规评估、体系建设到持续改进的全流程解决方案。特别关注成本控制和资源配置优化，帮助中小企业以最小投入实现合规要求。',
-    
-    keyFindings: [
-      '中小企业ESG合规可通过分阶段实施降低60%的初期投入',
-      '数字化ESG管理工具可为中小企业节省40%的人力成本',
-      '供应商协同管理是中小企业ESG合规的关键成功因素',
-      '政府补贴和税收优惠可覆盖中小企业ESG投入的30-50%'
-    ],
-    
+    id: 'msci-esg-china-2025',
+    title: '中国企业ESG评级跃迁指南：2024年MSCI ESG评级洞察报告',
+    industry: '泛行业',
+    topic: 'ESG',
+    pages: 99,
+    summary:
+      '基于近2,500家企业截至2024年的MSCI ESG评级数据，解析全球与中国企业评级变化趋势及行业领先实践，提供评级跃升路径与策略建议。',
+    detailedSummary:
+      '在2025年2月，我们搜集、研究了全球近2,500家MSCI ESG评级企业截止2024年年底的相关数据。从2024年全球企业MSCI ESG评级趋势的变化及行业领先企业的实践中，我们看到中国企业正在金融、信息技术、通信服务等现代服务业，以及房地产、能源、工业这些传统行业上全面追赶全球竞争对手。即便是在面对全球贸易保护主义高墙、地缘政治博弈加剧、供应链重构压力增加等多重挑战下，中国企业在可持续发展竞争力领域的赶超趋势仍然势不可挡。\n\n在ESG评级这个不进则退的游戏中，您的企业ESG竞争力掉队了吗？还在发愁如何逆袭吗？\n\n2024年全球企业MSCI ESG评级洞察报告显示：\n✓ 在全球，金融、信息技术、通信服务三个行业可持续发展竞争力提升最快\n✓ 中国企业整体可持续发展竞争力水平落后，但评级提升趋势强劲，在几乎所有行业迎头赶上\n✓ 2025年超过30%的中国企业实现ESG评级提升，远超全球平均水平\n✓ 全球MSCI ESG评级跳级提升的企业中，中国内地企业占一半以上\n✓ 全球包括中国内地企业ESG评级落后集中体现在公司治理和企业行为两个议题\n✓ 评级表现优异的企业普遍开展可持续发展/ESG赋能商业的探索，头部企业已经构筑ESG护城河\n\n报告核心价值：\n✓ 可持续发展趋势解码：全球及主要国家可持续发展竞争力格局有何变化？哪些行业的企业更容易实现ESG评级跃升？MSCI ESG评级方法有哪些调整，企业应如何应对？\n✓ 评级跃升方法与路径：全球35家实现了评级跳级跃升的企业做对了什么？如何快速高效提升MSCI ESG评级？如何避坑？\n✓ 可持续发展战略：如何在可持续发展中找到商业机会，实现第二增长曲线？',
+    date: '2025-02-01',
+    category: '独家洞察',
+    readTime: '—',
+    source: 'Future Vision独家发布',
+    keywords: ['MSCI', 'ESG', '评级'],
+    coverImage: '/images/pdf-cover.png',
+    tableOfContents: [],
+    samplePages: [],
     isPurchasable: true,
-    price: 1680,
-    currency: 'CNY',
-    contactInfo: {
-      email: 'sme@futurevision.com',
-      phone: '+86-400-123-4567',
-      wechat: 'FV_SME_Support',
-      contactPerson: '王顾问',
-      department: '中小企业服务部'
-    }
+    currency: 'CNY'
   },
-  
   {
-    id: 'supply-chain-transparency-2024',
-    title: '供应链透明度最佳实践研究',
-    industry: '消费品',
-    topic: '供应链管理',
-    pages: 38,
-    summary: '全球领先企业供应链透明度管理案例分析，提供可复制的实施框架和技术解决方案',
-    date: '2024-01-15',
-    category: '案例研究',
-    readTime: '18分钟',
-    coverImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=250&fit=crop',
-    
-    tableOfContents: [
-      {
-        id: 'supply-toc-1',
-        title: '供应链透明度发展趋势',
-        pageNumber: 3,
-        level: 1
-      },
-      {
-        id: 'supply-toc-2',
-        title: '领先企业案例分析',
-        pageNumber: 10,
-        level: 1
-      },
-      {
-        id: 'supply-toc-3',
-        title: '技术解决方案对比',
-        pageNumber: 22,
-        level: 1
-      },
-      {
-        id: 'supply-toc-4',
-        title: '实施路径与建议',
-        pageNumber: 30,
-        level: 1
-      }
-    ],
-    
-    samplePages: [
-      {
-        id: 'supply-sample-1',
-        pageNumber: 8,
-        title: '透明度成熟度模型',
-        content: '供应链透明度的五个发展阶段和评估标准',
-        type: 'infographic'
-      },
-      {
-        id: 'supply-sample-2',
-        pageNumber: 16,
-        title: 'Patagonia案例深度解析',
-        content: 'Patagonia供应链透明度管理的创新实践和经验总结',
-        type: 'text'
-      }
-    ],
-    
-    detailedSummary: '深入研究Nike、Patagonia、Unilever等20家全球领先企业的供应链透明度管理实践，总结出供应链透明度建设的核心要素、实施路径和技术工具。报告特别关注区块链、物联网、AI等新技术在供应链透明度提升中的应用，为企业提供前瞻性的解决方案。',
-    
-    keyFindings: [
-      '供应链透明度已成为消费者购买决策的重要因素，影响65%的消费者选择',
-      '区块链技术可将供应链追溯效率提升80%，但实施成本仍然较高',
-      '供应商协同是透明度建设的最大挑战，需要建立激励机制',
-      '透明度投资的ROI通常在18-24个月内显现，主要体现在品牌价值提升'
-    ],
-    
+    id: 'unseen-unconventional-risks-2024',
+    title: '未被察觉的致命风险——中企出海面临的新型非常规风险洞察报告',
+    industry: '泛行业',
+    topic: '企业环境影响评估与信息披露',
+    pages: 72,
+    summary:
+      '基于2013-2022年数据的典型案例研究，系统梳理中企出海常被忽视的六大非常规风险，并提出可执行的应对策略与建议。',
+    detailedSummary:
+      '本报告根据2013至2022年中企出海所产生的环境与社会相关的矛盾冲突事件的详实统计数据，深入剖析了中企在出海过程中，由于受到国内经营管理惯性和习惯的影响，经常被忽视的六大非常规风险。\n数据显示，中企出海几乎都会遭遇到这些非常规风险，但我们的企业往往没有在出海之前进行充分的调查与了解，也未能在思想和应对上提前做好预案，导致风险发生时不能及时作出适当的应对，最终付出惨重的代价。\n报告通过超过30个实际案例，对中企出海的主要行业、热门目的地进行了客观详实的风险分析，并总结出可执行落地的应对策略与建议，力求帮助出海中企能够重视这些非常规风险，并在理解风险成因的基础上采取切实可行的行动以规避和解决上述风险，最终得以在海外成功立足、进一步获得发展。',
+    date: '2024-01-01',
+    category: '独家洞察',
+    readTime: '—',
+    source: 'MSC独家发布',
+    keywords: ['劳工权益', '冲突矿产', '生物多样性', '社区矛盾', '种族与文化冲突', '野生动物保护', '环保问题'],
+    coverImage: '/images/pdf-cover.png',
+    tableOfContents: [],
+    samplePages: [],
     isPurchasable: true,
-    price: 2280,
-    currency: 'CNY',
-    contactInfo: {
-      email: 'supply@futurevision.com',
-      phone: '+86-400-123-4567',
-      wechat: 'FV_Supply_Chain',
-      contactPerson: '张专家',
-      department: '供应链研究中心'
-    }
+    currency: 'CNY'
   }
 ];
 

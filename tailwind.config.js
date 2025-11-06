@@ -14,7 +14,8 @@ export default {
   // 保留你的 safelist（可继续补充）
   safelist: [
     'mb-4', 'flex', 'flex-wrap', 'gap-2',
-    'bg-green-500', 'rounded', 'px-2',
+    'bg-green-500', 'bg-sky-600', 'bg-cyan-600', 'bg-gray-500',
+    'rounded', 'rounded-sm', 'px-2',
     'text-xs', 'text-white', 'font-semibold',
     'uppercase', 'h-6',
     'text-red-600', 'text-red-700',

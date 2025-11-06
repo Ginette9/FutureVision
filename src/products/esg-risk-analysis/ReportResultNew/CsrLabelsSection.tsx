@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getInitiativeIdsByCountryAndIndustry, getInitiativesByIds } from '../../../lib/database';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Initiative {
   id: number;
@@ -15,11 +16,13 @@ export const CsrLabelsSection: React.FC<{
   countryName: string; 
   industryName: string; 
 }> = ({ countryName, industryName }) => {
+  const { language } = useLanguage();
   const [initiatives, setInitiatives] = useState<Initiative[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const sectionTitle = 'ESG labels, supply chain initiatives & guidelines';
+  const sectionTitle = language === 'zh-CN' ? 'ESG标签、供应链倡议与指南' : 'ESG labels, supply chain initiatives & guidelines';
+  const sectionSubtitle = language === 'zh-CN' ? '行业标准与认证项目' : 'Industry standards and certification programs';
 
   useEffect(() => {
     const fetchInitiatives = async () => {
@@ -63,7 +66,7 @@ export const CsrLabelsSection: React.FC<{
           </div>
           <div>
             <h2 className="text-3xl font-light text-gray-900">{sectionTitle}</h2>
-            <p className="text-gray-600 mt-1">Industry standards and certification programs</p>
+            <p className="text-gray-600 mt-1">{sectionSubtitle}</p>
           </div>
         </div>
         <div className="text-center py-8">
@@ -86,7 +89,7 @@ export const CsrLabelsSection: React.FC<{
           </div>
           <div>
             <h2 className="text-3xl font-light text-gray-900">{sectionTitle}</h2>
-            <p className="text-gray-600 mt-1">Industry standards and certification programs</p>
+            <p className="text-gray-600 mt-1">{sectionSubtitle}</p>
           </div>
         </div>
         <div className="text-center py-8">
@@ -108,7 +111,7 @@ export const CsrLabelsSection: React.FC<{
           </div>
           <div>
             <h2 className="text-3xl font-light text-gray-900">{sectionTitle}</h2>
-            <p className="text-gray-600 mt-1">Industry standards and certification programs</p>
+            <p className="text-gray-600 mt-1">{sectionSubtitle}</p>
           </div>
         </div>
         <div className="text-center py-8">
