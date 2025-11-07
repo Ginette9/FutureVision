@@ -186,6 +186,21 @@ export const IntroductionSection: React.FC<Props> = ({
         </div>
       </div>
 
+      {/* 中文模式说明提示 */}
+      {isZh && (
+        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4">
+          <div className="flex items-start">
+            <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div className="ml-3">
+              <p className="text-sm">说明：本报告以英文为主，中文版为 AI 翻译，PDF 导出目前仅支持英文。</p>
+              <p className="text-sm mt-1">在中文页面下载 PDF 时将提示是否继续导出英文版 PDF。</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 分析概要卡片 */}
       <div className="grid md:grid-cols-2 gap-6">
         <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">

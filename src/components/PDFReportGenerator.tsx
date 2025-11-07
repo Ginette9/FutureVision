@@ -10,7 +10,8 @@ import {
   getConsiderationIdsByCountryAndIndustry,
   getConsiderationsByIds,
   getInitiativeIdsByCountryAndIndustry,
-  getInitiativesByIds
+  getInitiativesByIds,
+  closeDatabase
 } from '../lib/database';
 import { scrapeUrlContent, buildScrapeUrl, getBackendBase } from '../lib/utils';
 import { parseReportHtml } from '../products/esg-risk-analysis/ReportResultNew/parseReportHtml';
@@ -105,6 +106,8 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
 }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const { language } = useLanguage();
+  // 中文模式下导出强制使用英文内容
+  const exportLanguage = language === 'zh-CN' ? 'en-US' : language;
 
   // 获取报告数据
   const fetchReportData = async (): Promise<CategoryData[]> => {
@@ -205,7 +208,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
       }
 
       // 使用共享模块中的固定内容，确保与网页一致，且跟随语言切换
-      const fixed = getSectionsContent(language);
+      const fixed = getSectionsContent(exportLanguage);
       const dueDiligenceContent = fixed.dueDiligenceHtml;
       const aboutMvoContent = fixed.aboutMvoHtml;
       const contactContent = fixed.contactHtml;
@@ -658,6 +661,21 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
     setIsGenerating(true);
     
     try {
+      // 中文模式下提示仅支持英文导出
+      if (language === 'zh-CN') {
+        const ok = window.confirm('当前仅支持英文版 PDF 导出，是否继续导出英文版？');
+        if (!ok) {
+          setIsGenerating(false);
+          return;
+        }
+        // 临时强制数据库语言切换为英文，避免中文内容导致PDF乱码
+        const prevLang = (window as any).__fvLanguage || localStorage.getItem('language') || 'en-US';
+        (window as any).__fvLanguage = 'en-US';
+        try { await closeDatabase(); } catch {}
+        // 在finally中恢复
+        (window as any).__fvPrevLangForPdf = prevLang;
+      }
+
       const categories = await fetchReportData();
       const sectionsData = await fetchOtherSectionsData();
       
@@ -3112,6 +3130,13 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
       alert('PDF生成失败，请稍后重试');
     } finally {
       setIsGenerating(false);
+      // 还原数据库语言及连接
+      const prev = (window as any).__fvPrevLangForPdf;
+      if (prev) {
+        (window as any).__fvLanguage = prev;
+        try { await closeDatabase(); } catch {}
+        delete (window as any).__fvPrevLangForPdf;
+      }
     }
   };
 
