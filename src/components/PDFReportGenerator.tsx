@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import jsPDF from 'jspdf';
+import { PDFDocument } from 'pdf-lib';
 import { 
   getRiskIdsByCountryAndIndustry, 
   getRisksByIds, 
@@ -684,8 +685,25 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         return;
       }
 
-      // 创建PDF文档
-      const pdf = new jsPDF('p', 'mm', 'a4');
+      // 创建PDF文档：尽量与静态页尺寸保持一致，避免合并后大小不一致
+      let pdf: jsPDF;
+      let staticDocForMerge: PDFDocument | null = null;
+      try {
+        const staticResProbe = await fetch('/static_pages.pdf');
+        if (staticResProbe.ok) {
+          const staticBytesProbe = await staticResProbe.arrayBuffer();
+          staticDocForMerge = await PDFDocument.load(staticBytesProbe);
+          const firstPage = staticDocForMerge.getPage(0);
+          const size = firstPage.getSize();
+          const ptToMm = (pt: number) => pt * 0.352778; // 1pt = 0.352778mm
+          const formatMm: [number, number] = [ptToMm(size.width), ptToMm(size.height)];
+          pdf = new jsPDF('p', 'mm', formatMm);
+        } else {
+          pdf = new jsPDF('p', 'mm', 'a4');
+        }
+      } catch {
+        pdf = new jsPDF('p', 'mm', 'a4');
+      }
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       const margin = 12; // 从15减少到12，减少页边距以容纳更多文字
@@ -3080,50 +3098,63 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
           });
         }
         
-        // 6. Due Diligence Section（卡片式）
-        pdf.addPage();
-        currentY = margin + 20;
-        renderSectionCardContent('Due Diligence', sectionsData.dueDiligenceSection.html, 'Methodology and verification framework');
+        // 6. Due Diligence Section（替换为静态PDF，故跳过动态渲染）
+        // pdf.addPage();
+        // currentY = margin + 20;
+        // renderSectionCardContent('Due Diligence', sectionsData.dueDiligenceSection.html, 'Methodology and verification framework');
         
-        // 7. About Us Section（两个logo卡片）
-        pdf.addPage();
-        currentY = margin + 20;
-        await renderAboutUsCards(sectionsData.aboutMvoSection.html);
-        
-        // 8. Contact Section（卡片式）
-        pdf.addPage();
-        currentY = margin + 20;
-        renderSectionCardContent('Contact Information', sectionsData.contactSection.html, 'Reach out for tailored ESG advisory');
-        
-        // 9. Disclaimer Section（卡片式）
-        pdf.addPage();
-        currentY = margin + 20;
-        renderSectionCardContent('Disclaimer', sectionsData.disclaimerSection.html, 'Terms of use and legal considerations');
+        // 7. About Us / Contact / Disclaimer 等尾部固定版块全部使用静态PDF，
+        // 为避免出现空白页，这里不再新开页面。
+        // 从 Due diligence 之后的固定内容改由静态 PDF 替换。
       }
       
-      // 添加尾页
-      try {
-        pdf.addPage();
-        const backImg = new Image();
-        backImg.src = '/src/images/pdf-back-new.png';
-        await new Promise((resolve, reject) => {
-          backImg.onload = resolve;
-          backImg.onerror = reject;
-        });
-        pdf.addImage(backImg, 'PNG', 0, 0, pageWidth, pageHeight);
-      } catch (error) {
-        console.warn('尾页图片加载失败，跳过尾页');
-        // 如果尾页图片加载失败，添加最后一页的页脚
-        addFooter();
-      }
-      
-      // 如果成功添加了尾页，就不需要再添加页脚了
-      // 添加最后一页的页脚 - 只在没有尾页时执行
-      // addFooter();
-      
-      // 保存PDF
+      // 保存前合并静态页面（保留超链接）并添加尾页
       const fileName = `ESG_Risk_Report_${industryName}_${countryName}_${new Date().toISOString().split('T')[0]}.pdf`;
-      pdf.save(fileName);
+      
+      try {
+        // 1) 将当前 jsPDF 输出为字节
+        const jsBytes = pdf.output('arraybuffer');
+        // 2) 加载为可编辑的 PDF 文档
+        const baseDoc = await PDFDocument.load(jsBytes);
+        
+        // 3) 载入静态页面 PDF（应放在 public/static_pages.pdf）
+        const staticDoc = staticDocForMerge ? staticDocForMerge : await PDFDocument.load(await (await fetch('/static_pages.pdf')).arrayBuffer());
+        
+        // 4) 复制静态 PDF 的所有页面并追加到末尾（位于封面和动态内容之后、尾页之前）
+        const staticPageIndices = staticDoc.getPageIndices();
+        const copiedPages = await baseDoc.copyPages(staticDoc, staticPageIndices);
+        copiedPages.forEach(p => baseDoc.addPage(p));
+        
+        // 5) 添加尾页图片（若可用）
+        try {
+          const backImgRes = await fetch('/src/images/pdf-back-new.png');
+          const backImgBytes = await backImgRes.arrayBuffer();
+          const backPng = await baseDoc.embedPng(backImgBytes);
+          const refSize = baseDoc.getPage(0).getSize();
+          const backPage = baseDoc.addPage([refSize.width, refSize.height]);
+          backPage.drawImage(backPng, { x: 0, y: 0, width: refSize.width, height: refSize.height });
+        } catch (e) {
+          console.warn('尾页图片加载失败（pdf-lib），跳过尾页');
+        }
+        
+        // 6) 导出合并后的 PDF
+        const mergedBytes = await baseDoc.save();
+        // 复制到新的 Uint8Array，保证底层 buffer 是标准 ArrayBuffer
+        const bytesCopy = new Uint8Array(mergedBytes.length);
+        bytesCopy.set(mergedBytes);
+        const blob = new Blob([bytesCopy.buffer], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      } catch (mergeErr) {
+        console.error('静态页面合并失败，回退为原始保存：', mergeErr);
+        pdf.save(fileName);
+      }
       
     } catch (error) {
       console.error('PDF生成失败:', error);
