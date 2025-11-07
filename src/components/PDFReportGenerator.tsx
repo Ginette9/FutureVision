@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import jsPDF from 'jspdf';
 import { PDFDocument } from 'pdf-lib';
+import coverImageUrl from '@/images/pdf-cover-new.png';
+import backImageUrl from '@/images/pdf-back-new.png';
 import { 
   getRiskIdsByCountryAndIndustry, 
   getRisksByIds, 
@@ -866,7 +868,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
       // 添加封面页
       try {
         const coverImg = new Image();
-        coverImg.src = '/src/images/pdf-cover-new.png';
+        coverImg.src = coverImageUrl;
         await new Promise((resolve, reject) => {
           coverImg.onload = resolve;
           coverImg.onerror = reject;
@@ -3127,7 +3129,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         
         // 5) 添加尾页图片（若可用）
         try {
-          const backImgRes = await fetch('/src/images/pdf-back-new.png');
+          const backImgRes = await fetch(backImageUrl);
           const backImgBytes = await backImgRes.arrayBuffer();
           const backPng = await baseDoc.embedPng(backImgBytes);
           const refSize = baseDoc.getPage(0).getSize();
