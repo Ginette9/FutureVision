@@ -708,7 +708,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
       }
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 12; // 从15减少到12，减少页边距以容纳更多文字
+      const margin = 9; // 进一步减小页边距，使页面更紧凑
       const columnWidth = (pageWidth - margin * 3) / 2;
       const lineHeight = 5;
       
@@ -996,12 +996,15 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
           return 'Untitled';
         };
         const titleText = deriveTitle();
-        const headerHeight = 34;
-        const horizontalPadding = 15;
+        const horizontalPadding = 12;
         const contentWidth = pageWidth - margin * 2 - horizontalPadding * 2;
-        const cardPaddingTop = 10;
-        const cardPaddingBottom = 12;
+        const cardPaddingTop = 6;
+        const cardPaddingBottom = 8;
         const contentMarginX = margin + horizontalPadding;
+        // 顶部logo容器尺寸（更小且等比显示），并据此动态计算标题区高度
+        const logoW = 60; // 之前为120，过大导致视觉压迫
+        const logoH = 21; // 之前为36，适当减小高度
+        const computedHeaderHeight = logoH + 24; // logo高度 + 胶囊与标题留白，避免与正文重叠
 
         // 将正文合并为“段落+链接位置”，列表保持单独行
         const blocks: Array<{
@@ -1052,7 +1055,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         let firstPage = true;
 
         while (pointer < blocks.length || firstPage) {
-          const headerH = firstPage ? headerHeight : 0;
+          const headerH = firstPage ? computedHeaderHeight : 0;
           // 当页面可用高度过小时，先分页
           let availableHeight = pageHeight - margin - 15 - currentY - cardPaddingTop - cardPaddingBottom - headerH;
           if (availableHeight < 20) {
@@ -1093,7 +1096,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
             // 为简化估算：一旦超过高度，停止
           }
           // 预留1行安全余量，避免绘制时出现轻微溢出
-          consumedHeight = Math.min(consumedHeight, Math.max(0, availableHeight - 7));
+          consumedHeight = Math.min(consumedHeight, Math.max(0, availableHeight - 9));
 
           // 如果由于页底空间太小导致本页无法容纳任何正文，则先换页
           if (count === 0 && pointer < blocks.length) {
@@ -1110,15 +1113,13 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
           pdf.setDrawColor(229, 231, 235);
           pdf.setLineWidth(0.5);
           const rectHeight = headerH + consumedHeight + cardPaddingTop + cardPaddingBottom;
-          pdf.roundedRect(margin, currentY, pageWidth - margin * 2, rectHeight, 3, 3, 'FD');
+          pdf.roundedRect(margin, currentY, pageWidth - margin * 2, rectHeight, 6, 6, 'FD');
 
           // 首页绘制标题与装饰
           if (firstPage) {
-            // 左侧logo：固定容器，等比居中，避免变形
-            const logoX = margin + 8;
-            const logoY = currentY + 8;
-            const logoW = 28;
-            const logoH = 22;
+            // 顶部Logo容器：浅灰圆角矩形，居中于名称列（缩小尺寸，保持等比）
+            const logoX = contentMarginX + (contentWidth - logoW) / 2;
+            const logoY = currentY + cardPaddingTop + 4;
             const info = orgLogoInfoMap[org.id];
             if (info && info.dataUrl) {
               try {
@@ -1132,32 +1133,45 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                 const cx = logoX + (logoW - drawW) / 2;
                 const cy = logoY + (logoH - drawH) / 2;
                 const isPng = info.dataUrl.startsWith('data:image/png');
-                pdf.setFillColor(249, 250, 251);
-                pdf.roundedRect(logoX, logoY, logoW, logoH, 3, 3, 'F');
+                // 稍深灰背景+细描边，提升白色logo的可见性
+                pdf.setFillColor(229, 231, 235);
+                pdf.setDrawColor(209, 213, 219);
+                pdf.setLineWidth(0.3);
+                pdf.roundedRect(logoX, logoY, logoW, logoH, 8, 8, 'FD');
                 pdf.addImage(info.dataUrl, isPng ? 'PNG' : 'JPEG', cx, cy, drawW, drawH);
               } catch (e) {
-                pdf.setFillColor(249, 250, 251);
-                pdf.roundedRect(logoX, logoY, logoW, logoH, 3, 3, 'F');
+                pdf.setFillColor(229, 231, 235);
+                pdf.setDrawColor(209, 213, 219);
+                pdf.setLineWidth(0.3);
+                pdf.roundedRect(logoX, logoY, logoW, logoH, 8, 8, 'FD');
               }
             } else {
-              pdf.setFillColor(249, 250, 251);
-              pdf.roundedRect(logoX, logoY, logoW, logoH, 3, 3, 'F');
+              pdf.setFillColor(229, 231, 235);
+              pdf.setDrawColor(209, 213, 219);
+              pdf.setLineWidth(0.3);
+              pdf.roundedRect(logoX, logoY, logoW, logoH, 8, 8, 'FD');
             }
 
-            const nameX = margin + 45;
-            const nameY = currentY + cardPaddingTop + 12;
-            pdf.setFillColor(16, 185, 129);
-            pdf.roundedRect(nameX, nameY - 5, 2, 10, 1, 1, 'F');
+            // 左侧蓝色小胶囊（缩短并左移）
+            const pillX = contentMarginX - 5;
+            const pillY = logoY + logoH + 7;
+            // 颜色稍微调浅（接近 indigo-200）
+            pdf.setFillColor(199, 210, 254);
+            pdf.roundedRect(pillX, pillY, 11, 8, 1, 1, 'F');
+
+            // 名称与正文左对齐
+            const nameX = contentMarginX;
+            const nameY = pillY + 6;
             pdf.setFontSize(12);
             pdf.setFont('helvetica', 'bold');
             pdf.setTextColor(17, 24, 39);
             const titleLink = (org.link || (parsed.elements?.find(e => e.type === 'link' && (e as any).url)?.url as string) || '').trim();
             // 标题统一黑色加粗；若存在链接，仅添加可点击区域，不改变样式
             pdf.setTextColor(17, 24, 39);
-            pdf.text(titleText, nameX + 8, nameY);
+            pdf.text(titleText, nameX, nameY);
             const nameWidth = pdf.getTextWidth(titleText);
             if (titleLink) {
-              pdf.link(nameX + 8, nameY - 5, nameWidth, 8, { url: titleLink });
+              pdf.link(nameX, nameY - 5, nameWidth, 8, { url: titleLink });
             }
           }
 
@@ -1192,14 +1206,14 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
               continue;
             }
 
-            // 段落：行内分段渲染链接
+            // 段落：逐行渲染并在本页高度耗尽时截断，防止溢出
             pdf.setFontSize(10);
             pdf.setFont('helvetica', 'normal');
             const lines = pdf.splitTextToSize(normalizeText(b.content), contentWidth) as string[];
-            lines.forEach((ln) => {
+            let consumedAllParagraph = true;
+            for (const ln of lines) {
+              if (bodyY + 7 > currentY + rectHeight) { consumedAllParagraph = false; break; }
               let cursorX = contentMarginX + (b.indent || 0);
-              let rest = ln;
-              // 查找本行包含的链接文本位置
               const positions: Array<{ start: number; len: number; url: string }> = [];
               (b.links || []).forEach(l => {
                 const normText = normalizeText(l.text);
@@ -1210,22 +1224,17 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                 pdf.setTextColor(75, 85, 99);
                 pdf.text(ln, cursorX, bodyY);
               } else {
-                // 按出现顺序渲染分段
                 positions.sort((a, b) => a.start - b.start);
                 let from = 0;
                 positions.forEach(p => {
                   const pre = ln.slice(from, p.start);
-                  if (pre) {
-                    pdf.setTextColor(75, 85, 99);
-                    pdf.text(pre, cursorX, bodyY);
-                    cursorX += pdf.getTextWidth(pre);
-                  }
+                  if (pre) { pdf.setTextColor(75, 85, 99); pdf.text(pre, cursorX, bodyY); cursorX += pdf.getTextWidth(pre); }
                   const mid = ln.slice(p.start, p.start + p.len);
                   if (mid) {
-                    pdf.setTextColor(59, 130, 246);
+                    pdf.setTextColor(75, 85, 99);
                     pdf.text(mid, cursorX, bodyY);
                     const lw = pdf.getTextWidth(mid);
-                    pdf.setDrawColor(59, 130, 246);
+                    pdf.setDrawColor(75, 85, 99);
                     pdf.line(cursorX, bodyY + 1, cursorX + lw, bodyY + 1);
                     pdf.link(cursorX, bodyY - 5, lw, 8, { url: p.url });
                     cursorX += lw;
@@ -1233,14 +1242,12 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                   from = p.start + p.len;
                 });
                 const tail = ln.slice(from);
-                if (tail) {
-                  pdf.setTextColor(75, 85, 99);
-                  pdf.text(tail, cursorX, bodyY);
-                }
+                if (tail) { pdf.setTextColor(75, 85, 99); pdf.text(tail, cursorX, bodyY); }
               }
               bodyY += 7;
-            });
-            nextPointer = bi + 1; // 记录下一个待渲染块位置
+            }
+            nextPointer = consumedAllParagraph ? bi + 1 : bi;
+            if (!consumedAllParagraph) break;
           }
 
           // 更新位置与状态
@@ -1252,8 +1259,8 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
             currentY = margin;
             firstPage = false;
           } else {
-            // 完成卡片，添加间距
-            currentY += 12;
+            // 完成卡片，进一步压缩卡片间距
+            currentY += 6;
             break;
           }
         }
@@ -1273,11 +1280,14 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         };
         const titleText = deriveTitle();
         const headerHeight = 34;
-        const horizontalPadding = 15;
+        const horizontalPadding = 12;
         const contentWidth = pageWidth - margin * 2 - horizontalPadding * 2;
-        const cardPaddingTop = 10;
-        const cardPaddingBottom = 12;
+        const cardPaddingTop = 6;
+        const cardPaddingBottom = 8;
         const contentMarginX = margin + horizontalPadding;
+        const logoW = 60;
+        const logoH = 21;
+        const computedHeaderHeight = logoH + 24; // 增加标题与正文的间距，匹配组织卡片的舒适度
 
         const blocks: Array<{ kind: 'paragraph' | 'list' | 'bold'; content: string; indent?: number; links?: Array<{ text: string; url: string }>; }> = [];
         if (parsed.elements && parsed.elements.length > 0) {
@@ -1316,7 +1326,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         let pointer = 0;
         let firstPage = true;
         while (pointer < blocks.length || firstPage) {
-          const headerH = firstPage ? headerHeight : 0;
+          const headerH = firstPage ? computedHeaderHeight : 0;
           let availableHeight = pageHeight - margin - 15 - currentY - cardPaddingTop - cardPaddingBottom - headerH;
           if (availableHeight < 20) {
             addFooter();
@@ -1350,7 +1360,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
             consumedHeight += needH;
             countLines += lines.length;
           }
-          consumedHeight = Math.min(consumedHeight, Math.max(0, availableHeight - 7));
+          consumedHeight = Math.min(consumedHeight, Math.max(0, availableHeight - 9));
 
           if (countLines === 0 && pointer < blocks.length) {
             addFooter();
@@ -1365,14 +1375,12 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
           pdf.setDrawColor(229, 231, 235);
           pdf.setLineWidth(0.5);
           const rectHeight = headerH + consumedHeight + cardPaddingTop + cardPaddingBottom;
-          pdf.roundedRect(margin, currentY, pageWidth - margin * 2, rectHeight, 3, 3, 'FD');
+          pdf.roundedRect(margin, currentY, pageWidth - margin * 2, rectHeight, 6, 6, 'FD');
 
-          // 首页：左侧logo + 标题（黑色加粗，可点击但不改变样式）
+          // 首页：居中logo容器 + 左侧浅蓝胶囊 + 黑色加粗标题（可点击但不改变样式）
           if (firstPage) {
-            const logoX = margin + 8;
-            const logoY = currentY + 8;
-            const logoW = 28;
-            const logoH = 22;
+            const logoX = contentMarginX + (contentWidth - logoW) / 2;
+            const logoY = currentY + cardPaddingTop + 4;
             const info = initiativeLogoInfoMap[initiative.id];
             if (info && info.dataUrl) {
               try {
@@ -1383,30 +1391,39 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                 const cx = logoX + (logoW - drawW) / 2;
                 const cy = logoY + (logoH - drawH) / 2;
                 const isPng = info.dataUrl.startsWith('data:image/png');
-                pdf.setFillColor(249, 250, 251);
-                pdf.roundedRect(logoX, logoY, logoW, logoH, 3, 3, 'F');
+                pdf.setFillColor(229, 231, 235);
+                pdf.setDrawColor(209, 213, 219);
+                pdf.setLineWidth(0.3);
+                pdf.roundedRect(logoX, logoY, logoW, logoH, 8, 8, 'FD');
                 pdf.addImage(info.dataUrl, isPng ? 'PNG' : 'JPEG', cx, cy, drawW, drawH);
               } catch {
-                pdf.setFillColor(249, 250, 251);
-                pdf.roundedRect(logoX, logoY, logoW, logoH, 3, 3, 'F');
+                pdf.setFillColor(229, 231, 235);
+                pdf.setDrawColor(209, 213, 219);
+                pdf.setLineWidth(0.3);
+                pdf.roundedRect(logoX, logoY, logoW, logoH, 8, 8, 'FD');
               }
             } else {
-              pdf.setFillColor(249, 250, 251);
-              pdf.roundedRect(logoX, logoY, logoW, logoH, 3, 3, 'F');
+              pdf.setFillColor(229, 231, 235);
+              pdf.setDrawColor(209, 213, 219);
+              pdf.setLineWidth(0.3);
+              pdf.roundedRect(logoX, logoY, logoW, logoH, 8, 8, 'FD');
             }
 
-            const nameX = margin + 45;
-            const nameY = currentY + cardPaddingTop + 12;
-            pdf.setFillColor(16, 185, 129);
-            pdf.roundedRect(nameX, nameY - 5, 2, 10, 1, 1, 'F');
+            const pillX = contentMarginX - 5;
+            const pillY = logoY + logoH + 7;
+            pdf.setFillColor(199, 210, 254);
+            pdf.roundedRect(pillX, pillY, 11, 8, 1, 1, 'F');
+
+            const nameX = contentMarginX;
+            const nameY = pillY + 6;
             pdf.setFontSize(12);
             pdf.setFont('helvetica', 'bold');
             const titleLink = (initiative.link || (parsed.elements?.find(e => e.type === 'link' && (e as any).url)?.url as string) || '').trim();
             pdf.setTextColor(17, 24, 39);
-            pdf.text(titleText, nameX + 8, nameY);
+            pdf.text(titleText, nameX, nameY);
             const nameWidth = pdf.getTextWidth(titleText);
             if (titleLink) {
-              pdf.link(nameX + 8, nameY - 5, nameWidth, 8, { url: titleLink });
+              pdf.link(nameX, nameY - 5, nameWidth, 8, { url: titleLink });
             }
           }
 
@@ -1439,7 +1456,10 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
             pdf.setFontSize(10);
             pdf.setFont('helvetica', 'normal');
             const lines = pdf.splitTextToSize(b.content, contentWidth) as string[];
-            lines.forEach((ln) => {
+            {
+              let consumedAllParagraph = true;
+              for (const ln of lines) {
+                if (bodyY + 7 > currentY + rectHeight) { consumedAllParagraph = false; break; }
               let cursorX = contentMarginX + (b.indent || 0);
               const positions: Array<{ start: number; len: number; url: string }> = [];
               (b.links || []).forEach(l => { const idx = ln.indexOf(l.text); if (idx >= 0) positions.push({ start: idx, len: l.text.length, url: l.url }); });
@@ -1454,10 +1474,12 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                   if (pre) { pdf.setTextColor(75, 85, 99); pdf.text(pre, cursorX, bodyY); cursorX += pdf.getTextWidth(pre); }
                   const mid = ln.slice(p.start, p.start + p.len);
                   if (mid) {
-                    pdf.setTextColor(59, 130, 246);
+                    // 链接文本统一灰色
+                    pdf.setTextColor(75, 85, 99);
                     pdf.text(mid, cursorX, bodyY);
                     const lw = pdf.getTextWidth(mid);
-                    pdf.setDrawColor(59, 130, 246);
+                    // 下划线使用灰色
+                    pdf.setDrawColor(75, 85, 99);
                     pdf.line(cursorX, bodyY + 1, cursorX + lw, bodyY + 1);
                     pdf.link(cursorX, bodyY - 5, lw, 8, { url: p.url });
                     cursorX += lw;
@@ -1467,9 +1489,11 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                 const tail = ln.slice(from);
                 if (tail) { pdf.setTextColor(75, 85, 99); pdf.text(tail, cursorX, bodyY); }
               }
-              bodyY += 7;
-            });
-            nextPointer = bi + 1;
+                bodyY += 7;
+              }
+              nextPointer = consumedAllParagraph ? bi + 1 : bi;
+              if (!consumedAllParagraph) break;
+            }
           }
 
           currentY = currentY + rectHeight;
@@ -1480,7 +1504,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
             currentY = margin;
             firstPage = false;
           } else {
-            currentY += 12;
+            currentY += 8; // 卡片间距更紧凑
             break;
           }
         }
@@ -1546,12 +1570,9 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         // 1. 标题区域 - 按参考图重绘标题与副标题（含左侧图标）
         const headerH = 24;
         checkPageBreak(headerH + 10);
-        // 左侧图标的浅绿色容器
+        // 左侧图标（不再添加方形背景）
         const iconBoxW = 16, iconBoxH = 16;
-        pdf.setFillColor(224, 242, 234); // 近似浅绿背景
-        pdf.roundedRect(margin, currentY, iconBoxW, iconBoxH, 3, 3, 'F');
-        // 图标本体
-        drawIcon(introIcons.title, margin + 2, currentY + 2, 12, 12);
+        drawIcon(introIcons.title, margin, currentY, 16, 16);
         // 标题与副标题
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(18);
@@ -1561,18 +1582,18 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         pdf.setFontSize(10);
         pdf.setTextColor(75, 85, 99);
         pdf.text('Comprehensive risk assessment and recommendations', margin + iconBoxW + 8, currentY + 16);
-        currentY += headerH + 6; // 标题与卡片之间更紧凑
+        currentY += headerH + 5; // 标题与卡片之间更紧凑
         
         // 2. 两个概要卡片区域（垂直排列，尽量还原参考图的尺寸与样式）
         const cardWidthFull = pageWidth - margin * 2; // 满宽卡片
-        const innerPadding = 12;   // 左右内边距（紧凑但保持可读）
-        const topPadding = 8;      // 顶部内边距
-        const bottomPadding = 10;  // 底部内边距
-        const bulletIndent = 5;    // 圆点到文本的缩进
-        const lineGap = 4;         // 换行间距
+        const innerPadding = 10;   // 左右内边距（紧凑但保持可读）
+        const topPadding = 6;      // 顶部内边距
+        const bottomPadding = 6;  // 底部内边距
+        const bulletIndent = 3;    // 圆点到文本的缩进
+        const lineGap = 5;         // 换行间距
 
         // 文本换行：按照满宽卡片计算
-        pdf.setFontSize(10);
+        pdf.setFontSize(12);
         pdf.setFont('helvetica', 'normal');
         const maxLineWidth = cardWidthFull - innerPadding * 2 - bulletIndent - 2;
         const industryLines: string[] = (pdf.splitTextToSize(industryName, maxLineWidth) as string[]);
@@ -1628,14 +1649,14 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
           pdf.text(line, indTextStartX + bulletIndent, indListY + idx * lineGap);
         });
 
-        currentY += indCardHeight + 3; // 进一步减小卡片间距
+        currentY += indCardHeight + 5; // 进一步减小卡片间距
 
         // —— Geographic Scope（卡片二，下） ——
         const geoHeaderY = currentY + topPadding + 5;
         const geoListY = geoHeaderY + 14; // 列表整体下移
         const geoLastY = geoListY + Math.max(countryLines.length - 1, 0) * lineGap;
         const geoCardHeight = (geoLastY - currentY) + bottomPadding;
-        checkCardPageBreak(geoCardHeight + 4);
+        checkCardPageBreak(geoCardHeight + 5);
 
         pdf.setFillColor(247, 247, 247);
         pdf.setDrawColor(229, 231, 235);
@@ -1677,7 +1698,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
           pdf.text(line, geoTextStartX + bulletIndent, geoListY + idx * lineGap);
         });
 
-        currentY += geoCardHeight + 3; // 进入下一块内容前的间距（更紧凑）
+        currentY += geoCardHeight + 5; // 进入下一块内容前的间距（更紧凑）
 
         // 3. 详细分析内容区域（卡片内边距更紧凑，卡片高度按内容动态计算）
         const introCleaned = stripHeadingByText(content, 'Introduction');
@@ -1789,12 +1810,12 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
               case 'link': {
                 pdf.setFontSize(bodyFont);
                 pdf.setFont('helvetica', 'normal');
-                pdf.setTextColor(59, 130, 246);
+                pdf.setTextColor(75, 85, 99);
                 const lines = pdf.splitTextToSize(el.content, detailContentWidth) as string[];
                 lines.forEach(ln => { pdf.text(ln, margin + dInner, bodyY); bodyY += dLine; });
                 if (el.url) {
                   const textWidth = pdf.getTextWidth(el.content);
-                  pdf.setDrawColor(59, 130, 246);
+                  pdf.setDrawColor(75, 85, 99);
                   pdf.line(margin + dInner, bodyY - dLine + 1, margin + dInner + textWidth, bodyY - dLine + 1);
                 }
                 bodyY += 2; break;
@@ -1814,6 +1835,8 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
 
       // 预加载 Important 区块标题图标（从 public/images/graphs）
       const importantTitleIcon = await toDataUrl('/images/graphs/important-title.png');
+        const organizationsTitleIcon = await toDataUrl('/images/graphs/organizations-title.png');
+        const labelsTitleIcon = await toDataUrl('/images/graphs/labels-title.png');
 
       // 专门的Pay Attention板块渲染函数（尽量还原参考设计）
       const renderPayAttentionSection = (considerations: SectionData['considerations']) => {
@@ -1821,10 +1844,8 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         const headerH = 24;
         checkPageBreak(headerH + 10);
         const iconBoxW = 16, iconBoxH = 16;
-        // 浅粉容器，贴近参考设计
-        pdf.setFillColor(253, 242, 244);
-        pdf.roundedRect(margin, currentY, iconBoxW, iconBoxH, 3, 3, 'F');
-        drawIcon(importantTitleIcon, margin + 2, currentY + 2, 12, 12);
+        // 不再添加图标背景容器
+        drawIcon(importantTitleIcon, margin, currentY, 16, 16);
         // 标题与副标题文本（与 Intro 保持相同字号与对齐）
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(18);
@@ -1940,6 +1961,39 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
 
           currentY += cardHeight + 3; // 卡片间距更紧凑
         });
+      };
+
+      // 专门的Organizations板块标题渲染（左侧圆角图标 + 标题与副标题）
+      const renderOrganizationsHeader = () => {
+        const headerH = 24;
+        checkPageBreak(headerH + 10);
+        const iconBoxW = 16, iconBoxH = 16;
+        // 去除图标背景容器
+        drawIcon(organizationsTitleIcon, margin, currentY, 16, 16);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(18);
+        pdf.setTextColor(17, 24, 39);
+        pdf.text('Relevant organizations', margin + iconBoxW + 8, currentY + 8);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(10);
+        pdf.setTextColor(75, 85, 99);
+        pdf.text('Key organizations and standards in your industry', margin + iconBoxW + 8, currentY + 16);
+        currentY += headerH + 3; // 减少标题下方的额外留白
+      };
+      const renderLabelsHeader = () => {
+        const headerH = 24;
+        checkPageBreak(headerH + 10);
+        const iconBoxW = 16, iconBoxH = 16;
+        drawIcon(labelsTitleIcon, margin, currentY, 16, 16);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(18);
+        pdf.setTextColor(17, 24, 39);
+        pdf.text('ESG labels & supply chain initiatives & guidelines', margin + iconBoxW + 8, currentY + 8);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(10);
+        pdf.setTextColor(75, 85, 99);
+        pdf.text('Standards, certifications, and initiatives', margin + iconBoxW + 8, currentY + 16);
+        currentY += headerH + 3; // 减少标题下方的额外留白
       };
 
       // 渲染板块内容的函数
@@ -2079,10 +2133,10 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                       }
                       const mid = ln.slice(p.start, p.start + p.len);
                       if (mid) {
-                        pdf.setTextColor(59, 130, 246);
+                        pdf.setTextColor(colors.text);
                         pdf.text(mid, cursorX, currentY);
                         const lw = pdf.getTextWidth(mid);
-                        pdf.setDrawColor(59, 130, 246);
+                        pdf.setDrawColor(75, 85, 99);
                         pdf.line(cursorX, currentY + 1, cursorX + lw, currentY + 1);
                         pdf.link(cursorX, currentY - 4, lw, 7, { url: p.url });
                         cursorX += lw;
@@ -2314,10 +2368,10 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                     }
                     const mid = ln.slice(p.start, p.start + p.len);
                     if (mid) {
-                      pdf.setTextColor(59, 130, 246);
+                      pdf.setTextColor(colors.text);
                       pdf.text(mid, cursorX, bodyY);
                       const lw = pdf.getTextWidth(mid);
-                      pdf.setDrawColor(59, 130, 246);
+                      pdf.setDrawColor(75, 85, 99);
                       pdf.line(cursorX, bodyY + 1, cursorX + lw, bodyY + 1);
                       pdf.link(cursorX, bodyY - 4, lw, 7, { url: p.url });
                       cursorX += lw;
@@ -3228,10 +3282,10 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         
         // 4. CSR Section (基于organizations数据)
         if (sectionsData.organizations && sectionsData.organizations.length > 0) {
-          currentY = margin + 20;
+          currentY = margin + 10; // 章节顶部起始更靠近页面
           currentColumn = 0;
-          categoryStartY = margin + 20;
-          renderSectionTitle('Relevant Organizations', 'Key stakeholders and regulatory bodies');
+          categoryStartY = margin + 10;
+          renderOrganizationsHeader();
           
           const orgsSorted = sectionsData.organizations.slice().sort((a, b) => {
             const ai = orgLogoInfoMap[a.id];
@@ -3249,10 +3303,10 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         // 5. CSR Labels Section (基于initiatives数据)
         if (sectionsData.initiatives && sectionsData.initiatives.length > 0) {
           pdf.addPage();
-          currentY = margin + 20;
+          currentY = margin + 10; // 章节顶部起始更靠近页面
           currentColumn = 0;
-          categoryStartY = margin + 20;
-          renderSectionTitle('ESG Labels & Supply Chain Initiatives Guidelines', 'Standards, certifications, and initiatives');
+          categoryStartY = margin + 10;
+          renderLabelsHeader();
           
           const initsSorted = sectionsData.initiatives.slice().sort((a, b) => {
             const ai = initiativeLogoInfoMap[a.id];
