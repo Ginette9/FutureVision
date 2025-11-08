@@ -812,6 +812,28 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         }
       };
 
+      // 预加载 Introduction 板块的四个小图标（从 public/images/graphs）
+      const introIcons: {
+        title: string | null;
+        industry: string | null;
+        country: string | null;
+        detailed: string | null;
+      } = {
+        title: await toDataUrl('/images/graphs/introduction-title.png'),
+        industry: await toDataUrl('/images/graphs/introduction-industry.png'),
+        country: await toDataUrl('/images/graphs/introduction-country.png'),
+        detailed: await toDataUrl('/images/graphs/introduction-detailed.png')
+      };
+
+      // 简易图标绘制：在给定位置绘制 dataURL 图片，带兜底
+      const drawIcon = (dataUrl: string | null, x: number, y: number, w: number, h: number) => {
+        if (!dataUrl) return;
+        try {
+          const isPng = dataUrl.startsWith('data:image/png');
+          pdf.addImage(dataUrl, isPng ? 'PNG' : 'JPEG', x, y, w, h);
+        } catch {}
+      };
+
       // 预加载组织logo，构建映射
       const resolveLogoUrl = (raw?: string): string | null => {
         if (!raw) return null;
@@ -1514,175 +1536,280 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
 
       // 专门的Introduction板块渲染函数
       const renderIntroductionSection = (content: string) => {
-        // 1. 标题区域 - 统一风格的板块标题 + 副标题
-        renderSectionTitle('ESG Risk Analysis Report', 'Comprehensive risk assessment and recommendations');
+        // 为避免双列逻辑干扰，引言板块强制使用单列排版
+        const prevSingleColumnMode = singleColumnMode;
+        const prevCurrentColumn = currentColumn;
+        const prevCategoryStartY = categoryStartY;
+        singleColumnMode = true;
+        currentColumn = 0;
+        categoryStartY = currentY;
+        // 1. 标题区域 - 按参考图重绘标题与副标题（含左侧图标）
+        const headerH = 24;
+        checkPageBreak(headerH + 10);
+        // 左侧图标的浅绿色容器
+        const iconBoxW = 16, iconBoxH = 16;
+        pdf.setFillColor(224, 242, 234); // 近似浅绿背景
+        pdf.roundedRect(margin, currentY, iconBoxW, iconBoxH, 3, 3, 'F');
+        // 图标本体
+        drawIcon(introIcons.title, margin + 2, currentY + 2, 12, 12);
+        // 标题与副标题
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(18);
+        pdf.setTextColor(17, 24, 39);
+        pdf.text('ESG Risk Analysis Report', margin + iconBoxW + 8, currentY + 8);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(10);
+        pdf.setTextColor(75, 85, 99);
+        pdf.text('Comprehensive risk assessment and recommendations', margin + iconBoxW + 8, currentY + 16);
+        currentY += headerH + 6; // 标题与卡片之间更紧凑
         
-        // 2. 两个概要卡片区域
-        checkPageBreak(80);
-        
-        const cardWidth = (pageWidth - margin * 2 - 10) / 2; // 两个卡片平分宽度，中间留10px间距
-        const innerPadding = 14;   // 统一左右内边距
-        const bulletIndent = 6;    // 圆点到文本的缩进
-        const lineGap = 6;         // 换行间距，保持紧凑
+        // 2. 两个概要卡片区域（垂直排列，尽量还原参考图的尺寸与样式）
+        const cardWidthFull = pageWidth - margin * 2; // 满宽卡片
+        const innerPadding = 12;   // 左右内边距（紧凑但保持可读）
+        const topPadding = 8;      // 顶部内边距
+        const bottomPadding = 10;  // 底部内边距
+        const bulletIndent = 5;    // 圆点到文本的缩进
+        const lineGap = 4;         // 换行间距
 
-        // 文本换行：确保考虑左右内边距与缩进
+        // 文本换行：按照满宽卡片计算
         pdf.setFontSize(10);
         pdf.setFont('helvetica', 'normal');
-        const maxLineWidth = cardWidth - innerPadding * 2 - bulletIndent - 2;
+        const maxLineWidth = cardWidthFull - innerPadding * 2 - bulletIndent - 2;
         const industryLines: string[] = (pdf.splitTextToSize(industryName, maxLineWidth) as string[]);
         const countryLines: string[] = (pdf.splitTextToSize(countryName, maxLineWidth) as string[]);
 
-        // 计算卡片高度：标题+副标题+列表行
-        const baseHeight = 40; // 标题区高度
-        const card1Height = baseHeight + industryLines.length * lineGap;
-        const card2Height = baseHeight + countryLines.length * lineGap;
-        const cardHeight = Math.max(card1Height, card2Height);
+        // —— Industry Focus（卡片一，上） ——
+        // 高度按实际绘制位置计算：最后一行的Y位置 + 底部内边距
+        const indHeaderY = currentY + topPadding + 5;
+        const indListY = indHeaderY + 14; // 列表整体下移，让副标题远离列表内容
+        const indLastY = indListY + Math.max(industryLines.length - 1, 0) * lineGap;
+        const indCardHeight = (indLastY - currentY) + bottomPadding;
+        checkCardPageBreak(indCardHeight + 4);
 
-        // Industry Focus 卡片
-        pdf.setFillColor(249, 250, 251); // bg-gray-50
-        pdf.setDrawColor(229, 231, 235); // border-gray-200
-        pdf.setLineWidth(0.5);
-        pdf.roundedRect(margin, currentY, cardWidth, cardHeight, 3, 3, 'FD');
+        // 外框：白底+灰色描边，圆角更接近参考
+        pdf.setFillColor(243, 244, 246); // 更接近参考的浅灰背景
+        pdf.setDrawColor(229, 231, 235); // 更轻的边框颜色
+        pdf.setLineWidth(0.6);
+        pdf.roundedRect(margin, currentY, cardWidthFull, indCardHeight, 10, 10, 'FD');
 
-        // Industry Focus 标题
-        pdf.setFontSize(12);
-        pdf.setFont('helvetica', 'normal');
+        // 左侧图标圆形背景（浅绿）
+        pdf.setFillColor(231, 245, 233);
+        const indIconCX = margin + innerPadding; // 圆心X
+        const indIconCY = currentY + topPadding + 6; // 圆心Y上移以贴近标题
+        pdf.circle(indIconCX, indIconCY, 8, 'F');
+        drawIcon(introIcons.industry, indIconCX - 5, indIconCY - 5, 10, 10);
+
+        // 标题与副标题（靠左图标右侧，垂直对齐）
+        const indTextStartX = margin + innerPadding + 14; // 标题更靠左
+        // 标题与副标题（靠左图标右侧，垂直对齐）
+        // 注：indHeaderY 已在上方定义用于高度计算
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(16);
         pdf.setTextColor(17, 24, 39);
-        pdf.text('Industry Focus', margin + innerPadding, currentY + 15);
-
-        // Industry Focus 副标题
-        pdf.setFontSize(9);
-        pdf.setTextColor(75, 85, 99);
-        pdf.text('Target sectors analyzed', margin + innerPadding, currentY + 22);
-
-        // Industry Focus 列表项（自动换行）
+        pdf.text('Industry Focus', indTextStartX, indHeaderY);
+        pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(10);
+        pdf.setTextColor(75, 85, 99);
+        pdf.text('Target sectors analyzed', indTextStartX, indHeaderY + 6); // 更靠近主标题
+
+        // 列表项，统一使用“•”文本圆点，圆点略大
+        // 注：indListY 已在上方定义用于高度计算
+        const indBulletSize = 13; // 圆点更大更明显
+        pdf.setFontSize(indBulletSize);
         pdf.setFont('helvetica', 'normal');
         pdf.setTextColor(55, 65, 81);
-        // 列表项前缀圆点（仅首行）
-        pdf.setFillColor(59, 130, 246);
-        pdf.circle(margin + innerPadding, currentY + 35, 1, 'F');
-        const indTextX = margin + innerPadding + bulletIndent;
-        const indTextY = currentY + 37;
+        pdf.text('•', indTextStartX, indListY);
+
+        // 列表正文
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(55, 65, 81);
         industryLines.forEach((line: string, idx: number) => {
-          pdf.text(line, indTextX, indTextY + idx * lineGap);
+          pdf.text(line, indTextStartX + bulletIndent, indListY + idx * lineGap);
         });
 
-        // Geographic Scope 卡片
-        const card2X = margin + cardWidth + 10;
-        pdf.setFillColor(249, 250, 251);
+        currentY += indCardHeight + 3; // 进一步减小卡片间距
+
+        // —— Geographic Scope（卡片二，下） ——
+        const geoHeaderY = currentY + topPadding + 5;
+        const geoListY = geoHeaderY + 14; // 列表整体下移
+        const geoLastY = geoListY + Math.max(countryLines.length - 1, 0) * lineGap;
+        const geoCardHeight = (geoLastY - currentY) + bottomPadding;
+        checkCardPageBreak(geoCardHeight + 4);
+
+        pdf.setFillColor(243, 244, 246);
         pdf.setDrawColor(229, 231, 235);
-        pdf.roundedRect(card2X, currentY, cardWidth, cardHeight, 3, 3, 'FD');
+        pdf.setLineWidth(0.6);
+        pdf.roundedRect(margin, currentY, cardWidthFull, geoCardHeight, 10, 10, 'FD');
 
-        // Geographic Scope 标题
-        pdf.setFontSize(12);
-        pdf.setFont('helvetica', 'normal');
+        // 左侧图标圆形背景
+        pdf.setFillColor(231, 245, 233);
+        const geoIconCX = margin + innerPadding;
+        const geoIconCY = currentY + topPadding + 6;
+        pdf.circle(geoIconCX, geoIconCY, 8, 'F');
+        drawIcon(introIcons.country, geoIconCX - 5, geoIconCY - 5, 10, 10);
+
+        const geoTextStartX = margin + innerPadding + 14; // 标题更靠左
+        // 标题与副标题（靠左图标右侧，垂直对齐）
+        // 注：geoHeaderY 已在上方定义用于高度计算
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(16);
         pdf.setTextColor(17, 24, 39);
-        pdf.text('Geographic Scope', card2X + innerPadding, currentY + 15);
-
-        // Geographic Scope 副标题
-        pdf.setFontSize(9);
-        pdf.setTextColor(75, 85, 99);
-        pdf.text('Markets under review', card2X + innerPadding, currentY + 22);
-
-        // Geographic Scope 列表项（自动换行）
+        pdf.text('Geographic Scope', geoTextStartX, geoHeaderY);
+        pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(10);
+        pdf.setTextColor(75, 85, 99);
+        pdf.text('Markets under review', geoTextStartX, geoHeaderY + 6); // 更靠近主标题
+
+        // 列表项，统一使用“•”文本圆点，圆点略大
+        // 注：geoListY 已在上方定义用于高度计算
+        const geoBulletSize = 13; // 圆点更大更明显
+        pdf.setFontSize(geoBulletSize);
         pdf.setFont('helvetica', 'normal');
         pdf.setTextColor(55, 65, 81);
-        // 灰色圆点（仅首行）
-        pdf.setFillColor(100, 116, 139);
-        pdf.circle(card2X + innerPadding, currentY + 35, 1, 'F');
-        const countryTextX = card2X + innerPadding + bulletIndent;
-        const countryTextY = currentY + 37;
+        pdf.text('•', geoTextStartX, geoListY);
+
+        // 列表正文
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(55, 65, 81);
         countryLines.forEach((line: string, idx: number) => {
-          pdf.text(line, countryTextX, countryTextY + idx * lineGap);
+          pdf.text(line, geoTextStartX + bulletIndent, geoListY + idx * lineGap);
         });
 
-        currentY += cardHeight + 15;
-        
-        // 3. 详细分析内容区域
-        checkPageBreak(40);
-        
-        // 内容卡片背景
-        pdf.setFillColor(255, 255, 255);
-        pdf.setDrawColor(229, 231, 235);
-        pdf.setLineWidth(0.5);
-        
-        // 先计算内容高度来确定卡片大小（去除误入的“Introduction”标题）
+        currentY += geoCardHeight + 3; // 进入下一块内容前的间距（更紧凑）
+
+        // 3. 详细分析内容区域（卡片内边距更紧凑，卡片高度按内容动态计算）
         const introCleaned = stripHeadingByText(content, 'Introduction');
         const parsed = parseHtmlContent(introCleaned, 'general', countryName, industryName);
-        let contentHeight = 40; // 基础高度（标题区域）
-        
-        if (parsed.elements && parsed.elements.length > 0) {
-          parsed.elements.forEach(element => {
-            const lines = pdf.splitTextToSize(element.content, pageWidth - margin * 2 - 32);
-            contentHeight += lines.length * 5 + 3;
-          });
+
+        // 自适应压缩参数（初始行距稍微增大）
+        let dInner = 12;
+        let dTop = 8;
+        let dBottom = 8;
+        let dLine = 4.4; // 适当增大 Detailed Analysis 行间距
+        let bodyFont = 9;
+        const detailHeaderHeight = 26; // 更接近参考图的标题占位
+
+        const computeDetailHeight = (): { cardH: number; contentH: number; contentW: number } => {
+          const contentW = cardWidthFull - dInner * 2;
+          let contentH = 0;
+          if (parsed.elements && parsed.elements.length > 0) {
+            parsed.elements.forEach(el => {
+              let lines: string[] = [];
+              switch (el.type) {
+                case 'list':
+                  lines = pdf.splitTextToSize(`• ${el.content}`, contentW - bulletIndent) as string[];
+                  break;
+                default:
+                  lines = pdf.splitTextToSize(el.content, contentW) as string[];
+                  break;
+              }
+              contentH += lines.length * dLine + 2; // 末尾额外间隔 2
+            });
+          }
+          const cardH = dTop + detailHeaderHeight + contentH + dBottom;
+          return { cardH, contentH, contentW };
+        };
+
+        // 尝试在同一页压缩至剩余高度
+        const remaining = pageHeight - margin - currentY - 6;
+        let { cardH: detailCardHeight, contentW: detailContentWidth } = computeDetailHeight();
+        if (detailCardHeight > remaining) {
+          dLine = 3.8; bodyFont = 8; dTop = 6; dBottom = 8; ({ cardH: detailCardHeight, contentW: detailContentWidth } = computeDetailHeight());
         }
-        
-        pdf.roundedRect(margin, currentY, pageWidth - margin * 2, Math.min(contentHeight + 20, 200), 3, 3, 'FD');
-        
-        // Detailed Analysis 左侧圆点（替代图标）
-        pdf.setFillColor(59, 130, 246);
-        pdf.circle(margin + 20, currentY + 20, 2, 'F');
-        
-        // Detailed Analysis 标题
-        pdf.setFontSize(14);
-        pdf.setFont('helvetica', 'normal');
+        if (detailCardHeight > remaining) {
+          dInner = 10; ({ cardH: detailCardHeight, contentW: detailContentWidth } = computeDetailHeight());
+        }
+        if (detailCardHeight > remaining) {
+          dLine = 3.5; dTop = 5; dBottom = 6; ({ cardH: detailCardHeight, contentW: detailContentWidth } = computeDetailHeight());
+        }
+        if (detailCardHeight > remaining) {
+          dLine = 3.2; bodyFont = 7.8; dInner = 9; ({ cardH: detailCardHeight, contentW: detailContentWidth } = computeDetailHeight());
+        }
+
+        // 绘制卡片背景（浅灰）
+        pdf.setFillColor(243, 244, 246);
+        pdf.setDrawColor(229, 231, 235);
+        pdf.setLineWidth(0.5);
+        pdf.roundedRect(margin, currentY, cardWidthFull, detailCardHeight, 10, 10, 'FD');
+
+        // 左侧图标圆形背景
+        pdf.setFillColor(231, 245, 233);
+        const dIconCX = margin + dInner;
+        const dIconCY = currentY + dTop + 9;
+        pdf.circle(dIconCX, dIconCY, 8, 'F');
+        drawIcon(introIcons.detailed, dIconCX - 5.5, dIconCY - 5.5, 11, 11);
+
+        // 标题
+        const dTextStartX = margin + dInner + 14; // 标题进一步左移，与上方卡片对齐
+        const dHeaderY = currentY + dTop + 7;
+        pdf.setFontSize(16);
+        pdf.setFont('helvetica', 'bold');
         pdf.setTextColor(17, 24, 39);
-        pdf.text('Detailed Analysis', margin + 26, currentY + 22);
-        
-        currentY += 35;
-        
-        // 渲染详细内容
+        pdf.text('Detailed Analysis', dTextStartX, dHeaderY + 2);
+
+        // 正文内容（同卡片内）
+        let bodyY = currentY + dTop + detailHeaderHeight;
         if (parsed.elements && parsed.elements.length > 0) {
-          parsed.elements.forEach(element => {
-            checkPageBreak(10);
-            
-            switch (element.type) {
-              case 'text':
-                pdf.setFontSize(10);
+          parsed.elements.forEach(el => {
+            switch (el.type) {
+              case 'text': {
+                pdf.setFontSize(bodyFont);
                 pdf.setFont('helvetica', 'normal');
-                pdf.setTextColor(55, 65, 81); // text-gray-700
-                const lines = pdf.splitTextToSize(element.content, pageWidth - margin * 2 - 32);
-                pdf.text(lines, margin + 16, currentY);
-                currentY += lines.length * 5;
-                break;
-              case 'bold':
-                pdf.setFontSize(10);
+                pdf.setTextColor(55, 65, 81);
+                const lines = pdf.splitTextToSize(el.content, detailContentWidth) as string[];
+                lines.forEach(ln => { pdf.text(ln, margin + dInner, bodyY); bodyY += dLine; });
+                bodyY += 2; break;
+              }
+              case 'bold': {
+                pdf.setFontSize(bodyFont);
                 pdf.setFont('helvetica', 'bold');
                 pdf.setTextColor(55, 65, 81);
-                const boldLines = pdf.splitTextToSize(element.content, pageWidth - margin * 2 - 32);
-                pdf.text(boldLines, margin + 16, currentY);
-                currentY += boldLines.length * 5;
-                break;
-              case 'list':
-                pdf.setFontSize(10);
+                const lines = pdf.splitTextToSize(el.content, detailContentWidth) as string[];
+                lines.forEach(ln => { pdf.text(ln, margin + dInner, bodyY); bodyY += dLine; });
+                bodyY += 2; break;
+              }
+              case 'list': {
+                // 统一使用“•”文本圆点，并将圆点更大以增强辨识
+                const bulletSize = bodyFont + 4;
+                pdf.setFontSize(bulletSize);
                 pdf.setFont('helvetica', 'normal');
                 pdf.setTextColor(55, 65, 81);
-                const listLines = pdf.splitTextToSize(`• ${element.content}`, pageWidth - margin * 2 - 37);
-                pdf.text(listLines, margin + 21, currentY);
-                currentY += listLines.length * 5;
-                break;
-              case 'link':
-                pdf.setFontSize(10);
+                pdf.text('•', margin + dInner, bodyY);
+
+                // 列表正文（不包含圆点），保持与其他正文一致的字体
+                pdf.setFontSize(bodyFont);
+                pdf.setFont('helvetica', 'normal');
+                pdf.setTextColor(55, 65, 81);
+                const lines = pdf.splitTextToSize(el.content, detailContentWidth - bulletIndent) as string[];
+                lines.forEach(ln => { pdf.text(ln, margin + dInner + bulletIndent, bodyY); bodyY += dLine; });
+                bodyY += 2; break;
+              }
+              case 'link': {
+                pdf.setFontSize(bodyFont);
                 pdf.setFont('helvetica', 'normal');
                 pdf.setTextColor(59, 130, 246);
-                const linkLines = pdf.splitTextToSize(element.content, pageWidth - margin * 2 - 32);
-                pdf.text(linkLines, margin + 16, currentY);
-                if (element.url) {
-                  const textWidth = pdf.getTextWidth(element.content);
+                const lines = pdf.splitTextToSize(el.content, detailContentWidth) as string[];
+                lines.forEach(ln => { pdf.text(ln, margin + dInner, bodyY); bodyY += dLine; });
+                if (el.url) {
+                  const textWidth = pdf.getTextWidth(el.content);
                   pdf.setDrawColor(59, 130, 246);
-                  pdf.line(margin + 16, currentY + 1, margin + 16 + textWidth, currentY + 1);
+                  pdf.line(margin + dInner, bodyY - dLine + 1, margin + dInner + textWidth, bodyY - dLine + 1);
                 }
-                currentY += linkLines.length * 5;
-                break;
+                bodyY += 2; break;
+              }
             }
-            currentY += 3;
           });
         }
-        
-        currentY += 20; // 底部间距
+
+        // 移动到卡片底部，并留出与后续板块的间距
+        currentY += detailCardHeight + 8;
+
+        // 恢复之前的列模式设置（由外部控制后续板块的排版）
+        singleColumnMode = prevSingleColumnMode;
+        currentColumn = prevCurrentColumn;
+        categoryStartY = prevCategoryStartY;
       };
 
       // 专门的Pay Attention板块渲染函数（卡片式）
@@ -2174,6 +2301,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
 
         // 移动整体Y用于下一个板块或卡片
         currentY += cardHeight + 10;
+
       };
 
       // 渲染“About Us”板块为两个带logo的卡片（MSC 与 Future Vision）
