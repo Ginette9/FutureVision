@@ -1586,11 +1586,11 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         const indCardHeight = (indLastY - currentY) + bottomPadding;
         checkCardPageBreak(indCardHeight + 4);
 
-        // 外框：白底+灰色描边，圆角更接近参考
-        pdf.setFillColor(243, 244, 246); // 更接近参考的浅灰背景
-        pdf.setDrawColor(229, 231, 235); // 更轻的边框颜色
+        // 灰色卡片纯填充（去掉外边框），与“Important to Consider”统一
+        pdf.setFillColor(247, 247, 247);
+        pdf.setDrawColor(229, 231, 235); // 保留，但不描边
         pdf.setLineWidth(0.6);
-        pdf.roundedRect(margin, currentY, cardWidthFull, indCardHeight, 10, 10, 'FD');
+        pdf.roundedRect(margin, currentY, cardWidthFull, indCardHeight, 5, 5, 'F');
 
         // 左侧图标圆形背景（浅绿）
         pdf.setFillColor(231, 245, 233);
@@ -1637,10 +1637,10 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         const geoCardHeight = (geoLastY - currentY) + bottomPadding;
         checkCardPageBreak(geoCardHeight + 4);
 
-        pdf.setFillColor(243, 244, 246);
+        pdf.setFillColor(247, 247, 247);
         pdf.setDrawColor(229, 231, 235);
         pdf.setLineWidth(0.6);
-        pdf.roundedRect(margin, currentY, cardWidthFull, geoCardHeight, 10, 10, 'FD');
+        pdf.roundedRect(margin, currentY, cardWidthFull, geoCardHeight, 5, 5, 'F');
 
         // 左侧图标圆形背景
         pdf.setFillColor(231, 245, 233);
@@ -1728,11 +1728,11 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
           dLine = 3.2; bodyFont = 7.8; dInner = 9; ({ cardH: detailCardHeight, contentW: detailContentWidth } = computeDetailHeight());
         }
 
-        // 绘制卡片背景（浅灰）
-        pdf.setFillColor(243, 244, 246);
+        // 绘制卡片背景（浅灰，纯填充）
+        pdf.setFillColor(247, 247, 247);
         pdf.setDrawColor(229, 231, 235);
         pdf.setLineWidth(0.5);
-        pdf.roundedRect(margin, currentY, cardWidthFull, detailCardHeight, 10, 10, 'FD');
+        pdf.roundedRect(margin, currentY, cardWidthFull, detailCardHeight, 5, 5, 'F');
 
         // 左侧图标圆形背景
         pdf.setFillColor(231, 245, 233);
@@ -1812,10 +1812,31 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         categoryStartY = prevCategoryStartY;
       };
 
-      // 专门的Pay Attention板块渲染函数（卡片式）
+      // 预加载 Important 区块标题图标（从 public/images/graphs）
+      const importantTitleIcon = await toDataUrl('/images/graphs/important-title.png');
+
+      // 专门的Pay Attention板块渲染函数（尽量还原参考设计）
       const renderPayAttentionSection = (considerations: SectionData['considerations']) => {
-        // 标题区：统一板块标题风格 + 副标题（移除不稳定图标）
-        renderSectionTitle('Important to Consider', 'Critical factors for your ESG risk assessment');
+        // 标题区：参考 Introduction 标题布局与位置（左侧小圆角容器+图标，右侧主副标题）
+        const headerH = 24;
+        checkPageBreak(headerH + 10);
+        const iconBoxW = 16, iconBoxH = 16;
+        // 浅粉容器，贴近参考设计
+        pdf.setFillColor(253, 242, 244);
+        pdf.roundedRect(margin, currentY, iconBoxW, iconBoxH, 3, 3, 'F');
+        drawIcon(importantTitleIcon, margin + 2, currentY + 2, 12, 12);
+        // 标题与副标题文本（与 Intro 保持相同字号与对齐）
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(18);
+        pdf.setTextColor(17, 24, 39);
+        pdf.text('Important to Consider', margin + iconBoxW + 8, currentY + 8);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(10);
+        pdf.setTextColor(75, 85, 99);
+        pdf.text('Critical factors for your ESG risk assessment', margin + iconBoxW + 8, currentY + 16);
+        // 标题与内容之间进一步收紧留白
+        currentY += headerH + 4;
+
         const theme = getSectionTheme('Important to Consider');
 
         // 渲染每条提示为卡片
@@ -1835,17 +1856,19 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
             }
           }
 
-          // 统一内边距与图标样式
-          const innerPadding = 18;     // 左右内边距（更舒适的留白）
-          const bulletIndent = 10;     // 蓝色圆点到文本的缩进
-          const titleLineGap = 7;      // 标题行距估算（与渲染一致）
-          const bodyLineGap = 5;       // 正文行距估算（与渲染一致）
+          // 内边距与编号方块样式（缩小并靠近标题左侧，文字更紧凑）
+          const innerPadding = 10;     // 左右内边距（进一步紧凑）
+          const numberSize = 8;        // 更小的粉色方块
+          const numberRadius = 3;      // 方块圆角
+          const textIndent = numberSize + 6; // 标题/正文缩进更小
+          const titleLineGap = 5.4;    // 标题行距保持
+          const bodyLineGap = 5;     // 正文行距再略增，文本更舒展
 
           // 预估卡片高度（考虑左右内边距与缩进）
-          const titleWidth = pageWidth - margin * 2 - innerPadding * 2 - bulletIndent;
+          const titleWidth = pageWidth - margin * 2 - innerPadding * 2 - textIndent;
           // 先设置标题字体再测量
-          pdf.setFontSize(14);
-          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(13);
+          pdf.setFont('helvetica', 'normal');
           const titleLines: string[] = (pdf.splitTextToSize(titleText, titleWidth) as string[]);
           let bodyHeight = 0;
           // 先设置正文字体再测量
@@ -1853,43 +1876,59 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
           pdf.setFont('helvetica', 'normal');
           bodyElements.forEach(el => {
             const contentWidthBase = pageWidth - margin * 2 - innerPadding * 2;
-            const width = el.type === 'list' ? (contentWidthBase - bulletIndent) : contentWidthBase;
-            const prefix = el.type === 'list' ? '• ' : '';
+            const width = el.type === 'list' ? (contentWidthBase - textIndent) : contentWidthBase - textIndent;
+            const prefix = el.type === 'list' ? '' : '';
             const lines: string[] = (pdf.splitTextToSize(prefix + el.content, width) as string[]);
             bodyHeight += lines.length * bodyLineGap + 2;
           });
-          const cardHeight = 24 + titleLines.length * titleLineGap + bodyHeight + 14; // 顶部+标题+正文+底部
+          const cardHeight = 12 + titleLines.length * titleLineGap + bodyHeight + 0; // 进一步减少上下留白
           checkCardPageBreak(cardHeight + 10);
 
           // 卡片背景
-          pdf.setFillColor(theme.cardBg[0], theme.cardBg[1], theme.cardBg[2]);
-          pdf.setDrawColor(theme.cardBorder[0], theme.cardBorder[1], theme.cardBorder[2]);
-          pdf.setLineWidth(0.5);
-          pdf.roundedRect(margin, currentY, pageWidth - margin * 2, cardHeight, 6, 6, 'FD');
+          // 灰色卡片背景与边框，贴近参考图
+          // 更贴近参考图的灰色与边框
+          // 参考设计：灰色卡片无外边框，仅填充圆角背景（圆角更小）
+          pdf.setFillColor(247, 247, 247);
+          pdf.setDrawColor(214, 214, 214); // 保留默认描边色，但不进行描边
+          pdf.setLineWidth(0.4);
+          pdf.roundedRect(margin, currentY, pageWidth - margin * 2, cardHeight, 5, 5, 'F');
 
-          // 左侧蓝色圆点（替换原粉色编号方块）
-          pdf.setFillColor(theme.accent[0], theme.accent[1], theme.accent[2]);
-          pdf.circle(margin + innerPadding, currentY + 22, 2, 'F');
+          // 左侧小粉色方块序号（紧贴标题左侧，不霸占左侧空间）
+          const numX = margin + innerPadding;
+          const numY = currentY + 8; // 进一步减少卡片顶部留白
+          // 粉色方块加深（tailwind rose-200 ≈ 254,205,211）
+          pdf.setFillColor(254, 205, 211);
+          pdf.setDrawColor(253, 164, 175); // 仅设置，不描边
+          // 参考设计：序号方框无外边框，纯填充
+          pdf.roundedRect(numX, numY, numberSize, numberSize, numberRadius, numberRadius, 'F');
+          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(9); // 较小字号更适配8px方框
+          pdf.setTextColor(31, 41, 55);
+          const numStr = String(idx + 1);
+          const tw = pdf.getTextWidth(numStr);
+          // 调整基线位置，使数字在方框内更居中（上移1px）
+          pdf.text(numStr, numX + numberSize / 2 - tw / 2, numY + numberSize / 2 + 1);
 
           // 标题文本（与圆点对齐）
-          pdf.setFontSize(14);
-          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(13);
+          pdf.setFont('helvetica', 'normal'); // 小标题不加粗
           pdf.setTextColor(17, 24, 39);
-          const titleTextX = margin + innerPadding + bulletIndent;
+          const titleTextX = margin + innerPadding + textIndent;
           // 手动逐行渲染以确保与高度计算一致
           titleLines.forEach((line: string, i: number) => {
-            pdf.text(line, titleTextX, currentY + 22 + i * titleLineGap);
+          // 与序号方框水平对齐：使用方框中心作为基线起点（整体上移2px）
+          pdf.text(line, titleTextX, currentY + 12 + i * titleLineGap);
           });
 
           // 正文（统一字体与左右内边距）
-          let bodyY = currentY + 22 + titleLines.length * titleLineGap + 8;
+          let bodyY = currentY + 12 + titleLines.length * titleLineGap + 5;
           bodyElements.forEach(el => {
             pdf.setFontSize(10);
             pdf.setFont('helvetica', el.type === 'bold' ? 'bold' : 'normal');
             pdf.setTextColor(55, 65, 81);
             const contentWidthBase = pageWidth - margin * 2 - innerPadding * 2;
-            const width = el.type === 'list' ? (contentWidthBase - bulletIndent) : contentWidthBase;
-            const prefix = el.type === 'list' ? '• ' : '';
+            const width = contentWidthBase - textIndent;
+            const prefix = '';
             const lines: string[] = (pdf.splitTextToSize(prefix + el.content, width) as string[]);
             const textX = titleTextX; // 与标题左对齐
             // 逐行渲染，行距与测量保持一致
@@ -1899,7 +1938,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
             bodyY += lines.length * bodyLineGap + 2;
           });
 
-          currentY += cardHeight + 10; // 卡片间距
+          currentY += cardHeight + 3; // 卡片间距更紧凑
         });
       };
 
@@ -2374,7 +2413,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         // 引言结束后强制新开一页，保证每个板块从新页开始
         addFooter();
         pdf.addPage();
-        currentY = margin + 20;
+        currentY = margin + 4;
         
         // 2. Pay Attention Section（卡片式渲染）
         if (sectionsData.considerations && sectionsData.considerations.length > 0) {
