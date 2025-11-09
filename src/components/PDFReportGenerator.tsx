@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import jsPDF from 'jspdf';
-import { PDFDocument } from 'pdf-lib';
+import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import coverImageUrl from '@/images/pdf-cover-new.png';
 import backImageUrl from '@/images/pdf-back-new.png';
+import fvLogoUrl from '@/images/future-vision-logo.png';
 import { 
   getRiskIdsByCountryAndIndustry, 
   getRisksByIds, 
@@ -458,7 +459,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
   };
 
   // 绘制类别总结卡片 - 完全按照参考样例设计
-  const drawCategorySummary = (pdf: jsPDF, category: CategoryData, startY: number, pageWidth: number, margin: number, colors: any, lineHeight: number): number => {
+  const drawCategorySummary = (pdf: jsPDF, category: CategoryData, startY: number, pageWidth: number, margin: number, colors: any, lineHeight: number, warningIcon?: string | null): number => {
     const totalThemes = category.themes.length;
     let currentY = startY;
     
@@ -579,28 +580,34 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
       const startX = columnStartX[col];
       let themeY = contentStartY + columnHeights[col]; // 基于列高度定位
       
-      // 绘制主题名称和警告图标 - 参考用户样式
-      // 绘制黑色三角形警告图标 - 调整颜色和大小
-      pdf.setFillColor(0, 0, 0); // 黑色
-      pdf.setDrawColor(0, 0, 0);
-      
-      // 绘制三角形 - 调整位置与themes总数对齐
+      // 绘制主题名称和警示图标
       const triangleSize = 3.5;
-      const triangleX = startX; // 直接使用startX，与themes总数左对齐
+      const triangleX = startX; // 与themes总数左对齐
       const triangleY = themeY;
-      
-      pdf.triangle(
-        triangleX, triangleY - triangleSize,
-        triangleX - triangleSize, triangleY + triangleSize,
-        triangleX + triangleSize, triangleY + triangleSize,
-        'F'
-      );
-      
-      // 在三角形中心绘制白色感叹号 - 减小感叹号字体
-      pdf.setTextColor(255, 255, 255); // 白色
-      pdf.setFontSize(6);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('!', triangleX - 0.6, triangleY + 1.2);
+      // 使用已设计好的PNG图标替代三角形
+      if (warningIcon) {
+        // 尺寸与原三角形大致一致（约7x7mm），稍微留一点边距
+        const iconW = triangleSize * 2;
+        const iconH = triangleSize * 2;
+        try {
+          const isPng = warningIcon.startsWith('data:image/png');
+          pdf.addImage(warningIcon, isPng ? 'PNG' : 'JPEG', triangleX - iconW / 2, triangleY - iconH / 2, iconW, iconH);
+        } catch {}
+      } else {
+        // 兜底：若未能加载图片，仍绘制黑色三角
+        pdf.setFillColor(0, 0, 0);
+        pdf.setDrawColor(0, 0, 0);
+        pdf.triangle(
+          triangleX, triangleY - triangleSize,
+          triangleX - triangleSize, triangleY + triangleSize,
+          triangleX + triangleSize, triangleY + triangleSize,
+          'F'
+        );
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(6);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('!', triangleX - 0.6, triangleY + 1.2);
+      }
       
       // 绘制主题名称 - 增大字体
       pdf.setFontSize(10); // 增大字体从9到10
@@ -975,9 +982,50 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
       pdf.addPage();
       currentY = margin;
       
-      // 添加页脚函数：彻底不绘制任何内容，避免出现“乱码”或额外标记
+      // 预加载页脚Logo（Future Vision）供所有页面复用
+      const fvFooterLogoUrl = await toDataUrl(fvLogoUrl);
+      let fvFooterLogoAspect = 1; // w/h
+      if (fvFooterLogoUrl) {
+        try {
+          const img = new Image();
+          await new Promise<void>((resolve) => {
+            img.onload = () => resolve();
+            img.onerror = () => resolve();
+            img.src = fvFooterLogoUrl;
+          });
+          const w = img.naturalWidth || img.width || 0;
+          const h = img.naturalHeight || img.height || 0;
+          if (w && h) fvFooterLogoAspect = w / h;
+        } catch {}
+      }
+
+      // 添加页脚函数：除封面与尾页外均绘制左Logo、底中网址、右页码
       const addFooter = () => {
-        // no-op: 保持页面底部完全空白
+        try {
+          const currentPage = pdf.getNumberOfPages();
+          // 约定：封面是第1页，尾页由合并阶段追加；此处仅对当前jsPDF页面绘制
+          if (currentPage <= 1) return; // 跳过封面
+          const footerY = pageHeight - margin + 1.2; // 再次贴近底部
+          // 左下角：FV Logo（固定高度，按比例缩放宽度）
+          if (fvFooterLogoUrl) {
+            const logoH = 13; // 保持大小
+            const logoW = Math.max(6, Math.round(logoH * fvFooterLogoAspect));
+            const isPng = fvFooterLogoUrl.startsWith('data:image/png');
+            try {
+              // 进一步向下移动，使其相对文字更低一些
+              pdf.addImage(fvFooterLogoUrl, isPng ? 'PNG' : 'JPEG', margin, footerY - logoH + 5, logoW, logoH);
+            } catch {}
+          }
+          // 底部居中：网址
+          pdf.setFontSize(8);
+          pdf.setFont('helvetica', 'normal');
+          pdf.setTextColor(60, 60, 60);
+          pdf.text('www.mscfv.com', pageWidth / 2, footerY - 0.05, { align: 'center' });
+          // 右下角：页码（当前页）
+          pdf.setFontSize(8);
+          pdf.setTextColor(80, 80, 80);
+          pdf.text(String(currentPage), pageWidth - margin, footerY - 0.05, { align: 'right' });
+        } catch {}
       };
       
       // 添加标题 - 移除，因为参考样例中没有总标题
@@ -1918,9 +1966,10 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
       };
 
       // 预加载 Important 区块标题图标（从 public/images/graphs）
-      const importantTitleIcon = await toDataUrl('/images/graphs/important-title.png');
-        const organizationsTitleIcon = await toDataUrl('/images/graphs/organizations-title.png');
-        const labelsTitleIcon = await toDataUrl('/images/graphs/labels-title.png');
+  const importantTitleIcon = await toDataUrl('/images/graphs/important-title.png');
+  const organizationsTitleIcon = await toDataUrl('/images/graphs/organizations-title.png');
+  const labelsTitleIcon = await toDataUrl('/images/graphs/labels-title.png');
+  const riskWarningIcon = await toDataUrl('/images/graphs/risk-exclamation.png');
 
       // 专门的Pay Attention板块渲染函数（尽量还原参考设计）
       const renderPayAttentionSection = (considerations: SectionData['considerations']) => {
@@ -2588,7 +2637,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         categoryStartY = currentY;
         currentColumn = 0;
         
-        const cardEndY = drawCategorySummary(pdf, category, currentY, pageWidth, margin, colors, lineHeight);
+        const cardEndY = drawCategorySummary(pdf, category, currentY, pageWidth, margin, colors, lineHeight, riskWarningIcon);
         currentY = cardEndY;
         categoryStartY = cardEndY;
         currentColumn = 0;
@@ -3430,9 +3479,83 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         // 4) 复制静态 PDF 的所有页面并追加到末尾（位于封面和动态内容之后、尾页之前）
         const staticPageIndices = staticDoc.getPageIndices();
         const copiedPages = await baseDoc.copyPages(staticDoc, staticPageIndices);
+        const baseCountBeforeAppend = baseDoc.getPageCount();
         copiedPages.forEach(p => baseDoc.addPage(p));
+
+        // 为追加的静态页面绘制页脚（左Logo、底中网址、右页码）
+        try {
+          // 使用标准字体
+          const helvetica = await baseDoc.embedStandardFont(StandardFonts.Helvetica);
+          // 准备Logo（从先前的 dataURL 转换为字节）
+          let pngFooter;
+          let pngAspect = 1;
+          if (fvFooterLogoUrl) {
+            const toBytes = (dataUrl: string): Uint8Array => {
+              const comma = dataUrl.indexOf(',');
+              const b64 = dataUrl.slice(comma + 1);
+              const bin = atob(b64);
+              const arr = new Uint8Array(bin.length);
+              for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+              return arr;
+            };
+            try {
+              const bytes = toBytes(fvFooterLogoUrl);
+              pngFooter = await baseDoc.embedPng(bytes);
+              const w = (pngFooter as any).width || 0;
+              const h = (pngFooter as any).height || 1;
+              pngAspect = w && h ? w / h : 1;
+            } catch {}
+          }
+          // 统一与 jsPDF 页脚的视觉：将数值从 mm 换算为 pt
+          const mmToPt = (mm: number) => mm / 0.352778;
+          const footerBottomOffsetMm = Math.max(0, (margin as number) - 1.2); // jsPDF: footerY = pageHeight - margin + 1.2
+          const textYpt = mmToPt(footerBottomOffsetMm); // 文字基线距离底部的 pt 值
+          const logoHpt = mmToPt(13); // 动态页 Logo 高度 13mm 同步到静态页
+          const urlText = 'www.mscfv.com';
+          const fontSize = 8;
+          const colorUrl = rgb(0.24, 0.24, 0.24);
+          const colorPage = rgb(0.31, 0.31, 0.31);
+          const totalAfterAppend = baseDoc.getPageCount();
+          for (let pi = baseCountBeforeAppend; pi < totalAfterAppend; pi++) {
+            const page = baseDoc.getPage(pi);
+            const { width: pw, height: ph } = page.getSize();
+            // 左下Logo（与动态页一致：logoTop = footerY - logoH + 5mm）
+            if (pngFooter) {
+              const logoWpt = Math.max(mmToPt(6), Math.round(logoHpt * pngAspect));
+              const logoTopYpt = Math.max(mmToPt(1), textYpt - logoHpt + mmToPt(5));
+              page.drawImage(pngFooter, {
+                x: mmToPt(margin as number),
+                y: logoTopYpt,
+                width: logoWpt,
+                height: logoHpt
+              });
+            }
+            // 底部居中网址（y = 与动态页相同的基线高度）
+            const urlWidth = helvetica.widthOfTextAtSize(urlText, fontSize);
+            page.drawText(urlText, {
+              x: pw / 2 - urlWidth / 2,
+              y: textYpt,
+              size: fontSize,
+              font: helvetica,
+              color: colorUrl
+            });
+            // 右下角页码（整体页码）
+            const pageNumber = pi + 1; // PDF整体页码
+            const pageText = String(pageNumber);
+            const pageWidthText = helvetica.widthOfTextAtSize(pageText, fontSize);
+            page.drawText(pageText, {
+              x: pw - mmToPt(margin as number) - pageWidthText,
+              y: textYpt,
+              size: fontSize,
+              font: helvetica,
+              color: colorPage
+            });
+          }
+        } catch (e) {
+          console.warn('静态页面添加页脚失败，已跳过：', e);
+        }
         
-        // 5) 添加尾页图片（若可用）
+        // 5) 添加尾页图片（若可用）——尾页不绘制页脚
         try {
           const backImgRes = await fetch(backImageUrl);
           const backImgBytes = await backImgRes.arrayBuffer();
