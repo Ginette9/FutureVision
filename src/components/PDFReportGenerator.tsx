@@ -840,6 +840,9 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         detailed: await toDataUrl('/images/graphs/introduction-detailed.png')
       };
 
+      // 预加载 Risk Analysis 标题图标
+      const riskTitleIcon = await toDataUrl('/images/graphs/risk-title.png');
+
       // 简易图标绘制：在给定位置绘制 dataURL 图片，带兜底
       const drawIcon = (dataUrl: string | null, x: number, y: number, w: number, h: number) => {
         if (!dataUrl) return;
@@ -2129,6 +2132,23 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         currentY += headerH + 3; // 减少标题下方的额外留白
       };
 
+      // 专门的 Risk Analysis 标题渲染（左侧图标 + 标题 + 副标题）
+      const renderRiskHeader = () => {
+        const headerH = 24;
+        checkPageBreak(headerH + 10);
+        const iconBoxW = 16, iconBoxH = 16;
+        drawIcon(riskTitleIcon, margin, currentY, 16, 16);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(18);
+        pdf.setTextColor(17, 24, 39);
+        pdf.text('Risk Analysis', margin + iconBoxW + 6, currentY + 8);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(10);
+        pdf.setTextColor(75, 85, 99);
+        pdf.text('Risk categories and detailed ESG evaluations', margin + iconBoxW + 6, currentY + 16);
+        currentY += headerH + 3;
+      };
+
       // 渲染板块内容的函数
       const renderSectionContent = (title: string, content: string, subtitle?: string) => {
         if (!content) return;
@@ -2615,8 +2635,8 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
       currentColumn = 0;
       categoryStartY = margin;
 
-        // 添加Risk Analysis板块标题
-        renderSectionTitle('Risk Analysis', 'Risk categories and detailed ESG evaluations');
+                // 添加Risk Analysis板块标题（与其他板块一致的格式 + 左侧图标）
+                renderRiskHeader();
       currentY += 5; // 标题与摘要卡片之间增加一点留白
 
       // 处理每个类别
