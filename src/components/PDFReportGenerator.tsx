@@ -708,7 +708,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
       }
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 9; // 进一步减小页边距，使页面更紧凑
+      const margin = 7; // 再次减小页边距，提升页面可用空间
       const columnWidth = (pageWidth - margin * 3) / 2;
       const lineHeight = 5;
       
@@ -782,11 +782,18 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
               return await new Promise<string>((resolve2) => {
                 const img = new Image();
                 img.onload = () => {
+                  const naturalW = img.naturalWidth || img.width;
+                  const naturalH = img.naturalHeight || img.height;
+                  if (!naturalW || !naturalH) {
+                    // 无法获取自然尺寸，直接回退原始dataURL，避免错误拉伸
+                    resolve2(rawDataUrl);
+                    return;
+                  }
+                  const aspect = naturalH / naturalW; // 保留真实长宽比
+                  const maxW = 140; // 控制PNG大小，避免过大
+                  const targetW = Math.min(maxW, naturalW);
+                  const targetH = Math.max(1, Math.round(targetW * aspect));
                   const canvas = document.createElement('canvas');
-                  // 目标尺寸按卡片预期比例，避免过大
-                  const targetW = 140; // 提高分辨率，PDF里再缩放
-                  const aspect = img.width > 0 ? img.height / img.width : 0.75;
-                  const targetH = Math.max(100, Math.floor(targetW * aspect));
                   canvas.width = targetW;
                   canvas.height = targetH;
                   const ctx = canvas.getContext('2d');
@@ -795,6 +802,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                     return;
                   }
                   ctx.clearRect(0, 0, targetW, targetH);
+                  // 按真实比例绘制到目标尺寸
                   ctx.drawImage(img, 0, 0, targetW, targetH);
                   const pngUrl = canvas.toDataURL('image/png');
                   resolve2(pngUrl);
@@ -834,6 +842,67 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         } catch {}
       };
 
+      // 分析logo图像，给出容器推荐背景色（RGB）
+      const analyzeLogoBg = async (dataUrl: string): Promise<[number, number, number]> => {
+        try {
+          const img = new Image();
+          const loaded = await new Promise<boolean>((resolve) => {
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+            img.src = dataUrl;
+          });
+          if (!loaded) return [229, 231, 235];
+          const naturalW = img.naturalWidth || img.width || 0;
+          const naturalH = img.naturalHeight || img.height || 0;
+          if (!naturalW || !naturalH) return [229, 231, 235];
+          const sampleW = Math.min(80, naturalW);
+          const sampleH = Math.max(1, Math.round(sampleW * (naturalH / naturalW)));
+          const canvas = document.createElement('canvas');
+          canvas.width = sampleW; canvas.height = sampleH;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return [229, 231, 235];
+          ctx.drawImage(img, 0, 0, sampleW, sampleH);
+          const { data } = ctx.getImageData(0, 0, sampleW, sampleH);
+          let edgeAlphaSum = 0, edgeCount = 0;
+          let nonTransparentBrightnessSum = 0, nonTransparentCount = 0;
+          let cornerBrightnessSum = 0, cornerCount = 0;
+          const alphaAt = (i: number) => data[i + 3] / 255;
+          const brightAt = (i: number) => {
+            const r = data[i], g = data[i + 1], b = data[i + 2];
+            return 0.299 * r + 0.587 * g + 0.114 * b;
+          };
+          for (let y = 0; y < sampleH; y++) {
+            for (let x = 0; x < sampleW; x++) {
+              const idx = (y * sampleW + x) * 4;
+              const a = alphaAt(idx);
+              const br = brightAt(idx);
+              // 边缘区域（3px内）用于估计背景是否透明
+              if (x < 3 || x >= sampleW - 3 || y < 3 || y >= sampleH - 3) {
+                edgeAlphaSum += a; edgeCount++;
+                // 角落区域用于估计不透明背景的亮度
+                const isCorner = (x < 3 && y < 3) || (x < 3 && y >= sampleH - 3) || (x >= sampleW - 3 && y < 3) || (x >= sampleW - 3 && y >= sampleH - 3);
+                if (isCorner && a > 0.95) { cornerBrightnessSum += br; cornerCount++; }
+              }
+              if (a > 0.2) { nonTransparentBrightnessSum += br; nonTransparentCount++; }
+            }
+          }
+          const edgeAlphaAvg = edgeCount ? edgeAlphaSum / edgeCount : 1;
+          const nonTransBrightAvg = nonTransparentCount ? nonTransparentBrightnessSum / nonTransparentCount : 128;
+          const cornerBrightAvg = cornerCount ? cornerBrightnessSum / cornerCount : 255;
+          // 判定逻辑：
+          // 1) Opaque且角落很亮 => 白底图，容器用白色避免双层背景
+          if (edgeAlphaAvg > 0.95 && cornerBrightAvg > 240) return [255, 255, 255];
+          // 2) 透明且前景偏亮（白色logo） => 用更深的灰提升对比
+          if (edgeAlphaAvg < 0.2 && nonTransBrightAvg > 200) return [209, 213, 219];
+          // 3) 透明且前景偏暗 => 用极浅灰或白
+          if (edgeAlphaAvg < 0.2 && nonTransBrightAvg < 90) return [247, 247, 247];
+          // 默认浅灰
+          return [229, 231, 235];
+        } catch {
+          return [229, 231, 235];
+        }
+      };
+
       // 预加载组织logo，构建映射
       const resolveLogoUrl = (raw?: string): string | null => {
         if (!raw) return null;
@@ -843,7 +912,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         return `/images/${raw}`;
       };
 
-      const orgLogoInfoMap: Record<number, { dataUrl: string; w: number; h: number } | null> = {};
+      const orgLogoInfoMap: Record<number, { dataUrl: string; w: number; h: number; bg?: [number, number, number] } | null> = {};
       if (sectionsData && sectionsData.organizations) {
         await Promise.all(sectionsData.organizations.map(async (o) => {
           const url = resolveLogoUrl(o.logo) || '';
@@ -858,7 +927,8 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
               img.src = dataUrl;
             });
             if (!iw || !ih) { iw = 140; ih = 100; }
-            orgLogoInfoMap[o.id] = { dataUrl, w: iw, h: ih };
+            const bg = await analyzeLogoBg(dataUrl);
+            orgLogoInfoMap[o.id] = { dataUrl, w: iw, h: ih, bg };
           } else {
             orgLogoInfoMap[o.id] = null;
           }
@@ -866,7 +936,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
       }
 
       // 预加载倡议（Labels/Initiatives）logo，构建映射
-      const initiativeLogoInfoMap: Record<number, { dataUrl: string; w: number; h: number } | null> = {};
+      const initiativeLogoInfoMap: Record<number, { dataUrl: string; w: number; h: number; bg?: [number, number, number] } | null> = {};
       if (sectionsData && sectionsData.initiatives) {
         await Promise.all(sectionsData.initiatives.map(async (it) => {
           const url = resolveLogoUrl(it.logo) || '';
@@ -880,7 +950,8 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
               img.src = dataUrl;
             });
             if (!iw || !ih) { iw = 140; ih = 100; }
-            initiativeLogoInfoMap[it.id] = { dataUrl, w: iw, h: ih };
+            const bg = await analyzeLogoBg(dataUrl);
+            initiativeLogoInfoMap[it.id] = { dataUrl, w: iw, h: ih, bg };
           } else {
             initiativeLogoInfoMap[it.id] = null;
           }
@@ -1089,7 +1160,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
               tempPdf.setFont('helvetica', 'normal');
               lines = tempPdf.splitTextToSize(b.content, contentWidth) as string[];
             }
-            const needH = lines.length * 7; // 每行约7mm高度
+            const needH = lines.length * 6; // 每行约6mm高度（进一步压缩行距）
             if (consumedHeight + needH > availableHeight) break;
             consumedHeight += needH;
             count += lines.length;
@@ -1123,24 +1194,29 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
             const info = orgLogoInfoMap[org.id];
             if (info && info.dataUrl) {
               try {
-                const ratio = info.w > 0 ? info.h / info.w : 0.75;
-                let drawW = logoW;
-                let drawH = drawW * ratio;
-                if (drawH > logoH) {
-                  drawH = logoH;
+                const ratio = info.w > 0 ? info.h / info.w : 0.75; // h/w
+                const pad = 2; // 轻微内边距，避免紧贴容器边缘
+                // 优先以“宽度”适配，避免宽图被横向压缩
+                let drawW = logoW - pad;
+                let drawH = drawW * (ratio || 0.75);
+                // 若高度超出容器，则改为以高度适配
+                if (drawH > logoH - pad) {
+                  drawH = logoH - pad;
                   drawW = drawH / (ratio || 0.75);
                 }
                 const cx = logoX + (logoW - drawW) / 2;
                 const cy = logoY + (logoH - drawH) / 2;
                 const isPng = info.dataUrl.startsWith('data:image/png');
-                // 稍深灰背景+细描边，提升白色logo的可见性
-                pdf.setFillColor(229, 231, 235);
+                // 背景根据logo特性自适应
+                const bg = info.bg || [229, 231, 235];
+                pdf.setFillColor(bg[0], bg[1], bg[2]);
                 pdf.setDrawColor(209, 213, 219);
                 pdf.setLineWidth(0.3);
-                pdf.roundedRect(logoX, logoY, logoW, logoH, 8, 8, 'FD');
+                pdf.roundedRect(logoX, logoY, logoW, logoH, 6, 6, 'FD');
                 pdf.addImage(info.dataUrl, isPng ? 'PNG' : 'JPEG', cx, cy, drawW, drawH);
               } catch (e) {
-                pdf.setFillColor(229, 231, 235);
+                const bg = info.bg || [229, 231, 235];
+                pdf.setFillColor(bg[0], bg[1], bg[2]);
                 pdf.setDrawColor(209, 213, 219);
                 pdf.setLineWidth(0.3);
                 pdf.roundedRect(logoX, logoY, logoW, logoH, 8, 8, 'FD');
@@ -1154,7 +1230,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
 
             // 左侧蓝色小胶囊（缩短并左移）
             const pillX = contentMarginX - 5;
-            const pillY = logoY + logoH + 7;
+            const pillY = logoY + logoH + 5; // 缩短标题与胶囊的间距
             // 颜色稍微调浅（接近 indigo-200）
             pdf.setFillColor(199, 210, 254);
             pdf.roundedRect(pillX, pillY, 11, 8, 1, 1, 'F');
@@ -1180,7 +1256,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
           let nextPointer = pointer;
           for (let bi = pointer; bi < blocks.length; bi++) {
             const b = blocks[bi];
-            if (bodyY + 7 > currentY + rectHeight) break; // 超出本页卡片高度则停止
+            if (bodyY + 6 > currentY + rectHeight) break; // 超出本页卡片高度则停止
 
             if (b.kind === 'bold') {
               pdf.setFontSize(10);
@@ -1189,7 +1265,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
               const lines = pdf.splitTextToSize(normalizeText(b.content), contentWidth) as string[];
               lines.forEach((ln) => {
                 pdf.text(ln, contentMarginX, bodyY);
-                bodyY += 7;
+                bodyY += 6;
               });
               continue;
             }
@@ -1201,7 +1277,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
               pdf.setTextColor(75, 85, 99);
               lines.forEach((ln) => {
                 pdf.text(ln, contentMarginX + (b.indent || 0), bodyY);
-                bodyY += 7;
+                bodyY += 6;
               });
               continue;
             }
@@ -1212,7 +1288,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
             const lines = pdf.splitTextToSize(normalizeText(b.content), contentWidth) as string[];
             let consumedAllParagraph = true;
             for (const ln of lines) {
-              if (bodyY + 7 > currentY + rectHeight) { consumedAllParagraph = false; break; }
+              if (bodyY + 6 > currentY + rectHeight) { consumedAllParagraph = false; break; }
               let cursorX = contentMarginX + (b.indent || 0);
               const positions: Array<{ start: number; len: number; url: string }> = [];
               (b.links || []).forEach(l => {
@@ -1244,7 +1320,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                 const tail = ln.slice(from);
                 if (tail) { pdf.setTextColor(75, 85, 99); pdf.text(tail, cursorX, bodyY); }
               }
-              bodyY += 7;
+              bodyY += 6;
             }
             nextPointer = consumedAllParagraph ? bi + 1 : bi;
             if (!consumedAllParagraph) break;
@@ -1259,7 +1335,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
             currentY = margin;
             firstPage = false;
           } else {
-            // 完成卡片，进一步压缩卡片间距
+            // 完成卡片，适当增大卡片间距
             currentY += 6;
             break;
           }
@@ -1355,7 +1431,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
               tempPdf.setFont('helvetica', 'normal');
               lines = tempPdf.splitTextToSize(b.content, contentWidth) as string[];
             }
-            const needH = lines.length * 7;
+            const needH = lines.length * 6;
             if (consumedHeight + needH > availableHeight) break;
             consumedHeight += needH;
             countLines += lines.length;
@@ -1384,34 +1460,42 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
             const info = initiativeLogoInfoMap[initiative.id];
             if (info && info.dataUrl) {
               try {
-                const ratio = info.w > 0 ? info.h / info.w : 0.75;
-                let drawW = logoW;
-                let drawH = drawW * ratio;
-                if (drawH > logoH) { drawH = logoH; drawW = drawH / (ratio || 0.75); }
+                const ratio = info.w > 0 ? info.h / info.w : 0.75; // h/w
+                const pad = 2;
+                // 宽度优先适配，减少宽图被横向压缩的观感
+                let drawW = logoW - pad;
+                let drawH = drawW * (ratio || 0.75);
+                if (drawH > logoH - pad) {
+                  drawH = logoH - pad;
+                  drawW = drawH / (ratio || 0.75);
+                }
                 const cx = logoX + (logoW - drawW) / 2;
                 const cy = logoY + (logoH - drawH) / 2;
                 const isPng = info.dataUrl.startsWith('data:image/png');
-                pdf.setFillColor(229, 231, 235);
+                const bg = info.bg || [229, 231, 235];
+                pdf.setFillColor(bg[0], bg[1], bg[2]);
                 pdf.setDrawColor(209, 213, 219);
                 pdf.setLineWidth(0.3);
-                pdf.roundedRect(logoX, logoY, logoW, logoH, 8, 8, 'FD');
+                pdf.roundedRect(logoX, logoY, logoW, logoH, 6, 6, 'FD');
                 pdf.addImage(info.dataUrl, isPng ? 'PNG' : 'JPEG', cx, cy, drawW, drawH);
               } catch {
-                pdf.setFillColor(229, 231, 235);
+                const bg = info.bg || [229, 231, 235];
+                pdf.setFillColor(bg[0], bg[1], bg[2]);
                 pdf.setDrawColor(209, 213, 219);
                 pdf.setLineWidth(0.3);
-                pdf.roundedRect(logoX, logoY, logoW, logoH, 8, 8, 'FD');
+                pdf.roundedRect(logoX, logoY, logoW, logoH, 6, 6, 'FD');
               }
             } else {
               pdf.setFillColor(229, 231, 235);
               pdf.setDrawColor(209, 213, 219);
               pdf.setLineWidth(0.3);
-              pdf.roundedRect(logoX, logoY, logoW, logoH, 8, 8, 'FD');
+              pdf.roundedRect(logoX, logoY, logoW, logoH, 6, 6, 'FD');
             }
 
             const pillX = contentMarginX - 5;
-            const pillY = logoY + logoH + 7;
-            pdf.setFillColor(199, 210, 254);
+            const pillY = logoY + logoH + 5;
+            // ESG labels板块卡片标题左侧色块改为偏紫（violet-300）以区别组织卡片
+            pdf.setFillColor(196, 181, 253);
             pdf.roundedRect(pillX, pillY, 11, 8, 1, 1, 'F');
 
             const nameX = contentMarginX;
@@ -1432,14 +1516,14 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
           let nextPointer = pointer;
           for (let bi = pointer; bi < blocks.length; bi++) {
             const b = blocks[bi];
-            if (bodyY + 7 > currentY + rectHeight) break;
+            if (bodyY + 6 > currentY + rectHeight) break;
 
             if (b.kind === 'bold') {
               pdf.setFontSize(10);
               pdf.setFont('helvetica', 'bold');
               pdf.setTextColor(17, 24, 39);
               const lines = pdf.splitTextToSize(b.content, contentWidth) as string[];
-              lines.forEach((ln) => { pdf.text(ln, contentMarginX, bodyY); bodyY += 7; });
+              lines.forEach((ln) => { pdf.text(ln, contentMarginX, bodyY); bodyY += 6; });
               continue;
             }
 
@@ -1448,7 +1532,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
               pdf.setFont('helvetica', 'normal');
               const lines = pdf.splitTextToSize(`• ${b.content}`, contentWidth - (b.indent || 0)) as string[];
               pdf.setTextColor(75, 85, 99);
-              lines.forEach((ln) => { pdf.text(ln, contentMarginX + (b.indent || 0), bodyY); bodyY += 7; });
+              lines.forEach((ln) => { pdf.text(ln, contentMarginX + (b.indent || 0), bodyY); bodyY += 6; });
               continue;
             }
 
@@ -1459,7 +1543,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
             {
               let consumedAllParagraph = true;
               for (const ln of lines) {
-                if (bodyY + 7 > currentY + rectHeight) { consumedAllParagraph = false; break; }
+                if (bodyY + 6 > currentY + rectHeight) { consumedAllParagraph = false; break; }
               let cursorX = contentMarginX + (b.indent || 0);
               const positions: Array<{ start: number; len: number; url: string }> = [];
               (b.links || []).forEach(l => { const idx = ln.indexOf(l.text); if (idx >= 0) positions.push({ start: idx, len: l.text.length, url: l.url }); });
@@ -1489,7 +1573,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                 const tail = ln.slice(from);
                 if (tail) { pdf.setTextColor(75, 85, 99); pdf.text(tail, cursorX, bodyY); }
               }
-                bodyY += 7;
+                bodyY += 6;
               }
               nextPointer = consumedAllParagraph ? bi + 1 : bi;
               if (!consumedAllParagraph) break;
@@ -1504,7 +1588,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
             currentY = margin;
             firstPage = false;
           } else {
-            currentY += 8; // 卡片间距更紧凑
+            currentY += 8; // 适当增大卡片间距
             break;
           }
         }
@@ -1529,7 +1613,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
 
       // 渲染板块标题的函数（支持副标题并扩大背景高度，避免溢出）
       const renderSectionTitle = (title: string, subtitle?: string) => {
-        const bgHeight = subtitle ? 30 : 20;
+        const bgHeight = subtitle ? 26 : 18; // 压缩标题背景高度
         checkPageBreak(bgHeight + 10);
         const theme = getSectionTheme(title);
         
@@ -1555,7 +1639,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
           pdf.text(subtitle, margin + 10, currentY + 16);
         }
         
-        currentY += bgHeight + 5; // 背景后增加留白
+        currentY += bgHeight + 3; // 标题下方留白再压缩
       };
 
       // 专门的Introduction板块渲染函数
@@ -1973,11 +2057,11 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(18);
         pdf.setTextColor(17, 24, 39);
-        pdf.text('Relevant organizations', margin + iconBoxW + 8, currentY + 8);
+        pdf.text('Relevant organizations', margin + iconBoxW + 6, currentY + 8);
         pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(10);
         pdf.setTextColor(75, 85, 99);
-        pdf.text('Key organizations and standards in your industry', margin + iconBoxW + 8, currentY + 16);
+        pdf.text('Key organizations and standards in your industry', margin + iconBoxW + 6, currentY + 16);
         currentY += headerH + 3; // 减少标题下方的额外留白
       };
       const renderLabelsHeader = () => {
@@ -1988,11 +2072,11 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         pdf.setFont('helvetica', 'bold');
         pdf.setFontSize(18);
         pdf.setTextColor(17, 24, 39);
-        pdf.text('ESG labels & supply chain initiatives & guidelines', margin + iconBoxW + 8, currentY + 8);
+        pdf.text('ESG labels & supply chain initiatives & guidelines', margin + iconBoxW + 6, currentY + 8);
         pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(10);
         pdf.setTextColor(75, 85, 99);
-        pdf.text('Standards, certifications, and initiatives', margin + iconBoxW + 8, currentY + 16);
+        pdf.text('Standards, certifications, and initiatives', margin + iconBoxW + 6, currentY + 16);
         currentY += headerH + 3; // 减少标题下方的额外留白
       };
 
@@ -2094,7 +2178,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                 pdf.roundedRect(margin, currentY - 8, tagWidth, tagHeight, 2, 2, 'F');
                 pdf.setTextColor(255, 255, 255);
                 pdf.text(b.content, margin + 4, currentY - 1);
-                currentY += 8;
+                currentY += 6; // 压缩标签行间距
                 break;
               }
               case 'sources': {
@@ -2102,7 +2186,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
                 pdf.setFont('helvetica', 'bold');
                 pdf.setTextColor(colors.text);
                 pdf.text(b.content, margin, currentY);
-                currentY += 8;
+                currentY += 6; // 压缩来源标题行间距
                 break;
               }
               case 'paragraph':
@@ -2169,7 +2253,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
           }
         }
         
-        currentY += 10; // 板块间距
+        currentY += 8; // 板块间距（更紧凑）
       };
 
       // 渲染板块为「卡片式」的函数（仿照网页卡片样式）
@@ -3282,9 +3366,9 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         
         // 4. CSR Section (基于organizations数据)
         if (sectionsData.organizations && sectionsData.organizations.length > 0) {
-          currentY = margin + 10; // 章节顶部起始更靠近页面
+          currentY = margin + 4; // 进一步上移章节标题，和其他板块一致
           currentColumn = 0;
-          categoryStartY = margin + 10;
+          categoryStartY = margin + 4;
           renderOrganizationsHeader();
           
           const orgsSorted = sectionsData.organizations.slice().sort((a, b) => {
@@ -3303,9 +3387,9 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         // 5. CSR Labels Section (基于initiatives数据)
         if (sectionsData.initiatives && sectionsData.initiatives.length > 0) {
           pdf.addPage();
-          currentY = margin + 10; // 章节顶部起始更靠近页面
+          currentY = margin + 4; // 进一步上移章节标题，和其他板块一致
           currentColumn = 0;
-          categoryStartY = margin + 10;
+          categoryStartY = margin + 4;
           renderLabelsHeader();
           
           const initsSorted = sectionsData.initiatives.slice().sort((a, b) => {
