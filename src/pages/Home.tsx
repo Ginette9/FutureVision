@@ -109,7 +109,7 @@ export default function NewHome() {
             >
               <h1 className="text-3xl lg:text-5xl font-light text-gray-900 mb-6 leading-tight">
                 企业全球环境与社会
-                <span className="block font-normal text-gray-700">冲突风险管理</span>
+                <span className="block font-normal text-gray-700 mt-2">冲突风险管理</span>
               </h1>
               <p className="text-lg lg:text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl">
                 为中企出海提供全球ESG风险全面评估、监控预警与在地化管理，帮助企业规避ESG冲突事件，避免重大财务和声誉损失。
@@ -130,9 +130,9 @@ export default function NewHome() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="relative"
             >
-              <div className="aspect-square bg-gray-50 rounded-lg overflow-hidden">
+              <div className="aspect-square bg-white-50 rounded-lg overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=600&fit=crop"
+                  src="/images/square_earth.png"
                   alt="ESG咨询服务"
                   className="w-full h-full object-cover"
                 />

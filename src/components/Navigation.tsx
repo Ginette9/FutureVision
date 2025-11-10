@@ -8,7 +8,7 @@ const Navigation = () => {
   const location = useLocation();
 
   const navItems = [
-    { name: '首页', path: '/' },
+    // 首页从导航移除，改为点击左侧 logo + 文案回到首页
     { name: '专业服务', path: '/services' },
     // { name: '产品', path: '/products', subItems: [
     //   { name: 'ESG风险分析', path: '/esg-risk-analysis' }
@@ -16,8 +16,10 @@ const Navigation = () => {
     { name: '独家洞察', path: '/insights' },
     { name: '知识中心', path: '/knowledge' },
     { name: '成功案例', path: '/cases' },
+    // 会员入口（外链），位于“成功案例”和“关于我们”之间
+    { name: '会员入口', href: 'https://mscfv.com/futureVision/' },
     { name: '关于我们', path: '/about' },
-  ];
+  ] as Array<{ name: string; path?: string; href?: string }>;
 
   const isActive = (path: string) => {
     if (path === '/') {
@@ -31,7 +33,7 @@ const Navigation = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center h-20">
           {/* Logo - 左侧 */}
-          <Link to="/" className="flex items-center space-x-3 mr-16">
+          <Link to="/" className="flex items-center space-x-3 mr-8">
             <img
               src="/images/future-vision-logo-graph.png"
               alt="Future Vision Logo"
@@ -39,33 +41,46 @@ const Navigation = () => {
             />
             <div className="hidden sm:block">
               <h1 className="text-2xl font-light text-gray-900 tracking-tight">Future Vision</h1>
-              <p className="text-sm text-gray-500 font-light">洞悉未来商业增长</p>
+              <p className="text-sm text-gray-500 font-light" style={{ letterSpacing: '0.08em' }}>洞悉未来商业增长</p>
             </div>
           </Link>
 
           {/* Desktop Navigation - 中间 */}
-          <div className="hidden md:flex items-center justify-center space-x-16 flex-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`relative text-sm font-medium tracking-wide transition-colors duration-300 whitespace-nowrap ${
-                  isActive(item.path)
-                    ? 'text-gray-900'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                {item.name}
-                {isActive(item.path) && (
-                  <motion.div
-                    layoutId="activeTab"
-                    className="absolute -bottom-6 left-0 right-0 h-0.5 bg-gray-900"
-                    initial={false}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  />
-                )}
-              </Link>
-            ))}
+          <div className="hidden md:flex items-center justify-center space-x-12 flex-1">
+            {navItems.map((item) => {
+              if (item.href) {
+                return (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    className="relative text-sm font-medium tracking-wide transition-colors duration-300 whitespace-nowrap text-gray-600 hover:text-gray-900"
+                  >
+                    {item.name}
+                  </a>
+                );
+              }
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path!}
+                  className={`relative text-sm font-medium tracking-wide transition-colors duration-300 whitespace-nowrap ${
+                    isActive(item.path!)
+                      ? 'text-gray-900'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  {item.name}
+                  {isActive(item.path!) && (
+                    <motion.div
+                      layoutId="activeTab"
+                      className="absolute -bottom-6 left-0 right-0 h-0.5 bg-gray-900"
+                      initial={false}
+                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    />
+                  )}
+                </Link>
+              );
+            })}
           </div>
 
           {/* Right side items */}
@@ -101,20 +116,34 @@ const Navigation = () => {
             className="md:hidden bg-white border-t border-gray-100"
           >
             <div className="px-4 pt-4 pb-6 space-y-4">
-              {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`block py-2 text-base font-medium transition-colors duration-300 ${
-                    isActive(item.path)
-                      ? 'text-gray-900'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              ))}
+              {navItems.map((item) => {
+                if (item.href) {
+                  return (
+                    <a
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="block py-2 text-base font-medium transition-colors duration-300 text-gray-600 hover:text-gray-900"
+                    >
+                      {item.name}
+                    </a>
+                  );
+                }
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path!}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`block py-2 text-base font-medium transition-colors duration-300 ${
+                      isActive(item.path!)
+                        ? 'text-gray-900'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                );
+              })}
               
               {/* Mobile CTA */}
               <Link
