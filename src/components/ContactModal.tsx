@@ -180,12 +180,13 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
                   <div>
                     <label htmlFor="company" className="block text-sm font-medium text-gray-900 mb-2">
-                      公司
+                      公司 *
                     </label>
                     <input
                       type="text"
                       id="company"
                       name="company"
+                      required
                       value={formData.company}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 bg-white text-gray-900 focus:border-gray-900 focus:outline-none transition-colors"
@@ -195,12 +196,13 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
                   <div>
                     <label htmlFor="position" className="block text-sm font-medium text-gray-900 mb-2">
-                      职位
+                      职位 *
                     </label>
                     <input
                       type="text"
                       id="position"
                       name="position"
+                      required
                       value={formData.position}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 bg-white text-gray-900 focus:border-gray-900 focus:outline-none transition-colors"
@@ -210,12 +212,13 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
                   <div>
                     <label htmlFor="phone" className="block text-sm font-medium text-gray-900 mb-2">
-                      手机号码
+                      手机号码 *
                     </label>
                     <input
                       type="tel"
                       id="phone"
                       name="phone"
+                      required
                       value={formData.phone}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 bg-white text-gray-900 focus:border-gray-900 focus:outline-none transition-colors"

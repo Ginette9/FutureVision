@@ -78,12 +78,9 @@ export default function About() {
         <h1 className="text-4xl lg:text-5xl font-light text-gray-900 mb-6">
           关于我们
         </h1>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-          Future Vision - 您的首选智能咨询伙伴，致力于推动全球商业可持续发展
-        </p>
       </motion.div>
 
-      {/* Company Introduction */}
+      {/* Company Introduction - 三个小标题与文字（左侧上下两个，右侧一个） */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -91,39 +88,35 @@ export default function About() {
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20"
       >
         <div className="bg-gray-50 p-12">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl font-light text-gray-900 mb-6">
-                我们的使命
-              </h2>
-              <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-                Future Vision 成立于2019年，是一家专注于ESG（环境、社会和治理）咨询的专业服务机构。
-                我们致力于帮助企业在全球化进程中识别和管理ESG风险，实现可持续发展目标。
-              </p>
-              <p className="text-lg text-gray-600 leading-relaxed">
-                通过深度的行业洞察、前沿的分析工具和丰富的实践经验，我们为客户提供全方位的ESG解决方案，
-                助力企业在复杂多变的全球商业环境中保持竞争优势。
-              </p>
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
+            {/* 左侧：上下两个块 */}
+            <div className="space-y-8">
+              <div className="bg-white p-8 border border-gray-200">
+                <h3 className="text-xl font-medium text-gray-900 mb-4">我们的使命</h3>
+                <p className="text-lg text-gray-700 leading-relaxed">洞悉新增长 普惠可持续</p>
+              </div>
+              <div className="bg-white p-8 border border-gray-200">
+                <h3 className="text-xl font-medium text-gray-900 mb-4">我们致力于</h3>
+                <div className="space-y-3">
+                  <p className="text-gray-700 text-base leading-relaxed">
+                    将可持续发展融入到企业战略与行为中，帮助企业获得增长的同时产生正向社会价值
+                  </p>
+                  <p className="text-gray-700 text-base leading-relaxed">
+                    融合管理咨询方法与AI技术，实现可持续发展咨询的普惠
+                  </p>
+                </div>
+              </div>
             </div>
+            {/* 右侧：一个块 */}
             <div className="bg-white p-8 border border-gray-200">
-              <h3 className="text-xl font-medium text-gray-900 mb-6">核心数据</h3>
-              <div className="grid grid-cols-2 gap-6">
-                <div className="text-center">
-                  <div className="text-3xl font-light text-gray-900 mb-2">100+</div>
-                  <div className="text-sm text-gray-600">服务客户</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-light text-gray-900 mb-2">30+</div>
-                  <div className="text-sm text-gray-600">覆盖国家</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-light text-gray-900 mb-2">5年</div>
-                  <div className="text-sm text-gray-600">专业经验</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-light text-gray-900 mb-2">95%</div>
-                  <div className="text-sm text-gray-600">客户满意度</div>
-                </div>
+              <h3 className="text-xl font-medium text-gray-900 mb-4">我们相信</h3>
+              <div className="space-y-3">
+                <p className="text-gray-700 text-base leading-relaxed">
+                  企业的利益和前途在于为社会创造福祉
+                </p>
+                <p className="text-gray-700 text-base leading-relaxed">
+                  社会问题中蕴藏着巨大的商业机会
+                </p>
               </div>
             </div>
           </div>

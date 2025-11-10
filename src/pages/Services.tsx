@@ -139,7 +139,7 @@ export default function Services() {
             需要了解更多？
           </h2>
           <p className="text-lg text-gray-600 mb-8 max-w-xl mx-auto">
-            请联系我们的专业团队，获得专业的ESG风险管理解决方案
+            请描述您的需求，我们的顾问会尽快联系您。
           </p>
           <button 
             onClick={() => setIsContactModalOpen(true)}

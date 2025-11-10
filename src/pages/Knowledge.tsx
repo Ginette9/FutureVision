@@ -206,7 +206,7 @@ export default function Knowledge() {
             订阅知识更新
           </h2>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            第一时间获取最新的行业资讯、专业洞察和课程更新
+            第一时间获取最新的要闻资讯、专业洞察和课程内容
           </p>
           <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
             <input

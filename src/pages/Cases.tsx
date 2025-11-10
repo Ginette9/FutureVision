@@ -112,7 +112,7 @@ export default function Cases() {
           成功案例
         </h1>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-          通过专业的ESG解决方案，我们帮助众多企业成功应对全球化挑战
+          在过去的数十年中，我们帮助众多企业成功应对全球化和增长挑战
         </p>
       </motion.div>
 
@@ -202,45 +202,6 @@ export default function Cases() {
         </div>
       </div>
 
-      {/* Stats Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="bg-gray-50 p-12"
-        >
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-light text-gray-900 mb-6">
-              我们的成果
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              通过专业服务，我们帮助客户取得了显著成效
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-4xl font-light text-gray-900 mb-2">100+</div>
-              <div className="text-gray-600">成功案例</div>
-            </div>
-            <div>
-              <div className="text-4xl font-light text-gray-900 mb-2">50+</div>
-              <div className="text-gray-600">合作企业</div>
-            </div>
-            <div>
-              <div className="text-4xl font-light text-gray-900 mb-2">95%</div>
-              <div className="text-gray-600">客户满意度</div>
-            </div>
-            <div>
-              <div className="text-4xl font-light text-gray-900 mb-2">30+</div>
-              <div className="text-gray-600">覆盖国家</div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-
       {/* Contact Section */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
         <motion.div
@@ -250,12 +211,9 @@ export default function Cases() {
           viewport={{ once: true }}
           className="text-center bg-gray-50 p-12"
         >
-          <h2 className="text-3xl font-light text-gray-900 mb-6">
+          <h2 className="text-2xl font-light text-gray-900 mb-6">
             和我们一起，开启您的成功故事
           </h2>
-          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            让我们的专业团队为您量身定制ESG解决方案
-          </p>
           <button 
             onClick={() => setIsContactModalOpen(true)}
             className="inline-flex items-center px-8 py-3 text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300 font-medium"

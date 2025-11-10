@@ -113,12 +113,9 @@ export default function Insights() {
           viewport={{ once: true }}
           className="text-center bg-gray-50 p-12"
         >
-          <h2 className="text-3xl font-light text-gray-900 mb-6">
+          <h2 className="text-3xl font-light text-gray-900 mb-8">
             订阅我们的洞察报告
           </h2>
-          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            获取最新的ESG趋势分析、市场洞察和专业指导
-          </p>
           <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
             <input
               type="email"
