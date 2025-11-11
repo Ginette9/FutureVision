@@ -41,7 +41,7 @@ export const IntroductionSection: React.FC<Props> = ({
   const navigate = useNavigate();
   const location = useLocation();
   const { language } = useLanguage();
-  const isZh = language === 'zh-CN';
+  const isZh = language === 'zh-CN' || language === 'zh-HK';
 
   // 固定的详细分析内容
   const intro_prose_en = `
@@ -97,7 +97,32 @@ export const IntroductionSection: React.FC<Props> = ({
       </div>
     </div>
   `;
-  const intro_prose = isZh ? intro_prose_zh : intro_prose_en;
+  const intro_prose_zh_hk = `
+    <div class="mb-16 flex w-full flex-col">
+      <div class="flex flex-col gap-2">
+        <div class="flex flex-col rounded-sm py-4">
+          <div class="lg:item-center pdf-layout-wrap flex flex-col gap-6 lg:max-w-full lg:flex-row">
+            <div class="no-pdf-block"></div>
+          </div>
+          <div class="lg:item-center flex flex-col gap-6 self-start lg:max-w-full lg:flex-row">
+            <div class="flex gap-6 pt-4">
+              <div class="prose lg:prose-lg hyphens-none">
+                <p>本報告基於您選擇的產品與/或目標地區，提供 CSR 風險檢查的系統化分析。分析旨在協助識別供應鏈中的潛在環境與社會風險，並提出可落地的緩釋建議。</p>
+                <ul>
+                  <li>風險條目以隨機順序呈現</li>
+                  <li>風險分為四個主題：公平商業實踐、人權與倫理、勞動權利、環境</li>
+                  <li>每項風險均附有可執行的緩釋建議，便於制定改進措施</li>
+                  <li>我們持續更新風險資料庫，但個別類別可能暫未收錄公開來源；這並不代表該類別不存在風險</li>
+                  <li>風險數量不代表優先級或嚴重程度。建議結合供應商訪談與盡職調查，進行更全面的風險識別</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  const intro_prose = language === 'zh-HK' ? intro_prose_zh_hk : (isZh ? intro_prose_zh : intro_prose_en);
 
   const filename = useMemo(() => {
     const prods = productNames?.length ? productNames.join('_') : 'products';
@@ -256,7 +281,7 @@ export const IntroductionSection: React.FC<Props> = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h2 className="text-xl font-light text-gray-900">{isZh ? '详细分析' : 'Detailed Analysis'}</h2>
+          <h2 className="text-xl font-light text-gray-900">{language === 'zh-HK' ? '詳細分析' : (isZh ? '详细分析' : 'Detailed Analysis')}</h2>
         </div>
         <div 
           className="prose prose-lg max-w-none text-gray-700 leading-relaxed"

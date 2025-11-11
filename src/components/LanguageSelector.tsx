@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 // 语言选项类型
 type LanguageOption = {
-  code: 'en-US' | 'zh-CN';
+  code: 'en-US' | 'zh-CN' | 'zh-HK';
   nameKey: string;
   flag: string;
 };
@@ -19,6 +19,7 @@ const LanguageSelector = () => {
   const languageOptions: LanguageOption[] = [
     { code: 'en-US', nameKey: 'language.enUS', flag: '🇺🇸' },
     { code: 'zh-CN', nameKey: 'language.zhCN', flag: '🇨🇳' },
+    { code: 'zh-HK', nameKey: 'language.zhHK', flag: '🇭🇰' },
   ];
 
   const currentLanguage = languageOptions.find(option => option.code === language);

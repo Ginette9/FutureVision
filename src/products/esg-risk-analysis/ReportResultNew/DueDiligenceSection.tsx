@@ -4,7 +4,8 @@ import { getSectionsContent } from './sectionsContent';
 
 export const DueDiligenceSection: React.FC = () => {
   const { language } = useLanguage();
-  const sectionTitle = language === 'zh-CN' ? '尽职调查' : 'Due diligence';
+  const isZh = language === 'zh-CN' || language === 'zh-HK';
+  const sectionTitle = isZh ? '尽职调查' : 'Due diligence';
 
   const rawHtml = getSectionsContent(language).dueDiligenceHtml;
 
@@ -84,10 +85,10 @@ export const DueDiligenceSection: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-emerald-800">{language === 'zh-CN' ? 'OECD 指南' : 'OECD Guidelines'}</h3>
+            <h3 className="text-lg font-semibold text-emerald-800">{isZh ? 'OECD 指南' : 'OECD Guidelines'}</h3>
           </div>
           <p className="text-emerald-700 text-sm leading-relaxed">
-            {language === 'zh-CN'
+            {isZh
               ? '获得全球 35 个政府认可，为企业处理童工、环境与腐败等可持续议题提供全面框架。'
               : 'Endorsed by 35 governments worldwide, providing a comprehensive framework for companies to address sustainability issues including child labor, environment, and corruption.'}
           </p>
@@ -100,10 +101,10 @@ export const DueDiligenceSection: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-teal-800">{language === 'zh-CN' ? '联合国指导原则' : 'UN Guiding Principles'}</h3>
+            <h3 className="text-lg font-semibold text-teal-800">{isZh ? '联合国指导原则' : 'UN Guiding Principles'}</h3>
           </div>
           <p className="text-teal-700 text-sm leading-relaxed">
-            {language === 'zh-CN'
+            {isZh
               ? '三大支柱框架：国家保护人权的义务、企业尊重人权的责任以及有效救济途径。'
               : 'Three pillars framework: state duty to protect human rights, corporate responsibility to respect human rights, and access to effective remedy.'}
           </p>

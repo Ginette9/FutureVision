@@ -138,9 +138,9 @@ export const disclaimerHtmlZh = `
   </p>
 `;
 
-export const getSectionsContent = (language: 'en-US' | 'zh-CN') => ({
-  dueDiligenceHtml: language === 'zh-CN' ? dueDiligenceHtmlZh : dueDiligenceHtml,
-  aboutMvoHtml: language === 'zh-CN' ? aboutMvoHtmlZh : aboutMvoHtml,
-  contactHtml: language === 'zh-CN' ? contactHtmlZh : contactHtml,
-  disclaimerHtml: language === 'zh-CN' ? disclaimerHtmlZh : disclaimerHtml,
+export const getSectionsContent = (language: 'en-US' | 'zh-CN' | 'zh-HK') => ({
+  dueDiligenceHtml: language === 'zh-CN' || language === 'zh-HK' ? dueDiligenceHtmlZh : dueDiligenceHtml,
+  aboutMvoHtml: language === 'zh-CN' || language === 'zh-HK' ? aboutMvoHtmlZh : aboutMvoHtml,
+  contactHtml: language === 'zh-CN' || language === 'zh-HK' ? contactHtmlZh : contactHtml,
+  disclaimerHtml: language === 'zh-CN' || language === 'zh-HK' ? disclaimerHtmlZh : disclaimerHtml,
 });

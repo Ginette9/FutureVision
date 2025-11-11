@@ -1,12 +1,13 @@
 import initSqlJs from 'sql.js';
 import enDbUrl from '@/data/csr_database.db?url';
 import cnDbUrl from '@/data/csr_database_CN.db?url';
+import hkDbUrl from '@/data/csr_database_HK.db?url';
 
 // 缓存 SQL.js 和两个数据库实例（英文库用于ID映射，本地化库用于内容）
 let SQLLib: any = null;
 let dbEnglish: any = null;
 let dbLocalized: any = null;
-let dbLocalizedLang: 'en-US' | 'zh-CN' | null = null;
+let dbLocalizedLang: 'en-US' | 'zh-CN' | 'zh-HK' | null = null;
 
 async function loadSQL() {
   if (SQLLib) return SQLLib;
@@ -44,11 +45,11 @@ async function initDatabaseLocalized() {
       dbLocalized = null;
     }
 
-    const url = lang === 'zh-CN' ? cnDbUrl : enDbUrl;
+    const url = lang === 'zh-CN' ? cnDbUrl : (lang === 'zh-HK' ? hkDbUrl : enDbUrl);
     const res = await fetch(url);
     const uint8 = new Uint8Array(await res.arrayBuffer());
     dbLocalized = new SQL.Database(uint8);
-    dbLocalizedLang = lang as 'en-US' | 'zh-CN';
+    dbLocalizedLang = lang as 'en-US' | 'zh-CN' | 'zh-HK';
     return dbLocalized;
   } catch (error) {
     console.error('Failed to initialize localized database:', error);

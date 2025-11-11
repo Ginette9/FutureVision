@@ -3,12 +3,13 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 export const ContactSection: React.FC = () => {
   const { language } = useLanguage();
-  const sectionTitle = language === 'zh-CN' ? '联系' : 'Contact';
+  const isZh = language === 'zh-CN' || language === 'zh-HK';
+  const sectionTitle = isZh ? '联系' : 'Contact';
 
   const cards = [
     {
       tags:
-        language === 'zh-CN'
+        isZh
           ? [
               'ESG 评级提升',
               'ESG 风险检查与评估',
@@ -20,7 +21,7 @@ export const ContactSection: React.FC = () => {
               'ESG Conflict Incident Response Plan and Handling Procedures',
             ],
       html:
-        language === 'zh-CN'
+        isZh
           ? `
         <p>
           如对风险与建议有疑问，或正遭遇 ESG 冲突事件并因此承受财务损失，欢迎邮件联系 <a href="mailto:jinxia@mscfv.com"><strong>jinxia@mscfv.com</strong></a>。
@@ -34,11 +35,11 @@ export const ContactSection: React.FC = () => {
     },
     {
       tags:
-        language === 'zh-CN'
+        isZh
           ? ['可持续战略与增长', '全球化拓展与本地化执行']
           : ['Sustainability Strategy & Growth', 'Globalized Expansion & Localized Execution'],
       html:
-        language === 'zh-CN'
+        isZh
           ? `
         <p>
           若您在开拓新市场或本地化运营方面面临挑战，请联系 <a href="mailto:jacobtomas@msc-world.com"><strong>jacobtomas@msc-world.com</strong></a>，我们助您畅通国际增长路径。
@@ -51,9 +52,9 @@ export const ContactSection: React.FC = () => {
       `,
     },
     {
-      tags: language === 'zh-CN' ? ['合作伙伴'] : ['Collaboration partners'],
+      tags: isZh ? ['合作伙伴'] : ['Collaboration partners'],
       html:
-        language === 'zh-CN'
+        isZh
           ? `
         <p>
           我们帮助客户与伙伴利用 ESG 融合的增长引擎——从可持续战略设计到跨境风险缓释。请联系 <a href="mailto:leon@msc-world.com"><strong>leon@msc-world.com</strong></a>，携手把 ESG 风险转化为可持续增长。
@@ -97,7 +98,7 @@ export const ContactSection: React.FC = () => {
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3">
                     <div className="w-2 h-6 bg-gradient-to-b from-blue-600 to-cyan-600 rounded-full"></div>
-                    <h3 className="text-lg font-light text-gray-900">{language === 'zh-CN' ? '服务场景' : 'Service Scenarios'}</h3>
+                    <h3 className="text-lg font-light text-gray-900">{isZh ? '服务场景' : 'Service Scenarios'}</h3>
                   </div>
                   
                   <div className="grid md:grid-cols-2 gap-3">
@@ -137,9 +138,9 @@ export const ContactSection: React.FC = () => {
           </div>
           
           <div className="space-y-3">
-            <h3 className="text-2xl font-light text-gray-900">{language === 'zh-CN' ? '需要即时支持？' : 'Need Immediate Assistance?'}</h3>
+            <h3 className="text-2xl font-light text-gray-900">{isZh ? '需要即时支持？' : 'Need Immediate Assistance?'}</h3>
             <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              {language === 'zh-CN'
+              {isZh
                 ? '我们的 ESG 专家随时为您提供支持，帮助您应对可持续挑战并解锁增长机会。'
                 : 'Our ESG experts are ready to help you navigate sustainability challenges and unlock growth opportunities.'}
             </p>
@@ -153,7 +154,7 @@ export const ContactSection: React.FC = () => {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
-              <span>{language === 'zh-CN' ? 'ESG 风险' : 'ESG Risk'}</span>
+              <span>{isZh ? 'ESG 风险' : 'ESG Risk'}</span>
             </a>
             
             <a
@@ -163,7 +164,7 @@ export const ContactSection: React.FC = () => {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
               </svg>
-              <span>{language === 'zh-CN' ? '增长战略' : 'Growth Strategy'}</span>
+              <span>{isZh ? '增长战略' : 'Growth Strategy'}</span>
             </a>
             
             <a
@@ -173,7 +174,7 @@ export const ContactSection: React.FC = () => {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
-              <span>{language === 'zh-CN' ? '合作伙伴' : 'Partnership'}</span>
+              <span>{isZh ? '合作伙伴' : 'Partnership'}</span>
             </a>
           </div>
         </div>

@@ -3,6 +3,7 @@ export default {
   // 语言名称
   "language.zhCN": "简体中文",
   "language.enUS": "英语",
+  "language.zhHK": "繁体中文",
 
   // 中文行业完整列表（与 en-US 的 industries 顺序和长度一一对应）
   "industries.zh": [

@@ -42,6 +42,7 @@ export default {
   "language.zhCN": "Simplified Chinese",
   "language.enUS": "English",
   "language.zhTW": "Traditional Chinese",
+  "language.zhHK": "Traditional Chinese",
   
   // Home page
   "home.title": "Enterprise Overseas ESG Risk Analysis",

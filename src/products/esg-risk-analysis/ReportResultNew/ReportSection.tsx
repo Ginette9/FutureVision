@@ -212,8 +212,8 @@ const ReportSection: React.FC<Props> = ({ countryName, industryName }) => {
         <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
-        <h3 className="mt-2 text-sm font-medium text-gray-900">{language === 'zh-CN' ? '暂无报告数据' : 'No report data available'}</h3>
-        <p className="mt-1 text-sm text-gray-500">{language === 'zh-CN' ? '所选国家与行业未找到风险或建议。' : 'No risks or recommendations found for the selected country and industry.'}</p>
+        <h3 className="mt-2 text-sm font-medium text-gray-900">{(language === 'zh-CN' || language === 'zh-HK') ? '暂无报告数据' : 'No report data available'}</h3>
+        <p className="mt-1 text-sm text-gray-500">{(language === 'zh-CN' || language === 'zh-HK') ? '所选国家与行业未找到风险或建议。' : 'No risks or recommendations found for the selected country and industry.'}</p>
       </div>
     );
   }
@@ -235,7 +235,7 @@ const ReportSection: React.FC<Props> = ({ countryName, industryName }) => {
       <div className="space-y-4">
         <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
           <p className="text-gray-700 mb-4 text-sm sm:text-base">
-            {language === 'zh-CN'
+            {(language === 'zh-CN' || language === 'zh-HK')
               ? '以下为基于您提交的答案生成的风险分析结果。需要重新选择产品或国家吗？'
               : 'Below you will find the results of the risk analysis based on your submitted answers. Would you like to switch your product or country?'}
           </p>
@@ -246,20 +246,20 @@ const ReportSection: React.FC<Props> = ({ countryName, industryName }) => {
             <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            {language === 'zh-CN' ? '再次填写 ESG 风险评估表' : 'Fill out the ESG Risk Form again'}
+            {(language === 'zh-CN' || language === 'zh-HK') ? '再次填写 ESG 风险评估表' : 'Fill out the ESG Risk Form again'}
           </a>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-gradient-to-r from-red-50 to-orange-50 rounded-lg p-4 sm:p-6 gap-4">
           <div className="min-w-0">
-            <h3 className="text-lg font-semibold text-gray-900">{language === 'zh-CN' ? '风险概览' : 'Risk Summary'}</h3>
-            <p className="text-gray-600 text-sm sm:text-base">{language === 'zh-CN' ? '分析中识别到的风险总数' : 'Total risks identified in your analysis'}</p>
+            <h3 className="text-lg font-semibold text-gray-900">{(language === 'zh-CN' || language === 'zh-HK') ? '风险概览' : 'Risk Summary'}</h3>
+            <p className="text-gray-600 text-sm sm:text-base">{(language === 'zh-CN' || language === 'zh-HK') ? '分析中识别到的风险总数' : 'Total risks identified in your analysis'}</p>
           </div>
           <div className="text-center sm:text-right flex-shrink-0">
             <div className="text-2xl sm:text-3xl font-bold text-red-600">
               {totalRisks}
             </div>
-            <div className="text-sm text-gray-500">{language === 'zh-CN' ? '项风险' : 'risks found'}</div>
+            <div className="text-sm text-gray-500">{(language === 'zh-CN' || language === 'zh-HK') ? '项风险' : 'risks found'}</div>
           </div>
         </div>
       </div>
@@ -277,7 +277,7 @@ const ReportSection: React.FC<Props> = ({ countryName, industryName }) => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span className="text-sm font-medium">
-                  {language === 'zh-CN' ? `${category.themes.length} 个主题已分析` : `${category.themes.length} themes analyzed`}
+                  {(language === 'zh-CN' || language === 'zh-HK') ? `${category.themes.length} 个主题已分析` : `${category.themes.length} themes analyzed`}
                 </span>
               </div>
             </div>

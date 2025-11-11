@@ -21,8 +21,9 @@ export const CsrLabelsSection: React.FC<{
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const sectionTitle = language === 'zh-CN' ? 'ESG标签、供应链倡议与指南' : 'ESG labels, supply chain initiatives & guidelines';
-  const sectionSubtitle = language === 'zh-CN' ? '行业标准与认证项目' : 'Industry standards and certification programs';
+  const isZh = language === 'zh-CN' || language === 'zh-HK';
+  const sectionTitle = isZh ? 'ESG标签、供应链倡议与指南' : 'ESG labels, supply chain initiatives & guidelines';
+  const sectionSubtitle = isZh ? '行业标准与认证项目' : 'Industry standards and certification programs';
 
   useEffect(() => {
     const fetchInitiatives = async () => {

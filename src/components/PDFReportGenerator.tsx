@@ -111,7 +111,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
   const [isGenerating, setIsGenerating] = useState(false);
   const { language } = useLanguage();
   // 中文模式下导出强制使用英文内容
-  const exportLanguage = language === 'zh-CN' ? 'en-US' : language;
+  const exportLanguage = (language === 'zh-CN' || language === 'zh-HK') ? 'en-US' : language;
 
   // 获取报告数据
   const fetchReportData = async (): Promise<CategoryData[]> => {
@@ -672,7 +672,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
     
     try {
       // 中文模式下提示仅支持英文导出
-      if (language === 'zh-CN') {
+      if (language === 'zh-CN' || language === 'zh-HK') {
         const ok = window.confirm('当前仅支持英文版 PDF 导出，是否继续导出英文版？');
         if (!ok) {
           setIsGenerating(false);

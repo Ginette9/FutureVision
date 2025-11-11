@@ -51,8 +51,9 @@ export const CSRSection: React.FC<{
     }
   }, [countryName, industryName]);
 
-  const sectionTitle = language === 'zh-CN' ? '相关组织与标准' : 'Relevant organizations';
-  const sectionSubtitle = language === 'zh-CN' ? '行业中关键组织与规范' : 'Key organizations and standards in your industry';
+  const isZh = language === 'zh-CN' || language === 'zh-HK';
+  const sectionTitle = isZh ? '相关组织与标准' : 'Relevant organizations';
+  const sectionSubtitle = isZh ? '行业中关键组织与规范' : 'Key organizations and standards in your industry';
 
   if (loading) {
     return (

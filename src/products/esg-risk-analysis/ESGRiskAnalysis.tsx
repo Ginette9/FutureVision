@@ -7,6 +7,7 @@ import RiskForm from './RiskForm';
 import LogoCarousel from '@/components/LogoCarousel';
 import { getCountryId, getProductId } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
+import zhCNTranslations from '@/locales/zh-CN';
 
 // 定义表单验证模式
 const contactSchema = z.object({
@@ -30,8 +31,17 @@ export const getIndustries = (
   };
 
   const enList = ensureArray(t('industries'));
-  const zhList = language === 'zh-CN' ? ensureArray(t('industries.zh')) : [];
-  const displayList = language === 'zh-CN' && zhList.length === enList.length ? zhList : enList;
+  let zhList: string[] = [];
+  if (language === 'zh-CN') {
+    // 直接使用当前语言的中文列表
+    zhList = ensureArray(t('industries.zh'));
+  } else if (language === 'zh-HK') {
+    // 优先使用 zh-HK 的中文列表；若不完整则回退到 zh-CN 完整列表
+    const zhHK = ensureArray(t('industries.zh'));
+    const zhCN = Array.isArray((zhCNTranslations as any)["industries.zh"]) ? (zhCNTranslations as any)["industries.zh"] as string[] : [];
+    zhList = zhHK.length === enList.length ? zhHK : (zhCN.length === enList.length ? zhCN : []);
+  }
+  const displayList = (language === 'zh-CN' || language === 'zh-HK') && zhList.length === enList.length ? zhList : enList;
 
   return displayList.map((label, idx) => {
     const enName = enList[idx] ?? label;
@@ -60,8 +70,15 @@ export const getCountries = (
   };
 
   const enList = ensureArray(t('countries'));
-  const zhList = language === 'zh-CN' ? ensureArray(t('countries.zh')) : [];
-  const displayList = language === 'zh-CN' && zhList.length === enList.length ? zhList : enList;
+  let zhList: string[] = [];
+  if (language === 'zh-CN') {
+    zhList = ensureArray(t('countries.zh'));
+  } else if (language === 'zh-HK') {
+    const zhHK = ensureArray(t('countries.zh'));
+    const zhCN = Array.isArray((zhCNTranslations as any)["countries.zh"]) ? (zhCNTranslations as any)["countries.zh"] as string[] : [];
+    zhList = zhHK.length === enList.length ? zhHK : (zhCN.length === enList.length ? zhCN : []);
+  }
+  const displayList = (language === 'zh-CN' || language === 'zh-HK') && zhList.length === enList.length ? zhList : enList;
 
   return displayList.map((label, idx) => {
     const enName = enList[idx] ?? label;

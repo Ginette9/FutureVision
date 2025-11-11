@@ -53,6 +53,8 @@ const Navigation = () => {
                   <a
                     key={item.href}
                     href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="relative text-sm font-medium tracking-wide transition-colors duration-300 whitespace-nowrap text-gray-600 hover:text-gray-900"
                   >
                     {item.name}

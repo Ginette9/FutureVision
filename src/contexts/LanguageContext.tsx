@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 // 支持的语言类型
-type Language = 'en-US' | 'zh-CN';
+type Language = 'en-US' | 'zh-CN' | 'zh-HK';
 
 // 翻译资源接口（允许字符串或字符串数组）
 interface TranslationResources {
@@ -30,6 +30,15 @@ const loadTranslations = async (lang: Language): Promise<TranslationResources> =
       return base;
     }
   }
+  if (lang === 'zh-HK') {
+    try {
+      const zhHK = (await import('@/locales/zh-HK')).default as TranslationResources;
+      return { ...base, ...zhHK };
+    } catch (e) {
+      console.error('Failed to load zh-HK translations, falling back to en-US:', e);
+      return base;
+    }
+  }
   return base;
 };
 
@@ -43,7 +52,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   const [isLoading, setIsLoading] = useState(true);
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('language');
-    return (saved === 'zh-CN' ? 'zh-CN' : 'en-US');
+    return (saved === 'zh-CN' || saved === 'zh-HK') ? (saved as Language) : 'en-US';
   });
 
   // 根据当前语言加载翻译资源

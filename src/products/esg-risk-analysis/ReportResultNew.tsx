@@ -162,8 +162,9 @@ function ReportResultNew() {
       : formData.industry.name
   ) : '';
 
-  const displayCountryName = formData ? (language === 'zh-CN' ? zhCountryName : englishCountryName) : '';
-  const displayIndustryName = formData ? (language === 'zh-CN' ? zhIndustryName : englishIndustryName) : '';
+  const isZh = language === 'zh-CN' || language === 'zh-HK';
+  const displayCountryName = formData ? (isZh ? zhCountryName : englishCountryName) : '';
+  const displayIndustryName = formData ? (isZh ? zhIndustryName : englishIndustryName) : '';
 
   const introSection = sections.find((s) => s.id === 'introduction');
   const payAttentionSection = sections.find((s) => s.id === 'important-to-consider');

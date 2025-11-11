@@ -7,7 +7,8 @@ import FutureVisionLogo from '@/images/future-vision-logo.png';
 
 export const AboutMvoSection: React.FC = () => {
   const { language } = useLanguage();
-  const sectionTitle = language === 'zh-CN' ? '关于我们' : 'About Us';
+  const isZh = language === 'zh-CN' || language === 'zh-HK';
+  const sectionTitle = isZh ? '关于我们' : 'About Us';
 
   // 卡片内容数组
   const cards = [
@@ -15,7 +16,7 @@ export const AboutMvoSection: React.FC = () => {
       title: 'MSC HK',
       logo: MscLogo,
       html:
-        language === 'zh-CN'
+        isZh
           ? `
         <p><strong>Maker Sustainability Consulting</strong>（MSC）是一家扎根中国、面向全球的可持续战略咨询公司。我们通过咨询服务，助力全球企业迈向可持续经济。</p>
         <p>凭借十余年经验，我们将战略思维与实践落地相结合，与全球企业并肩重塑增长——走向一个由中国洞察赋能、可持续、智能、全球互联的未来。</p>
@@ -29,7 +30,7 @@ export const AboutMvoSection: React.FC = () => {
       title: 'Future Vision',
       logo: FutureVisionLogo,
       html:
-        language === 'zh-CN'
+        isZh
           ? `
         <p><strong>Future Vision</strong>是一位由 AI 驱动的商业与可持续智能助手，帮助企业家探索可持续增长的新机会。</p>
         <p>借助 Future Vision，管理者可实时监控 ESG 风险，跟踪竞品洞察与全球商业动态，并连接国际机构与专家网络。</p>
@@ -55,7 +56,7 @@ export const AboutMvoSection: React.FC = () => {
         <div>
           <h2 className="text-3xl font-light text-gray-900">{sectionTitle}</h2>
           <p className="text-gray-600 mt-1">
-            {language === 'zh-CN' ? '可持续咨询与 AI 驱动智能' : 'Sustainability consulting and AI-powered intelligence'}
+            {isZh ? '可持续咨询与 AI 驱动智能' : 'Sustainability consulting and AI-powered intelligence'}
           </p>
         </div>
       </div>
@@ -105,9 +106,9 @@ export const AboutMvoSection: React.FC = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-gray-900">{language === 'zh-CN' ? '准备好重新定义增长了吗？' : 'Ready to Transform Your Business?'}</h3>
+          <h3 className="text-xl font-semibold text-gray-900">{isZh ? '准备好重新定义增长了吗？' : 'Ready to Transform Your Business?'}</h3>
           <p className="text-gray-600">
-            {language === 'zh-CN'
+            {isZh
               ? '了解我们的可持续咨询与 AI 智能如何助力您的企业实现可持续增长。'
               : "Discover how our sustainability consulting and AI-powered intelligence can drive your company's sustainable growth."}
           </p>
@@ -118,7 +119,7 @@ export const AboutMvoSection: React.FC = () => {
               rel="noopener noreferrer"
               className="inline-flex items-center px-6 py-3 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors"
             >
-              {language === 'zh-CN' ? '访问 MSC 官网' : 'Visit MSC Website'}
+              {isZh ? '访问 MSC 官网' : 'Visit MSC Website'}
               <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
@@ -129,7 +130,7 @@ export const AboutMvoSection: React.FC = () => {
               rel="noopener noreferrer"
               className="inline-flex items-center px-6 py-3 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors"
             >
-              {language === 'zh-CN' ? '探索 Future Vision' : 'Explore Future Vision'}
+              {isZh ? '探索 Future Vision' : 'Explore Future Vision'}
               <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
