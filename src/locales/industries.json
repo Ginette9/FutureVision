@@ -1,0 +1,1627 @@
+[
+  {
+    "title": null,
+    "children": []
+  },
+  {
+    "title": "Animal and vegetable oils, fats and waxes",
+    "children": [
+      {
+        "title": "Fixed vegetable fats and oils",
+        "children": [
+          {
+            "title": "Other vegetable oils and fats"
+          },
+          {
+            "title": "Palm oil"
+          },
+          {
+            "title": "Soy oil"
+          }
+        ]
+      },
+      {
+        "title": "Animal oils and fats",
+        "children": []
+      },
+      {
+        "title": "Processed animal or vegetable fats, oils and waxes (non edible)",
+        "children": []
+      }
+    ]
+  },
+  {
+    "title": "Beverages and tobacco",
+    "children": [
+      {
+        "title": "Tobacco and tobacco manufactures",
+        "children": [
+          {
+            "title": "Tobacco (manufactured, also tobacco substitutes)"
+          },
+          {
+            "title": "Tobacco (unmanufactured) and tobacco refuse"
+          }
+        ]
+      },
+      {
+        "title": "Beverages",
+        "children": [
+          {
+            "title": "Non alcoholic beverages (natural/mineral water, soda)"
+          },
+          {
+            "title": "Alcoholic beverages (a.o. beer, wine, liquor/liqueur, distilled)"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Chemicals and related products",
+    "children": [
+      {
+        "title": "Plastics in nonprimary forms",
+        "children": [
+          {
+            "title": "Plates, sheets, film, foil and strips of plastics"
+          },
+          {
+            "title": "Monofilament, rods, sticks and profile shapes of plastics"
+          },
+          {
+            "title": "Tubes, pipes and hoses of plastics"
+          }
+        ]
+      },
+      {
+        "title": "Plastics in primary forms",
+        "children": [
+          {
+            "title": "Other plastics (in primary forms)"
+          },
+          {
+            "title": "Polymers of ethylene (in primary forms)"
+          },
+          {
+            "title": "Polyacetals, polyethers and epoxide resins (in primary forms)"
+          },
+          {
+            "title": "Polymers of styrene (in primary forms)"
+          },
+          {
+            "title": "Polymers of vinyl chloride or other halogenated olefins (in primary forms)"
+          },
+          {
+            "title": "Waste, parings and scrap of plastics"
+          }
+        ]
+      },
+      {
+        "title": "Organic chemicals",
+        "children": [
+          {
+            "title": "Other organic chemicals"
+          },
+          {
+            "title": "Organo-inorganic compounds, heterocyclic compounds, nucleic acids and their salts"
+          },
+          {
+            "title": "Alcohols, phenols and derivatives"
+          },
+          {
+            "title": "Nitrogen-function compounds"
+          },
+          {
+            "title": "Hydrocarbons and derivatives"
+          }
+        ]
+      },
+      {
+        "title": "Medicinal and pharmaceutical products",
+        "children": [
+          {
+            "title": "Soap, cleansing and polishing preparations"
+          },
+          {
+            "title": "Medicinal and pharmaceutical products (no medicaments)"
+          },
+          {
+            "title": "Medicaments (including veterinary medicaments)"
+          }
+        ]
+      },
+      {
+        "title": "Chemical materials and products",
+        "children": [
+          {
+            "title": "Explosives and pyrotechnic products"
+          },
+          {
+            "title": "Insecticides, fungicides, herbicides and disinfectants"
+          },
+          {
+            "title": "Lubricants, liquids for hydraulic transmissions, antifreezes and deicing fluids"
+          },
+          {
+            "title": "Miscellaneous chemical products"
+          },
+          {
+            "title": "Starches, inulin and wheat gluten, albuminoidal substances and glues"
+          }
+        ]
+      },
+      {
+        "title": "Carboxylic acids and derivatives",
+        "children": []
+      },
+      {
+        "title": "Essential oils, perfumes and soaps",
+        "children": [
+          {
+            "title": "Essential oils, perfume and flavor materials"
+          },
+          {
+            "title": "Perfumery, cosmetics, or toilet preparations (no soaps)"
+          }
+        ]
+      },
+      {
+        "title": "Inorganic chemicals",
+        "children": [
+          {
+            "title": "Radioactive and associated materials"
+          },
+          {
+            "title": "Inorganic chemical elements, oxides and halogen salts (incl. silicon)"
+          },
+          {
+            "title": "Metallic salts and peroxysalts of inorganic acids"
+          },
+          {
+            "title": "Inorganic chemicals and compounds of precious metals"
+          },
+          {
+            "title": "Lithium"
+          }
+        ]
+      },
+      {
+        "title": "Fertilizers",
+        "children": []
+      },
+      {
+        "title": "Dyeing, tanning and coloring materials",
+        "children": [
+          {
+            "title": "Synthetic organic varnishes, dyes and color lakes"
+          },
+          {
+            "title": "Dyeing and tanning extracts, and synthetic tanning materials"
+          },
+          {
+            "title": "Pigments, paints, varnishes and related materials"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Services",
+    "children": [
+      {
+        "title": "Business services",
+        "children": [
+          {
+            "title": "Holdings (non financial), group services and management advisory"
+          },
+          {
+            "title": "Other business services"
+          },
+          {
+            "title": "Legal services, accountancy, tax advisory and administration"
+          },
+          {
+            "title": "Facility management, cleaning & landscape services"
+          },
+          {
+            "title": "Security & investigation"
+          },
+          {
+            "title": "Job placement & employment agencies"
+          },
+          {
+            "title": "Advertising & market research"
+          },
+          {
+            "title": "Research & development services"
+          },
+          {
+            "title": "Design, photography, translation and other consultancy"
+          },
+          {
+            "title": "Technical testing and analysis"
+          },
+          {
+            "title": "Veterinary activities"
+          }
+        ]
+      },
+      {
+        "title": "Transport and storage (incl. mail and deliverers)",
+        "children": [
+          {
+            "title": "Land transport (incl. transport via pipeline)"
+          },
+          {
+            "title": "Water transport"
+          },
+          {
+            "title": "Air transport"
+          },
+          {
+            "title": "Warehousing and support activities for transportation"
+          },
+          {
+            "title": "Postal and courier activities"
+          }
+        ]
+      },
+      {
+        "title": "Tourism & catering",
+        "children": [
+          {
+            "title": "Travel agency, tour operator, tourist information and reservation services"
+          },
+          {
+            "title": "Accommodation services (incl. housekeeping)"
+          },
+          {
+            "title": "Food and beverage service activities"
+          }
+        ]
+      },
+      {
+        "title": "Construction",
+        "children": [
+          {
+            "title": "Construction of buildings and development of building projects"
+          },
+          {
+            "title": "Civil engineering (excl. earthworks)"
+          },
+          {
+            "title": "Specialised construction activities"
+          }
+        ]
+      },
+      {
+        "title": "Mining and quarrying",
+        "children": [
+          {
+            "title": "Extraction of crude petroleum and natural gas"
+          },
+          {
+            "title": "Mining and quarrying (no oil and gas)"
+          },
+          {
+            "title": "Mining support activities"
+          }
+        ]
+      },
+      {
+        "title": "Agriculture, hunting, forestry and fishing",
+        "children": [
+          {
+            "title": "Growing of food crops"
+          },
+          {
+            "title": "Growing of ornamental plants"
+          },
+          {
+            "title": "Animal breeding and husbandry"
+          },
+          {
+            "title": "Support activities to agriculture (incl. treatment of crops and seeds)"
+          },
+          {
+            "title": "Hunting"
+          },
+          {
+            "title": "Forestry and logging"
+          },
+          {
+            "title": "Support activities to forestry"
+          },
+          {
+            "title": "Fishing"
+          },
+          {
+            "title": "Aquaculture"
+          }
+        ]
+      },
+      {
+        "title": "Water, waste and recycling",
+        "children": [
+          {
+            "title": "Collection, purification and distribution of water"
+          },
+          {
+            "title": "Sewerage"
+          },
+          {
+            "title": "Waste collection, treatment and disposal activities"
+          },
+          {
+            "title": "Recycling (incl. preparation for recycling)"
+          },
+          {
+            "title": "Remediation activities and other waste management services"
+          }
+        ]
+      },
+      {
+        "title": "Energy production, distribution and trade",
+        "children": [
+          {
+            "title": "Production of electricity"
+          },
+          {
+            "title": "Operation of transmission systems for electricity, gas and hot water"
+          },
+          {
+            "title": "Distribution of electricity and gas through pipes"
+          },
+          {
+            "title": "Trade of electricity and gas through pipes"
+          },
+          {
+            "title": "Manufacture of gas"
+          },
+          {
+            "title": "Steam and air conditioning supply"
+          }
+        ]
+      },
+      {
+        "title": "Government, education & health care",
+        "children": [
+          {
+            "title": "Public administration, public services and compulsory social security"
+          },
+          {
+            "title": "Education"
+          },
+          {
+            "title": "Health care"
+          },
+          {
+            "title": "Residential care activities"
+          },
+          {
+            "title": "Social work activities without accommodation"
+          }
+        ]
+      },
+      {
+        "title": "Repair & installation of machinery and equipment",
+        "children": [
+          {
+            "title": "Repair of metal products, machinery and equipment"
+          },
+          {
+            "title": "Installation of industrial machinery and equipment"
+          },
+          {
+            "title": "Repair of computers and communication equipment"
+          },
+          {
+            "title": "Repair of computers and peripheral equipment"
+          }
+        ]
+      },
+      {
+        "title": "Arts, culture, sport & leisure",
+        "children": [
+          {
+            "title": "Arts"
+          },
+          {
+            "title": "Lending of cultural goods, public archives, museums, botanical and zoological gardens and nature reserves activities"
+          },
+          {
+            "title": "Lotteries and betting"
+          },
+          {
+            "title": "Sports and recreation"
+          }
+        ]
+      },
+      {
+        "title": "Media, ICT and telecom",
+        "children": [
+          {
+            "title": "Publishing of books, magazines etc."
+          },
+          {
+            "title": "Software publishing"
+          },
+          {
+            "title": "Motion picture, video and television programme production"
+          },
+          {
+            "title": "Sound recording  and music publishing activities"
+          },
+          {
+            "title": "Programming and broadcasting activities (radio and television)"
+          },
+          {
+            "title": "Telecommunications"
+          },
+          {
+            "title": "Support activities in the field of information technology"
+          },
+          {
+            "title": "Information service activities"
+          }
+        ]
+      },
+      {
+        "title": "Financial services",
+        "children": [
+          {
+            "title": "Financial institutions (except insurance and pension funds)"
+          },
+          {
+            "title": "Insurance and pension funding (not compulsory social insurance)"
+          },
+          {
+            "title": "Other financial services"
+          }
+        ]
+      },
+      {
+        "title": "Rental and lease",
+        "children": [
+          {
+            "title": "Renting, buying and selling of real estate"
+          },
+          {
+            "title": "Renting of movable property"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Manufactured goods classified chiefly by material",
+    "children": [
+      {
+        "title": "Textile yarn and fabrics",
+        "children": [
+          {
+            "title": "Woven fabrics of other textile materials (including narrow or special fabrics)"
+          },
+          {
+            "title": "Knitted or crocheted fabrics"
+          },
+          {
+            "title": "Textile yarn"
+          },
+          {
+            "title": "Woven fabrics of synthetic textile materials"
+          },
+          {
+            "title": "Cotton fabrics (woven)"
+          },
+          {
+            "title": "Made-up articles, wholly or chiefly of textile materials"
+          },
+          {
+            "title": "Special yarns and special textile fabrics"
+          },
+          {
+            "title": "Tulles, lace, embroidery, ribbons, trimmings and other small wares"
+          },
+          {
+            "title": "Floor coverings, carpets and linoleum"
+          }
+        ]
+      },
+      {
+        "title": "Non-metallic mineral manufactures",
+        "children": [
+          {
+            "title": "Lime, cement, and fabricated construction materials (not glass or clay)"
+          },
+          {
+            "title": "Mineral manufactures such as concrete (not clay or glass)"
+          },
+          {
+            "title": "Household ceramics and porcelain"
+          },
+          {
+            "title": "Glassware"
+          },
+          {
+            "title": "Clay construction materials & refractory construction materials (roof tiles, bricks)"
+          },
+          {
+            "title": "Pearls, precious and semiprecious stones (unworked or worked)"
+          },
+          {
+            "title": "Glass"
+          }
+        ]
+      },
+      {
+        "title": "Iron and steel",
+        "children": [
+          {
+            "title": "Iron and steel tubes, pipes and hollow profiles, fittings for tubes and pipes"
+          },
+          {
+            "title": "Alloy steel flat-rolled products"
+          },
+          {
+            "title": "Iron and nonalloy steel flat-rolled products (clad, plated or coated)"
+          },
+          {
+            "title": "Iron or nonalloy steel flat-rolled products (not clad, plated or coated)"
+          },
+          {
+            "title": "Pig iron and spiegeleisen, sponge iron, iron or steel granules and powders and ferroalloys"
+          },
+          {
+            "title": "Iron and steel wire"
+          },
+          {
+            "title": "Iron or steel ingots and other primary forms, and semifinished products of iron or steel"
+          },
+          {
+            "title": "Iron and steel rails and railway track construction material"
+          },
+          {
+            "title": "Iron and steel bars, rods, angles, shapes and sections, including sheet piling"
+          }
+        ]
+      },
+      {
+        "title": "Paper, paperboard, paper pulp and articles thereof",
+        "children": [
+          {
+            "title": "Articles of paper and paperboard (including diapers)"
+          },
+          {
+            "title": "Paper and paperboard (sheets)"
+          },
+          {
+            "title": "Sanitary napkins and tampons, diapers, and similar sanitary articles"
+          }
+        ]
+      },
+      {
+        "title": "Rubber manufactures",
+        "children": [
+          {
+            "title": "Rubber tires, interchangeable tire treads, tire flaps and inner tubes"
+          },
+          {
+            "title": "Materials of rubber (pastes, plates, sheets, rods, thread, tubes, etc.)"
+          },
+          {
+            "title": "Articles of rubber"
+          }
+        ]
+      },
+      {
+        "title": "Nonferrous metals",
+        "children": [
+          {
+            "title": "Silver, platinum and other platinum group metals (including palladium)"
+          },
+          {
+            "title": "Zinc and zinc alloys"
+          },
+          {
+            "title": "Tin and tin alloys"
+          },
+          {
+            "title": "Miscellaneous nonferrous base metals and alloys (including coltan)"
+          },
+          {
+            "title": "Copper and copper alloys"
+          },
+          {
+            "title": "Lead and lead alloys"
+          },
+          {
+            "title": "Gold, nonmonetary"
+          },
+          {
+            "title": "Nickel and nickel alloys"
+          },
+          {
+            "title": "Aluminum and aluminum alloys"
+          }
+        ]
+      },
+      {
+        "title": "Leather and leather manufactures",
+        "children": [
+          {
+            "title": "Furskins, tanned or dressed (no fake furs or fur articles)"
+          },
+          {
+            "title": "Leather"
+          },
+          {
+            "title": "Manufactures of leather or composition leather (including saddlery and harnesses)"
+          }
+        ]
+      },
+      {
+        "title": "Cork and wood manufactures, no furniture",
+        "children": [
+          {
+            "title": "Wood manufactures (no furniture)"
+          },
+          {
+            "title": "Cork manufactures"
+          },
+          {
+            "title": "Worked wood (veneers, plywood, particle boards)"
+          }
+        ]
+      },
+      {
+        "title": "Manufactures of metals",
+        "children": [
+          {
+            "title": "Wire products (excluding insulated electrical wiring) and fencing grills"
+          },
+          {
+            "title": "Household equipment of base metal"
+          },
+          {
+            "title": "Other manufactures of base metal"
+          },
+          {
+            "title": "Nails, screws, nuts, bolts, rivets and similar articles"
+          },
+          {
+            "title": "Tools for use in the hand or in machines"
+          },
+          {
+            "title": "Metal structures and parts of iron, steel or aluminum"
+          },
+          {
+            "title": "Metal containers for storage or transport"
+          },
+          {
+            "title": "Cutlery and tableware (knives, spoons, forks, etc.)"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Food and live animals",
+    "children": [
+      {
+        "title": "Dairy products and birds' eggs",
+        "children": [
+          {
+            "title": "Milk and cream and milk products (other than butter or cheese)"
+          },
+          {
+            "title": "Birds' eggs, egg yolks and egg albumin (fresh, dried or otherwise preserved)"
+          },
+          {
+            "title": "Cheese and curd"
+          },
+          {
+            "title": "Butter and other fats derived from milk"
+          }
+        ]
+      },
+      {
+        "title": "Fish and crustaceans",
+        "children": [
+          {
+            "title": "Fish, crustaceans, molluscs and other aquatic invertebrates (prepared or preserved)"
+          },
+          {
+            "title": "Crustaceans & molluscs"
+          },
+          {
+            "title": "Fish (dried, salted or smoked) or fish meal & flour"
+          },
+          {
+            "title": "Fish (fresh, chilled or frozen)"
+          }
+        ]
+      },
+      {
+        "title": "Meat and meat preparations",
+        "children": [
+          {
+            "title": "Meat of bovine animals (fresh, chilled or frozen)"
+          },
+          {
+            "title": "Meat and edible meat offal (salted, in brine, dried or smoked)"
+          },
+          {
+            "title": "Meat and edible meat offal (prepared or preserved)"
+          },
+          {
+            "title": "Other meat (not bovine) and edible meat offal (fresh, chilled or frozen)"
+          }
+        ]
+      },
+      {
+        "title": "Live animals",
+        "children": [
+          {
+            "title": "Bovine animals, live"
+          },
+          {
+            "title": "Horses, donkeys, mules and hinnies, live"
+          },
+          {
+            "title": "Other live animals"
+          },
+          {
+            "title": "Swine, live"
+          },
+          {
+            "title": "Sheep and goats, live"
+          },
+          {
+            "title": "Poultry, live"
+          }
+        ]
+      },
+      {
+        "title": "Cereals and cereal preparations",
+        "children": [
+          {
+            "title": "Cereal preparations and preparations of flour or starch of fruits or vegetables"
+          },
+          {
+            "title": "Cereal meals and flours"
+          },
+          {
+            "title": "Barley (unmilled)"
+          },
+          {
+            "title": "Maize (not sweet corn, unmilled)"
+          },
+          {
+            "title": "Meal and flour of wheat and meslin"
+          },
+          {
+            "title": "Wheat, spelt and meslin (unmilled)"
+          },
+          {
+            "title": "Rice"
+          },
+          {
+            "title": "Other cereals (unmilled)"
+          }
+        ]
+      },
+      {
+        "title": "Coffee, tea, cocoa and spices",
+        "children": [
+          {
+            "title": "Ginger, curcuma or turmeric (excluding ginger preserved in sugar or conserved in syrup)"
+          },
+          {
+            "title": "Pepper, chili, bell pepper"
+          },
+          {
+            "title": "Coffee and coffee substitutes"
+          },
+          {
+            "title": "Cocoa"
+          },
+          {
+            "title": "Cloves (whole fruit, cloves and stems)"
+          },
+          {
+            "title": "Seeds of anise, badian, fennel, coriander, cumin or caraway, juniper berries"
+          },
+          {
+            "title": "Spices"
+          },
+          {
+            "title": "Vanilla (beans)"
+          },
+          {
+            "title": "Tea and mate (including coca, khat/qat/miraa)"
+          },
+          {
+            "title": "Cinnamon and cinnamon-tree flowers"
+          },
+          {
+            "title": "Chocolate and other cocoa preparations"
+          }
+        ]
+      },
+      {
+        "title": "Vegetables and fruit",
+        "children": [
+          {
+            "title": "Onions and shallots, fresh or chilled"
+          },
+          {
+            "title": "Oranges, fresh or dried"
+          },
+          {
+            "title": "Fruit and vegetable juices, unfermented (including grape must)"
+          },
+          {
+            "title": "Mushrooms and truffles, fresh or chilled"
+          },
+          {
+            "title": "Melons (including watermelons) and papaws (papayas), fresh"
+          },
+          {
+            "title": "Other fresh fruit"
+          },
+          {
+            "title": "Other edible nuts"
+          },
+          {
+            "title": "Roots and tubers, for human food, fresh or dried (sugar cane, sugar beet, cassave)"
+          },
+          {
+            "title": "Potatoes, fresh or chilled (not including sweet potatoes)"
+          },
+          {
+            "title": "Pineapples, fresh or dried"
+          },
+          {
+            "title": "Pears and quinces, fresh"
+          },
+          {
+            "title": "Lettuce and chicory (including endive), fresh or chilled"
+          },
+          {
+            "title": "Leguminous vegetables, dried, shelled (beans)"
+          },
+          {
+            "title": "Cashew nuts, fresh or dried"
+          },
+          {
+            "title": "Citrus fruit, fresh or dried"
+          },
+          {
+            "title": "Carrots, turnips, beetroot, salsify, celeriac, radishes, similar edible roots, fresh or chilled"
+          },
+          {
+            "title": "Cabbage and similar edible brassicas (broccoli, cauliflower)"
+          },
+          {
+            "title": "Berries, fresh"
+          },
+          {
+            "title": "Coconuts, fresh or dried"
+          },
+          {
+            "title": "Cucumbers and gherkins, fresh or chilled"
+          },
+          {
+            "title": "Hazelnuts or filberts, fresh or dried"
+          },
+          {
+            "title": "Grapes, fresh or dried"
+          },
+          {
+            "title": "Garlic, leeks and other alliaceous vegetables, fresh or chilled"
+          },
+          {
+            "title": "Dates, fresh or dried"
+          },
+          {
+            "title": "Stone Fruit, fresh (e.g. cherries, peaches, apricots, nectarines)"
+          },
+          {
+            "title": "Sweet corn (uncooked or cooked by steaming or boiling in water), frozen"
+          },
+          {
+            "title": "Figs, fresh or dried"
+          },
+          {
+            "title": "Tomatoes, fresh or chilled"
+          },
+          {
+            "title": "Preserved vegetables and vegetables preparations"
+          },
+          {
+            "title": "Preserved fruit and fruit preparations (excluding fruit juices)"
+          },
+          {
+            "title": "Almonds, fresh or dried"
+          },
+          {
+            "title": "Apples, fresh"
+          },
+          {
+            "title": "Apricot, peach or plum stones and kernels, fresh or dried, whether or not ground"
+          },
+          {
+            "title": "Bananas (including plantains), fresh or dried"
+          },
+          {
+            "title": "Avocados, guavas, mangoes and mangosteens, fresh or dried"
+          },
+          {
+            "title": "Aubergines, (eggplant), fresh or chilled"
+          },
+          {
+            "title": "Arrowroot, salep, jerusalem artichokes, sweet potatoes, similar roots and tubers, fresh or dried"
+          }
+        ]
+      },
+      {
+        "title": "Miscellaneous edible products and preparations of food",
+        "children": [
+          {
+            "title": "Edible products and preparations of food"
+          },
+          {
+            "title": "Margarine and shortening"
+          }
+        ]
+      },
+      {
+        "title": "Feeding stuff for cattle and other animals (cattle, fish)",
+        "children": [
+          {
+            "title": "Residues of starch manufacture, beet-pulp, bagasse and waste of food industry"
+          },
+          {
+            "title": "Bran, sharps and other residues from cereals or leguminous plants"
+          },
+          {
+            "title": "Food wastes & prepared animal feeds (incl. dog & cat food)"
+          },
+          {
+            "title": "Food for pets"
+          },
+          {
+            "title": "Flours, meals, pellets & greaves of meat (incl. meat offal, fish, crustaceans, molluscs)"
+          },
+          {
+            "title": "Hay and fodder (of cereals or leguminous plants)"
+          }
+        ]
+      },
+      {
+        "title": "Sugars, sugar preparations & honey",
+        "children": [
+          {
+            "title": "Natural Honey"
+          },
+          {
+            "title": "Cane sugar, raw or processed"
+          },
+          {
+            "title": "Beet sugar, raw or processed"
+          },
+          {
+            "title": "Other sugars (including chemically pure lactose, maltose, glucose and fructose); sugar syrups; artificial honey; caramel"
+          },
+          {
+            "title": "Sugar confectionary (candy, chewing gum)"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Machinery and transport equipment",
+    "children": [
+      {
+        "title": "Metalworking machinery",
+        "children": [
+          {
+            "title": "Metalworking machinery (other than machine tools) and parts thereof"
+          },
+          {
+            "title": "Machine parts and accessories, and hand held tool holders"
+          },
+          {
+            "title": "Machine tools for working metal, sintered metal carbides or cermets"
+          },
+          {
+            "title": "Machine tools working by removing metal or other materials"
+          }
+        ]
+      },
+      {
+        "title": "Office machines and automatic data processing machines",
+        "children": [
+          {
+            "title": "Parts and accessories for office machines and computers"
+          },
+          {
+            "title": "Computers and computer-related machinery (including laptops, notebooks, ipads and other tablets)"
+          },
+          {
+            "title": "Office machines (not computers)"
+          }
+        ]
+      },
+      {
+        "title": "Telecommunications machines and (consumer) electronics",
+        "children": [
+          {
+            "title": "Radio-broadcast receivers"
+          },
+          {
+            "title": "Telecommunications equipment, telephones, mobile and smartphones (including parts & accessories)"
+          },
+          {
+            "title": "Tv receivers, video monitors and projectors, video/dvd recording (electronics)"
+          },
+          {
+            "title": "Sound & television recorders or reproducers"
+          }
+        ]
+      },
+      {
+        "title": "Road vehicles",
+        "children": [
+          {
+            "title": "Other road motor vehicles"
+          },
+          {
+            "title": "Motor vehicles for the transport of goods and special purpose motor vehicles"
+          },
+          {
+            "title": "Motor cars and other motor vehicles for the transport of persons (not public transport)"
+          },
+          {
+            "title": "Parts and accessories for tractors, motor cars, trucks, public-transport/road motor vehicles"
+          },
+          {
+            "title": "Motorcycles (including mopeds) and cycles, motorized and not motorized, invalid carriages"
+          },
+          {
+            "title": "Trailers and semi-trailers, not mechanically propelled vehicles and transport containers"
+          }
+        ]
+      },
+      {
+        "title": "Power generating machinery and equipment",
+        "children": [
+          {
+            "title": "Rotating electric machines (and parts thereof)"
+          },
+          {
+            "title": "Power/electricity generating machinery and parts thereof (incl. solar panels, wind turbines etc.)"
+          },
+          {
+            "title": "Steam or other vapor generating boilers and super-heated water boilers (and parts thereof)"
+          },
+          {
+            "title": "Steam turbines and other vapor turbines (and parts thereof)"
+          },
+          {
+            "title": "Engines and motors, nonelectric (and parts thereof)"
+          },
+          {
+            "title": "Internal combustion piston engines (and parts thereof)"
+          }
+        ]
+      },
+      {
+        "title": "Electrical machinery, apparatus and electronics (and parts thereof)",
+        "children": [
+          {
+            "title": "Thermionic valves/tubes, diodes, transistors and similar semiconductor devices/integrated circuits"
+          },
+          {
+            "title": "Electrical apparatus for switching, protecting or connecting electrical circuits"
+          },
+          {
+            "title": "Electro-diagnostic apparatus for medical sciences and radiological apparatus"
+          },
+          {
+            "title": "Other electrical machinery and apparatus (electronics)"
+          },
+          {
+            "title": "Household type electrical and nonelectrical equipment (electronics)"
+          },
+          {
+            "title": "Equipment for distributing electricity"
+          },
+          {
+            "title": "Electric power machinery (not rotating electric power generating machinery) and parts thereof"
+          }
+        ]
+      },
+      {
+        "title": "Machinery specialized for particular industries",
+        "children": [
+          {
+            "title": "Tractors (other than mechanical handling equipment)"
+          },
+          {
+            "title": "Food-processing machines (excluding domestic)"
+          },
+          {
+            "title": "Textile and leather machinery (and parts thereof)"
+          },
+          {
+            "title": "Agricultural machinery, excluding tractors (and parts thereof)"
+          },
+          {
+            "title": "Machinery and equipment specialized for particular industries (and parts thereof)"
+          },
+          {
+            "title": "Printing and bookbinding machinery (and parts thereof)"
+          },
+          {
+            "title": "Paper mill and pulp mill machinery, paper cutting machines (and parts thereof)"
+          },
+          {
+            "title": "Civil engineering and contractors' plant and equipment"
+          }
+        ]
+      },
+      {
+        "title": "Transport equipment",
+        "children": [
+          {
+            "title": "(Parts of) aircraft (equipment), spacecraft, satellites and spacecraft launch vehicles"
+          },
+          {
+            "title": "Ships, boats (including hovercraft) and floating structures"
+          },
+          {
+            "title": "Railway vehicles (including hovertrains) and associated equipment"
+          }
+        ]
+      },
+      {
+        "title": "General industrial machinery and equipment",
+        "children": [
+          {
+            "title": "Heating and cooling equipment (and parts thereof)"
+          },
+          {
+            "title": "Pumps for liquids, liquid elevators (and parts thereof)"
+          },
+          {
+            "title": "Taps, cocks, valves and similar appliances for pipes, boiler shells and tanks"
+          },
+          {
+            "title": "Ball or roller bearings"
+          },
+          {
+            "title": "Mechanical handling equipment (and parts thereof)"
+          },
+          {
+            "title": "Nonelectric parts and accessories of machinery"
+          },
+          {
+            "title": "(Parts of) transmission shafts/cranks, shaft bearings (housing), gearing, ball screws, clutches"
+          },
+          {
+            "title": "Pumps (not for liquids), air or gas compressors and fans, centrifuges (and parts thereof)"
+          },
+          {
+            "title": "Nonelectrical machinery, tools and mechanical apparatus (and parts thereof)"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Crude materials inedible, except fuels",
+    "children": [
+      {
+        "title": "Metalliferous ores and metal scrap",
+        "children": [
+          {
+            "title": "Iron ore and concentrates"
+          },
+          {
+            "title": "Nickel ores and concentrates (including nickel mattes, nickel oxide sinters)"
+          },
+          {
+            "title": "Nonferrous base metal waste and scrap"
+          },
+          {
+            "title": "Ores and concentrates of base metals (incl. lead, tin, tantalum, tungsten, niobium, chromium, zinc)"
+          },
+          {
+            "title": "Ferrous waste and scrap (including remelting ingots of iron or steel)"
+          },
+          {
+            "title": "Copper ores and concentrates (including copper mattes, cement copper)"
+          },
+          {
+            "title": "Aluminum ores and concentrates (including alumina)"
+          },
+          {
+            "title": "Ores and concentrates of uranium or thorium"
+          },
+          {
+            "title": "Ores and waste of precious metals (other than of gold)"
+          },
+          {
+            "title": "Cobalt ores and concentrates"
+          },
+          {
+            "title": "Manganese ores and concentrates"
+          }
+        ]
+      },
+      {
+        "title": "Pulp and waste paper",
+        "children": []
+      },
+      {
+        "title": "Raw hides and skins",
+        "children": [
+          {
+            "title": "Raw furskins"
+          },
+          {
+            "title": "Raw hides and skins (except furskins)"
+          }
+        ]
+      },
+      {
+        "title": "Oil seeds and oleaginous fruits",
+        "children": [
+          {
+            "title": "Soy beans"
+          },
+          {
+            "title": "Peanuts"
+          },
+          {
+            "title": "Palm nuts"
+          },
+          {
+            "title": "Cotton seed"
+          },
+          {
+            "title": "Mustard seed"
+          },
+          {
+            "title": "Oil-seeds & oleaginous fruits, n.e.s."
+          }
+        ]
+      },
+      {
+        "title": "Crude rubber",
+        "children": [
+          {
+            "title": "Natural rubber (including latex, balata, gutta-percha, guayule, chicle and similar natural gums)"
+          },
+          {
+            "title": "Synthetic rubber, reclaimed rubber and waste of unhardened rubber"
+          }
+        ]
+      },
+      {
+        "title": "Crude animal and vegetable materials",
+        "children": [
+          {
+            "title": "Bamboo, rattan, reeds, straw, etc."
+          },
+          {
+            "title": "Bulbs, tubers and (parts of) live plants"
+          },
+          {
+            "title": "Crude animal materials (such as ivory, coral, hair, bones, feathers)"
+          },
+          {
+            "title": "Cut flowers and foliage"
+          },
+          {
+            "title": "Lac, natural gums, resins, gum resins, and balsams"
+          },
+          {
+            "title": "Seeds, fruit and spores used for sowing"
+          },
+          {
+            "title": "Liquorice and ginseng"
+          },
+          {
+            "title": "Other materials of vegetable origin"
+          },
+          {
+            "title": "Seaweed"
+          }
+        ]
+      },
+      {
+        "title": "Cork and wood",
+        "children": [
+          {
+            "title": "Wood in the rough or roughly squared"
+          },
+          {
+            "title": "Wood in chips or particles, and wood waste"
+          },
+          {
+            "title": "Fuel wood (excluding wood waste), and wood charcoal"
+          },
+          {
+            "title": "Raw natural cork and waste of natural cork"
+          },
+          {
+            "title": "Wood (simply worked) and railway sleepers of wood"
+          }
+        ]
+      },
+      {
+        "title": "Crude fertilizers and crude minerals",
+        "children": [
+          {
+            "title": "Sulfur and unroasted iron pyrites"
+          },
+          {
+            "title": "Crude fertilizers"
+          },
+          {
+            "title": "Crude minerals (e.g. clays, salt, asbestos, bitumen)"
+          },
+          {
+            "title": "Natural abrasives (including industrial diamonds)"
+          },
+          {
+            "title": "Stone, sand and gravel"
+          },
+          {
+            "title": "Graphite (natural)"
+          }
+        ]
+      },
+      {
+        "title": "Textile fibers and their wastes",
+        "children": [
+          {
+            "title": "Wool and other animal hair (including wool tops)"
+          },
+          {
+            "title": "Worn clothing and rags"
+          },
+          {
+            "title": "Synthetic fibers suitable for spinning"
+          },
+          {
+            "title": "Silk textile fibers"
+          },
+          {
+            "title": "Cotton textile fibers"
+          },
+          {
+            "title": "Jute and other textile bast fibers"
+          },
+          {
+            "title": "Manmade fibers suitable for spinning"
+          },
+          {
+            "title": "Other vegetable textile fibers (hemp, sisal, cocos, flax, etc.)"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Mineral fuels and lubricants",
+    "children": [
+      {
+        "title": "Biofuels",
+        "children": []
+      },
+      {
+        "title": "Coal, coke and briquettes",
+        "children": [
+          {
+            "title": "Briquettes, lignite and peat"
+          },
+          {
+            "title": "Coal (not agglomerated)"
+          },
+          {
+            "title": "Coke and semicoke (including char) and retort carbon"
+          }
+        ]
+      },
+      {
+        "title": "Petroleum and petroleum products",
+        "children": [
+          {
+            "title": "Petroleum oils and oils from bituminous minerals (other than crude)"
+          },
+          {
+            "title": "Residual petroleum products"
+          },
+          {
+            "title": "Crude petroleum oils and oils from bituminous minerals"
+          }
+        ]
+      },
+      {
+        "title": "Gas, natural and manufactured",
+        "children": [
+          {
+            "title": "Liquefied propane and butane"
+          },
+          {
+            "title": "Coal gas, water gas, producer gas and similar gases"
+          },
+          {
+            "title": "Natural gas (whether or not liquified)"
+          },
+          {
+            "title": "Petroleum gases and other gaseous hydrocarbons"
+          }
+        ]
+      },
+      {
+        "title": "Electrical energy (electric current)",
+        "children": []
+      }
+    ]
+  },
+  {
+    "title": "Miscellaneous manufactured articles",
+    "children": [
+      {
+        "title": "Furniture and parts thereof, bedding",
+        "children": []
+      },
+      {
+        "title": "Manufactured goods",
+        "children": []
+      },
+      {
+        "title": "Works of art, collectors' pieces and antiques",
+        "children": []
+      },
+      {
+        "title": "Footwear and shoes",
+        "children": []
+      },
+      {
+        "title": "Umbrellas, parasols, walking-sticks",
+        "children": []
+      },
+      {
+        "title": "Arms and ammunition",
+        "children": []
+      },
+      {
+        "title": "Travel goods and handbags",
+        "children": []
+      },
+      {
+        "title": "Orthopedic and medical appliances, artifical body parts, hearing aids",
+        "children": []
+      },
+      {
+        "title": "Prefabricated buildings, sanitary and lighting",
+        "children": [
+          {
+            "title": "Prefabricated buildings"
+          },
+          {
+            "title": "Sanitary, plumbing and heating fixtures and fittings"
+          },
+          {
+            "title": "Lighting fixtures and fittings"
+          }
+        ]
+      },
+      {
+        "title": "Candles, matches, articles of combustible materials, smokers' requisites",
+        "children": []
+      },
+      {
+        "title": "Basketware, wickerwork, brooms, brushes etc",
+        "children": []
+      },
+      {
+        "title": "Articles and manufactures of carving or molding materials",
+        "children": []
+      },
+      {
+        "title": "Articles of plastics",
+        "children": []
+      },
+      {
+        "title": "Printed matter, books and magazines",
+        "children": []
+      },
+      {
+        "title": "Articles of apparel and clothing accessories",
+        "children": [
+          {
+            "title": "Clothing accessories, of textile fabrics"
+          },
+          {
+            "title": "Clothes of woven textiles (except swimwear and coated or laminated apparel)"
+          },
+          {
+            "title": "Clothing of knitted or crocheted textile fabric (except swimwear or coated apparel)"
+          },
+          {
+            "title": "Other articles of apparel of textile fabrics (also baby clothing)"
+          },
+          {
+            "title": "Apparel and clothing accessories of other than textile fabrics, and headgear, fur, leather"
+          }
+        ]
+      },
+      {
+        "title": "Baby carriages, toys, games and sporting goods",
+        "children": [
+          {
+            "title": "Festive, Carnival or other entertainment articles"
+          }
+        ]
+      },
+      {
+        "title": "Jewelry, goldsmiths' and silversmiths' ware",
+        "children": []
+      },
+      {
+        "title": "Office and stationery supplies",
+        "children": []
+      },
+      {
+        "title": "Professional and scientific instruments and apparatus",
+        "children": [
+          {
+            "title": "Instruments for medical, surgical, dental or veterinary purposes, healthcare equipment"
+          },
+          {
+            "title": "Meters and counters"
+          },
+          {
+            "title": "Measuring, checking, analysing and controlling instruments and apparatus"
+          },
+          {
+            "title": "Optical instruments and apparatus"
+          }
+        ]
+      },
+      {
+        "title": "Musical instruments and accessories, records, tapes, CDs and other sound recordings",
+        "children": []
+      },
+      {
+        "title": "Photographic apparatus, optical goods, watches and clocks",
+        "children": [
+          {
+            "title": "Cinematographic film, exposed and developed"
+          },
+          {
+            "title": "Optical goods, lenses and glasses"
+          },
+          {
+            "title": "Photographic and cinematographic supplies"
+          },
+          {
+            "title": "Photographic apparatus and equipment"
+          },
+          {
+            "title": "Watches and clocks"
+          }
+        ]
+      }
+    ]
+  }
+]

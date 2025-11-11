@@ -139,6 +139,16 @@ export default function ESGRiskAnalysis() {
  };
 
  const handleSelectChange = (name: string, value: string) => {
+  // 支持清空：当 value 为空时，将对应字段置为 null
+  if (!value) {
+    if (name === 'industry') {
+      setFormData((prev) => ({ ...prev, industry: null }));
+    } else if (name === 'country') {
+      setFormData((prev) => ({ ...prev, country: null }));
+    }
+    return;
+  }
+
   if (name === 'industry') {
     const selected = industries.find((i) => i.id === value);
     if (selected) {

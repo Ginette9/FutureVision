@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
+import IndustryTreeSelect from './IndustryTreeSelect';
 
 interface RiskFormProps {
   formData: {
@@ -51,25 +52,12 @@ export default function RiskForm({
   const { t } = useLanguage();
   const [industrySearch, setIndustrySearch] = useState('');
   const [countrySearch, setCountrySearch] = useState('');
-  const [filteredIndustries, setFilteredIndustries] = useState(industries);
+  // 行业改为分级组件控制（保留搜索输入用于过滤）
   const [filteredCountries, setFilteredCountries] = useState(countries);
   const [showIndustryDropdown, setShowIndustryDropdown] = useState(false);
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
 
-  // 过滤行业选项
-  useEffect(() => {
-    if (!industrySearch.trim()) {
-      setFilteredIndustries(industries);
-      return;
-    }
-    
-    const searchTerm = industrySearch.toLowerCase();
-    setFilteredIndustries(
-      industries.filter(industry => 
-        industry.name.toLowerCase().includes(searchTerm)
-      )
-    );
-  }, [industrySearch, industries]);
+  // 行业列表由分级组件内部处理，不在此处过滤
 
   // 过滤地区选项
   useEffect(() => {
@@ -87,10 +75,9 @@ export default function RiskForm({
   }, [countrySearch, countries]);
 
   // 选择行业处理函数
-  const handleIndustrySelect = (industryId: string) => {
+  const handleIndustrySelect = (industryId: string, label?: string) => {
     onSelectChange('industry', industryId);
-    const selectedIndustry = industries.find(ind => ind.id === industryId);
-    setIndustrySearch(selectedIndustry?.name || '');
+    setIndustrySearch(label || '');
     setShowIndustryDropdown(false);
   };
 
@@ -118,24 +105,39 @@ export default function RiskForm({
               onChange={(e) => {
                 setIndustrySearch(e.target.value);
                 setShowIndustryDropdown(true);
+                // 若已选中行业，则清空以便继续输入或重新选择
+                if (formData.industry) {
+                  onSelectChange('industry', '');
+                }
               }}
               onFocus={() => setShowIndustryDropdown(true)}
               placeholder="请选择或搜索行业"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             />
+            {(formData.industry || industrySearch) && (
+              <button
+                type="button"
+                aria-label="清除行业"
+                onClick={() => {
+                  setIndustrySearch('');
+                  onSelectChange('industry', '');
+                  setShowIndustryDropdown(false);
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 8.586l3.536-3.536a1 1 0 111.414 1.414L11.414 10l3.536 3.536a1 1 0 01-1.414 1.414L10 11.414l-3.536 3.536a1 1 0 01-1.414-1.414L8.586 10 5.05 6.464a1 1 0 111.414-1.414L10 8.586z" clipRule="evenodd" />
+                </svg>
+              </button>
+            )}
             
             {showIndustryDropdown && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                {filteredIndustries.map((industry) => (
-                  <button
-                    key={industry.id}
-                    type="button"
-                    onClick={() => handleIndustrySelect(industry.id)}
-                    className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
-                  >
-                    {industry.name}
-                  </button>
-                ))}
+              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-80 overflow-y-auto">
+                <IndustryTreeSelect
+                  searchTerm={industrySearch}
+                  onSelect={(id, label) => handleIndustrySelect(id, label)}
+                  selectedId={formData.industry?.id || undefined}
+                />
               </div>
             )}
           </div>
@@ -153,11 +155,31 @@ export default function RiskForm({
               onChange={(e) => {
                 setCountrySearch(e.target.value);
                 setShowCountryDropdown(true);
+                // 若已选中地区，则清空以便继续输入或重新选择
+                if (formData.country) {
+                  onSelectChange('country', '');
+                }
               }}
               onFocus={() => setShowCountryDropdown(true)}
               placeholder="请选择或搜索地区"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             />
+            {(formData.country || countrySearch) && (
+              <button
+                type="button"
+                aria-label="清除地区"
+                onClick={() => {
+                  setCountrySearch('');
+                  onSelectChange('country', '');
+                  setShowCountryDropdown(false);
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 8.586l3.536-3.536a1 1 0 111.414 1.414L11.414 10l3.536 3.536a1 1 0 01-1.414 1.414L10 11.414l-3.536 3.536a1 1 0 01-1.414-1.414L8.586 10 5.05 6.464a1 1 0 111.414-1.414L10 8.586z" clipRule="evenodd" />
+                </svg>
+              </button>
+            )}
             
             {showCountryDropdown && (
               <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
