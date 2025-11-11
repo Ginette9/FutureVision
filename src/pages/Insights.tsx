@@ -63,11 +63,11 @@ export default function Insights() {
               }`}
             >
               {insight.coverImage && (
-                <div className="h-48 overflow-hidden">
+                <div className="aspect-video bg-white-100 overflow-hidden">
                   <img 
                     src={insight.coverImage} 
                     alt={insight.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 </div>
               )}

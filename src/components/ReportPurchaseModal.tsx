@@ -214,12 +214,13 @@ export default function ReportPurchaseModal({ isOpen, onClose, report }: ReportP
                     </div>
                     <div>
                       <label htmlFor="position" className="block text-sm font-medium text-gray-700 mb-1">
-                        职位
+                        职位 *
                       </label>
                       <input
                         type="text"
                         id="position"
                         name="position"
+                        required
                         value={formData.position}
                         onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
@@ -230,12 +231,13 @@ export default function ReportPurchaseModal({ isOpen, onClose, report }: ReportP
 
                   <div>
                     <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                      联系电话
+                      联系电话 *
                     </label>
                     <input
                       type="tel"
                       id="phone"
                       name="phone"
+                      required
                       value={formData.phone}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
@@ -245,11 +247,12 @@ export default function ReportPurchaseModal({ isOpen, onClose, report }: ReportP
 
                   <div>
                     <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                      留言
+                      留言 *
                     </label>
                     <textarea
                       id="message"
                       name="message"
+                      required
                       rows={4}
                       value={formData.message}
                       onChange={handleInputChange}

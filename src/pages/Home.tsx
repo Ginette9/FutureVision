@@ -96,6 +96,13 @@ export default function NewHome() {
   // 独家洞察数据 - 使用新的数据结构
   const insights = getLatestInsightReports(3);
 
+  const formatDate = (dateString: string) => {
+    const d = new Date(dateString);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    return `${y}年${m}月`;
+  };
+  
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
@@ -235,11 +242,11 @@ export default function NewHome() {
                 viewport={{ once: true }}
                 className="bg-white overflow-hidden hover:shadow-lg transition-shadow duration-300"
               >
-                <div className="aspect-video bg-gray-100 overflow-hidden">
+                <div className="aspect-video bg-white-100 overflow-hidden">
                   <img
                     src={insight.coverImage}
                     alt={insight.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 </div>
                 <div className="p-6">
@@ -251,7 +258,7 @@ export default function NewHome() {
                   </p>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-gray-500">
-                      {insight.date}
+                      {formatDate(insight.date)}
                     </span>
                     <button
                       onClick={() => handleReportClick(insight)}

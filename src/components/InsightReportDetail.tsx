@@ -1,7 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { InsightReport } from '../data/insightReports';
 import ReportPurchaseModal from './ReportPurchaseModal';
+import fvLogoUrl from '@/images/future-vision-logo.png';
+import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist';
+// 使用ESM worker入口以兼容最新版本
+// @ts-ignore
+import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+
+GlobalWorkerOptions.workerSrc = pdfWorkerUrl as any;
 
 interface InsightReportDetailProps {
   report: InsightReport;
@@ -10,8 +17,9 @@ interface InsightReportDetailProps {
 }
 
 export default function InsightReportDetail({ report, isOpen, onClose }: InsightReportDetailProps) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'contents' | 'samples'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'contents'>('overview');
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [renderCache, setRenderCache] = useState<Record<string, string>>({});
 
   const formatYearMonth = (dateString: string) => {
     const d = new Date(dateString);
@@ -27,6 +35,61 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
   const handleCloseContactModal = () => {
     setIsContactModalOpen(false);
   };
+
+  const renderPageImage = useCallback(async (pageNum: number): Promise<string | null> => {
+    try {
+      const url = report.pdfUrl;
+      if (!url) return null;
+      const loadingTask = getDocument({ url });
+      const pdf = await loadingTask.promise;
+      const page = await pdf.getPage(pageNum);
+      // 提升渲染清晰度：按设备像素比放大
+      const dpr = (typeof window !== 'undefined' ? window.devicePixelRatio : 1) || 1;
+      const baseScale = 1.0;
+      const targetScale = Math.min(3, Math.max(2, dpr * 2));
+      const viewport = page.getViewport({ scale: baseScale * targetScale });
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+      canvas.width = Math.floor(viewport.width);
+      canvas.height = Math.floor(viewport.height);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // 传入 canvas 以符合类型要求
+      await page.render({ canvasContext: ctx, viewport, canvas }).promise;
+
+      // 绘制水印（右下角FV logo）
+      const img = new Image();
+      img.src = fvLogoUrl;
+      await new Promise((resolve) => { img.onload = resolve; img.onerror = resolve; });
+      const logoW = Math.max(80, Math.round(canvas.width * 0.15));
+      const aspect = img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 1.6;
+      const logoH = Math.round(logoW / aspect);
+      const x = canvas.width - logoW - 16;
+      const y = canvas.height - logoH - 16;
+      ctx.globalAlpha = 0.35;
+      try { ctx.drawImage(img, x, y, logoW, logoH); } catch {}
+      ctx.globalAlpha = 1;
+
+      const dataUrl = canvas.toDataURL('image/png');
+      setRenderCache((c) => ({ ...c, [String(pageNum)]: dataUrl }));
+      return dataUrl;
+    } catch (e) {
+      console.warn('Failed to render PDF page', pageNum, e);
+      return null;
+    }
+  }, [report.pdfUrl]);
+
+  useEffect(() => {
+    (async () => {
+      if (!report.pdfUrl) return;
+      const coverPg = report.coverPage || 1;
+      const firstToc = (report.tocPages && report.tocPages[0]) || coverPg;
+      if (!renderCache[String(coverPg)]) await renderPageImage(coverPg);
+      if (!renderCache[String(firstToc)]) await renderPageImage(firstToc);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [report.pdfUrl]);
 
   return (
     <>
@@ -48,11 +111,11 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
             >
               {/* Header */}
               <div className="relative">
-                <div className="aspect-video bg-gray-100 overflow-hidden">
+                <div className="aspect-video bg-white-100 overflow-hidden">
                   <img
-                    src={report.coverImage}
+                    src={(renderCache[String(report.coverPage || 1)] || report.coverImage) as string}
                     alt={report.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 </div>
                 <button
@@ -102,8 +165,7 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                   <nav className="flex space-x-8">
                     {[
                       { id: 'overview', label: '报告概览' },
-                      { id: 'contents', label: '目录结构' },
-                      { id: 'samples', label: '示例页面' }
+                      { id: 'contents', label: '目录结构' }
                     ].map((tab) => (
                       <button
                         key={tab.id}
@@ -121,14 +183,22 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                 </div>
 
                 {/* Tab Content */}
-                <div className="max-h-96 overflow-y-auto">
+                <div className="max-h-[80vh] overflow-y-auto">
                   {activeTab === 'overview' && (
                     <div className="space-y-6">
                       <div>
                         <h3 className="text-lg font-semibold mb-3">报告摘要</h3>
-                        <p className="text-gray-700 leading-relaxed">
-                          {report.detailedSummary || report.summary}
-                        </p>
+                        {(() => {
+                          const raw = (report.detailedSummary || report.summary || '').trim();
+                          const parts = raw.includes('\n\n') ? raw.split(/\n{2,}/) : raw.split(/\n/);
+                          return (
+                            <div className="space-y-3">
+                              {parts.filter(Boolean).map((para, idx) => (
+                                <p key={idx} className="text-gray-700 leading-relaxed">{para}</p>
+                              ))}
+                            </div>
+                          );
+                        })()}
                       </div>
                     </div>
                   )}
@@ -136,37 +206,24 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                   {activeTab === 'contents' && (
                     <div>
                       <div className="rounded-lg border bg-gray-50 p-2">
-                        <img
-                          src={(report as any).tocImageUrl || report.coverImage}
-                          alt="目录结构"
-                          className="w-full object-contain max-h-96"
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {activeTab === 'samples' && (
-                    <div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {report.samplePages.filter(p => p.imageUrl).length > 0 ? (
-                          report.samplePages.filter(p => p.imageUrl).map((page) => (
-                            <img
-                              key={page.id}
-                              src={page.imageUrl as string}
-                              alt={page.title}
-                              className="w-full object-cover rounded border max-h-64"
-                            />
-                          ))
+                        {report.pdfUrl ? (
+                          <div className="space-y-4">
+                            {((report.tocPages && report.tocPages.length > 0) ? report.tocPages : [report.coverPage || 1]).map((p) => (
+                              <PdfPreview key={p} page={p} getImage={renderPageImage} cache={renderCache} />
+                            ))}
+                          </div>
                         ) : (
                           <img
-                            src={report.coverImage}
-                            alt="示例页面"
-                            className="w-full object-contain rounded border max-h-96 bg-gray-50"
+                            src={report.tocImageUrl || report.coverImage}
+                            alt="目录结构"
+                            className="w-full h-auto object-contain"
                           />
                         )}
                       </div>
                     </div>
                   )}
+
+                  {/* 已移除“示例页面”标签：PDF可自由查看，避免冗余 */}
                 </div>
 
                 {/* Action Buttons */}
@@ -179,6 +236,16 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                     >
                       关闭
                     </button>
+                    {report.pdfUrl && (
+                      <a
+                        href={report.pdfUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-6 py-2 bg-gray-100 text-gray-900 hover:bg-gray-200 transition-colors duration-200 rounded"
+                      >
+                        在线查看PDF
+                      </a>
+                    )}
                     <button
                       onClick={handleContactPurchase}
                       className="px-6 py-2 bg-gray-900 text-white hover:bg-gray-800 transition-colors duration-200 rounded"
@@ -200,5 +267,21 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
         report={report}
       />
     </>
+  );
+}
+
+function PdfPreview({ page, getImage, cache }: { page: number; getImage: (p: number) => Promise<string | null>; cache: Record<string, string>; }) {
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    (async () => {
+      if (cache[String(page)]) { setUrl(cache[String(page)]); return; }
+      const u = await getImage(page);
+      setUrl(u);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
+  if (!url) return <div className="w-full h-64 rounded border bg-gray-50 animate-pulse" />;
+  return (
+    <img src={url} alt={`第${page}页`} className="w-full h-auto object-contain rounded border bg-white" />
   );
 }
