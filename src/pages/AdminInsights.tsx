@@ -5,7 +5,10 @@ import {
   getAllInsightReports,
   addInsightReport,
   updateInsightReport,
-  deleteInsightReport
+  deleteInsightReport,
+  moveInsightReportUp,
+  moveInsightReportDown,
+  moveInsightReportToTop
 } from '@/data/insightReports';
 import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist';
 import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
@@ -176,7 +179,7 @@ export default function AdminInsights() {
     setForm(f => ({ ...f, coverCropY: clamped }));
     if (editMode?.id) {
       updateInsightReport(editMode.id, { coverCropY: clamped });
-      setReports(getAllInsightReports());
+      setReports([...getAllInsightReports()]);
     }
   };
 
@@ -212,7 +215,7 @@ export default function AdminInsights() {
   });
 
   useEffect(() => {
-    setReports(getAllInsightReports());
+    setReports([...getAllInsightReports()]);
   }, []);
 
   const handleLogin = (code: string) => {
@@ -335,7 +338,7 @@ export default function AdminInsights() {
       // 编辑模式下立即持久化
       if (editMode?.id) {
         updateInsightReport(editMode.id, { coverImage: optimized });
-        setReports(getAllInsightReports());
+        setReports([...getAllInsightReports()]);
       }
       setStatusMsg('封面图已生成并保存');
     } else {
@@ -357,7 +360,7 @@ export default function AdminInsights() {
       (setForm as any)((f: any) => ({ ...f, tocImageUrl: optimized }));
       if (editMode?.id) {
         updateInsightReport(editMode.id, { tocImageUrl: optimized } as any);
-        setReports(getAllInsightReports());
+        setReports([...getAllInsightReports()]);
       }
       setStatusMsg('目录图已生成并保存');
     } else {
@@ -427,7 +430,7 @@ export default function AdminInsights() {
     } else {
       addInsightReport(report);
     }
-    setReports(getAllInsightReports());
+    setReports([...getAllInsightReports()]);
     resetForm();
   };
 
@@ -443,8 +446,25 @@ export default function AdminInsights() {
   const handleDelete = (id: string) => {
     if (!confirm('确定删除该报告？')) return;
     deleteInsightReport(id);
-    setReports(getAllInsightReports());
+    setReports([...getAllInsightReports()]);
     if (editMode?.id === id) resetForm();
+  };
+
+  // 排序操作：上移/下移/置顶
+  const handleMoveUp = (id: string) => {
+    if (moveInsightReportUp(id)) {
+      setReports([...getAllInsightReports()]);
+    }
+  };
+  const handleMoveDown = (id: string) => {
+    if (moveInsightReportDown(id)) {
+      setReports([...getAllInsightReports()]);
+    }
+  };
+  const handleMoveTop = (id: string) => {
+    if (moveInsightReportToTop(id)) {
+      setReports([...getAllInsightReports()]);
+    }
   };
 
   const exportJson = () => {
@@ -466,7 +486,7 @@ export default function AdminInsights() {
         if (Array.isArray(arr)) {
           // 覆盖式导入（存到 localStorage）
           localStorage.setItem('insightReportsStore', JSON.stringify(arr));
-          setReports(getAllInsightReports());
+          setReports([...getAllInsightReports()]);
         } else {
           alert('JSON 格式错误：需要是报告数组');
         }
@@ -611,9 +631,9 @@ export default function AdminInsights() {
           </div>
 
           <div className="mt-6">
-            <h3 className="text-sm font-medium mb-2">上传完整PDF（推荐使用URL）</h3>
+            <h3 className="text-sm font-medium mb-2">填写PDF相对路径</h3>
             <div className="flex items-center gap-3 mb-2">
-              <input className="flex-1 border rounded px-3 py-2" placeholder="PDF URL（建议 /reports/xxx.pdf）" value={pdfInput.value} onChange={e => { const val = e.target.value; setPdfInput({ type: 'url', value: val }); setForm(f => ({ ...f, pdfUrl: val })); if (editMode?.id) { updateInsightReport(editMode.id, { pdfUrl: val }); setReports(getAllInsightReports()); } }} />
+              <input className="flex-1 border rounded px-3 py-2" placeholder="/reports/xxx.pdf" value={pdfInput.value} onChange={e => { const val = e.target.value; setPdfInput({ type: 'url', value: val }); setForm(f => ({ ...f, pdfUrl: val })); if (editMode?.id) { updateInsightReport(editMode.id, { pdfUrl: val }); setReports([...getAllInsightReports()]); } }} />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               
@@ -632,8 +652,7 @@ export default function AdminInsights() {
               <button type="button" className="px-3 py-2 border rounded disabled:opacity-50" disabled={generatingToc} onClick={handleGenerateTocFromPdf}>{generatingToc ? '生成中…' : '从PDF生成目录图'}</button>
               {statusMsg && <span className="text-xs text-gray-600">{statusMsg}</span>}
             </div>
-            <p className="text-xs text-gray-500 mt-2">推荐使用相对路径，如 <code>/reports/xxx.pdf</code>。将PDF放置到 <code>/public/reports/</code> 后，这里的URL将被永久保存。</p>
-          </div>
+            </div>
 
           <div className="mt-6">
             <h3 className="text-sm font-medium mb-2">目录截图（可选）</h3>
@@ -660,12 +679,15 @@ export default function AdminInsights() {
             <div className="space-y-3">
               {reports.map(r => (
                 <div key={r.id} className="flex items-center gap-4 p-3 border rounded">
-            <img src={r.coverImage} alt="封面" className="w-16 h-16 object-cover rounded" style={{ objectPosition: `50% ${Math.round(r.coverCropY ?? 0)}%` }} />
+            <img src={r.coverImage} alt="封面" className="w-16 h-16 object-contain rounded bg-gray-50" />
                   <div className="flex-1">
                     <div className="font-medium">{r.title}</div>
                     <div className="text-sm text-gray-500">{r.industry} · {r.topic} · {r.pages}页 · {r.source || 'MSC独家发布'}</div>
                   </div>
                   <div className="flex gap-2">
+                    <button className="px-3 py-1.5 border rounded" onClick={() => handleMoveUp(r.id)}>上移</button>
+                    <button className="px-3 py-1.5 border rounded" onClick={() => handleMoveDown(r.id)}>下移</button>
+                    <button className="px-3 py-1.5 border rounded" onClick={() => handleMoveTop(r.id)}>置顶</button>
                     <button className="px-3 py-1.5 border rounded" onClick={() => handleEdit(r.id)}>编辑</button>
                     <button className="px-3 py-1.5 border rounded text-red-600" onClick={() => handleDelete(r.id)}>删除</button>
                   </div>

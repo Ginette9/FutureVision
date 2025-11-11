@@ -63,7 +63,7 @@ export default function Insights() {
               }`}
             >
               {insight.coverImage && (
-                <div className="aspect-video bg-white-100 overflow-hidden">
+                <div className="aspect-video bg-white-100 overflow-hidden mt-8">
                   <img 
                     src={insight.coverImage} 
                     alt={insight.title}

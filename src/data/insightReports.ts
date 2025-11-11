@@ -208,7 +208,8 @@ export function searchInsightReports(query: string): InsightReport[] {
 
 // 添加新报告（用于后续管理功能）
 export function addInsightReport(report: InsightReport): void {
-  insightReports.push(report);
+  // 新增报告置顶显示：插入到数组头部
+  insightReports.unshift(report);
   saveStore();
 }
 
@@ -228,6 +229,41 @@ export function deleteInsightReport(id: string): boolean {
   const index = insightReports.findIndex(report => report.id === id);
   if (index !== -1) {
     insightReports.splice(index, 1);
+    saveStore();
+    return true;
+  }
+  return false;
+}
+
+// 调整报告顺序：上移/下移（持久化）
+export function moveInsightReportUp(id: string): boolean {
+  const index = insightReports.findIndex(r => r.id === id);
+  if (index > 0) {
+    const [item] = insightReports.splice(index, 1);
+    insightReports.splice(index - 1, 0, item);
+    saveStore();
+    return true;
+  }
+  return false;
+}
+
+export function moveInsightReportDown(id: string): boolean {
+  const index = insightReports.findIndex(r => r.id === id);
+  if (index !== -1 && index < insightReports.length - 1) {
+    const [item] = insightReports.splice(index, 1);
+    insightReports.splice(index + 1, 0, item);
+    saveStore();
+    return true;
+  }
+  return false;
+}
+
+// 将报告置顶
+export function moveInsightReportToTop(id: string): boolean {
+  const index = insightReports.findIndex(r => r.id === id);
+  if (index > 0) {
+    const [item] = insightReports.splice(index, 1);
+    insightReports.unshift(item);
     saveStore();
     return true;
   }
