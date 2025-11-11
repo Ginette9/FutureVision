@@ -4,25 +4,84 @@ import ContactModal from '../components/ContactModal';
 
 export default function About() {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  
-  const team = [
+
+  // 顾问毕业院校 logo（来自 public/images/universities）
+  const universityLogos = [
+    '/images/universities/university-cambridge.png',
+    '/images/universities/university-oxford.png',
+    '/images/universities/university-harvard.png',
+    '/images/universities/university-duke.png',
+    '/images/universities/university-penn.jpg',
+    '/images/universities/university-nyu.png',
+    '/images/universities/university-brown.jpg',
+    '/images/universities/university-peking.png',
+    '/images/universities/university-scientia.jpg',
+    '/images/universities/university-lse.png',
+    '/images/universities/university-manchester.jpg',
+    '/images/universities/university-nottingham.jpg',
+    '/images/universities/university-cuhk.png',
+    '/images/universities/university-massachusetts.png',
+    '/images/universities/university-fudan.png',
+    '/images/universities/university-tsinghua.jpg',
+    '/images/universities/university-royal-college-of-art.jpg',
+    '/images/universities/university-zhejiang.png'
+  ];
+
+  // 顾问职业经历 logo（来自 public/images/companies）
+  const companyLogos = [
+    '/images/companies/company-mckinsey.png',
+    '/images/companies/company-bcg.png',
+    '/images/companies/company-berger.png',
+    '/images/companies/company-nielsen.png',
+    '/images/companies/company-bill-melinda-gates.png',
+    '/images/companies/company-strategy&.png',
+    '/images/companies/company-deloitte.png',
+    '/images/companies/company-ibm.png',
+    '/images/companies/company-msci.png',
+    '/images/companies/company-ant-group.png',
+    '/images/companies/company-cicc.png',
+    '/images/companies/company-bytedance.png',
+    '/images/companies/company-mars.png',
+    '/images/companies/company-ey.png',
+    '/images/companies/company-tencent.png',
+    '/images/companies/company-apple.png',
+    '/images/companies/company-alibaba.png',
+    '/images/companies/company-sensetime.jpg',
+    '/images/companies/company-kwai.png',
+    '/images/companies/company-icbc.png',
+    '/images/companies/company-bank-of-communications.png',
+    '/images/companies/company-accenture.png'
+  ];
+
+  // 团队荣誉（白底），每个 logo 与对应文字（来自 public/images/achievements）
+  const achievementItems = [
     {
-      name: '金霞',
-      position: '创始人 & CEO',
-      description: '拥有15年国际商务和ESG咨询经验，曾服务于多家世界500强企业',
-      linkedin: 'https://www.linkedin.com/in/xia-jin-25267620'
+      src: '/images/achievements/achievement-forbes-under-30.png',
+      label: '5人登上福布斯30位30岁以下精英'
     },
     {
-      name: '王旭',
-      position: '商业情报总监',
-      description: '专注于全球商业情报分析，拥有丰富的市场研究和数据分析经验',
-      linkedin: '#'
+      src: '/images/achievements/achievement-g20-yea.png',
+      label: '2人入选G20YEA领军青年'
     },
     {
-      name: '子璇',
-      position: '内容与传播总监',
-      description: '负责内容策略和社媒传播，擅长将复杂的ESG概念转化为易懂的内容',
-      linkedin: '#'
+      src: '/images/achievements/achievement-apec.png',
+      label: '2人入选APEC未来之声'
+    },
+    {
+      src: '/images/achievements/achievement-wef-left.png',
+      label: '2人入选世界经济论坛全球杰出青年'
+    },
+    {
+      src: '/images/achievements/achievement-wef-right.png',
+      label: '2人入选世界经济论坛全球杰出青年'
+    },
+    {
+      src: '/images/achievements/achievement-youth-for-sdgs.png',
+      label: '2人入选联合国可持续青年领袖'
+    },
+    {
+      src: '/images/achievements/achievement-tedx.png',
+      label: '2人登上TEDx演讲'
     }
   ];
 
@@ -47,22 +106,24 @@ export default function About() {
 
   const offices = [
     {
-      city: '香港',
-      address: 'Room 1318-19, Hollywood Plaza 610 Nathan Road, Mong Kok, Kowloon',
-      phone: '+852 4609 1687',
-      email: 'hk@mscfv.com'
-    },
-    {
-      city: '北京',
-      address: 'Room 1805, Capital Mansion 6 Xinyuan South Road, Chaoyang District',
-      phone: '+86 189 8948 5442',
-      email: 'beijing@mscfv.com'
+      city: '杭州',
+      address: '杭州市萧山区鸿宁路广孚联合国际中心2402室'
     },
     {
       city: '上海',
-      address: '42/F, Magnolia Plaza, 501 East Da Ming Road, Hongkou District',
-      phone: '+86 21 6888 8888',
-      email: 'shanghai@mscfv.com'
+      address: '上海市虹口区东大名路501号白玉兰广场42层'
+    },
+    {
+      city: '北京',
+      address: '北京市朝阳区新源南路6号京城大厦 1805 室'
+    },
+    {
+      city: '沈阳',
+      address: '沈阳市沈抚新区彰武路李石经济区管委会大楼3层'
+    },
+    {
+      city: '香港',
+      address: '香港新界沙田安耀街3号汇达大厦2605室'
     }
   ];
 
@@ -96,26 +157,26 @@ export default function About() {
                 <p className="text-lg text-gray-700 leading-relaxed">洞悉新增长 普惠可持续</p>
               </div>
               <div className="bg-white p-8 border border-gray-200">
-                <h3 className="text-xl font-medium text-gray-900 mb-4">我们致力于</h3>
+                <h3 className="text-xl font-medium text-gray-900 mb-4">我们相信</h3>
                 <div className="space-y-3">
                   <p className="text-gray-700 text-base leading-relaxed">
-                    将可持续发展融入到企业战略与行为中，帮助企业获得增长的同时产生正向社会价值
+                  企业的利益和前途在于为社会创造福祉
                   </p>
                   <p className="text-gray-700 text-base leading-relaxed">
-                    融合管理咨询方法与AI技术，实现可持续发展咨询的普惠
+                    社会问题中蕴藏着巨大的商业机会
                   </p>
                 </div>
               </div>
             </div>
             {/* 右侧：一个块 */}
             <div className="bg-white p-8 border border-gray-200">
-              <h3 className="text-xl font-medium text-gray-900 mb-4">我们相信</h3>
+              <h3 className="text-xl font-medium text-gray-900 mb-4">我们致力于</h3>
               <div className="space-y-3">
                 <p className="text-gray-700 text-base leading-relaxed">
-                  企业的利益和前途在于为社会创造福祉
+                  将可持续发展融入到企业战略与行为中，帮助企业获得增长的同时产生正向社会价值
                 </p>
                 <p className="text-gray-700 text-base leading-relaxed">
-                  社会问题中蕴藏着巨大的商业机会
+                  融合管理咨询方法与AI技术，实现可持续发展咨询的普惠
                 </p>
               </div>
             </div>
@@ -176,34 +237,63 @@ export default function About() {
             由资深专家组成的专业团队，为您提供卓越的咨询服务
           </p>
         </div>
-        
-        <div className="grid md:grid-cols-3 gap-8">
-          {team.map((member, index) => (
-            <motion.div
-              key={member.name}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 * index }}
-              className="text-center bg-white border border-gray-200 p-8"
-            >
-              <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-6"></div>
-              <h3 className="text-xl font-medium text-gray-900 mb-2">
-                {member.name}
-              </h3>
-              <p className="text-gray-600 font-medium mb-4">
-                {member.position}
-              </p>
-              <p className="text-gray-600 leading-relaxed mb-6">
-                {member.description}
-              </p>
-              <a
-                href={member.linkedin}
-                className="text-gray-900 hover:text-gray-700 font-medium"
+        {/* 顾问毕业院校 */}
+        <div className="bg-white border border-gray-200 p-8 mb-12">
+          <h3 className="text-xl font-medium text-gray-900 mb-6">顾问毕业院校</h3>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-x-8 gap-y-6 place-items-center">
+            {universityLogos.map((src, i) => (
+              <motion.div
+                key={src}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.02 * i }}
+                className="w-full flex items-center justify-center p-2"
               >
-                LinkedIn →
-              </a>
-            </motion.div>
-          ))}
+                <img src={src} alt="university logo" className="h-12 md:h-14 lg:h-16 object-contain" />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* 顾问职业经历 */}
+        <div className="bg-white border border-gray-200 p-8 mb-12">
+          <h3 className="text-xl font-medium text-gray-900 mb-6">顾问职业经历</h3>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-x-8 gap-y-6 place-items-center">
+            {companyLogos.map((src, i) => (
+              <motion.div
+                key={src}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.02 * i }}
+                className="w-full flex items-center justify-center p-2"
+              >
+                <img src={src} alt="company logo" className="h-12 md:h-14 lg:h-16 object-contain" />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* 团队荣誉（白底） */}
+        <div className="bg-white border border-gray-200 p-8">
+          <h3 className="text-xl font-medium text-gray-900 mb-6">团队荣誉</h3>
+          {/* 大屏尽量单行展示；小屏自动换行 */}
+          <div className="flex flex-wrap items-start justify-between gap-y-8">
+            {achievementItems.map((item, i) => (
+              <motion.div
+                key={item.src}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.02 * i }}
+                className="flex flex-col items-center text-center basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-[12.5%] px-2"
+              >
+                <img src={item.src} alt="achievement logo" className="h-16 md:h-18 lg:h-20 object-contain" />
+                <p className="mt-3 text-xs md:text-sm text-gray-700 leading-snug tracking-tight">{item.label}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </motion.div>
 
@@ -223,91 +313,23 @@ export default function About() {
           </p>
         </div>
         
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="flex flex-wrap justify-center gap-8">
           {offices.map((office, index) => (
             <motion.div
               key={office.city}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 * index }}
-              className="bg-gray-50 p-8"
+              transition={{ duration: 0.6, delay: 0.08 * index }}
+              className="bg-gray-50 border border-gray-200 p-6 md:p-6 w-full sm:basis-[48%] md:basis-[31%]"
             >
-              <h3 className="text-xl font-medium text-gray-900 mb-4">
+              <h3 className="text-xl font-medium text-gray-900 mb-3">
                 {office.city}
               </h3>
-              <div className="space-y-3 text-gray-600">
-                <p className="leading-relaxed">
-                  {office.address}
-                </p>
-                <p>
-                  <span className="font-medium">电话:</span> {office.phone}
-                </p>
-                <p>
-                  <span className="font-medium">邮箱:</span> {office.email}
-                </p>
-              </div>
+              <p className="text-gray-700 leading-relaxed tracking-tight">
+                {office.address}
+              </p>
             </motion.div>
           ))}
-        </div>
-      </motion.div>
-
-      {/* Timeline */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 1.0 }}
-        className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-20"
-      >
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-light text-gray-900 mb-6">
-            发展历程
-          </h2>
-        </div>
-        
-        <div className="space-y-8">
-          <div className="flex items-start">
-            <div className="flex-shrink-0 w-24 text-right pr-8">
-              <span className="text-lg font-medium text-gray-900">2019</span>
-            </div>
-            <div className="flex-shrink-0 w-4 h-4 bg-gray-900 rounded-full mt-1 mr-8"></div>
-            <div className="flex-1">
-              <h3 className="text-lg font-medium text-gray-900 mb-2">公司成立</h3>
-              <p className="text-gray-600">Future Vision 在香港正式成立，专注于ESG咨询服务</p>
-            </div>
-          </div>
-          
-          <div className="flex items-start">
-            <div className="flex-shrink-0 w-24 text-right pr-8">
-              <span className="text-lg font-medium text-gray-900">2020</span>
-            </div>
-            <div className="flex-shrink-0 w-4 h-4 bg-gray-900 rounded-full mt-1 mr-8"></div>
-            <div className="flex-1">
-              <h3 className="text-lg font-medium text-gray-900 mb-2">业务拓展</h3>
-              <p className="text-gray-600">在北京和上海设立办公室，服务范围扩展至中国大陆</p>
-            </div>
-          </div>
-          
-          <div className="flex items-start">
-            <div className="flex-shrink-0 w-24 text-right pr-8">
-              <span className="text-lg font-medium text-gray-900">2022</span>
-            </div>
-            <div className="flex-shrink-0 w-4 h-4 bg-gray-900 rounded-full mt-1 mr-8"></div>
-            <div className="flex-1">
-              <h3 className="text-lg font-medium text-gray-900 mb-2">国际认证</h3>
-              <p className="text-gray-600">获得多项国际ESG咨询认证，成为行业领先的专业服务机构</p>
-            </div>
-          </div>
-          
-          <div className="flex items-start">
-            <div className="flex-shrink-0 w-24 text-right pr-8">
-              <span className="text-lg font-medium text-gray-900">2024</span>
-            </div>
-            <div className="flex-shrink-0 w-4 h-4 bg-gray-900 rounded-full mt-1 mr-8"></div>
-            <div className="flex-1">
-              <h3 className="text-lg font-medium text-gray-900 mb-2">持续创新</h3>
-              <p className="text-gray-600">推出智能ESG风险分析平台，为客户提供更高效的服务</p>
-            </div>
-          </div>
         </div>
       </motion.div>
 

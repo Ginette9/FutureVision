@@ -223,7 +223,7 @@ export default function ESGRiskAnalysis() {
        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16"
      >
        <h1 className="text-4xl lg:text-5xl font-light text-gray-900 mb-6">
-         ESG风险分析工具
+         ESGVoyant
        </h1>
        <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8">
          基于全球数据和先进算法，为您的企业出海提供精准的ESG风险评估和预警
