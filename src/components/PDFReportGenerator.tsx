@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import jsPDF from 'jspdf';
-import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+import { PDFDocument, StandardFonts, rgb, degrees } from 'pdf-lib';
 import coverImageUrl from '@/images/pdf-cover-new.png';
 import backImageUrl from '@/images/pdf-back-new.png';
 import fvLogoUrl from '@/images/future-vision-logo.png';
@@ -3573,6 +3573,47 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
           }
         } catch (e) {
           console.warn('静态页面添加页脚失败，已跳过：', e);
+        }
+
+        // 为所有页面添加斜对角水印（除封面；尾页在后续追加后不包含在当前范围内）
+        try {
+          const logoRes = await fetch(fvLogoUrl);
+          const logoBytes = await logoRes.arrayBuffer();
+          const logoPng = await baseDoc.embedPng(logoBytes);
+          const lw = (logoPng as any).width || 0;
+          const lh = (logoPng as any).height || 1;
+          const aspect = lw && lh ? lw / lh : 1;
+          const total = baseDoc.getPageCount();
+          const opacity = 0.08; // 透明度：不影响阅读
+          const angleDeg = 30; // 倾斜角度优化为 30°
+          const theta = (Math.PI / 180) * angleDeg;
+          const sinT = Math.sin(theta);
+          const cosT = Math.cos(theta);
+          for (let pi = 1; pi < total; pi++) { // 跳过第1页封面
+            const page = baseDoc.getPage(pi);
+            const { width: pw, height: ph } = page.getSize();
+            const diag = Math.sqrt(pw * pw + ph * ph);
+            const targetDiag = diag * 0.8; // 覆盖整页的80%
+            const H = targetDiag / Math.sqrt(aspect * aspect + 1);
+            const W = aspect * H;
+            // 以图片左下角为旋转中心，计算旋转后外接矩形尺寸与偏移，使其居中
+            const bboxW = W * cosT + H * sinT;
+            const bboxH = W * sinT + H * cosT;
+            const minX = -H * sinT; // 0~90°时最小X为 -H*sinθ
+            const minY = 0;         // 0~90°时最小Y为 0
+            const x = (pw - bboxW) / 2 - minX; // 使外接矩形居中后回推到旋转中心
+            const y = (ph - bboxH) / 2 - minY;
+            page.drawImage(logoPng, {
+              x,
+              y,
+              width: W,
+              height: H,
+              rotate: degrees(angleDeg), // 左下到右上方向
+              opacity
+            });
+          }
+        } catch (e) {
+          console.warn('水印添加失败，已跳过：', e);
         }
         
         // 5) 添加尾页图片（若可用）——尾页不绘制页脚
