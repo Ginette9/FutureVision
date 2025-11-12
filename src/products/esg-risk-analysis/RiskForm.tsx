@@ -235,7 +235,7 @@ export default function RiskForm({
       <div className="grid md:grid-cols-2 gap-6">
         <AnimatedFormField delay={0.5}>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            职位
+            职位 <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -244,12 +244,13 @@ export default function RiskForm({
             onChange={onInputChange}
             placeholder="请输入您的职位"
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+            required
           />
         </AnimatedFormField>
 
         <AnimatedFormField delay={0.6}>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            公司/组织
+            公司/组织 <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -258,13 +259,14 @@ export default function RiskForm({
             onChange={onInputChange}
             placeholder="请输入您的公司或组织"
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+            required
           />
         </AnimatedFormField>
       </div>
 
       <AnimatedFormField delay={0.7}>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          联系电话
+          联系电话 <span className="text-red-500">*</span>
         </label>
         <input
           type="tel"
@@ -273,6 +275,7 @@ export default function RiskForm({
           onChange={onInputChange}
           placeholder="请输入您的联系电话"
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+          required
         />
       </AnimatedFormField>
 

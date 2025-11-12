@@ -226,7 +226,7 @@ export default function ESGRiskAnalysis() {
          ESGVoyant
        </h1>
        <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8">
-         基于全球数据和先进算法，为您的企业出海提供精准的ESG风险评估和预警
+         基于全球可靠数据来源及领先算法，全面覆盖合规及隐性ESG风险<br />为您提供全面、精准的评估、预警及建议
        </p>
        
        {/* 核心价值主张 */}
@@ -291,23 +291,23 @@ export default function ESGRiskAnalysis() {
          className="mt-16 grid md:grid-cols-2 lg:grid-cols-4 gap-6"
        >
          <div className="text-center p-6 bg-gray-50 rounded-lg">
-           <div className="text-3xl font-light text-blue-600 mb-2">50+</div>
-           <div className="text-sm text-gray-600">覆盖国家和地区</div>
+           <div className="text-3xl font-light text-blue-600 mb-2">252</div>
+           <div className="text-sm text-gray-600">国家与地区</div>
          </div>
          
          <div className="text-center p-6 bg-gray-50 rounded-lg">
-           <div className="text-3xl font-light text-green-600 mb-2">24/7</div>
-           <div className="text-sm text-gray-600">实时监测更新</div>
+           <div className="text-3xl font-light text-green-600 mb-2">471</div>
+           <div className="text-sm text-gray-600">GICS行业</div>
          </div>
          
          <div className="text-center p-6 bg-gray-50 rounded-lg">
-           <div className="text-3xl font-light text-purple-600 mb-2">99%</div>
-           <div className="text-sm text-gray-600">数据准确率</div>
+           <div className="text-3xl font-light text-purple-600 mb-2">22</div>
+           <div className="text-sm text-gray-600">ESG核心主题</div>
          </div>
          
          <div className="text-center p-6 bg-gray-50 rounded-lg">
-           <div className="text-3xl font-light text-orange-600 mb-2">5min</div>
-           <div className="text-sm text-gray-600">快速生成报告</div>
+           <div className="text-3xl font-light text-orange-600 mb-2">80%</div>
+           <div className="text-sm text-gray-600">隐性ESG风险占比</div>
          </div>
        </motion.div>
        
