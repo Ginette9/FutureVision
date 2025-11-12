@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
 dotenv.config();
 const app = express();
 const PORT = Number(process.env.PORT || 3001);
@@ -206,6 +208,62 @@ app.post('/api/pay/paypal/capture', async (req, res) => {
 });
 
 // 已移除第三方回调与订单查询接口
+
+// ============== 简单报告存储 API ==============
+const DATA_DIR = path.join(process.cwd(), 'data');
+const INSIGHTS_JSON = path.join(DATA_DIR, 'insights.json');
+
+function ensureDataFile() {
+  try {
+    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+    if (!fs.existsSync(INSIGHTS_JSON)) {
+      fs.writeFileSync(INSIGHTS_JSON, JSON.stringify([], null, 2), 'utf8');
+    }
+  } catch (e) {
+    console.error('[insights] ensure data file failed:', e.message);
+  }
+}
+
+function readInsights() {
+  try {
+    ensureDataFile();
+    const raw = fs.readFileSync(INSIGHTS_JSON, 'utf8');
+    const arr = JSON.parse(raw);
+    if (Array.isArray(arr)) return arr;
+    return [];
+  } catch (e) {
+    console.error('[insights] read failed:', e.message);
+    return [];
+  }
+}
+
+function writeInsights(arr) {
+  try {
+    ensureDataFile();
+    fs.writeFileSync(INSIGHTS_JSON, JSON.stringify(arr ?? [], null, 2), 'utf8');
+    return true;
+  } catch (e) {
+    console.error('[insights] write failed:', e.message);
+    return false;
+  }
+}
+
+// 获取线上报告列表
+app.get('/api/insights', (req, res) => {
+  const data = readInsights();
+  res.json({ items: data, count: data.length });
+});
+
+// 覆盖保存报告列表（由管理页触发）
+app.post('/api/insights', (req, res) => {
+  const { items } = req.body || {};
+  if (!Array.isArray(items)) {
+    return res.status(400).json({ error: 'invalid_payload', message: 'items must be an array' });
+  }
+  const ok = writeInsights(items);
+  if (!ok) return res.status(500).json({ error: 'write_failed' });
+  return res.json({ success: true, count: items.length });
+});
 
 // 健康检查路由
 app.get('/health', (req, res) => {

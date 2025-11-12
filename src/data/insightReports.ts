@@ -126,6 +126,34 @@ export const insightReports: InsightReport[] = [
 
 // 本地持久化（仅在浏览器运行时生效）
 const STORAGE_KEY = 'insightReportsStore';
+const UPDATE_EVENT = 'insights-store-updated';
+
+function dispatchUpdateEvent() {
+  try {
+    if (typeof window === 'undefined') return;
+    const ev = new Event(UPDATE_EVENT);
+    window.dispatchEvent(ev);
+  } catch {}
+}
+
+async function saveToServerIfAvailable() {
+  try {
+    if (typeof window === 'undefined') return;
+    // 同源API；失败则尝试本地开发端口（3002）
+    const payload = { items: insightReports };
+    const tryUrls = ['/api/insights', 'http://localhost:3002/api/insights'];
+    for (const url of tryUrls) {
+      try {
+        const resp = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (resp.ok) break;
+      } catch {}
+    }
+  } catch {}
+}
 function bootstrapStore() {
   try {
     if (typeof window === 'undefined') return;
@@ -156,9 +184,39 @@ function saveStore() {
   try {
     if (typeof window === 'undefined') return;
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(insightReports));
+    // 同步到服务端（若可用），并通知前端刷新
+    // 不阻塞：异步触发，忽略错误
+    void saveToServerIfAvailable();
+    dispatchUpdateEvent();
   } catch {}
 }
 bootstrapStore();
+
+// 首次加载（localStorage为空）时尝试从服务端拉取并覆盖内存与本地存储
+async function bootstrapFromServerIfEmpty() {
+  try {
+    if (typeof window === 'undefined') return;
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (raw) return; // 已有本地存储则不覆盖
+    // 依次尝试同源与本地开发端口
+    const urls = ['/api/insights', 'http://localhost:3002/api/insights'];
+    let data: any = null;
+    for (const url of urls) {
+      try {
+        const resp = await fetch(url);
+        if (resp.ok) { data = await resp.json(); break; }
+      } catch {}
+    }
+    if (!data) return;
+    const arr = Array.isArray(data?.items) ? data.items : [];
+    if (Array.isArray(arr) && arr.length > 0) {
+      insightReports.splice(0, insightReports.length, ...arr);
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(insightReports));
+      dispatchUpdateEvent();
+    }
+  } catch {}
+}
+void bootstrapFromServerIfEmpty();
 
 // 获取所有报告
 export function getAllInsightReports(): InsightReport[] {

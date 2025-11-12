@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getAllInsightReports, InsightReport } from '../data/insightReports';
 import InsightReportDetail from '../components/InsightReportDetail';
 
@@ -7,8 +7,14 @@ export default function Insights() {
   const [selectedReport, setSelectedReport] = useState<InsightReport | null>(null);
   const [isReportDetailOpen, setIsReportDetailOpen] = useState(false);
 
-  // 获取所有独家洞察报告
-  const insights = getAllInsightReports();
+  // 获取所有独家洞察报告（状态 + 事件刷新）
+  const [insights, setInsights] = useState<InsightReport[]>(getAllInsightReports());
+
+  useEffect(() => {
+    const handler = () => setInsights(getAllInsightReports());
+    window.addEventListener('insights-store-updated', handler);
+    return () => window.removeEventListener('insights-store-updated', handler);
+  }, []);
 
   const handleReportClick = (report: InsightReport) => {
     setSelectedReport(report);

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ContactModal from '../components/ContactModal';
 import InsightReportDetail from '../components/InsightReportDetail';
-import { getLatestInsightReports, InsightReport } from '../data/insightReports';
+import { getAllInsightReports, InsightReport } from '../data/insightReports';
 import graphGlobal from '../images/graph-global.png';
 import graphListed from '../images/graph-listed.png';
 import graphSme from '../images/graph-sme.png';
@@ -94,7 +94,15 @@ export default function NewHome() {
   ];
 
   // 独家洞察数据 - 使用新的数据结构
-  const insights = getLatestInsightReports(3);
+  // 首页展示顺序与管理页一致：直接按数组顺序取前3个
+  const [insights, setInsights] = useState<InsightReport[]>(getAllInsightReports().slice(0, 3));
+
+  // 监听数据层更新事件，自动刷新首页展示
+  useEffect(() => {
+    const handler = () => setInsights(getAllInsightReports().slice(0, 3));
+    window.addEventListener('insights-store-updated', handler);
+    return () => window.removeEventListener('insights-store-updated', handler);
+  }, []);
 
   const formatDate = (dateString: string) => {
     const d = new Date(dateString);

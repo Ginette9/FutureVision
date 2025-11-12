@@ -607,7 +607,7 @@ export default function AdminInsights() {
                 setForm(f => ({ ...f, detailedSummary: val } as any));
                 if (editMode?.id) {
                   updateInsightReport(editMode.id, { detailedSummary: val } as any);
-                  setReports(getAllInsightReports());
+                  setReports([...getAllInsightReports()]);
                 }
               }}
             />
