@@ -184,6 +184,39 @@ export default function AdminInsights() {
     }
   };
 
+  // 上传PDF到服务端并设置pdfUrl
+  const uploadPdfToServer = async (file: File) => {
+    try {
+      const dataUrl = await fileToDataUrl(file);
+      const payload = { filename: file.name, contentBase64: dataUrl } as any;
+      // 首选同源API，失败则回退到本地3002开发端口
+      let resp: Response | null = null;
+      try {
+        resp = await fetch('/api/uploads', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      } catch {}
+      if (!resp || !resp.ok) {
+        try {
+          resp = await fetch('http://localhost:3002/api/uploads', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        } catch {}
+      }
+      if (!resp || !resp.ok) {
+        throw new Error('上传失败，请检查服务端是否已启动');
+      }
+      const json = await resp.json();
+      const url = json?.url as string;
+      if (!url) throw new Error('服务端未返回文件URL');
+      setPdfInput({ type: 'url', value: url });
+      setForm(f => ({ ...f, pdfUrl: url }));
+      if (editMode?.id) {
+        updateInsightReport(editMode.id, { pdfUrl: url });
+        setReports([...getAllInsightReports()]);
+      }
+      setStatusMsg('PDF已上传并保存链接');
+    } catch (e) {
+      alert('PDF上传失败：' + (e as Error).message);
+    }
+  };
+
   const handleCoverDragStart = (e: any) => {
     setDraggingCover(true);
     handleCoverDrag(e);
@@ -635,6 +668,7 @@ export default function AdminInsights() {
             <h3 className="text-sm font-medium mb-2">填写PDF相对路径</h3>
             <div className="flex items-center gap-3 mb-2">
               <input className="flex-1 border rounded px-3 py-2" placeholder="/reports/xxx.pdf" value={pdfInput.value} onChange={e => { const val = e.target.value; setPdfInput({ type: 'url', value: val }); setForm(f => ({ ...f, pdfUrl: val })); if (editMode?.id) { updateInsightReport(editMode.id, { pdfUrl: val }); setReports([...getAllInsightReports()]); } }} />
+              <input type="file" accept="application/pdf" onChange={e => e.target.files?.[0] && uploadPdfToServer(e.target.files[0])} />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               

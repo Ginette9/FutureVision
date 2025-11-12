@@ -10,7 +10,7 @@ const PORT = Number(process.env.PORT || 3001);
 
 // 启用CORS
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 
 // 静态文件服务（生产环境）
 if (process.env.NODE_ENV === 'production') {
@@ -216,6 +216,11 @@ const DEFAULT_DATA_DIR = path.join(process.cwd(), 'data');
 const DEFAULT_INSIGHTS_JSON = path.join(DEFAULT_DATA_DIR, 'insights.json');
 const INSIGHTS_JSON = ENV_INSIGHTS_PATH || DEFAULT_INSIGHTS_JSON;
 
+// 运行时上传目录（PDF/图片），支持持久盘配置
+const ENV_UPLOADS_DIR = process.env.UPLOADS_DIR;
+const DEFAULT_UPLOADS_DIR = path.join(DEFAULT_DATA_DIR, 'uploads');
+const UPLOADS_DIR = ENV_UPLOADS_DIR || DEFAULT_UPLOADS_DIR;
+
 function ensureDataFile() {
   try {
     const dir = path.dirname(INSIGHTS_JSON);
@@ -252,6 +257,15 @@ function writeInsights(arr) {
   }
 }
 
+function ensureUploadsDir() {
+  try {
+    if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+  } catch (e) {
+    console.error('[uploads] ensure dir failed:', e.message);
+  }
+}
+ensureUploadsDir();
+
 // 获取线上报告列表
 app.get('/api/insights', (req, res) => {
   const data = readInsights();
@@ -267,6 +281,30 @@ app.post('/api/insights', (req, res) => {
   const ok = writeInsights(items);
   if (!ok) return res.status(500).json({ error: 'write_failed' });
   return res.json({ success: true, count: items.length });
+});
+
+// 静态服务上传的文件（PDF、图片等）
+app.use('/uploads', express.static(UPLOADS_DIR));
+
+// 简易上传接口：接受 dataURL/base64 内容并保存到 uploads 目录
+app.post('/api/uploads', (req, res) => {
+  try {
+    const { filename, contentBase64 } = req.body || {};
+    if (!filename || !contentBase64) {
+      return res.status(400).json({ error: 'filename and contentBase64 are required' });
+    }
+    const safeName = path.basename(String(filename));
+    const target = path.join(UPLOADS_DIR, safeName);
+    const raw = String(contentBase64);
+    const comma = raw.indexOf(',');
+    const pure = comma >= 0 ? raw.slice(comma + 1) : raw;
+    const buf = Buffer.from(pure, 'base64');
+    fs.writeFileSync(target, buf);
+    return res.json({ ok: true, url: `/uploads/${safeName}` });
+  } catch (e) {
+    console.error('[uploads] save failed:', e.message);
+    return res.status(500).json({ error: 'save_failed' });
+  }
 });
 
 // 健康检查路由
