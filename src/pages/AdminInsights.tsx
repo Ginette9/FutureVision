@@ -8,7 +8,8 @@ import {
   deleteInsightReport,
   moveInsightReportUp,
   moveInsightReportDown,
-  moveInsightReportToTop
+  moveInsightReportToTop,
+  replaceInsightReports
 } from '@/data/insightReports';
 import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist';
 import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
@@ -484,8 +485,8 @@ export default function AdminInsights() {
       try {
         const arr = JSON.parse(String(reader.result));
         if (Array.isArray(arr)) {
-          // 覆盖式导入（存到 localStorage）
-          localStorage.setItem('insightReportsStore', JSON.stringify(arr));
+          // 覆盖式导入：替换内存 + 持久化保存 + 派发刷新事件（数据层负责）
+          replaceInsightReports(arr);
           setReports([...getAllInsightReports()]);
         } else {
           alert('JSON 格式错误：需要是报告数组');

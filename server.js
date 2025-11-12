@@ -210,12 +210,16 @@ app.post('/api/pay/paypal/capture', async (req, res) => {
 // 已移除第三方回调与订单查询接口
 
 // ============== 简单报告存储 API ==============
-const DATA_DIR = path.join(process.cwd(), 'data');
-const INSIGHTS_JSON = path.join(DATA_DIR, 'insights.json');
+// 支持通过环境变量覆盖存储路径（适配 Render 持久盘）
+const ENV_INSIGHTS_PATH = process.env.INSIGHTS_PATH;
+const DEFAULT_DATA_DIR = path.join(process.cwd(), 'data');
+const DEFAULT_INSIGHTS_JSON = path.join(DEFAULT_DATA_DIR, 'insights.json');
+const INSIGHTS_JSON = ENV_INSIGHTS_PATH || DEFAULT_INSIGHTS_JSON;
 
 function ensureDataFile() {
   try {
-    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+    const dir = path.dirname(INSIGHTS_JSON);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     if (!fs.existsSync(INSIGHTS_JSON)) {
       fs.writeFileSync(INSIGHTS_JSON, JSON.stringify([], null, 2), 'utf8');
     }

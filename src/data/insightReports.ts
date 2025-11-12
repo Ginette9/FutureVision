@@ -223,6 +223,14 @@ export function getAllInsightReports(): InsightReport[] {
   return insightReports;
 }
 
+// 覆盖式替换整个列表（导入JSON使用）
+export function replaceInsightReports(items: InsightReport[]): void {
+  if (Array.isArray(items)) {
+    insightReports.splice(0, insightReports.length, ...items);
+    saveStore();
+  }
+}
+
 // 根据ID获取特定报告
 export function getInsightReportById(id: string): InsightReport | undefined {
   return insightReports.find(report => report.id === id);
