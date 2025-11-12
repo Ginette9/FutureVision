@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { InsightReport } from '../data/insightReports';
 import ReportPurchaseModal from './ReportPurchaseModal';
 import fvLogoUrl from '@/images/future-vision-logo.png';
+import { PDFDocument, degrees } from 'pdf-lib';
 import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist';
 // 使用ESM worker入口以兼容最新版本
 // @ts-ignore
@@ -58,18 +59,7 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
       // 传入 canvas 以符合类型要求
       await page.render({ canvasContext: ctx, viewport, canvas }).promise;
 
-      // 绘制水印（右下角FV logo）
-      const img = new Image();
-      img.src = fvLogoUrl;
-      await new Promise((resolve) => { img.onload = resolve; img.onerror = resolve; });
-      const logoW = Math.max(80, Math.round(canvas.width * 0.15));
-      const aspect = img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 1.6;
-      const logoH = Math.round(logoW / aspect);
-      const x = canvas.width - logoW - 16;
-      const y = canvas.height - logoH - 16;
-      ctx.globalAlpha = 0.35;
-      try { ctx.drawImage(img, x, y, logoW, logoH); } catch {}
-      ctx.globalAlpha = 1;
+      
 
       const dataUrl = canvas.toDataURL('image/png');
       setRenderCache((c) => ({ ...c, [String(pageNum)]: dataUrl }));
@@ -77,6 +67,39 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
     } catch (e) {
       console.warn('Failed to render PDF page', pageNum, e);
       return null;
+    }
+  }, [report.pdfUrl]);
+
+  const openWatermarkedPdf = useCallback(async () => {
+    try {
+      if (!report.pdfUrl) return;
+      const resp = await fetch(report.pdfUrl);
+      const buf = await resp.arrayBuffer();
+      const pdf = await PDFDocument.load(buf);
+      const logoResp = await fetch(fvLogoUrl);
+      const logoBuf = await logoResp.arrayBuffer();
+      const logo = await pdf.embedPng(logoBuf);
+      const pageCount = pdf.getPageCount();
+      for (let i = 0; i < pageCount; i++) {
+        if (i === 0 || i === pageCount - 1) continue;
+        const page = pdf.getPage(i);
+        const { width, height } = page.getSize();
+        const dims = logo.scale(1);
+        const base = Math.min(width, height) * 0.9;
+        const scale = base / Math.min(dims.width, dims.height);
+        const scaled = logo.scale(scale);
+        const offsetX = 150; // 右移 20
+        const offsetY = -100; // 下移 30
+        const x = (width - scaled.width) / 2 + offsetX;
+        const y = (height - scaled.height) / 2 + offsetY;
+        page.drawImage(logo, { x, y, width: scaled.width, height: scaled.height, rotate: degrees(30), opacity: 0.12 });
+      }
+      const out = await pdf.save();
+      const blob = new Blob([out], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    } catch {
+      if (report.pdfUrl) window.open(report.pdfUrl, '_blank');
     }
   }, [report.pdfUrl]);
 
@@ -237,14 +260,12 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                       关闭
                     </button>
                     {report.pdfUrl && (
-                      <a
-                        href={report.pdfUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <button
+                        onClick={openWatermarkedPdf}
                         className="px-6 py-2 bg-gray-100 text-gray-900 hover:bg-gray-200 transition-colors duration-200 rounded"
                       >
                         在线查看PDF
-                      </a>
+                      </button>
                     )}
                     <button
                       onClick={handleContactPurchase}
