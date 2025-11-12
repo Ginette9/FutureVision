@@ -15,19 +15,18 @@ function fileToDataUrl(file: File): Promise<string> {
 
 async function uploadImageToServer(file: File, overrideName?: string): Promise<string> {
   const dataUrl = await fileToDataUrl(file);
-  const payload = { filename: overrideName || file.name, contentBase64: dataUrl } as any;
-  const endpoints = ['http://localhost:3002/api/uploads', '/api/uploads', 'http://localhost:3001/api/uploads'];
+  const payload = { filename: overrideName || file.name, contentBase64: dataUrl, folder: 'news-pics' } as any;
+  const endpoints = ['/api/uploads', 'http://localhost:3002/api/uploads', 'http://localhost:3001/api/uploads'];
   for (const ep of endpoints) {
     try {
-      const resp = await fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      const t = localStorage.getItem('adminToken');
+      if (t) headers['X-Admin-Token'] = t;
+      const resp = await fetch(ep, { method: 'POST', headers, body: JSON.stringify(payload) });
       if (resp.ok) {
         const json = await resp.json();
         const path = String(json?.url || '');
         if (!path) continue;
-        if (ep.startsWith('http')) {
-          const base = ep.replace(/\/api\/uploads$/, '');
-          return `${base}${path}`;
-        }
         return path;
       }
     } catch {}
@@ -145,6 +144,7 @@ export default function AdminNews() {
     if (code && code.trim().length > 0) {
       setIsAuthenticated(true);
       sessionStorage.setItem('adminLogin', '1');
+      try { localStorage.setItem('adminToken', code.trim()); } catch {}
     }
   };
 

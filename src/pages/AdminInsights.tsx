@@ -192,11 +192,17 @@ export default function AdminInsights() {
       // 首选同源API，失败则回退到本地3002开发端口
       let resp: Response | null = null;
       try {
-        resp = await fetch('/api/uploads', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+        const t = localStorage.getItem('adminToken');
+        if (t) headers['X-Admin-Token'] = t;
+        resp = await fetch('/api/uploads', { method: 'POST', headers, body: JSON.stringify(payload) });
       } catch {}
       if (!resp || !resp.ok) {
         try {
-          resp = await fetch('http://localhost:3002/api/uploads', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+          const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+          const t = localStorage.getItem('adminToken');
+          if (t) headers['X-Admin-Token'] = t;
+          resp = await fetch('http://localhost:3002/api/uploads', { method: 'POST', headers, body: JSON.stringify(payload) });
         } catch {}
       }
       if (!resp || !resp.ok) {

@@ -151,7 +151,12 @@ async function saveToServerIfAvailable() {
       try {
         const resp = await fetch(url, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            ...(typeof window !== 'undefined' && window.localStorage.getItem('adminToken') 
+              ? { 'X-Admin-Token': String(window.localStorage.getItem('adminToken')) } 
+              : {})
+          },
           body: JSON.stringify(payload)
         });
         if (resp.ok) break;

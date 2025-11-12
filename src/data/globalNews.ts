@@ -38,7 +38,12 @@ async function saveToServerIfAvailable() {
       try {
         const resp = await fetch(url, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            ...(typeof window !== 'undefined' && window.localStorage.getItem('adminToken') 
+              ? { 'X-Admin-Token': String(window.localStorage.getItem('adminToken')) } 
+              : {})
+          },
           body: JSON.stringify(payload)
         });
         if (resp.ok) break;
@@ -54,7 +59,16 @@ function bootstrapStore() {
     if (!raw) return;
     const arr = JSON.parse(raw);
     if (Array.isArray(arr)) {
-      globalNews.splice(0, globalNews.length, ...(arr as any));
+      const normalized = (arr as any[]).map(n => {
+        if (n && typeof n === 'object' && typeof (n as any).coverImage === 'string') {
+          let s = String((n as any).coverImage);
+          s = s.replace(/^https?:\/\/(localhost|127\.0\.0\.1):\d+/, '');
+          if (s && !s.startsWith('http') && !s.startsWith('/')) s = '/' + s;
+          return { ...n, coverImage: s };
+        }
+        return n;
+      });
+      globalNews.splice(0, globalNews.length, ...normalized as any);
     }
   } catch {}
 }
@@ -85,7 +99,16 @@ async function bootstrapFromServerIfEmpty() {
     if (!data) return;
     const arr = Array.isArray(data?.items) ? data.items : [];
     if (Array.isArray(arr) && arr.length > 0) {
-      globalNews.splice(0, globalNews.length, ...arr);
+      const normalized = (arr as any[]).map(n => {
+        if (n && typeof n === 'object' && typeof (n as any).coverImage === 'string') {
+          let s = String((n as any).coverImage);
+          s = s.replace(/^https?:\/\/(localhost|127\.0\.0\.1):\d+/, '');
+          if (s && !s.startsWith('http') && !s.startsWith('/')) s = '/' + s;
+          return { ...n, coverImage: s };
+        }
+        return n;
+      });
+      globalNews.splice(0, globalNews.length, ...normalized as any);
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(globalNews));
       dispatchUpdateEvent();
     }

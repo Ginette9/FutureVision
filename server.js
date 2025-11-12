@@ -7,6 +7,7 @@ import path from 'path';
 dotenv.config();
 const app = express();
 const PORT = Number(process.env.PORT || 3001);
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN;
 
 // 启用CORS
 app.use(cors());
@@ -312,6 +313,10 @@ app.get('/api/insights', (req, res) => {
 
 // 覆盖保存报告列表（由管理页触发）
 app.post('/api/insights', (req, res) => {
+  const token = req.headers['x-admin-token'];
+  if (ADMIN_TOKEN && token !== ADMIN_TOKEN) {
+    return res.status(403).json({ error: 'forbidden' });
+  }
   const { items } = req.body || {};
   if (!Array.isArray(items)) {
     return res.status(400).json({ error: 'invalid_payload', message: 'items must be an array' });
@@ -342,6 +347,10 @@ app.use('/uploads', express.static(UPLOADS_DIR));
 // 简易上传接口：接受 dataURL/base64 内容并保存到 uploads 目录
 app.post('/api/uploads', (req, res) => {
   try {
+    const token = req.headers['x-admin-token'];
+    if (ADMIN_TOKEN && token !== ADMIN_TOKEN) {
+      return res.status(403).json({ error: 'forbidden' });
+    }
     const { filename, contentBase64, folder } = req.body || {};
     if (!filename || !contentBase64) {
       return res.status(400).json({ error: 'filename and contentBase64 are required' });
