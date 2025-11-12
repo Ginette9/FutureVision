@@ -147,7 +147,7 @@ async function saveToServerIfAvailable() {
     if (!ENABLE_SERVER_SYNC) return;
     // 同源API；失败则尝试本地开发端口（3002）
     const payload = { items: insightReports };
-    const tryUrls = ['/api/insights', 'http://localhost:3002/api/insights'];
+    const tryUrls = ['/api/insights', 'http://localhost:3001/api/insights', 'http://localhost:3002/api/insights'];
     for (const url of tryUrls) {
       try {
         const resp = await fetch(url, {
@@ -206,7 +206,7 @@ async function bootstrapFromServerIfEmpty() {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (raw) return; // 已有本地存储则不覆盖
     // 依次尝试同源与本地开发端口
-    const urls = ['/api/insights', 'http://localhost:3002/api/insights'];
+    const urls = ['/api/insights', 'http://localhost:3001/api/insights', 'http://localhost:3002/api/insights'];
     let data: any = null;
     for (const url of urls) {
       try {
