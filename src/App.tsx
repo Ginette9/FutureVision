@@ -11,6 +11,7 @@ import Knowledge from "./pages/Knowledge";
 import Cases from "./pages/Cases";
 import About from "./pages/About";
 import AdminInsights from "./pages/AdminInsights";
+import AdminNews from "./pages/AdminNews";
 import ReportResult from "./products/esg-risk-analysis/ReportResult";
 import ReportResultNew from "./products/esg-risk-analysis/ReportResultNew";
 import Pay from "./products/esg-risk-analysis/Pay";
@@ -161,6 +162,7 @@ export default function App() {
               <Route path="/esg-risk-analysis/intro" element={<ESGRiskAnalysisNew />} />
               <Route path="/insights" element={<Insights />} />
               <Route path="/admin/insights" element={<AdminInsights />} />
+              <Route path="/admin/news" element={<AdminNews />} />
               <Route path="/knowledge" element={<Knowledge />} />
               <Route path="/cases" element={<Cases />} />
               <Route path="/about" element={<About />} />

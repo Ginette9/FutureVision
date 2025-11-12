@@ -1,5 +1,9 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getAllGlobalNews, GlobalNewsItem } from '../data/globalNews';
+import { replaceKeywords } from '../lib/textTransform';
+import { ZH_HK_REPLACEMENTS } from '../data/zhHKReplacements';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface KnowledgeItem {
   id: number;
@@ -13,6 +17,8 @@ interface KnowledgeItem {
 
 export default function Knowledge() {
   const [activeCategory, setActiveCategory] = useState('weekly');
+  const [news, setNews] = useState<GlobalNewsItem[]>([]);
+  const { language } = useLanguage();
 
   const categories = [
     { id: 'weekly', name: '全球要闻' },
@@ -103,12 +109,20 @@ export default function Knowledge() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('zh-CN', {
+    const locale = language === 'zh-HK' ? 'zh-HK' : language;
+    return date.toLocaleDateString(locale, {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     });
   };
+
+  useEffect(() => {
+    setNews([...getAllGlobalNews()]);
+    const onUpdate = () => setNews([...getAllGlobalNews()]);
+    window.addEventListener('global-news-updated', onUpdate);
+    return () => window.removeEventListener('global-news-updated', onUpdate);
+  }, []);
 
   return (
     <div className="min-h-screen bg-white pt-24 pb-16">
@@ -146,53 +160,107 @@ export default function Knowledge() {
         </div>
       </div>
 
-      {/* Knowledge Items Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          key={activeCategory}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16"
-        >
-          {knowledgeItems[activeCategory]?.map((item, index) => (
-            <motion.article
-              key={item.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-300"
-            >
-              <div className="p-8">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1">
-                    {item.category}
-                  </span>
-                  <span className="text-sm text-gray-400">
-                    {item.readTime}
-                  </span>
+        {activeCategory === 'weekly' ? (
+          <motion.div
+            key="weekly"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="space-y-16 mb-16"
+          >
+            {news.map((n, index) => (
+              <motion.div
+                key={n.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.05 }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch"
+              >
+                <div className="overflow-hidden rounded-xl h-64 md:h-80">
+                  {(() => {
+                    const cover = (n.coverImage && n.coverImage.startsWith('/uploads/'))
+                      ? ((import.meta as any).env?.DEV ? `http://localhost:3002${n.coverImage}` : n.coverImage)
+                      : n.coverImage;
+                    return <img src={cover} alt={n.titleZh} className="w-full h-full object-cover object-center" />;
+                  })()}
                 </div>
-                
-                <h3 className="text-xl font-medium text-gray-900 mb-3 leading-tight">
-                  {item.title}
-                </h3>
-                
-                <p className="text-gray-600 mb-6 leading-relaxed">
-                  {item.summary}
-                </p>
-                
-                <div className="flex items-center justify-between">
-                  <time className="text-sm text-gray-500">
-                    {formatDate(item.date)}
-                  </time>
-                  <button className="text-gray-900 hover:text-gray-600 transition-colors duration-300 font-medium">
-                    {activeCategory === 'courses' ? '开始学习' : '阅读更多'} →
-                  </button>
+                <div className="flex flex-col justify-between h-64 md:h-80">
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-semibold text-black tracking-tight">
+                      {(() => {
+                        const base = (language === 'zh-CN' || language === 'zh-HK') ? n.titleZh : n.titleEn;
+                        return language === 'zh-HK' ? replaceKeywords(base || '', ZH_HK_REPLACEMENTS) : (base || '');
+                      })()}
+                    </h3>
+                    <time className="text-sm text-neutral-500">{formatDate(n.date)}</time>
+                  </div>
+                  <p className="text-neutral-700 leading-relaxed whitespace-pre-line">
+                    {(() => {
+                      const base = (language === 'zh-CN' || language === 'zh-HK') ? n.summaryZh : n.summaryEn;
+                      return language === 'zh-HK' ? replaceKeywords(base || '', ZH_HK_REPLACEMENTS) : (base || '');
+                    })()}
+                  </p>
+                  <div className="flex gap-3">
+                    {((n.linkZh || n.linkEn)) && (
+                      <a
+                        href={n.linkZh || n.linkEn}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-4 py-2 rounded-md bg-black text-white hover:bg-neutral-800"
+                      >
+                        {language === 'zh-CN' || language === 'zh-HK' ? '阅读原文' : 'Read Full'}
+                      </a>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </motion.article>
-          ))}
-        </motion.div>
+              </motion.div>
+            ))}
+          </motion.div>
+        ) : (
+          <motion.div
+            key={activeCategory}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16"
+          >
+            {knowledgeItems[activeCategory]?.map((item, index) => (
+              <motion.article
+                key={item.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                className="bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-300"
+              >
+                <div className="p-8">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1">
+                      {item.category}
+                    </span>
+                    <span className="text-sm text-gray-400">
+                      {item.readTime}
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-medium text-gray-900 mb-3 leading-tight">
+                    {item.title}
+                  </h3>
+                  <p className="text-gray-600 mb-6 leading-relaxed">
+                    {item.summary}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <time className="text-sm text-gray-500">
+                      {formatDate(item.date)}
+                    </time>
+                    <button className="text-gray-900 hover:text-gray-600 transition-colors duration-300 font-medium">
+                      {activeCategory === 'courses' ? '开始学习' : '阅读更多'} →
+                    </button>
+                  </div>
+                </div>
+              </motion.article>
+            ))}
+          </motion.div>
+        )}
 
         {/* Newsletter Subscription */}
         <motion.div

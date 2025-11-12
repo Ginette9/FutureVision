@@ -215,6 +215,8 @@ const ENV_INSIGHTS_PATH = process.env.INSIGHTS_PATH;
 const DEFAULT_DATA_DIR = path.join(process.cwd(), 'data');
 const DEFAULT_INSIGHTS_JSON = path.join(DEFAULT_DATA_DIR, 'insights.json');
 const INSIGHTS_JSON = ENV_INSIGHTS_PATH || DEFAULT_INSIGHTS_JSON;
+const DEFAULT_NEWS_JSON = path.join(DEFAULT_DATA_DIR, 'news.json');
+const NEWS_JSON = process.env.NEWS_PATH || DEFAULT_NEWS_JSON;
 
 // 运行时上传目录（PDF/图片），支持持久盘配置
 const ENV_UPLOADS_DIR = process.env.UPLOADS_DIR;
@@ -257,6 +259,42 @@ function writeInsights(arr) {
   }
 }
 
+function ensureNewsFile() {
+  try {
+    const dir = path.dirname(NEWS_JSON);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(NEWS_JSON)) {
+      fs.writeFileSync(NEWS_JSON, JSON.stringify([], null, 2), 'utf8');
+    }
+  } catch (e) {
+    console.error('[news] ensure data file failed:', e.message);
+  }
+}
+
+function readNews() {
+  try {
+    ensureNewsFile();
+    const raw = fs.readFileSync(NEWS_JSON, 'utf8');
+    const arr = JSON.parse(raw);
+    if (Array.isArray(arr)) return arr;
+    return [];
+  } catch (e) {
+    console.error('[news] read failed:', e.message);
+    return [];
+  }
+}
+
+function writeNews(arr) {
+  try {
+    ensureNewsFile();
+    fs.writeFileSync(NEWS_JSON, JSON.stringify(arr ?? [], null, 2), 'utf8');
+    return true;
+  } catch (e) {
+    console.error('[news] write failed:', e.message);
+    return false;
+  }
+}
+
 function ensureUploadsDir() {
   try {
     if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
@@ -279,6 +317,21 @@ app.post('/api/insights', (req, res) => {
     return res.status(400).json({ error: 'invalid_payload', message: 'items must be an array' });
   }
   const ok = writeInsights(items);
+  if (!ok) return res.status(500).json({ error: 'write_failed' });
+  return res.json({ success: true, count: items.length });
+});
+
+app.get('/api/news', (req, res) => {
+  const data = readNews();
+  res.json({ items: data, count: data.length });
+});
+
+app.post('/api/news', (req, res) => {
+  const { items } = req.body || {};
+  if (!Array.isArray(items)) {
+    return res.status(400).json({ error: 'invalid_payload', message: 'items must be an array' });
+  }
+  const ok = writeNews(items);
   if (!ok) return res.status(500).json({ error: 'write_failed' });
   return res.json({ success: true, count: items.length });
 });
