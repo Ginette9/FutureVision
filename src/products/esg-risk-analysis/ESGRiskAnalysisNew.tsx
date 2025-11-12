@@ -34,27 +34,8 @@ export default function ESGRiskAnalysisNew() {
               停止在海外交学费
             </h1>
             <h2 className="text-xl md:text-2xl font-light text-slate-600 mb-6">
-              避免出现下一个"巴西比亚迪"
+              避免ESG风险层面合规却失守
             </h2>
-            <p className="text-xl text-slate-500 mb-12 leading-relaxed">
-              —— 已经累计帮助客户节省 <span className="font-semibold text-slate-900">XX亿美金</span>
-            </p>
-            
-            {/* 添加主要CTA按钮 */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <button
-                onClick={handleGetStarted}
-                className="bg-slate-900 text-white px-8 py-4 rounded-lg hover:bg-slate-800 transition-colors font-medium text-lg shadow-lg hover:shadow-xl"
-              >
-                立即开始分析
-              </button>
-              <button
-                onClick={() => document.getElementById('usage-flow')?.scrollIntoView({ behavior: 'smooth' })}
-                className="border border-slate-300 text-slate-700 px-8 py-4 rounded-lg hover:bg-slate-50 transition-colors font-medium text-lg"
-              >
-                了解使用流程
-              </button>
-            </div>
           </motion.div>
         </div>
       </section>
@@ -68,9 +49,9 @@ export default function ESGRiskAnalysisNew() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-center mb-20"
           >
-            <h3 className="text-3xl md:text-4xl font-light text-slate-900 mb-8">4步获得完整ESG风险分析</h3>
+            <h3 className="text-3xl md:text-4xl font-light text-slate-900 mb-8">4步获得完整ESG风险分析报告</h3>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              简单快速的操作流程，让您轻松获得专业的ESG风险分析报告
+              简单快捷让您轻松获得专业报告，全面覆盖合规及隐性ESG风险
             </p>
           </motion.div>
 
@@ -79,7 +60,7 @@ export default function ESGRiskAnalysisNew() {
               { step: 'Step 1', title: '选择你的行业', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4' },
               { step: 'Step 2', title: '选择目标地区', icon: 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
               { step: 'Step 3', title: '获得综合预警', icon: 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' },
-              { step: 'Step 4', title: '获得完整报告', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' }
+              { step: 'Step 4', title: '付费获得专业解读', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' }
             ].map((item, index) => (
               <motion.div
                 key={item.step}
@@ -107,12 +88,6 @@ export default function ESGRiskAnalysisNew() {
             transition={{ duration: 0.6, delay: 0.7 }}
             className="text-center"
           >
-            <button
-              onClick={handleGetStarted}
-              className="bg-slate-900 text-white px-12 py-4 rounded-lg hover:bg-slate-800 transition-colors font-medium text-base shadow-lg hover:shadow-xl"
-            >
-              开始试用
-            </button>
           </motion.div>
         </div>
       </section>
@@ -132,9 +107,6 @@ export default function ESGRiskAnalysisNew() {
             <p className="text-xl text-slate-600 mb-3 leading-relaxed">
               人工智能驱动的全球ESG风险识别工具
             </p>
-            <p className="text-sm text-slate-400">
-              （产品名称TBD）
-            </p>
           </motion.div>
 
           {/* Value Propositions */}
@@ -146,7 +118,7 @@ export default function ESGRiskAnalysisNew() {
               className="text-center"
             >
               <h4 className="text-xl font-medium text-slate-900 mb-4">不再需要支付</h4>
-              <p className="text-slate-600 leading-relaxed text-lg">数十万美金的咨询费用</p>
+              <p className="text-slate-600 leading-relaxed text-lg">高额在地化背调成本</p>
             </motion.div>
 
             <motion.div
@@ -155,8 +127,8 @@ export default function ESGRiskAnalysisNew() {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="text-center"
             >
-              <h4 className="text-xl font-medium text-slate-900 mb-4">不再需要担心项目停工、</h4>
-              <p className="text-slate-600 leading-relaxed text-lg">产品召回、人权关系等未知风险</p>
+              <h4 className="text-xl font-medium text-slate-900 mb-4">不再需要担心</h4>
+              <p className="text-slate-600 leading-relaxed text-lg">遗漏人权与道德、劳工冲突等隐性ESG风险</p>
             </motion.div>
 
             <motion.div
@@ -165,8 +137,8 @@ export default function ESGRiskAnalysisNew() {
               transition={{ duration: 0.6, delay: 0.5 }}
               className="text-center"
             >
-              <h4 className="text-xl font-medium text-slate-900 mb-4">不再需要交千万美金的</h4>
-              <p className="text-slate-600 leading-relaxed text-lg">在地学费</p>
+              <h4 className="text-xl font-medium text-slate-900 mb-4">不再需要承受</h4>
+              <p className="text-slate-600 leading-relaxed text-lg">高昂的财务损失与声誉损害</p>
             </motion.div>
           </div>
 
@@ -208,27 +180,27 @@ export default function ESGRiskAnalysisNew() {
           >
             <div>
               <div className="text-3xl md:text-4xl font-light text-slate-900 mb-3">252</div>
-              <div className="text-sm md:text-base text-slate-500">覆盖国家与政策</div>
+              <div className="text-sm md:text-base text-slate-500">国家与地区</div>
             </div>
             <div>
               <div className="text-3xl md:text-4xl font-light text-slate-900 mb-3">471</div>
-              <div className="text-sm md:text-base text-slate-500">合作伙伴</div>
+              <div className="text-sm md:text-base text-slate-500">GICS行业</div>
             </div>
             <div>
               <div className="text-3xl md:text-4xl font-light text-slate-900 mb-3">4,000+</div>
-              <div className="text-sm md:text-base text-slate-500">合规数据源</div>
+              <div className="text-sm md:text-base text-slate-500">可靠数据来源</div>
             </div>
             <div>
               <div className="text-3xl md:text-4xl font-light text-slate-900 mb-3">5,500+</div>
-              <div className="text-sm md:text-base text-slate-500">风险案例</div>
+              <div className="text-sm md:text-base text-slate-500">风险事项</div>
             </div>
             <div>
               <div className="text-3xl md:text-4xl font-light text-slate-900 mb-3">10,000+</div>
-              <div className="text-sm md:text-base text-slate-500">全球ESG数据源</div>
+              <div className="text-sm md:text-base text-slate-500">全球ESG冲突案例</div>
             </div>
             <div>
               <div className="text-3xl md:text-4xl font-light text-slate-900 mb-3">30,000+</div>
-              <div className="text-sm md:text-base text-slate-500">可持续发展数据</div>
+              <div className="text-sm md:text-base text-slate-500">在地化NGO与可持续关注社群</div>
             </div>
           </motion.div>
 
@@ -240,12 +212,12 @@ export default function ESGRiskAnalysisNew() {
             className="grid grid-cols-2 md:grid-cols-6 gap-8 mb-20"
           >
             {[
-              { icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', title: '合规检查' },
-              { icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6', title: '趋势分析' },
-              { icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z', title: '数据统计' },
-              { icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z', title: '风险预警' },
-              { icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', title: '报告生成' },
-              { icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z', title: '团队协作' }
+              { icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', title: '敏感议题评估' },
+              { icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6', title: '供应链风险分析' },
+              { icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z', title: 'ESG趋势预判' },
+              { icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z', title: '高风险预警' },
+              { icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', title: '冲突案例分析' },
+              { icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z', title: '在地化风险管理' }
             ].map((item, index) => (
               <div key={index} className="flex flex-col items-center">
                 <div className="w-16 h-16 md:w-20 md:h-20 bg-slate-100 rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors mb-3">
@@ -270,16 +242,10 @@ export default function ESGRiskAnalysisNew() {
             className="text-center mb-12"
           >
             <h3 className="text-2xl font-light text-slate-900 mb-6">已获得这些知名企业信任</h3>
-            <p className="text-base text-slate-500 mb-8">（logo动态展示）</p>
             
             {/* 添加第三个CTA */}
             <div className="mb-8">
-              <button
-                onClick={handleGetStarted}
-                className="bg-white border-2 border-slate-900 text-slate-900 px-8 py-3 rounded-lg hover:bg-slate-900 hover:text-white transition-colors font-medium text-base shadow-sm"
-              >
-                加入他们，立即体验
-              </button>
+              
             </div>
           </motion.div>
           <LogoCarousel />
@@ -398,9 +364,9 @@ export default function ESGRiskAnalysisNew() {
              transition={{ duration: 0.6, delay: 1.9 }}
              className="text-center mb-20"
            >
-             <h3 className="text-3xl md:text-4xl font-light text-slate-900 mb-8">报告示例</h3>
-             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-               查看我们的报告预览和完整报告示例，了解详细的ESG风险分析内容
+             <h3 className="text-3xl md:text-4xl font-light text-slate-900 mb-8">报告内容结构</h3>
+             <p className="text-lg text-slate-600 max-w-2xl mx-auto whitespace-nowrap">
+               全面涵盖商业行为规范、人权与商业伦理、劳工权益与劳动保障、环境管理与影响四大主题
              </p>
            </motion.div>
 
