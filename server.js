@@ -342,18 +342,23 @@ app.use('/uploads', express.static(UPLOADS_DIR));
 // 简易上传接口：接受 dataURL/base64 内容并保存到 uploads 目录
 app.post('/api/uploads', (req, res) => {
   try {
-    const { filename, contentBase64 } = req.body || {};
+    const { filename, contentBase64, folder } = req.body || {};
     if (!filename || !contentBase64) {
       return res.status(400).json({ error: 'filename and contentBase64 are required' });
     }
     const safeName = path.basename(String(filename));
-    const target = path.join(UPLOADS_DIR, safeName);
+    const allowedFolders = new Set(['news-pics', 'reports']);
+    const sub = allowedFolders.has(String(folder)) ? String(folder) : '';
+    const dir = sub ? path.join(UPLOADS_DIR, sub) : UPLOADS_DIR;
+    try { if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true }); } catch {}
+    const target = path.join(dir, safeName);
     const raw = String(contentBase64);
     const comma = raw.indexOf(',');
     const pure = comma >= 0 ? raw.slice(comma + 1) : raw;
     const buf = Buffer.from(pure, 'base64');
     fs.writeFileSync(target, buf);
-    return res.json({ ok: true, url: `/uploads/${safeName}` });
+    const url = sub ? `/uploads/${sub}/${safeName}` : `/uploads/${safeName}`;
+    return res.json({ ok: true, url });
   } catch (e) {
     console.error('[uploads] save failed:', e.message);
     return res.status(500).json({ error: 'save_failed' });

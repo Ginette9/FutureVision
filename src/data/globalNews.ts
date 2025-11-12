@@ -32,7 +32,6 @@ const ENABLE_SERVER_SYNC = (typeof import.meta !== 'undefined' && (import.meta a
 async function saveToServerIfAvailable() {
   try {
     if (typeof window === 'undefined') return;
-    if (!ENABLE_SERVER_SYNC) return;
     const payload = { items: globalNews };
     const tryUrls = ['/api/news', 'http://localhost:3001/api/news', 'http://localhost:3002/api/news'];
     for (const url of tryUrls) {
@@ -55,17 +54,7 @@ function bootstrapStore() {
     if (!raw) return;
     const arr = JSON.parse(raw);
     if (Array.isArray(arr)) {
-      const normalized = (arr as any[]).map(n => {
-        if (n && typeof n === 'object' && typeof n.coverImage === 'string') {
-          const s = n.coverImage as string;
-          if (s.startsWith('/uploads/')) {
-            const dev = (typeof import.meta !== 'undefined' && (import.meta as any).env && ((import.meta as any).env.DEV === true));
-            return { ...n, coverImage: dev ? `http://localhost:3002${s}` : s };
-          }
-        }
-        return n;
-      });
-      globalNews.splice(0, globalNews.length, ...normalized as any);
+      globalNews.splice(0, globalNews.length, ...(arr as any));
     }
   } catch {}
 }
@@ -84,9 +73,7 @@ bootstrapStore();
 async function bootstrapFromServerIfEmpty() {
   try {
     if (typeof window === 'undefined') return;
-    if (!ENABLE_SERVER_SYNC) return;
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (raw) return;
     const urls = ['/api/news', 'http://localhost:3001/api/news', 'http://localhost:3002/api/news'];
     let data: any = null;
     for (const url of urls) {

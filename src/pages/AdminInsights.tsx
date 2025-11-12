@@ -188,7 +188,7 @@ export default function AdminInsights() {
   const uploadPdfToServer = async (file: File) => {
     try {
       const dataUrl = await fileToDataUrl(file);
-      const payload = { filename: file.name, contentBase64: dataUrl } as any;
+      const payload = { filename: file.name, contentBase64: dataUrl, folder: 'reports' } as any;
       // 首选同源API，失败则回退到本地3002开发端口
       let resp: Response | null = null;
       try {

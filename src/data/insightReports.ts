@@ -144,7 +144,6 @@ const ENABLE_SERVER_SYNC = (typeof import.meta !== 'undefined' && (import.meta a
 async function saveToServerIfAvailable() {
   try {
     if (typeof window === 'undefined') return;
-    if (!ENABLE_SERVER_SYNC) return;
     // 同源API；失败则尝试本地开发端口（3002）
     const payload = { items: insightReports };
     const tryUrls = ['/api/insights', 'http://localhost:3001/api/insights', 'http://localhost:3002/api/insights'];
@@ -202,9 +201,7 @@ bootstrapStore();
 async function bootstrapFromServerIfEmpty() {
   try {
     if (typeof window === 'undefined') return;
-    if (!ENABLE_SERVER_SYNC) return;
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (raw) return; // 已有本地存储则不覆盖
     // 依次尝试同源与本地开发端口
     const urls = ['/api/insights', 'http://localhost:3001/api/insights', 'http://localhost:3002/api/insights'];
     let data: any = null;

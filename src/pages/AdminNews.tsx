@@ -13,9 +13,9 @@ function fileToDataUrl(file: File): Promise<string> {
   });
 }
 
-async function uploadImageToServer(file: File): Promise<string> {
+async function uploadImageToServer(file: File, overrideName?: string): Promise<string> {
   const dataUrl = await fileToDataUrl(file);
-  const payload = { filename: file.name, contentBase64: dataUrl } as any;
+  const payload = { filename: overrideName || file.name, contentBase64: dataUrl } as any;
   const endpoints = ['http://localhost:3002/api/uploads', '/api/uploads', 'http://localhost:3001/api/uploads'];
   for (const ep of endpoints) {
     try {
@@ -220,8 +220,8 @@ export default function AdminNews() {
     for (const entry of mapByIndex) {
       if (!entry) continue;
       const ext = (entry.file.name.split('.').pop() || 'jpg').toLowerCase();
-      const dateStr = items[entry.idx]?.date || today;
-      const fname = `news-${dateStr}-${entry.idx + 1}.${ext}`;
+      const dateStr = (items[entry.idx]?.date || today).replace(/-/g, '');
+      const fname = `${dateStr}_${entry.idx + 1}.${ext}`;
       const url = await uploadImageToServer(entry.file, fname);
       setItems(prev => prev.map((p, i) => i === entry.idx ? { ...p, coverImage: url } : p));
       setCoverInputs(prev => ({ ...prev, [entry.idx]: { type: 'url', value: url } }));
@@ -300,8 +300,8 @@ export default function AdminNews() {
                       const file = e.target.files?.[0];
                       if (!file) return;
                       const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-                      const dateStr = items[idx]?.date || today;
-                      const fname = `news-${dateStr}-${idx + 1}.${ext}`;
+                      const dateStr = (items[idx]?.date || today).replace(/-/g, '');
+                      const fname = `${dateStr}_${idx + 1}.${ext}`;
                       const url = await uploadImageToServer(file, fname);
                       setItems(prev => prev.map((p, i) => i === idx ? { ...p, coverImage: url } : p));
                     }}
