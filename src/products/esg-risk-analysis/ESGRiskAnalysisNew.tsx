@@ -40,61 +40,9 @@ export default function ESGRiskAnalysisNew() {
         </div>
       </section>
 
-      {/* Usage Flow Section - 移到前面突出使用流程 */}
-      <section id="usage-flow" className="py-24 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-center mb-20"
-          >
-            <h3 className="text-3xl md:text-4xl font-light text-slate-900 mb-8">4步获得完整ESG风险分析报告</h3>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              简单快捷让您轻松获得专业报告，全面覆盖合规及隐性ESG风险
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-4 gap-8 mb-16">
-            {[
-              { step: 'Step 1', title: '选择你的行业', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4' },
-              { step: 'Step 2', title: '选择目标地区', icon: 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
-              { step: 'Step 3', title: '获得综合预警', icon: 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' },
-              { step: 'Step 4', title: '付费获得专业解读', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' }
-            ].map((item, index) => (
-              <motion.div
-                key={item.step}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
-                className="text-center"
-              >
-                <div className="bg-slate-50 rounded-2xl p-8 mb-4 hover:bg-slate-100 transition-colors">
-                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
-                    <svg className="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
-                    </svg>
-                  </div>
-                  <h4 className="text-base font-medium text-slate-900 mb-3">{item.step}</h4>
-                  <p className="text-sm text-slate-600">{item.title}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.7 }}
-            className="text-center"
-          >
-          </motion.div>
-        </div>
-      </section>
-
       {/* Product Introduction Section */}
       <section className="py-20 bg-slate-50">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -110,7 +58,7 @@ export default function ESGRiskAnalysisNew() {
           </motion.div>
 
           {/* Value Propositions */}
-          <div className="grid md:grid-cols-3 gap-12 mb-20">
+          <div className="bg-white rounded-2xl shadow-sm p-8 md:p-10 grid md:grid-cols-3 gap-8 md:gap-10 mb-20">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -128,7 +76,7 @@ export default function ESGRiskAnalysisNew() {
               className="text-center"
             >
               <h4 className="text-xl font-medium text-slate-900 mb-4">不再需要担心</h4>
-              <p className="text-slate-600 leading-relaxed text-lg">遗漏人权与道德、劳工冲突等隐性ESG风险</p>
+              <p className="text-slate-600 leading-relaxed text-lg">遗漏合规之外的隐性风险</p>
             </motion.div>
 
             <motion.div
@@ -149,85 +97,129 @@ export default function ESGRiskAnalysisNew() {
             transition={{ duration: 0.6, delay: 0.6 }}
             className="text-center mb-16"
           >
-            <h3 className="text-2xl md:text-3xl font-light text-slate-900 mb-12 leading-relaxed">
-              现在只需1%的费用，就可以提前避免所有这些风险
+            <h3 className="text-2xl md:text-3xl font-light text-slate-900 mb-8 md:mb-10 leading-relaxed">
+              只需1%的投入，构筑100%的ESG风险防线
             </h3>
-            <div className="flex flex-col md:flex-row justify-center items-center space-y-6 md:space-y-0 md:space-x-16 text-slate-600 text-lg mb-12">
-              <div>覆盖 <span className="font-semibold text-slate-900">XX</span> 国家与政策</div>
-              <div>覆盖 <span className="font-semibold text-slate-900">99%</span> NGO与在地机构</div>
-              <div>覆盖 <span className="font-semibold text-slate-900">XX</span></div>
+            <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-100 p-8 md:p-10">
+              <div className="mb-6 md:mb-8">
+                <span className="inline-block text-2xl md:text-2xl font-medium text-slate-900 tracking-tight">全面覆盖</span>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 text-slate-700 mb-16 md:mb-20">
+                <div className="text-center text-sm md:text-base bg-slate-50 rounded-lg py-3 px-4">商业行为规范</div>
+                <div className="text-center text-sm md:text-base bg-slate-50 rounded-lg py-3 px-4">人权与商业伦理</div>
+                <div className="text-center text-sm md:text-base bg-slate-50 rounded-lg py-3 px-4">劳工权益与劳动保障</div>
+                <div className="text-center text-sm md:text-base bg-slate-50 rounded-lg py-3 px-4">环境管理与影响</div>
+              </div>
+              <div className="mt-8 md:mt-10">
+                <div className="grid grid-cols-2 md:grid-cols-6 gap-4 md:gap-6 text-center mb-8 md:mb-10">
+                  <div>
+                    <div className="text-2xl md:text-3xl font-light text-slate-900 mb-1 md:mb-2">252</div>
+                    <div className="text-xs md:text-sm text-slate-500">国家与地区</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl md:text-3xl font-light text-slate-900 mb-1 md:mb-2">471</div>
+                    <div className="text-xs md:text-sm text-slate-500">GICS行业</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl md:text-3xl font-light text-slate-900 mb-1 md:mb-2">4,000+</div>
+                    <div className="text-xs md:text-sm text-slate-500">可靠数据来源</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl md:text-3xl font-light text-slate-900 mb-1 md:mb-2">5,500+</div>
+                    <div className="text-xs md:text-sm text-slate-500">风险事项</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl md:text-3xl font-light text-slate-900 mb-1 md:mb-2">10,000+</div>
+                    <div className="text-xs md:text-sm text-slate-500">全球ESG冲突案例</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl md:text-3xl font-light text-slate-900 mb-1 md:mb-2">30,000+</div>
+                    <div className="text-xs md:text-sm text-slate-500">在地化NGO与可持续关注社群</div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 md:grid-cols-6 gap-4 md:gap-6">
+                  {[
+                    { icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', title: '敏感议题评估' },
+                    { icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6', title: '供应链风险分析' },
+                    { icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z', title: 'ESG趋势预判' },
+                    { icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z', title: '高风险预警' },
+                    { icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', title: '冲突案例分析' },
+                    { icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z', title: '在地化风险管理' }
+                  ].map((item, index) => (
+                    <div key={index} className="flex flex-col items-center">
+                      <div className="w-14 h-14 md:w-16 md:h-16 bg-slate-50 rounded-full flex items-center justify-center hover:bg-slate-100 transition-colors mb-2 md:mb-3">
+                        <svg className="w-7 h-7 md:w-8 md:h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
+                        </svg>
+                      </div>
+                      <p className="text-xs md:text-sm text-slate-600 text-center">{item.title}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-            
-            {/* 添加第二个CTA */}
-            <button
-              onClick={handleGetStarted}
-              className="bg-slate-900 text-white px-10 py-3 rounded-lg hover:bg-slate-800 transition-colors font-medium text-base shadow-lg hover:shadow-xl"
-            >
-              免费试用产品
-            </button>
           </motion.div>
         </div>
       </section>
 
-      {/* Data Statistics Section */}
-      <section className="py-20 bg-white">
+
+      {/* Usage Flow Section - 移到前面突出使用流程 */}
+      <section id="usage-flow" className="py-24 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.7 }}
-            className="grid grid-cols-2 md:grid-cols-6 gap-8 text-center mb-20"
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-center mb-20"
           >
-            <div>
-              <div className="text-3xl md:text-4xl font-light text-slate-900 mb-3">252</div>
-              <div className="text-sm md:text-base text-slate-500">国家与地区</div>
-            </div>
-            <div>
-              <div className="text-3xl md:text-4xl font-light text-slate-900 mb-3">471</div>
-              <div className="text-sm md:text-base text-slate-500">GICS行业</div>
-            </div>
-            <div>
-              <div className="text-3xl md:text-4xl font-light text-slate-900 mb-3">4,000+</div>
-              <div className="text-sm md:text-base text-slate-500">可靠数据来源</div>
-            </div>
-            <div>
-              <div className="text-3xl md:text-4xl font-light text-slate-900 mb-3">5,500+</div>
-              <div className="text-sm md:text-base text-slate-500">风险事项</div>
-            </div>
-            <div>
-              <div className="text-3xl md:text-4xl font-light text-slate-900 mb-3">10,000+</div>
-              <div className="text-sm md:text-base text-slate-500">全球ESG冲突案例</div>
-            </div>
-            <div>
-              <div className="text-3xl md:text-4xl font-light text-slate-900 mb-3">30,000+</div>
-              <div className="text-sm md:text-base text-slate-500">在地化NGO与可持续关注社群</div>
-            </div>
+            <h3 className="text-3xl md:text-4xl font-light text-slate-900 mb-8">4步获得专属ESG风险分析报告</h3>
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+              全面覆盖合规及隐性ESG风险
+            </p>
           </motion.div>
 
-          {/* Icon Grid */}
+          <div className="grid md:grid-cols-4 gap-8 mb-16">
+            {[
+              { step: 'Step 1', title: '选择你的行业', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4' },
+              { step: 'Step 2', title: '选择目标地区', icon: 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+              { step: 'Step 3', title: '获取通用报告', icon: 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' },
+              { step: 'Step 4', title: '定制专属报告', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' }
+            ].map((item, index) => (
+              <motion.div
+                key={item.step}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
+                className="text-center"
+              >
+                <div className="bg-slate-50 rounded-2xl p-8 mb-4 hover:bg-slate-100 transition-colors">
+                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+                    <svg className="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
+                    </svg>
+                  </div>
+                  <h4 className="text-base font-medium text-slate-900 mb-3">{item.step}</h4>
+                  <p className="text-sm text-slate-600">{item.title}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          <div className="text-center">
+            <button
+              onClick={handleGetStarted}
+              className="bg-slate-900 text-white px-12 py-4 rounded-lg hover:bg-slate-800 transition-colors font-medium text-lg shadow-lg hover:shadow-xl"
+            >
+              使用ESGVoyant，获取完整报告
+            </button>
+          </div>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-            className="grid grid-cols-2 md:grid-cols-6 gap-8 mb-20"
+            transition={{ duration: 0.6, delay: 0.7 }}
+            className="text-center"
           >
-            {[
-              { icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', title: '敏感议题评估' },
-              { icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6', title: '供应链风险分析' },
-              { icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z', title: 'ESG趋势预判' },
-              { icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z', title: '高风险预警' },
-              { icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', title: '冲突案例分析' },
-              { icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z', title: '在地化风险管理' }
-            ].map((item, index) => (
-              <div key={index} className="flex flex-col items-center">
-                <div className="w-16 h-16 md:w-20 md:h-20 bg-slate-100 rounded-full flex items-center justify-center hover:bg-slate-200 transition-colors mb-3">
-                  <svg className="w-8 h-8 md:w-10 md:h-10 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
-                  </svg>
-                </div>
-                <p className="text-xs md:text-sm text-slate-600 text-center">{item.title}</p>
-              </div>
-            ))}
           </motion.div>
         </div>
       </section>
@@ -242,18 +234,13 @@ export default function ESGRiskAnalysisNew() {
             className="text-center mb-12"
           >
             <h3 className="text-2xl font-light text-slate-900 mb-6">已获得这些知名企业信任</h3>
-            
-            {/* 添加第三个CTA */}
-            <div className="mb-8">
-              
-            </div>
           </motion.div>
           <LogoCarousel />
         </div>
       </section>
 
       {/* Pricing Plans Section */}
-      <section className="py-24 bg-slate-50">
+      <section className="py-24 bg-slate-50 hidden">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -356,7 +343,7 @@ export default function ESGRiskAnalysisNew() {
        </section>
 
        {/* Report Examples Section */}
-       <section className="py-24 bg-white">
+       <section className="py-24 bg-white hidden">
          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
            <motion.div
              initial={{ opacity: 0, y: 20 }}
@@ -483,7 +470,7 @@ export default function ESGRiskAnalysisNew() {
         </section>
 
         {/* Additional Services Section */}
-        <section className="py-24 bg-slate-50">
+        <section className="py-24 bg-slate-50 hidden">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}

@@ -458,6 +458,12 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
     );
   };
 
+  // 避免编号单独换行：将末尾数字与前一词用不换行空格连接
+  const protectTrailingNumber = (input: string): string => {
+    if (!input) return '';
+    return input.replace(/(\S)\s+(\d+(?:\/\d+)?)$/, `$1\u00A0$2`);
+  };
+
   // 绘制类别总结卡片 - 完全按照参考样例设计
   const drawCategorySummary = (pdf: jsPDF, category: CategoryData, startY: number, pageWidth: number, margin: number, colors: any, lineHeight: number, warningIcon?: string | null): number => {
     const totalThemes = category.themes.length;
@@ -485,7 +491,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
       
       // 风险项高度 - 使用与实际渲染相同的参数
       theme.risks.forEach((risk, riskIndex) => {
-        const riskText = `Risk : ${theme.themeName} ${riskIndex + 1}`;
+        const riskText = protectTrailingNumber(`Risk : ${theme.themeName} ${riskIndex + 1}`);
         const maxWidth = (pageWidth - margin * 2) / 3 - 20;
         const riskLines = pdf.splitTextToSize(riskText, maxWidth);
         themeContentHeight += riskLines.length * 4 + 3; // 更新为新的行间距：行间距4，项目间距3
@@ -493,7 +499,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
       
       // 建议项高度 - 使用与实际渲染相同的参数
       theme.recommendations.forEach((rec, recIndex) => {
-        const adviceText = `Advice : ${theme.themeName} ${recIndex + 1}`; // 添加编号以保持一致
+        const adviceText = protectTrailingNumber(`Advice : ${theme.themeName} ${recIndex + 1}`); // 添加编号以保持一致
         const maxWidth = (pageWidth - margin * 2) / 3 - 20;
         const adviceLines = pdf.splitTextToSize(adviceText, maxWidth);
         themeContentHeight += adviceLines.length * 4 + 3; // 更新为新的行间距：行间距4，项目间距3
@@ -533,7 +539,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
       theme.risks.forEach((risk, riskIndex) => {
         tempPdf.setFontSize(8);
         tempPdf.setFont('helvetica', 'normal');
-        const riskText = `Risk : ${theme.themeName} ${riskIndex + 1}`;
+        const riskText = protectTrailingNumber(`Risk : ${theme.themeName} ${riskIndex + 1}`);
         const maxWidth = columnWidth - 20;
         const riskLines = tempPdf.splitTextToSize(riskText, maxWidth);
         themeY += riskLines.length * 4 + 3; // 增大风险项间距从2到3
@@ -543,7 +549,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
       theme.recommendations.forEach((rec, recIndex) => {
         tempPdf.setFontSize(8);
         tempPdf.setFont('helvetica', 'normal');
-        const adviceText = `Advice : ${theme.themeName} ${recIndex + 1}`; // 添加编号以保持一致
+        const adviceText = protectTrailingNumber(`Advice : ${theme.themeName} ${recIndex + 1}`); // 添加编号以保持一致
         const maxWidth = columnWidth - 20;
         const adviceLines = tempPdf.splitTextToSize(adviceText, maxWidth);
         themeY += adviceLines.length * 4 + 3; // 增大建议项间距从2到3
@@ -630,7 +636,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         pdf.setFontSize(8); // 增大字体从7到8
         pdf.setFont('helvetica', 'normal');
         pdf.setTextColor(0, 0, 0);
-        const riskText = `Risk : ${theme.themeName} ${riskIndex + 1}`;
+        const riskText = protectTrailingNumber(`Risk : ${theme.themeName} ${riskIndex + 1}`);
         const maxWidth = columnWidth - 20;
         const riskLines = pdf.splitTextToSize(riskText, maxWidth);
         riskLines.forEach((line: string, lineIndex: number) => {
@@ -649,7 +655,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         pdf.setFontSize(8); // 增大字体从7到8
         pdf.setFont('helvetica', 'normal');
         pdf.setTextColor(0, 0, 0);
-        const adviceText = `Advice : ${theme.themeName} ${recIndex + 1}`; // 添加编号显示
+        const adviceText = protectTrailingNumber(`Advice : ${theme.themeName} ${recIndex + 1}`); // 添加编号显示
         const maxWidth = columnWidth - 20;
         const adviceLines = pdf.splitTextToSize(adviceText, maxWidth);
         adviceLines.forEach((line: string, lineIndex: number) => {
@@ -1100,6 +1106,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
           .replace(/\s{2,}/g, ' ')
           .trim();
       };
+
 
       // 渲染组织卡片（修复：logo显示、正文链接行内与可点击、分页）
       const renderOrganizationCard = (org: OrganizationData) => {
@@ -2698,7 +2705,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
               pdf.setFont('helvetica', 'bold');
               
               // 计算标签文本并检查是否需要换行 - 每条风险独立编号
-              const riskLabelText = `Risk : ${theme.themeName} ${riskIndex + 1}`;
+              const riskLabelText = protectTrailingNumber(`Risk : ${theme.themeName} ${riskIndex + 1}`);
               const labelLines = pdf.splitTextToSize(riskLabelText, columnWidth - 15);
               
               // 计算文字的实际高度（字体大小的约1.2倍是合理的行高）
@@ -3061,7 +3068,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
               pdf.setFont('helvetica', 'bold');
               
               // 计算标签文本并检查是否需要换行 - 每条建议独立编号
-              const adviceLabelText = `Advice : ${theme.themeName} ${recIndex + 1}`;
+              const adviceLabelText = protectTrailingNumber(`Advice : ${theme.themeName} ${recIndex + 1}`);
               const labelLines = pdf.splitTextToSize(adviceLabelText, columnWidth - 15);
               
               // 计算文字的实际高度
@@ -3493,14 +3500,13 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
         // 2) 加载为可编辑的 PDF 文档
         const baseDoc = await PDFDocument.load(jsBytes);
         
-        // 3) 载入静态页面 PDF（应放在 public/static_pages.pdf）
-        const staticDoc = staticDocForMerge ? staticDocForMerge : await PDFDocument.load(await (await fetch('/static_pages.pdf')).arrayBuffer());
-        
-        // 4) 复制静态 PDF 的所有页面并追加到末尾（位于封面和动态内容之后、尾页之前）
-        const staticPageIndices = staticDoc.getPageIndices();
-        const copiedPages = await baseDoc.copyPages(staticDoc, staticPageIndices);
+        // 3) 复制静态 PDF 的所有页面并追加到末尾（如果探测到静态页）
         const baseCountBeforeAppend = baseDoc.getPageCount();
-        copiedPages.forEach(p => baseDoc.addPage(p));
+        if (staticDocForMerge) {
+          const staticPageIndices = staticDocForMerge.getPageIndices();
+          const copiedPages = await baseDoc.copyPages(staticDocForMerge, staticPageIndices);
+          copiedPages.forEach(p => baseDoc.addPage(p));
+        }
 
         // 为追加的静态页面绘制页脚（左Logo、底中网址、右页码）
         try {
