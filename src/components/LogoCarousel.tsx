@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 // 导入所有logo图片
 import logoBMW from '@/images/logo-BMW.png';
@@ -13,7 +13,7 @@ import logoCocaCola from '@/images/logo-cocacola.png';
 import logoGoogle from '@/images/logo-google.jpg';
 import logoTencent from '@/images/logo-tencent.png';
 
-const logos = [
+const defaultLogos = [
   { src: logoBMW, alt: 'BMW' },
   { src: logoBoC, alt: 'Bank of China' },
   { src: logoCMG, alt: 'CMG' },
@@ -27,7 +27,34 @@ const logos = [
   { src: logoTencent, alt: 'Tencent' },
 ];
 
-const LogoCarousel: React.FC = () => {
+type Direction = 'right' | 'left';
+type InputLogo = string | { src: string; alt?: string };
+
+interface LogoCarouselProps {
+  logos?: InputLogo[];
+  directions?: [Direction, Direction];
+  variant?: 'card' | 'plain';
+  itemWidth?: number;
+  itemHeight?: number;
+  gapClassName?: string;
+  imageClassName?: string;
+  speed?: number;
+  boxed?: boolean;
+  syncRows?: boolean;
+}
+
+const LogoCarousel: React.FC<LogoCarouselProps> = ({
+  logos,
+  directions = ['right', 'left'],
+  variant = 'card',
+  itemWidth = 100,
+  itemHeight = 64,
+  gapClassName = 'gap-5 md:gap-6',
+  imageClassName = 'max-w-full max-h-full object-contain',
+  speed = 1.2,
+  boxed = false,
+  syncRows = false,
+}) => {
   const firstRowRef = useRef<HTMLDivElement>(null);
   const secondRowRef = useRef<HTMLDivElement>(null);
   
@@ -35,34 +62,49 @@ const LogoCarousel: React.FC = () => {
     let animationId: number;
     let firstRowPosition = 0;
     let secondRowPosition = 0;
-    const scrollSpeed = 1.2;
+    let sharedPosition = 0;
+    const scrollSpeed = speed;
     
     const animate = () => {
       const firstRow = firstRowRef.current;
       const secondRow = secondRowRef.current;
       
       if (firstRow) {
-        // 第一排向右滑动
-        firstRowPosition += scrollSpeed;
-        const maxScroll = firstRow.scrollWidth - firstRow.clientWidth;
-        if (maxScroll > 0) {
-          if (firstRowPosition >= maxScroll) {
-            firstRowPosition = 0;
+        if (syncRows) {
+          sharedPosition += scrollSpeed;
+          const maxScroll = firstRow.scrollWidth - firstRow.clientWidth;
+          if (maxScroll > 0) {
+            const pos = sharedPosition % maxScroll;
+            firstRow.scrollLeft = directions[0] === 'right' ? (maxScroll - pos) : pos;
           }
-          firstRow.scrollLeft = firstRowPosition;
+        } else {
+          firstRowPosition += scrollSpeed;
+          const maxScroll = firstRow.scrollWidth - firstRow.clientWidth;
+          if (maxScroll > 0) {
+            if (firstRowPosition >= maxScroll) {
+              firstRowPosition = 0;
+            }
+            firstRow.scrollLeft = directions[0] === 'right' ? (maxScroll - firstRowPosition) : firstRowPosition;
+          }
         }
       }
       
       if (secondRow) {
-        // 第二排反向滑动（从右向左）
-        secondRowPosition += scrollSpeed;
-        const maxScrollSecond = secondRow.scrollWidth - secondRow.clientWidth;
-        if (maxScrollSecond > 0) {
-          if (secondRowPosition >= maxScrollSecond) {
-            secondRowPosition = 0;
+        if (syncRows) {
+          const maxScrollSecond = secondRow.scrollWidth - secondRow.clientWidth;
+          if (maxScrollSecond > 0) {
+            const pos = sharedPosition % maxScrollSecond;
+            secondRow.scrollLeft = directions[1] === 'right' ? (maxScrollSecond - pos) : pos;
           }
-          // 反向滚动：从最大值开始减去当前位置
-          secondRow.scrollLeft = maxScrollSecond - secondRowPosition;
+        } else {
+          secondRowPosition += scrollSpeed;
+          const maxScrollSecond = secondRow.scrollWidth - secondRow.clientWidth;
+          if (maxScrollSecond > 0) {
+            if (secondRowPosition >= maxScrollSecond) {
+              secondRowPosition = 0;
+            }
+            secondRow.scrollLeft = directions[1] === 'right' ? (maxScrollSecond - secondRowPosition) : secondRowPosition;
+          }
         }
       }
       
@@ -80,21 +122,23 @@ const LogoCarousel: React.FC = () => {
     };
   }, []);
   
-  // 将logo分成两组
-  const firstRowLogos = logos.slice(0, Math.ceil(logos.length / 2));
-  const secondRowLogos = logos.slice(Math.ceil(logos.length / 2));
+  const resolvedLogos = (logos && logos.length > 0 ? logos : defaultLogos).map(l =>
+    typeof l === 'string' ? { src: l, alt: '' } : { src: l.src, alt: l.alt ?? '' }
+  );
+  const firstRowLogos = resolvedLogos.slice(0, Math.ceil(resolvedLogos.length / 2));
+  const secondRowLogos = resolvedLogos.slice(Math.ceil(resolvedLogos.length / 2));
   
   // 创建双倍数组以实现无缝滚动
   const doubleFirstRow = [...firstRowLogos, ...firstRowLogos];
   const doubleSecondRow = [...secondRowLogos, ...secondRowLogos];
   
-  const LogoRow = ({ logos: rowLogos, scrollRef }: { 
-    logos: typeof doubleFirstRow, 
+  const LogoRow = ({ logos: rowLogos, scrollRef }: {
+    logos: typeof doubleFirstRow,
     scrollRef: React.RefObject<HTMLDivElement>
   }) => (
-    <div 
+    <div
       ref={scrollRef}
-      className="flex gap-6 md:gap-8 overflow-x-scroll scrollbar-hide"
+      className={`flex ${gapClassName} overflow-x-scroll scrollbar-hide`}
       style={{
         scrollbarWidth: 'none',
         msOverflowStyle: 'none'
@@ -102,22 +146,23 @@ const LogoCarousel: React.FC = () => {
     >
       {rowLogos.map((logo, index) => (
         <div
-          key={`${logo.alt}-${index}`}
-          className="flex-shrink-0 bg-white rounded-lg shadow-md p-3 flex items-center justify-center"
-          style={{
-            minWidth: '120px',
-            width: '120px',
-            height: '80px',
-          }}
+          key={`${logo.src}-${index}`}
+          className={
+            variant === 'card'
+              ? `flex-shrink-0 bg-white ${boxed ? 'border border-gray-200' : ''} rounded-lg shadow-sm p-3 flex items-center justify-center`
+              : 'flex-shrink-0 flex items-center justify-center'
+          }
+          style={
+            variant === 'card'
+              ? { minWidth: `${itemWidth}px`, width: `${itemWidth}px`, height: `${itemHeight}px` }
+              : { minWidth: `${itemWidth}px`, height: `${itemHeight}px` }
+          }
         >
           <img
             src={logo.src}
             alt={logo.alt}
-            className="max-w-full max-h-full object-contain opacity-90"
-            style={{
-              mixBlendMode: 'multiply',
-              filter: 'contrast(1.1) brightness(0.9)'
-            }}
+            className={imageClassName}
+            style={undefined}
           />
         </div>
       ))}
@@ -126,14 +171,8 @@ const LogoCarousel: React.FC = () => {
   
   return (
     <div className="w-full space-y-4">
-      <LogoRow 
-        logos={doubleFirstRow} 
-        scrollRef={firstRowRef}
-      />
-      <LogoRow 
-        logos={doubleSecondRow} 
-        scrollRef={secondRowRef}
-      />
+      <LogoRow logos={doubleFirstRow} scrollRef={firstRowRef} />
+      <LogoRow logos={doubleSecondRow} scrollRef={secondRowRef} />
     </div>
   );
 };

@@ -539,3 +539,13 @@ html.export-pdf .prose :where(h2){ font-size:1.2rem!important; }
 html.export-pdf .prose :where(h3){ font-size:1.05rem!important; }
 .exporting .no-print{ display:none!important; }
 .exporting .no-print-only{ display:none!important; }
+/* 横向滚动容器隐藏滚动条（Firefox/IE/WebKit） */
+.scrollbar-hide { 
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}

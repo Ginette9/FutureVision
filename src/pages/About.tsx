@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import ContactModal from '../components/ContactModal';
+import LogoCarousel from '@/components/LogoCarousel';
 
 export default function About() {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
@@ -76,7 +77,7 @@ export default function About() {
       label: '2人入选世界经济论坛全球杰出青年'
     },
     {
-      src: '/images/achievements/achievement-youth-for-sdgs.png',
+      src: '/images/achievements/achievement-youths-for-sdgs.png',
       label: '2人入选联合国可持续青年领袖'
     },
     {
@@ -238,61 +239,119 @@ export default function About() {
           </p>
         </div>
         {/* 顾问毕业院校 */}
-        <div className="bg-white border border-gray-200 p-8 mb-12">
-          <h3 className="text-xl font-medium text-gray-900 mb-6">顾问毕业院校</h3>
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-x-8 gap-y-6 place-items-center">
-            {universityLogos.map((src, i) => (
-              <motion.div
-                key={src}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.02 * i }}
-                className="w-full flex items-center justify-center p-2"
-              >
-                <img src={src} alt="university logo" className="h-12 md:h-14 lg:h-16 object-contain" />
-              </motion.div>
-            ))}
-          </div>
+        <div className="bg-white p-6 md:p-8 mb-12">
+          <h3 className="text-lg md:text-xl font-medium text-gray-900 mb-4 md:mb-6">顾问毕业院校</h3>
+          <LogoCarousel
+            logos={universityLogos}
+            directions={["right", "right"]}
+            variant="card"
+            boxed
+            syncRows
+            itemWidth={120}
+            itemHeight={72}
+            gapClassName="gap-6 md:gap-8"
+            imageClassName="max-w-full max-h-full object-contain"
+            speed={1.2}
+          />
         </div>
 
         {/* 顾问职业经历 */}
-        <div className="bg-white border border-gray-200 p-8 mb-12">
-          <h3 className="text-xl font-medium text-gray-900 mb-6">顾问职业经历</h3>
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-x-8 gap-y-6 place-items-center">
-            {companyLogos.map((src, i) => (
-              <motion.div
-                key={src}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.02 * i }}
-                className="w-full flex items-center justify-center p-2"
-              >
-                <img src={src} alt="company logo" className="h-12 md:h-14 lg:h-16 object-contain" />
-              </motion.div>
-            ))}
-          </div>
+        <div className="bg-white p-6 md:p-8 mb-12">
+          <h3 className="text-lg md:text-xl font-medium text-gray-900 mb-4 md:mb-6">顾问职业经历</h3>
+          <LogoCarousel
+            logos={companyLogos}
+            directions={["right", "right"]}
+            variant="card"
+            boxed
+            syncRows
+            itemWidth={120}
+            itemHeight={72}
+            gapClassName="gap-6 md:gap-8"
+            imageClassName="max-w-full max-h-full object-contain"
+            speed={1.2}
+          />
         </div>
 
-        {/* 团队荣誉（白底） */}
-        <div className="bg-white border border-gray-200 p-8">
-          <h3 className="text-xl font-medium text-gray-900 mb-6">团队荣誉</h3>
-          {/* 大屏尽量单行展示；小屏自动换行 */}
-          <div className="flex flex-wrap items-start justify-between gap-y-8">
-            {achievementItems.map((item, i) => (
+        {/* 团队荣誉（白底黑字自定义排版） */}
+        <div className="bg-white p-6 md:p-8">
+          <h3 className="text-lg md:text-xl font-medium text-gray-900 mb-6">团队荣誉</h3>
+          <div className="border border-gray-200 p-4 md:p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 lg:auto-rows-[150px] gap-6">
+            {/* 左列：Forbes 30 Under 30（加大） */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4 }}
+              className="bg-white p-4 md:p-6 lg:col-span-4 lg:row-span-2 flex h-full flex-col"
+            >
+              <div className="flex-1 w-full flex items-center justify-center">
+                <img src="/images/achievements/achievement-forbes-under-30.png" alt="Forbes 30 Under 30" className="h-44 md:h-52 object-contain" />
+              </div>
+              <p className="mt-2 text-xs md:text-sm text-gray-900 text-center">5人登上福布斯30位30岁以下精英</p>
+            </motion.div>
+
+            {/* 中列：上 G20YEA，下 APEC */}
+            <div className="space-y-8 lg:col-span-3">
               <motion.div
-                key={item.src}
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.02 * i }}
-                className="flex flex-col items-center text-center basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-[12.5%] px-2"
+                transition={{ duration: 0.4 }}
+                className="bg-white p-4 md:p-6 flex h-full flex-col min-h-[150px]"
               >
-                <img src={item.src} alt="achievement logo" className="h-16 md:h-18 lg:h-20 object-contain" />
-                <p className="mt-3 text-xs md:text-sm text-gray-700 leading-snug tracking-tight">{item.label}</p>
+                <div className="flex-1 w-full flex items-center justify-center">
+                  <img src="/images/achievements/achievement-g20-yea.png" alt="G20YEA" className="h-12 md:h-14 object-contain" />
+                </div>
+                <p className="mt-2 text-xs md:text-sm text-gray-900 text-center whitespace-nowrap">2人入选G20YEA领军青年</p>
               </motion.div>
-            ))}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4 }}
+                className="bg-white p-4 md:p-6 flex h-full flex-col min-h-[150px]"
+              >
+                <div className="flex-1 w-full flex items-center justify-center">
+                  <img src="/images/achievements/achievement-apec.jpeg" alt="APEC" className="h-10 md:h-12 object-contain" />
+                </div>
+                <p className="mt-2 text-xs md:text-sm text-gray-900 text-center whitespace-nowrap">2人入选APEC未来之声</p>
+              </motion.div>
+            </div>
+
+            {/* 右列：上 WEF左右 logo 与共用文字；下并排 SDGs 与 TEDx */}
+            <div className="space-y-8 lg:col-span-5">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4 }}
+                className="bg-white p-4 md:p-6 flex h-full flex-col min-h-[150px]"
+              >
+                <div className="flex-1 w-full flex items-center justify-center gap-6">
+                  <img src="/images/achievements/achievement-wef-left.png" alt="WEF Left" className="h-14 md:h-16 object-contain" />
+                  <img src="/images/achievements/achievement-wef-right.png" alt="WEF Right" className="h-14 md:h-16 object-contain" />
+                </div>
+                <p className="mt-2 text-xs md:text-sm text-center text-gray-900 whitespace-nowrap">2人入选世界经济论坛全球杰出青年</p>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4 }}
+                className="bg-white p-4 md:p-6 flex h-full flex-col min-h-[150px]"
+              >
+                <div className="flex-1 w-full grid grid-cols-2 gap-6 items-center justify-items-center">
+                  <img src="/images/achievements/achievement-youths-for-sdgs.png" alt="Youths for SDGs" className="h-16 md:h-20 object-contain" />
+                  <img src="/images/achievements/achievement-tedx.png" alt="TEDx" className="h-6 md:h-10 object-contain" />
+                </div>
+                <div className="grid grid-cols-2 gap-6">
+                  <p className="mt-2 text-xs md:text-sm text-gray-900 text-center whitespace-nowrap">2人入选联合国可持续青年领袖</p>
+                  <p className="mt-2 text-xs md:text-sm text-gray-900 text-center whitespace-nowrap">2人登上TEDx演讲</p>
+                </div>
+              </motion.div>
+            </div>
+            </div>
           </div>
         </div>
       </motion.div>
