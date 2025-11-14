@@ -1,6 +1,6 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { AuthContext } from '../contexts/authContext';
-import { GlobalNewsItem, getAllGlobalNews, replaceGlobalNews } from '../data/globalNews';
+import { GlobalNewsItem, getAllGlobalNews, replaceGlobalNews, updateGlobalNews, deleteGlobalNews } from '../data/globalNews';
 
 type ImageInput = { type: 'url' | 'file'; value: string };
 
@@ -130,14 +130,15 @@ function parseTsv(input: string): Omit<GlobalNewsItem, 'id' | 'coverImage' | 'da
 
 export default function AdminNews() {
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
-  const [items, setItems] = useState<GlobalNewsItem[]>([]);
+  const [existingItems, setExistingItems] = useState<GlobalNewsItem[]>([]);
+  const [newItems, setNewItems] = useState<GlobalNewsItem[]>([]);
   const [weeklyText, setWeeklyText] = useState('');
   const [weeklyTextTsv, setWeeklyTextTsv] = useState('');
   const [coverInputs, setCoverInputs] = useState<Record<number, ImageInput>>({});
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   useEffect(() => {
-    setItems([...getAllGlobalNews()]);
+    setExistingItems([...getAllGlobalNews()]);
   }, []);
 
   const handleLogin = (code: string) => {
@@ -162,7 +163,7 @@ export default function AdminNews() {
     for (let idx = 0; idx < Math.min(maxLen, 5); idx++) {
       const f = free[idx];
       const t = tsv[idx];
-      let coverUrl = items[idx]?.coverImage || '';
+      let coverUrl = newItems[idx]?.coverImage || '';
       const input = coverInputs[idx];
       if (input?.type === 'url') coverUrl = input.value || coverUrl;
       if (input?.type === 'file' && input.value) {
@@ -178,16 +179,16 @@ export default function AdminNews() {
         titleEn: (t?.titleEn || f?.titleEn || ''),
         summaryZh: (f?.summaryZh || t?.summaryZh || ''),
         summaryEn: (f?.summaryEn || ''),
-        linkZh: (t?.linkZh || t?.linkEn || items[idx]?.linkZh || items[idx]?.linkEn || ''),
-        linkEn: (t?.linkZh || t?.linkEn || items[idx]?.linkZh || items[idx]?.linkEn || ''),
+        linkZh: (t?.linkZh || t?.linkEn || existingItems[idx]?.linkZh || existingItems[idx]?.linkEn || ''),
+        linkEn: (t?.linkZh || t?.linkEn || existingItems[idx]?.linkZh || existingItems[idx]?.linkEn || ''),
         date: parsedDate || today
       });
     }
-    setItems(result);
+    setNewItems(result);
   };
 
-  const ensureItemsLength = (len: number) => {
-    setItems(prev => {
+  const ensureNewItemsLength = (len: number) => {
+    setNewItems(prev => {
       const arr = [...prev];
       while (arr.length < len) {
         arr.push({
@@ -208,7 +209,7 @@ export default function AdminNews() {
 
   const handleBatchUpload = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
-    ensureItemsLength(5);
+    ensureNewItemsLength(5);
     const mapByIndex: Array<{ idx: number; file: File } | null> = [null, null, null, null, null];
     for (const f of Array.from(files)) {
       const base = f.name.split('.')?.[0] || '';
@@ -220,16 +221,19 @@ export default function AdminNews() {
     for (const entry of mapByIndex) {
       if (!entry) continue;
       const ext = (entry.file.name.split('.').pop() || 'jpg').toLowerCase();
-      const dateStr = (items[entry.idx]?.date || today).replace(/-/g, '');
+      const dateStr = (newItems[entry.idx]?.date || today).replace(/-/g, '');
       const fname = `${dateStr}_${entry.idx + 1}.${ext}`;
       const url = await uploadImageToServer(entry.file, fname);
-      setItems(prev => prev.map((p, i) => i === entry.idx ? { ...p, coverImage: url } : p));
+      setNewItems(prev => prev.map((p, i) => i === entry.idx ? { ...p, coverImage: url } : p));
       setCoverInputs(prev => ({ ...prev, [entry.idx]: { type: 'url', value: url } }));
     }
   };
 
   const handleSave = () => {
-    replaceGlobalNews(items);
+    const combined = [...getAllGlobalNews(), ...newItems];
+    replaceGlobalNews(combined);
+    setExistingItems([...getAllGlobalNews()]);
+    setNewItems([]);
   };
 
   const exportJson = () => {
@@ -326,22 +330,62 @@ export default function AdminNews() {
         </div>
       </div>
 
+      <details className="mt-8">
+        <summary className="cursor-pointer select-none text-sm text-gray-600">已保存内容（点击展开进行编辑）</summary>
+        <div className="mt-4 space-y-8">
+          {existingItems.map((it, idx) => (
+            <div key={it.id} className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+              {(() => {
+                const s = it.coverImage || '';
+                const cover = s.startsWith('/uploads/') ? `http://localhost:3001${s}` : s;
+                return <img src={cover} alt={it.titleZh} className="w-full h-auto rounded" />;
+              })()}
+              <div className="space-y-2">
+                <input className="w-full border px-3 py-2" value={it.titleZh} onChange={e => setExistingItems(prev => prev.map(p => p.id === it.id ? { ...p, titleZh: e.target.value } : p))} />
+                <input className="w-full border px-3 py-2" value={it.titleEn} onChange={e => setExistingItems(prev => prev.map(p => p.id === it.id ? { ...p, titleEn: e.target.value } : p))} />
+                <textarea className="w-full border px-3 py-2 h-24" value={it.summaryZh} onChange={e => setExistingItems(prev => prev.map(p => p.id === it.id ? { ...p, summaryZh: e.target.value } : p))} />
+                <textarea className="w-full border px-3 py-2 h-24" value={it.summaryEn} onChange={e => setExistingItems(prev => prev.map(p => p.id === it.id ? { ...p, summaryEn: e.target.value } : p))} />
+                <input className="border px-3 py-2" placeholder="统一链接地址（所有语言使用同一链接）" value={it.linkZh || it.linkEn || ''} onChange={e => setExistingItems(prev => prev.map(p => p.id === it.id ? { ...p, linkZh: e.target.value, linkEn: e.target.value } : p))} />
+                <div className="flex items-center gap-2">
+                  <input className="flex-1 border px-3 py-2" placeholder="图片URL，如 /news-pics/xxx.jpg 或 https://..." value={it.coverImage} onChange={e => setExistingItems(prev => prev.map(p => p.id === it.id ? { ...p, coverImage: e.target.value } : p))} />
+                  <input type="file" accept="image/*" onChange={async (e) => { const file = e.target.files?.[0]; if (!file) return; const ext = (file.name.split('.').pop() || 'jpg').toLowerCase(); const dateStr = (it.date || new Date().toISOString().slice(0,10)).replace(/-/g, ''); const fname = `${dateStr}_saved_${idx + 1}.${ext}`; const url = await uploadImageToServer(file, fname); setExistingItems(prev => prev.map(p => p.id === it.id ? { ...p, coverImage: url } : p)); }} />
+                </div>
+                <div className="flex gap-2">
+                  <button className="px-3 py-1 border" onClick={() => { deleteGlobalNews(it.id); setExistingItems([...getAllGlobalNews()]); }}>删除</button>
+                </div>
+              </div>
+            </div>
+          ))}
+          <div>
+            <button className="px-4 py-2 bg-indigo-600 text-white" onClick={() => { replaceGlobalNews(existingItems); setExistingItems([...getAllGlobalNews()]); }}>保存更改</button>
+          </div>
+        </div>
+      </details>
+
       <div className="mt-8 space-y-8">
-        {items.map(it => (
+        {newItems.map((it, idx) => (
           <div key={it.id} className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-            <img src={it.coverImage} alt={it.titleZh} className="w-full h-auto rounded" />
+            {(() => {
+              const s = it.coverImage || '';
+              const cover = s.startsWith('/uploads/') ? `http://localhost:3001${s}` : s;
+              return <img src={cover} alt={it.titleZh} className="w-full h-auto rounded" />;
+            })()}
             <div className="space-y-2">
-              <input className="w-full border px-3 py-2" value={it.titleZh} onChange={e => setItems(prev => prev.map(p => p.id === it.id ? { ...p, titleZh: e.target.value } : p))} />
-              <input className="w-full border px-3 py-2" value={it.titleEn} onChange={e => setItems(prev => prev.map(p => p.id === it.id ? { ...p, titleEn: e.target.value } : p))} />
-              <textarea className="w-full border px-3 py-2 h-24" value={it.summaryZh} onChange={e => setItems(prev => prev.map(p => p.id === it.id ? { ...p, summaryZh: e.target.value } : p))} />
-              <textarea className="w-full border px-3 py-2 h-24" value={it.summaryEn} onChange={e => setItems(prev => prev.map(p => p.id === it.id ? { ...p, summaryEn: e.target.value } : p))} />
+              <input className="w-full border px-3 py-2" value={it.titleZh} onChange={e => setNewItems(prev => prev.map(p => p.id === it.id ? { ...p, titleZh: e.target.value } : p))} />
+              <input className="w-full border px-3 py-2" value={it.titleEn} onChange={e => setNewItems(prev => prev.map(p => p.id === it.id ? { ...p, titleEn: e.target.value } : p))} />
+              <textarea className="w-full border px-3 py-2 h-24" value={it.summaryZh} onChange={e => setNewItems(prev => prev.map(p => p.id === it.id ? { ...p, summaryZh: e.target.value } : p))} />
+              <textarea className="w-full border px-3 py-2 h-24" value={it.summaryEn} onChange={e => setNewItems(prev => prev.map(p => p.id === it.id ? { ...p, summaryEn: e.target.value } : p))} />
               <div className="grid grid-cols-1 gap-2">
                 <input
                   className="border px-3 py-2"
                   placeholder="统一链接地址（所有语言使用同一链接）"
                   value={it.linkZh || it.linkEn || ''}
-                  onChange={e => setItems(prev => prev.map(p => p.id === it.id ? { ...p, linkZh: e.target.value, linkEn: e.target.value } : p))}
+                  onChange={e => setNewItems(prev => prev.map(p => p.id === it.id ? { ...p, linkZh: e.target.value, linkEn: e.target.value } : p))}
                 />
+              </div>
+              <div className="flex items-center gap-2">
+                <input className="flex-1 border px-3 py-2" placeholder="图片URL，如 /news-pics/xxx.jpg 或 https://..." value={it.coverImage} onChange={e => setNewItems(prev => prev.map(p => p.id === it.id ? { ...p, coverImage: e.target.value } : p))} />
+                <input type="file" accept="image/*" onChange={async (e) => { const file = e.target.files?.[0]; if (!file) return; const ext = (file.name.split('.').pop() || 'jpg').toLowerCase(); const dateStr = (it.date || new Date().toISOString().slice(0,10)).replace(/-/g, ''); const fname = `${dateStr}_new_${idx + 1}.${ext}`; const url = await uploadImageToServer(file, fname); setNewItems(prev => prev.map(p => p.id === it.id ? { ...p, coverImage: url } : p)); }} />
               </div>
             </div>
           </div>

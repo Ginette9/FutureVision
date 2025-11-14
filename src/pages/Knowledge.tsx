@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { getAllGlobalNews, GlobalNewsItem } from '../data/globalNews';
+import { getAllMustReads, MustReadItem } from '../data/mustReads';
+import { getAllCourses, CourseResourceItem } from '../data/courseResources';
 import { replaceKeywords } from '../lib/textTransform';
 import { ZH_HK_REPLACEMENTS } from '../data/zhHKReplacements';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -18,6 +20,8 @@ interface KnowledgeItem {
 export default function Knowledge() {
   const [activeCategory, setActiveCategory] = useState('weekly');
   const [news, setNews] = useState<GlobalNewsItem[]>([]);
+  const [mustReads, setMustReads] = useState<MustReadItem[]>([]);
+  const [courses, setCourses] = useState<CourseResourceItem[]>([]);
   const { language } = useLanguage();
 
   const categories = [
@@ -26,86 +30,7 @@ export default function Knowledge() {
     { id: 'courses', name: '课程资源' }
   ];
 
-  const knowledgeItems: Record<string, KnowledgeItem[]> = {
-    weekly: [
-      {
-        id: 4,
-        title: '本周ESG要闻：欧盟新法规影响分析',
-        summary: '欧盟最新ESG法规对中国企业的影响及应对策略',
-        date: '2024-01-20',
-        category: '政策解读',
-        readTime: '8分钟'
-      },
-      {
-        id: 5,
-        title: '全球供应链风险周报',
-        summary: '本周全球供应链重大风险事件汇总',
-        date: '2024-01-18',
-        category: '风险监测',
-        readTime: '10分钟'
-      },
-      {
-        id: 10,
-        title: '本周可持续发展动态',
-        summary: '全球可持续发展领域的最新动态和政策变化',
-        date: '2024-01-22',
-        category: '政策解读',
-        readTime: '12分钟'
-      }
-    ],
-    industry: [
-      {
-        id: 6,
-        title: '制造业ESG转型必读',
-        summary: '制造业企业ESG转型的关键要素和成功案例',
-        date: '2024-01-12',
-        category: '行业洞察',
-        readTime: '18分钟'
-      },
-      {
-        id: 7,
-        title: '科技行业可持续发展趋势',
-        summary: '科技行业在可持续发展方面的最新趋势和机遇',
-        date: '2024-01-08',
-        category: '行业洞察',
-        readTime: '14分钟'
-      },
-      {
-        id: 11,
-        title: '金融业ESG实践指南',
-        summary: '金融机构ESG实践的最佳案例和实施路径',
-        date: '2024-01-06',
-        category: '行业洞察',
-        readTime: '16分钟'
-      }
-    ],
-    courses: [
-      {
-        id: 8,
-        title: 'ESG基础认知课程',
-        summary: '从零开始了解ESG的基本概念和实施框架',
-        date: '2024-01-03',
-        category: '基础课程',
-        readTime: '45分钟'
-      },
-      {
-        id: 9,
-        title: '企业出海风险管理实务',
-        summary: '企业出海过程中的风险识别、评估和管理实务',
-        date: '2023-12-28',
-        category: '实务课程',
-        readTime: '60分钟'
-      },
-      {
-        id: 12,
-        title: '可持续供应链管理',
-        summary: '构建可持续供应链的策略和实施方法',
-        date: '2023-12-25',
-        category: '专业课程',
-        readTime: '90分钟'
-      }
-    ]
-  };
+  const knowledgeItems: Record<string, KnowledgeItem[]> = { weekly: [] } as any;
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -119,9 +44,19 @@ export default function Knowledge() {
 
   useEffect(() => {
     setNews([...getAllGlobalNews()]);
-    const onUpdate = () => setNews([...getAllGlobalNews()]);
-    window.addEventListener('global-news-updated', onUpdate);
-    return () => window.removeEventListener('global-news-updated', onUpdate);
+    setMustReads([...getAllMustReads()]);
+    setCourses([...getAllCourses()]);
+    const onNews = () => setNews([...getAllGlobalNews()]);
+    const onMust = () => setMustReads([...getAllMustReads()]);
+    const onCourse = () => setCourses([...getAllCourses()]);
+    window.addEventListener('global-news-updated', onNews);
+    window.addEventListener('must-read-updated', onMust);
+    window.addEventListener('course-updated', onCourse);
+    return () => {
+      window.removeEventListener('global-news-updated', onNews);
+      window.removeEventListener('must-read-updated', onMust);
+      window.removeEventListener('course-updated', onCourse);
+    };
   }, []);
 
   return (
@@ -169,7 +104,16 @@ export default function Knowledge() {
             transition={{ duration: 0.6 }}
             className="space-y-16 mb-16"
           >
-            {news.map((n, index) => (
+            {([...news]
+              .sort((a, b) => {
+                const ta = new Date(a.date).getTime();
+                const tb = new Date(b.date).getTime();
+                if (!isFinite(ta) && !isFinite(tb)) return 0;
+                if (!isFinite(ta)) return 1;
+                if (!isFinite(tb)) return -1;
+                return tb - ta;
+              })
+            ).map((n, index) => (
               <motion.div
                 key={n.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -179,9 +123,10 @@ export default function Knowledge() {
               >
                 <div className="overflow-hidden rounded-xl h-64 md:h-80">
                   {(() => {
-                    const cover = (n.coverImage && n.coverImage.startsWith('/uploads/'))
-                      ? ((import.meta as any).env?.DEV ? `http://localhost:3002${n.coverImage}` : n.coverImage)
-                      : n.coverImage;
+                    const s = n.coverImage || '';
+                    const cover = s.startsWith('/uploads/')
+                      ? ((import.meta as any).env?.DEV ? `http://localhost:3001${s}` : s)
+                      : s;
                     return <img src={cover} alt={n.titleZh} className="w-full h-full object-cover object-center" />;
                   })()}
                 </div>
@@ -223,41 +168,64 @@ export default function Knowledge() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16"
+            className="space-y-16 mb-16"
           >
-            {knowledgeItems[activeCategory]?.map((item, index) => (
-              <motion.article
+            {([...(activeCategory === 'industry' ? mustReads : courses)]
+              .sort((a: any, b: any) => {
+                const ta = new Date(a?.date).getTime();
+                const tb = new Date(b?.date).getTime();
+                if (!isFinite(ta) && !isFinite(tb)) return 0;
+                if (!isFinite(ta)) return 1;
+                if (!isFinite(tb)) return -1;
+                return tb - ta;
+              })
+            ).map((item: any, index: number) => (
+              <motion.div
                 key={item.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-300"
+                transition={{ duration: 0.6, delay: index * 0.05 }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch"
               >
-                <div className="p-8">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1">
-                      {item.category}
-                    </span>
-                    <span className="text-sm text-gray-400">
-                      {item.readTime}
-                    </span>
+                <div className="overflow-hidden rounded-xl h-64 md:h-80">
+                  {(() => {
+                    const s = String(item.coverImage || '');
+                    const cover = s.startsWith('/uploads/')
+                      ? ((import.meta as any).env?.DEV ? `http://localhost:3001${s}` : s)
+                      : s;
+                    return <img src={cover} alt={item.titleZh || item.titleEn} className="w-full h-full object-cover object-center" />;
+                  })()}
+                </div>
+                <div className="flex flex-col justify-between h-64 md:h-80">
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-semibold text-black tracking-tight">
+                      {(() => {
+                        const base = (language === 'zh-CN' || language === 'zh-HK') ? item.titleZh : item.titleEn;
+                        return language === 'zh-HK' ? replaceKeywords(base || '', ZH_HK_REPLACEMENTS) : (base || '');
+                      })()}
+                    </h3>
+                    <time className="text-sm text-neutral-500">{formatDate(item.date)}</time>
                   </div>
-                  <h3 className="text-xl font-medium text-gray-900 mb-3 leading-tight">
-                    {item.title}
-                  </h3>
-                  <p className="text-gray-600 mb-6 leading-relaxed">
-                    {item.summary}
+                  <p className="text-neutral-700 leading-relaxed whitespace-pre-line">
+                    {(() => {
+                      const base = (language === 'zh-CN' || language === 'zh-HK') ? item.summaryZh : item.summaryEn;
+                      return language === 'zh-HK' ? replaceKeywords(base || '', ZH_HK_REPLACEMENTS) : (base || '');
+                    })()}
                   </p>
-                  <div className="flex items-center justify-between">
-                    <time className="text-sm text-gray-500">
-                      {formatDate(item.date)}
-                    </time>
-                    <button className="text-gray-900 hover:text-gray-600 transition-colors duration-300 font-medium">
-                      {activeCategory === 'courses' ? '开始学习' : '阅读更多'} →
-                    </button>
+                  <div className="flex gap-3">
+                    {(item.linkZh || item.linkEn) && (
+                      <a
+                        href={item.linkZh || item.linkEn}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-4 py-2 rounded-md bg-black text-white hover:bg-neutral-800"
+                      >
+                        阅读更多
+                      </a>
+                    )}
                   </div>
                 </div>
-              </motion.article>
+              </motion.div>
             ))}
           </motion.div>
         )}

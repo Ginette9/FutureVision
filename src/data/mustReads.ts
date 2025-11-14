@@ -1,6 +1,4 @@
-import { InsightReport } from './insightReports';
-
-export interface GlobalNewsItem {
+export interface MustReadItem {
   id: string;
   coverImage: string;
   titleZh: string;
@@ -12,10 +10,10 @@ export interface GlobalNewsItem {
   date: string;
 }
 
-const globalNews: GlobalNewsItem[] = [];
+const mustReads: MustReadItem[] = [];
 
-const STORAGE_KEY = 'globalNewsStore';
-const UPDATE_EVENT = 'global-news-updated';
+const STORAGE_KEY = 'mustReadStore';
+const UPDATE_EVENT = 'must-read-updated';
 
 function dispatchUpdateEvent() {
   try {
@@ -32,16 +30,16 @@ const ENABLE_SERVER_SYNC = (typeof import.meta !== 'undefined' && (import.meta a
 async function saveToServerIfAvailable() {
   try {
     if (typeof window === 'undefined') return;
-    const payload = { items: globalNews };
-    const tryUrls = ['/api/news', 'http://localhost:3001/api/news', 'http://localhost:3002/api/news'];
+    const payload = { items: mustReads } as any;
+    const tryUrls = ['/api/must-reads', 'http://localhost:3001/api/must-reads', 'http://localhost:3002/api/must-reads'];
     for (const url of tryUrls) {
       try {
         const resp = await fetch(url, {
           method: 'POST',
-          headers: { 
+          headers: {
             'Content-Type': 'application/json',
-            ...(typeof window !== 'undefined' && window.localStorage.getItem('adminToken') 
-              ? { 'X-Admin-Token': String(window.localStorage.getItem('adminToken')) } 
+            ...(typeof window !== 'undefined' && window.localStorage.getItem('adminToken')
+              ? { 'X-Admin-Token': String(window.localStorage.getItem('adminToken')) }
               : {})
           },
           body: JSON.stringify(payload)
@@ -68,7 +66,7 @@ function bootstrapStore() {
         }
         return n;
       });
-      globalNews.splice(0, globalNews.length, ...normalized as any);
+      mustReads.splice(0, mustReads.length, ...normalized as any);
     }
   } catch {}
 }
@@ -76,7 +74,7 @@ function bootstrapStore() {
 function saveStore() {
   try {
     if (typeof window === 'undefined') return;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(globalNews));
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(mustReads));
     void saveToServerIfAvailable();
     dispatchUpdateEvent();
   } catch {}
@@ -88,7 +86,7 @@ async function bootstrapFromServerIfEmpty() {
   try {
     if (typeof window === 'undefined') return;
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    const urls = ['/api/news', '/data/news.json', 'http://localhost:3001/api/news', 'http://localhost:3002/api/news'];
+    const urls = ['/api/must-reads', '/data/must-reads.json', 'http://localhost:3001/api/must-reads', 'http://localhost:3002/api/must-reads'];
     let data: any = null;
     for (const url of urls) {
       try {
@@ -108,45 +106,48 @@ async function bootstrapFromServerIfEmpty() {
         }
         return n;
       });
-      globalNews.splice(0, globalNews.length, ...normalized as any);
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(globalNews));
+      mustReads.splice(0, mustReads.length, ...normalized as any);
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(mustReads));
       dispatchUpdateEvent();
     }
   } catch {}
 }
-
 void bootstrapFromServerIfEmpty();
 
-export function getAllGlobalNews(): GlobalNewsItem[] {
-  return globalNews;
-}
-
-export function replaceGlobalNews(items: GlobalNewsItem[]): void {
+export function getAllMustReads(): MustReadItem[] { return mustReads; }
+export function replaceMustReads(items: MustReadItem[]): void {
   if (Array.isArray(items)) {
-    globalNews.splice(0, globalNews.length, ...items);
+    mustReads.splice(0, mustReads.length, ...items);
     saveStore();
   }
 }
 
-export function addGlobalNews(item: GlobalNewsItem): void {
-  globalNews.unshift(item);
+export function addMustRead(item: MustReadItem): void {
+  mustReads.unshift(item);
   saveStore();
 }
 
-export function updateGlobalNews(id: string, partial: Partial<GlobalNewsItem>): boolean {
-  const idx = globalNews.findIndex(n => n.id === id);
+export function addManyMustReads(items: MustReadItem[]): void {
+  if (Array.isArray(items) && items.length > 0) {
+    mustReads.splice(0, 0, ...items);
+    saveStore();
+  }
+}
+
+export function updateMustRead(id: string, partial: Partial<MustReadItem>): boolean {
+  const idx = mustReads.findIndex(n => n.id === id);
   if (idx !== -1) {
-    globalNews[idx] = { ...globalNews[idx], ...partial };
+    mustReads[idx] = { ...mustReads[idx], ...partial } as MustReadItem;
     saveStore();
     return true;
   }
   return false;
 }
 
-export function deleteGlobalNews(id: string): boolean {
-  const idx = globalNews.findIndex(n => n.id === id);
+export function deleteMustRead(id: string): boolean {
+  const idx = mustReads.findIndex(n => n.id === id);
   if (idx !== -1) {
-    globalNews.splice(idx, 1);
+    mustReads.splice(idx, 1);
     saveStore();
     return true;
   }

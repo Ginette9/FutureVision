@@ -1,6 +1,4 @@
-import { InsightReport } from './insightReports';
-
-export interface GlobalNewsItem {
+export interface CourseResourceItem {
   id: string;
   coverImage: string;
   titleZh: string;
@@ -12,10 +10,10 @@ export interface GlobalNewsItem {
   date: string;
 }
 
-const globalNews: GlobalNewsItem[] = [];
+const courses: CourseResourceItem[] = [];
 
-const STORAGE_KEY = 'globalNewsStore';
-const UPDATE_EVENT = 'global-news-updated';
+const STORAGE_KEY = 'courseStore';
+const UPDATE_EVENT = 'course-updated';
 
 function dispatchUpdateEvent() {
   try {
@@ -32,16 +30,16 @@ const ENABLE_SERVER_SYNC = (typeof import.meta !== 'undefined' && (import.meta a
 async function saveToServerIfAvailable() {
   try {
     if (typeof window === 'undefined') return;
-    const payload = { items: globalNews };
-    const tryUrls = ['/api/news', 'http://localhost:3001/api/news', 'http://localhost:3002/api/news'];
+    const payload = { items: courses } as any;
+    const tryUrls = ['/api/courses', 'http://localhost:3001/api/courses', 'http://localhost:3002/api/courses'];
     for (const url of tryUrls) {
       try {
         const resp = await fetch(url, {
           method: 'POST',
-          headers: { 
+          headers: {
             'Content-Type': 'application/json',
-            ...(typeof window !== 'undefined' && window.localStorage.getItem('adminToken') 
-              ? { 'X-Admin-Token': String(window.localStorage.getItem('adminToken')) } 
+            ...(typeof window !== 'undefined' && window.localStorage.getItem('adminToken')
+              ? { 'X-Admin-Token': String(window.localStorage.getItem('adminToken')) }
               : {})
           },
           body: JSON.stringify(payload)
@@ -68,7 +66,7 @@ function bootstrapStore() {
         }
         return n;
       });
-      globalNews.splice(0, globalNews.length, ...normalized as any);
+      courses.splice(0, courses.length, ...normalized as any);
     }
   } catch {}
 }
@@ -76,7 +74,7 @@ function bootstrapStore() {
 function saveStore() {
   try {
     if (typeof window === 'undefined') return;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(globalNews));
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(courses));
     void saveToServerIfAvailable();
     dispatchUpdateEvent();
   } catch {}
@@ -88,7 +86,7 @@ async function bootstrapFromServerIfEmpty() {
   try {
     if (typeof window === 'undefined') return;
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    const urls = ['/api/news', '/data/news.json', 'http://localhost:3001/api/news', 'http://localhost:3002/api/news'];
+    const urls = ['/api/courses', '/data/courses.json', 'http://localhost:3001/api/courses', 'http://localhost:3002/api/courses'];
     let data: any = null;
     for (const url of urls) {
       try {
@@ -108,45 +106,48 @@ async function bootstrapFromServerIfEmpty() {
         }
         return n;
       });
-      globalNews.splice(0, globalNews.length, ...normalized as any);
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(globalNews));
+      courses.splice(0, courses.length, ...normalized as any);
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(courses));
       dispatchUpdateEvent();
     }
   } catch {}
 }
-
 void bootstrapFromServerIfEmpty();
 
-export function getAllGlobalNews(): GlobalNewsItem[] {
-  return globalNews;
-}
-
-export function replaceGlobalNews(items: GlobalNewsItem[]): void {
+export function getAllCourses(): CourseResourceItem[] { return courses; }
+export function replaceCourses(items: CourseResourceItem[]): void {
   if (Array.isArray(items)) {
-    globalNews.splice(0, globalNews.length, ...items);
+    courses.splice(0, courses.length, ...items);
     saveStore();
   }
 }
 
-export function addGlobalNews(item: GlobalNewsItem): void {
-  globalNews.unshift(item);
+export function addCourse(item: CourseResourceItem): void {
+  courses.unshift(item);
   saveStore();
 }
 
-export function updateGlobalNews(id: string, partial: Partial<GlobalNewsItem>): boolean {
-  const idx = globalNews.findIndex(n => n.id === id);
+export function addManyCourses(items: CourseResourceItem[]): void {
+  if (Array.isArray(items) && items.length > 0) {
+    courses.splice(0, 0, ...items);
+    saveStore();
+  }
+}
+
+export function updateCourse(id: string, partial: Partial<CourseResourceItem>): boolean {
+  const idx = courses.findIndex(n => n.id === id);
   if (idx !== -1) {
-    globalNews[idx] = { ...globalNews[idx], ...partial };
+    courses[idx] = { ...courses[idx], ...partial } as CourseResourceItem;
     saveStore();
     return true;
   }
   return false;
 }
 
-export function deleteGlobalNews(id: string): boolean {
-  const idx = globalNews.findIndex(n => n.id === id);
+export function deleteCourse(id: string): boolean {
+  const idx = courses.findIndex(n => n.id === id);
   if (idx !== -1) {
-    globalNews.splice(idx, 1);
+    courses.splice(idx, 1);
     saveStore();
     return true;
   }

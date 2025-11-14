@@ -12,6 +12,7 @@ import Cases from "./pages/Cases";
 import About from "./pages/About";
 import AdminInsights from "./pages/AdminInsights";
 import AdminNews from "./pages/AdminNews";
+import AdminKnowledge from "./pages/AdminKnowledge";
 import ReportResult from "./products/esg-voyant/ReportResult";
 import ReportResultNew from "./products/esg-voyant/ReportResultNew";
 import Pay from "./products/esg-voyant/Pay";
@@ -162,7 +163,8 @@ export default function App() {
               <Route path="/esg-voyant/intro" element={<ESGRiskAnalysisNew />} />
               <Route path="/insights" element={<Insights />} />
               <Route path="/admin/insights" element={<AdminInsights />} />
-              <Route path="/admin/news" element={<AdminNews />} />
+              <Route path="/admin/news" element={<AdminKnowledge />} />
+              <Route path="/admin/knowledge" element={<AdminKnowledge />} />
               <Route path="/knowledge" element={<Knowledge />} />
               <Route path="/cases" element={<Cases />} />
               <Route path="/about" element={<About />} />

@@ -218,6 +218,10 @@ const DEFAULT_INSIGHTS_JSON = path.join(DEFAULT_DATA_DIR, 'insights.json');
 const INSIGHTS_JSON = ENV_INSIGHTS_PATH || DEFAULT_INSIGHTS_JSON;
 const DEFAULT_NEWS_JSON = path.join(DEFAULT_DATA_DIR, 'news.json');
 const NEWS_JSON = process.env.NEWS_PATH || DEFAULT_NEWS_JSON;
+const DEFAULT_MUST_READS_JSON = path.join(DEFAULT_DATA_DIR, 'must-reads.json');
+const MUST_READS_JSON = process.env.MUST_READS_PATH || DEFAULT_MUST_READS_JSON;
+const DEFAULT_COURSES_JSON = path.join(DEFAULT_DATA_DIR, 'courses.json');
+const COURSES_JSON = process.env.COURSES_PATH || DEFAULT_COURSES_JSON;
 
 // 运行时上传目录（PDF/图片），支持持久盘配置
 const ENV_UPLOADS_DIR = process.env.UPLOADS_DIR;
@@ -296,6 +300,78 @@ function writeNews(arr) {
   }
 }
 
+function ensureMustReadsFile() {
+  try {
+    const dir = path.dirname(MUST_READS_JSON);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(MUST_READS_JSON)) {
+      fs.writeFileSync(MUST_READS_JSON, JSON.stringify([], null, 2), 'utf8');
+    }
+  } catch (e) {
+    console.error('[must-reads] ensure data file failed:', e.message);
+  }
+}
+
+function readMustReads() {
+  try {
+    ensureMustReadsFile();
+    const raw = fs.readFileSync(MUST_READS_JSON, 'utf8');
+    const arr = JSON.parse(raw);
+    if (Array.isArray(arr)) return arr;
+    return [];
+  } catch (e) {
+    console.error('[must-reads] read failed:', e.message);
+    return [];
+  }
+}
+
+function writeMustReads(arr) {
+  try {
+    ensureMustReadsFile();
+    fs.writeFileSync(MUST_READS_JSON, JSON.stringify(arr ?? [], null, 2), 'utf8');
+    return true;
+  } catch (e) {
+    console.error('[must-reads] write failed:', e.message);
+    return false;
+  }
+}
+
+function ensureCoursesFile() {
+  try {
+    const dir = path.dirname(COURSES_JSON);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(COURSES_JSON)) {
+      fs.writeFileSync(COURSES_JSON, JSON.stringify([], null, 2), 'utf8');
+    }
+  } catch (e) {
+    console.error('[courses] ensure data file failed:', e.message);
+  }
+}
+
+function readCourses() {
+  try {
+    ensureCoursesFile();
+    const raw = fs.readFileSync(COURSES_JSON, 'utf8');
+    const arr = JSON.parse(raw);
+    if (Array.isArray(arr)) return arr;
+    return [];
+  } catch (e) {
+    console.error('[courses] read failed:', e.message);
+    return [];
+  }
+}
+
+function writeCourses(arr) {
+  try {
+    ensureCoursesFile();
+    fs.writeFileSync(COURSES_JSON, JSON.stringify(arr ?? [], null, 2), 'utf8');
+    return true;
+  } catch (e) {
+    console.error('[courses] write failed:', e.message);
+    return false;
+  }
+}
+
 function ensureUploadsDir() {
   try {
     if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
@@ -341,8 +417,39 @@ app.post('/api/news', (req, res) => {
   return res.json({ success: true, count: items.length });
 });
 
+app.get('/api/must-reads', (req, res) => {
+  const data = readMustReads();
+  res.json({ items: data, count: data.length });
+});
+
+app.post('/api/must-reads', (req, res) => {
+  const { items } = req.body || {};
+  if (!Array.isArray(items)) {
+    return res.status(400).json({ error: 'invalid_payload', message: 'items must be an array' });
+  }
+  const ok = writeMustReads(items);
+  if (!ok) return res.status(500).json({ error: 'write_failed' });
+  return res.json({ success: true, count: items.length });
+});
+
+app.get('/api/courses', (req, res) => {
+  const data = readCourses();
+  res.json({ items: data, count: data.length });
+});
+
+app.post('/api/courses', (req, res) => {
+  const { items } = req.body || {};
+  if (!Array.isArray(items)) {
+    return res.status(400).json({ error: 'invalid_payload', message: 'items must be an array' });
+  }
+  const ok = writeCourses(items);
+  if (!ok) return res.status(500).json({ error: 'write_failed' });
+  return res.json({ success: true, count: items.length });
+});
+
 // 静态服务上传的文件（PDF、图片等）
 app.use('/uploads', express.static(UPLOADS_DIR));
+app.use('/data', express.static(DEFAULT_DATA_DIR));
 
 // 简易上传接口：接受 dataURL/base64 内容并保存到 uploads 目录
 app.post('/api/uploads', (req, res) => {
@@ -356,7 +463,7 @@ app.post('/api/uploads', (req, res) => {
       return res.status(400).json({ error: 'filename and contentBase64 are required' });
     }
     const safeName = path.basename(String(filename));
-    const allowedFolders = new Set(['news-pics', 'reports']);
+    const allowedFolders = new Set(['news-pics', 'reports', 'knowledge-pics']);
     const sub = allowedFolders.has(String(folder)) ? String(folder) : '';
     const dir = sub ? path.join(UPLOADS_DIR, sub) : UPLOADS_DIR;
     try { if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true }); } catch {}
