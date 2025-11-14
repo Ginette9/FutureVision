@@ -18,7 +18,7 @@ export default function Products() {
         '多维度评估',
         '定制化预警'
       ],
-      link: '/esg-risk-analysis/intro'
+      link: '/esg-voyant/intro'
     },
     {
       id: 'market-entry-engine',

@@ -18,8 +18,8 @@ import {
   closeDatabase
 } from '../lib/database';
 import { scrapeUrlContent, buildScrapeUrl, getBackendBase } from '../lib/utils';
-import { parseReportHtml } from '../products/esg-risk-analysis/ReportResultNew/parseReportHtml';
-import { getSectionsContent } from '../products/esg-risk-analysis/ReportResultNew/sectionsContent';
+import { parseReportHtml } from '../products/esg-voyant/ReportResultNew/parseReportHtml';
+import { getSectionsContent } from '../products/esg-voyant/ReportResultNew/sectionsContent';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface RiskItem {

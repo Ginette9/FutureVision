@@ -12,7 +12,7 @@ export default function Pay() {
 
   const returnTo = useMemo(() => {
     const from = params.get("from");
-    return from && from.startsWith("/") ? from : "/report";
+    return from && from.startsWith("/") ? from : "/esg-voyant/report";
   }, [params]);
 
   // 支持邀请码直通 + PayPal

@@ -131,7 +131,7 @@ export default function NewHome() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
-                  to="/esg-risk-analysis/intro"
+                  to="/esg-voyant/intro"
                   className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300"
                 >
                   了解服务
@@ -550,7 +550,7 @@ export default function NewHome() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                to="/esg-risk-analysis/intro"
+                to="/esg-voyant/intro"
                 className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-gray-900 bg-white hover:bg-gray-100 transition-colors duration-300"
               >
                 免费风险评估

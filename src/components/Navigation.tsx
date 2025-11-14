@@ -11,7 +11,7 @@ const Navigation = () => {
     // 首页从导航移除，改为点击左侧 logo + 文案回到首页
     { name: '专业服务', path: '/services' },
     // { name: '产品', path: '/products', subItems: [
-    //   { name: 'ESG风险分析', path: '/esg-risk-analysis' }
+    //   { name: 'ESG风险分析', path: '/esg-voyant/form' }
     // ]},
     { name: '独家洞察', path: '/insights' },
     { name: '知识中心', path: '/knowledge' },
@@ -149,7 +149,7 @@ const Navigation = () => {
               
               {/* Mobile CTA */}
               <Link
-                to="/esg-risk-analysis/intro"
+                to="/esg-voyant/intro"
                 onClick={() => setIsMenuOpen(false)}
                 className="block py-3 px-6 text-base font-medium text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300 text-center mt-6"
               >

@@ -2,8 +2,8 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { motion } from 'framer-motion';
 import Home from "./pages/Home";
-import ESGRiskAnalysis from "./products/esg-risk-analysis/ESGRiskAnalysis";
-import ESGRiskAnalysisNew from "./products/esg-risk-analysis/ESGRiskAnalysisNew";
+import ESGRiskAnalysis from "./products/esg-voyant/ESGRiskAnalysis";
+import ESGRiskAnalysisNew from "./products/esg-voyant/ESGRiskAnalysisNew";
 import Services from "./pages/Services";
 import Products from "./pages/Products";
 import Insights from "./pages/Insights";
@@ -12,9 +12,9 @@ import Cases from "./pages/Cases";
 import About from "./pages/About";
 import AdminInsights from "./pages/AdminInsights";
 import AdminNews from "./pages/AdminNews";
-import ReportResult from "./products/esg-risk-analysis/ReportResult";
-import ReportResultNew from "./products/esg-risk-analysis/ReportResultNew";
-import Pay from "./products/esg-risk-analysis/Pay";
+import ReportResult from "./products/esg-voyant/ReportResult";
+import ReportResultNew from "./products/esg-voyant/ReportResultNew";
+import Pay from "./products/esg-voyant/Pay";
 import Navigation from './components/Navigation';
 import { AuthContext } from './contexts/authContext';
 
@@ -158,8 +158,8 @@ export default function App() {
               <Route path="/" element={<Home />} />
               <Route path="/services" element={<Services />} />
               <Route path="/products" element={<Products />} />
-              <Route path="/esg-risk-analysis" element={<ESGRiskAnalysis />} />
-              <Route path="/esg-risk-analysis/intro" element={<ESGRiskAnalysisNew />} />
+              <Route path="/esg-voyant/form" element={<ESGRiskAnalysis />} />
+              <Route path="/esg-voyant/intro" element={<ESGRiskAnalysisNew />} />
               <Route path="/insights" element={<Insights />} />
               <Route path="/admin/insights" element={<AdminInsights />} />
               <Route path="/admin/news" element={<AdminNews />} />
@@ -167,7 +167,7 @@ export default function App() {
               <Route path="/cases" element={<Cases />} />
               <Route path="/about" element={<About />} />
               <Route path="/report/api" element={<ReportResult />} />
-              <Route path="/report" element={<ReportResultNew />} />
+              <Route path="/esg-voyant/report" element={<ReportResultNew />} />
               <Route path="/pay" element={<Pay />} />
             </Routes>
       </main>

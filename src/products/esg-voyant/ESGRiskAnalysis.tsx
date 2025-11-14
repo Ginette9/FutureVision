@@ -205,7 +205,7 @@ export default function ESGRiskAnalysis() {
      sessionStorage.setItem('showAILoader', 'true');
      
      // 导航到结果页面
-     navigate('/report');
+     navigate('/esg-voyant/report');
    } catch (error) {
      toast.error('生成报告失败，请重试');
    } finally {

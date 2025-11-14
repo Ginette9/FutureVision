@@ -23,7 +23,7 @@ export default function Services() {
         "ESG持续披露与沟通"
       ],
       buttonText: "了解详情",
-      action: () => navigate('/esg-risk-analysis/intro')
+      action: () => navigate('/esg-voyant/intro')
     },
     {
       category: "上市公司",

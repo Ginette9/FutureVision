@@ -71,7 +71,7 @@ function ReportResult() {
   useEffect(() => {
     const savedData = localStorage.getItem('riskAnalysisData');
     if (!savedData) {
-      navigate('/esg-risk-analysis');
+      navigate('/esg-voyant/form');
       return;
     }
 
@@ -242,7 +242,7 @@ function ReportResult() {
                     Below you will find the results of the risk analysis based on your submitted answers.
                     Would you like to switch your product or country?
                   </p>
-                  <a className="text-blue-700 underline hover:no-underline text-sm" target="_blank" href="/esg-risk-analysis">
+                  <a className="text-blue-700 underline hover:no-underline text-sm" target="_blank" href="/esg-voyant/form">
                     Fill out the ESG Risk Form again
                   </a>
                 </div>
@@ -451,7 +451,7 @@ function ReportResult() {
                   />
                 )}
                 <button 
-                  onClick={() => navigate('/esg-risk-analysis')}
+                  onClick={() => navigate('/esg-voyant/form')}
                   className="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   <span className="hidden sm:inline">New Analysis</span>

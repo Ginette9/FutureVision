@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import LogoCarousel from '@/components/LogoCarousel';
+import ContactModal from '@/components/ContactModal';
 
 export default function ESGRiskAnalysisNew() {
   const navigate = useNavigate();
+  const [isContactOpen, setIsContactOpen] = useState(false);
 
   const handleGetStarted = () => {
-    navigate('/esg-risk-analysis');
+    navigate('/esg-voyant/form');
   };
 
   const handleGetUnlimitedPlan = () => {
@@ -18,6 +20,10 @@ export default function ESGRiskAnalysisNew() {
   const handleBuyWhitepaper = () => {
     // 处理白皮书购买
     console.log('购买白皮书');
+  };
+
+  const handleContactAdvisor = () => {
+    setIsContactOpen(true);
   };
 
   return (
@@ -224,6 +230,51 @@ export default function ESGRiskAnalysisNew() {
         </div>
       </section>
 
+      {/* ESGNexus Section - 延伸定制化产品 */}
+      <section className="py-24 bg-slate-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 md:p-12">
+              <div className="text-center mb-3">
+                <h3 className="text-2xl md:text-3xl font-medium text-slate-900">ESGNexus</h3>
+              </div>
+              <p className="text-slate-600 text-center max-w-3xl mx-auto mb-8 md:mb-10">
+                全球在地化ESG风险管理咨询服务套件，确保您的业务在全球安全、稳健、可持续
+              </p>
+              <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                {[
+                  '全球在地化ESG风险评估（跨国合规+隐性风险）',
+                  'ESG风险监控与告警',
+                  '可持续发展战略落地与ESG治理体系建设',
+                  '在地化利益相关方沟通与关系搭建',
+                  'ESG危机预案与冲突应对',
+                  'ESG持续披露与沟通'
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-start gap-3 bg-slate-50 rounded-lg p-4">
+                    <div className="flex-shrink-0 w-7 h-7 rounded-full bg-slate-900 text-white text-sm flex items-center justify-center">
+                      {idx + 1}
+                    </div>
+                    <p className="text-slate-700">{item}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="text-center mt-10">
+                <button
+                  onClick={handleContactAdvisor}
+                  className="bg-slate-900 text-white px-8 py-3 rounded-lg hover:bg-slate-800 transition-colors font-medium"
+                >
+                  联系专属顾问
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Customer Logos Section */}
       <section className="py-16 bg-slate-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -238,6 +289,8 @@ export default function ESGRiskAnalysisNew() {
           <LogoCarousel />
         </div>
       </section>
+
+      <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
 
       {/* Pricing Plans Section */}
       <section className="py-24 bg-slate-50 hidden">
