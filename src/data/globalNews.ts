@@ -88,7 +88,7 @@ async function bootstrapFromServerIfEmpty() {
   try {
     if (typeof window === 'undefined') return;
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    const urls = ['/api/news', '/data/news.json', 'http://localhost:3001/api/news', 'http://localhost:3002/api/news'];
+    const urls = ['/api/news', '/data/global-news.json', 'http://localhost:3001/api/news', 'http://localhost:3002/api/news'];
     let data: any = null;
     for (const url of urls) {
       try {

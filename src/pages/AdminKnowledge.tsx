@@ -178,6 +178,8 @@ export default function AdminKnowledge() {
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState<'news' | 'must' | 'course'>('news');
 
+  const [existingMust, setExistingMust] = useState<MustReadItem[]>([]);
+  const [existingCourse, setExistingCourse] = useState<CourseResourceItem[]>([]);
   const [mustItems, setMustItems] = useState<MustReadItem[]>([]);
   const [courseItems, setCourseItems] = useState<CourseResourceItem[]>([]);
   const [mustFreeText, setMustFreeText] = useState('');
@@ -189,8 +191,16 @@ export default function AdminKnowledge() {
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   useEffect(() => {
-    setMustItems([...getAllMustReads()]);
-    setCourseItems([...getAllCourses()]);
+    setExistingMust([...getAllMustReads()]);
+    setExistingCourse([...getAllCourses()]);
+    const onMust = () => setExistingMust([...getAllMustReads()]);
+    const onCourse = () => setExistingCourse([...getAllCourses()]);
+    window.addEventListener('must-read-updated', onMust);
+    window.addEventListener('course-updated', onCourse);
+    return () => {
+      window.removeEventListener('must-read-updated', onMust);
+      window.removeEventListener('course-updated', onCourse);
+    };
   }, []);
 
   const handleLogin = (code: string) => {
@@ -257,8 +267,8 @@ export default function AdminKnowledge() {
     setCourseItems(result);
   };
 
-  const handleSaveMust = () => { replaceMustReads([...getAllMustReads(), ...mustItems]); setMustItems([]); };
-  const handleSaveCourse = () => { replaceCourses([...getAllCourses(), ...courseItems]); setCourseItems([]); };
+  const handleSaveMust = () => { replaceMustReads([...existingMust, ...mustItems]); setMustItems([]); };
+  const handleSaveCourse = () => { replaceCourses([...existingCourse, ...courseItems]); setCourseItems([]); };
 
   const exportMustJson = () => {
     const blob = new Blob([JSON.stringify(getAllMustReads(), null, 2)], { type: 'application/json' });
@@ -277,6 +287,29 @@ export default function AdminKnowledge() {
         const arr = JSON.parse(String(reader.result));
         if (Array.isArray(arr)) {
           replaceMustReads(arr as MustReadItem[]);
+        }
+      } catch {}
+    };
+    reader.readAsText(file);
+  };
+
+  const exportCourseJson = () => {
+    const blob = new Blob([JSON.stringify(getAllCourses(), null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'courses.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importCourseJson = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const arr = JSON.parse(String(reader.result));
+        if (Array.isArray(arr)) {
+          replaceCourses(arr as CourseResourceItem[]);
         }
       } catch {}
     };
@@ -342,7 +375,7 @@ export default function AdminKnowledge() {
               <details className="mt-4">
                 <summary className="cursor-pointer select-none text-sm text-gray-600">已保存内容（点击展开进行编辑）</summary>
                 <div className="mt-4 space-y-6">
-                {getAllMustReads().map((it, idx) => (
+                {existingMust.map((it, idx) => (
                   <div key={it.id} className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                     {(() => {
                       const s = it.coverImage || '';
@@ -366,7 +399,7 @@ export default function AdminKnowledge() {
                   </div>
                 ))}
                 <div>
-                  <button className="px-4 py-2 bg-indigo-600 text-white" onClick={() => replaceMustReads([...getAllMustReads()])}>保存更改</button>
+                  <button className="px-4 py-2 bg-indigo-600 text-white" onClick={() => replaceMustReads([...existingMust])}>保存更改</button>
                 </div>
                 </div>
               </details>
@@ -414,11 +447,16 @@ export default function AdminKnowledge() {
               <div className="flex gap-3">
                 <button className="px-4 py-2 bg-indigo-600 text-white" onClick={handleParseCourse}>解析并预览</button>
                 <button className="px-4 py-2 bg-gray-900 text-white" onClick={handleSaveCourse}>保存</button>
+                <label className="px-4 py-2 bg-gray-100 text-gray-700 cursor-pointer">
+                  导入JSON
+                  <input type="file" accept="application/json" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) importCourseJson(f); }} />
+                </label>
+                <button className="px-4 py-2 bg-gray-100 text-gray-700" onClick={exportCourseJson}>导出JSON</button>
               </div>
               <details className="mt-4">
                 <summary className="cursor-pointer select-none text-sm text-gray-600">已保存内容（点击展开进行编辑）</summary>
                 <div className="mt-4 space-y-6">
-                {getAllCourses().map((it, idx) => (
+                {existingCourse.map((it, idx) => (
                   <div key={it.id} className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                     {(() => {
                       const s = it.coverImage || '';
@@ -442,7 +480,7 @@ export default function AdminKnowledge() {
                   </div>
                 ))}
                 <div>
-                  <button className="px-4 py-2 bg-indigo-600 text-white" onClick={() => replaceCourses([...getAllCourses()])}>保存更改</button>
+                  <button className="px-4 py-2 bg-indigo-600 text-white" onClick={() => replaceCourses([...existingCourse])}>保存更改</button>
                 </div>
                 </div>
               </details>

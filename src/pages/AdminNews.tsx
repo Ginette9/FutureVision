@@ -237,7 +237,7 @@ export default function AdminNews() {
   };
 
   const exportJson = () => {
-    const blob = new Blob([JSON.stringify(items, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(getAllGlobalNews(), null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -251,7 +251,7 @@ export default function AdminNews() {
     reader.onload = () => {
       try {
         const arr = JSON.parse(String(reader.result));
-        if (Array.isArray(arr)) setItems(arr as GlobalNewsItem[]);
+        if (Array.isArray(arr)) replaceGlobalNews(arr as GlobalNewsItem[]);
       } catch {}
     };
     reader.readAsText(file);
