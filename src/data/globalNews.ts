@@ -88,7 +88,17 @@ async function bootstrapFromServerIfEmpty() {
   try {
     if (typeof window === 'undefined') return;
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    const urls = ['/api/news', '/data/global-news.json', 'http://localhost:3001/api/news', 'http://localhost:3002/api/news'];
+    const urls = [
+      '/api/news',
+      '/data/news.json',
+      '/data/global-news.json',
+      'http://localhost:3001/api/news',
+      'http://localhost:3002/api/news',
+      'http://localhost:3001/data/news.json',
+      'http://localhost:3001/data/global-news.json',
+      'http://localhost:3002/data/news.json',
+      'http://localhost:3002/data/global-news.json'
+    ];
     let data: any = null;
     for (const url of urls) {
       try {
@@ -97,7 +107,7 @@ async function bootstrapFromServerIfEmpty() {
       } catch {}
     }
     if (!data) return;
-    const arr = Array.isArray(data?.items) ? data.items : [];
+    const arr = Array.isArray(data) ? data : (Array.isArray(data?.items) ? data.items : []);
     if (Array.isArray(arr) && arr.length > 0) {
       const normalized = (arr as any[]).map(n => {
         if (n && typeof n === 'object' && typeof (n as any).coverImage === 'string') {

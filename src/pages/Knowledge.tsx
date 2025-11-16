@@ -163,71 +163,137 @@ export default function Knowledge() {
             ))}
           </motion.div>
         ) : (
-          <motion.div
-            key={activeCategory}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="space-y-16 mb-16"
-          >
-            {([...(activeCategory === 'industry' ? mustReads : courses)]
-              .sort((a: any, b: any) => {
-                const ta = new Date(a?.date).getTime();
-                const tb = new Date(b?.date).getTime();
-                if (!isFinite(ta) && !isFinite(tb)) return 0;
-                if (!isFinite(ta)) return 1;
-                if (!isFinite(tb)) return -1;
-                return tb - ta;
-              })
-            ).map((item: any, index: number) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.05 }}
-                className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch"
-              >
-                <div className="overflow-hidden rounded-xl h-64 md:h-80">
-                  {(() => {
-                    const s = String(item.coverImage || '');
-                    const cover = s.startsWith('/uploads/')
-                      ? ((import.meta as any).env?.DEV ? `http://localhost:3001${s}` : s)
-                      : s;
-                    return <img src={cover} alt={item.titleZh || item.titleEn} className="w-full h-full object-cover object-center" />;
-                  })()}
-                </div>
-                <div className="flex flex-col justify-between h-64 md:h-80">
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-semibold text-black tracking-tight">
+          activeCategory === 'courses' ? (
+            <motion.div
+              key="courses"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16"
+            >
+              {[...courses]
+                .sort((a: any, b: any) => {
+                  const ta = new Date(a?.date).getTime();
+                  const tb = new Date(b?.date).getTime();
+                  if (!isFinite(ta) && !isFinite(tb)) return 0;
+                  if (!isFinite(ta)) return 1;
+                  if (!isFinite(tb)) return -1;
+                  return tb - ta;
+                })
+                .map((item: any, index: number) => (
+                  <motion.article
+                    key={item.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.05 }}
+                    className="bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-300 p-6 flex flex-col gap-4"
+                  >
+                    <div className="w-full h-32 md:h-36 overflow-hidden rounded">
                       {(() => {
-                        const base = (language === 'zh-CN' || language === 'zh-HK') ? item.titleZh : item.titleEn;
-                        return language === 'zh-HK' ? replaceKeywords(base || '', ZH_HK_REPLACEMENTS) : (base || '');
+                        const s = String(item.coverImage || '');
+                        const cover = s.startsWith('/uploads/')
+                          ? ((import.meta as any).env?.DEV ? `http://localhost:3001${s}` : s)
+                          : s;
+                        return <img src={cover} alt={item.titleZh || item.titleEn} className="w-full h-full object-contain object-center" />;
                       })()}
-                    </h3>
-                    <time className="text-sm text-neutral-500">{formatDate(item.date)}</time>
-                  </div>
-                  <p className="text-neutral-700 leading-relaxed whitespace-pre-line">
-                    {(() => {
-                      const base = (language === 'zh-CN' || language === 'zh-HK') ? item.summaryZh : item.summaryEn;
-                      return language === 'zh-HK' ? replaceKeywords(base || '', ZH_HK_REPLACEMENTS) : (base || '');
-                    })()}
-                  </p>
-                  <div className="flex gap-3">
-                    {(item.linkZh || item.linkEn) && (
-                      <a
-                        href={item.linkZh || item.linkEn}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="px-4 py-2 rounded-md bg-black text-white hover:bg-neutral-800"
-                      >
-                        阅读更多
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="text-lg font-semibold text-black tracking-tight">
+                        {(() => {
+                          const base = (language === 'zh-CN' || language === 'zh-HK') ? item.titleZh : item.titleEn;
+                          return language === 'zh-HK' ? replaceKeywords(base || '', ZH_HK_REPLACEMENTS) : (base || '');
+                        })()}
+                      </h3>
+                      <p className="text-sm text-neutral-700 leading-relaxed">
+                        {(() => {
+                          const base = (language === 'zh-CN' || language === 'zh-HK') ? item.summaryZh : item.summaryEn;
+                          const txt = language === 'zh-HK' ? replaceKeywords(base || '', ZH_HK_REPLACEMENTS) : (base || '');
+                          return txt.length > 120 ? (txt.slice(0, 120) + '…') : txt;
+                        })()}
+                      </p>
+                    </div>
+                    <div className="mt-auto">
+                      {(item.linkZh || item.linkEn) && (
+                        <a
+                          href={item.linkZh || item.linkEn}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-block px-4 py-2 rounded-md bg-black text-white hover:bg-neutral-800"
+                        >
+                          {(language === 'zh-CN' || language === 'zh-HK') ? '学习课程' : 'Start Learning'}
+                        </a>
+                      )}
+                    </div>
+                  </motion.article>
+                ))}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="industry"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="space-y-16 mb-16"
+            >
+              {[...mustReads]
+                .sort((a: any, b: any) => {
+                  const ta = new Date(a?.date).getTime();
+                  const tb = new Date(b?.date).getTime();
+                  if (!isFinite(ta) && !isFinite(tb)) return 0;
+                  if (!isFinite(ta)) return 1;
+                  if (!isFinite(tb)) return -1;
+                  return tb - ta;
+                })
+                .map((item: any, index: number) => (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.05 }}
+                    className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch"
+                  >
+                    <div className="overflow-hidden rounded-xl h-64 md:h-80">
+                      {(() => {
+                        const s = String(item.coverImage || '');
+                        const cover = s.startsWith('/uploads/')
+                          ? ((import.meta as any).env?.DEV ? `http://localhost:3001${s}` : s)
+                          : s;
+                        return <img src={cover} alt={item.titleZh || item.titleEn} className="w-full h-full object-cover object-center" />;
+                      })()}
+                    </div>
+                    <div className="flex flex-col justify-between h-64 md:h-80">
+                      <div className="space-y-2">
+                        <h3 className="text-xl font-semibold text-black tracking-tight">
+                          {(() => {
+                            const base = (language === 'zh-CN' || language === 'zh-HK') ? item.titleZh : item.titleEn;
+                            return language === 'zh-HK' ? replaceKeywords(base || '', ZH_HK_REPLACEMENTS) : (base || '');
+                          })()}
+                        </h3>
+                        <time className="text-sm text-neutral-500">{formatDate(item.date)}</time>
+                      </div>
+                      <p className="text-neutral-700 leading-relaxed whitespace-pre-line">
+                        {(() => {
+                          const base = (language === 'zh-CN' || language === 'zh-HK') ? item.summaryZh : item.summaryEn;
+                          return language === 'zh-HK' ? replaceKeywords(base || '', ZH_HK_REPLACEMENTS) : (base || '');
+                        })()}
+                      </p>
+                      <div className="flex gap-3">
+                        {(item.linkZh || item.linkEn) && (
+                          <a
+                            href={item.linkZh || item.linkEn}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="px-4 py-2 rounded-md bg-black text-white hover:bg-neutral-800"
+                          >
+                            {(language === 'zh-CN' || language === 'zh-HK') ? '阅读更多' : 'Read More'}
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+            </motion.div>
+          )
         )}
 
         {/* Newsletter Subscription */}
