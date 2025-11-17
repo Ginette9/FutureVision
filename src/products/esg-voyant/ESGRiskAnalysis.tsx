@@ -190,16 +190,34 @@ export default function ESGRiskAnalysis() {
    
    setIsLoading(true);
    
-   try {
-     // 模拟API请求延迟
-     await new Promise(resolve => setTimeout(resolve, 1500));
+  try {
+    const payload = {
+      name: formData.name,
+      email: formData.email,
+      position: formData.position,
+      organization: formData.organization,
+      phone: formData.phone,
+      industry: formData.industry,
+      country: formData.country
+    } as any;
+    const endpoints = ['/api/esg-form', 'http://localhost:3001/api/esg-form', 'http://localhost:3002/api/esg-form'];
+    let saved = false;
+    for (const ep of endpoints) {
+      try {
+        const resp = await fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        if (resp.ok) { saved = true; break; }
+      } catch {}
+    }
+    if (!saved) {
+      toast.error('信息保存失败');
+    }
      
      // 清除之前的报告生成记录，确保新的报告会显示loading动画
      const reportGeneratedKey = `reportGenerated_${formData.industry.id}_${formData.country.id}`;
      localStorage.removeItem(reportGeneratedKey);
      
-     // 将表单数据存储在localStorage中供结果页面使用
-     localStorage.setItem('riskAnalysisData', JSON.stringify(formData));
+    // 将表单数据存储在localStorage中供结果页面使用
+    localStorage.setItem('riskAnalysisData', JSON.stringify(formData));
      
      // 设置标记表示从首页跳转，用于控制AI加载器显示
      sessionStorage.setItem('showAILoader', 'true');
@@ -327,4 +345,3 @@ export default function ESGRiskAnalysis() {
    </div>
  );
 }
-

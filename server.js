@@ -226,6 +226,8 @@ const DEFAULT_SUBSCRIPTIONS_JSON = path.join(DEFAULT_DATA_DIR, 'subscriptions.js
 const SUBSCRIPTIONS_JSON = process.env.SUBSCRIPTIONS_PATH || DEFAULT_SUBSCRIPTIONS_JSON;
 const DEFAULT_CONTACTS_JSON = path.join(DEFAULT_DATA_DIR, 'contacts.json');
 const CONTACTS_JSON = process.env.CONTACTS_PATH || DEFAULT_CONTACTS_JSON;
+const DEFAULT_LEADS_JSON = path.join(DEFAULT_DATA_DIR, 'esg-form-leads.json');
+const LEADS_JSON = process.env.LEADS_PATH || DEFAULT_LEADS_JSON;
 
 // 运行时上传目录（PDF/图片），支持持久盘配置
 const ENV_UPLOADS_DIR = process.env.UPLOADS_DIR;
@@ -458,6 +460,46 @@ function writeContacts(arr) {
   }
 }
 
+function ensureLeadsFile() {
+  try {
+    const dir = path.dirname(LEADS_JSON);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(LEADS_JSON)) {
+      fs.writeFileSync(LEADS_JSON, JSON.stringify([], null, 2), 'utf8');
+    }
+  } catch (e) {
+    console.error('[leads] ensure data file failed:', e.message);
+  }
+}
+function readLeads() {
+  try {
+    ensureLeadsFile();
+    const raw = fs.readFileSync(LEADS_JSON, 'utf8');
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr : [];
+  } catch (e) {
+    console.error('[leads] read failed:', e.message);
+    return [];
+  }
+}
+function writeLeads(arr) {
+  try {
+    ensureLeadsFile();
+    const list = Array.isArray(arr) ? arr : [];
+    const seen = new Set();
+    const uniq = [];
+    for (const it of list) {
+      const key = `${String(it?.email || '').toLowerCase()}__${String(it?.industryId || '')}__${String(it?.countryId || '')}`;
+      if (key && !seen.has(key)) { seen.add(key); uniq.push(it); }
+    }
+    fs.writeFileSync(LEADS_JSON, JSON.stringify(uniq, null, 2), 'utf8');
+    return true;
+  } catch (e) {
+    console.error('[leads] write failed:', e.message);
+    return false;
+  }
+}
+
 // 获取线上报告列表
 app.get('/api/insights', (req, res) => {
   const data = readInsights();
@@ -547,6 +589,41 @@ app.post('/api/contact', (req, res) => {
     return res.json({ success: true });
   } catch (e) {
     console.error('[contact] failed:', e.message);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+app.get('/api/esg-forms', (req, res) => {
+  const items = readLeads();
+  res.json({ items, count: items.length });
+});
+
+app.post('/api/esg-form', (req, res) => {
+  try {
+    const { name, email, position, organization, phone, industry, country } = req.body || {};
+    const e = String(email || '').trim();
+    if (!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
+      return res.status(400).json({ error: 'invalid_email' });
+    }
+    const rec = {
+      name: String(name || ''),
+      email: e,
+      position: String(position || ''),
+      organization: String(organization || ''),
+      phone: String(phone || ''),
+      industryId: String(industry?.id || ''),
+      industryName: String(industry?.name || ''),
+      countryId: String(country?.id || ''),
+      countryName: String(country?.name || ''),
+      ts: new Date().toISOString()
+    };
+    const items = readLeads();
+    items.push(rec);
+    const ok = writeLeads(items);
+    if (!ok) return res.status(500).json({ error: 'write_failed' });
+    return res.json({ success: true });
+  } catch (e) {
+    console.error('[esg-form] failed:', e.message);
     return res.status(500).json({ error: 'internal_error' });
   }
 });
