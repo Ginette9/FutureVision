@@ -298,7 +298,7 @@ export default function AdminKnowledge() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'courses.json';
+    a.download = 'courses-resources.json';
     a.click();
     URL.revokeObjectURL(url);
   };

@@ -220,7 +220,7 @@ const DEFAULT_NEWS_JSON = path.join(DEFAULT_DATA_DIR, 'global-news.json');
 const NEWS_JSON = process.env.NEWS_PATH || DEFAULT_NEWS_JSON;
 const DEFAULT_MUST_READS_JSON = path.join(DEFAULT_DATA_DIR, 'must-reads.json');
 const MUST_READS_JSON = process.env.MUST_READS_PATH || DEFAULT_MUST_READS_JSON;
-const DEFAULT_COURSES_JSON = path.join(DEFAULT_DATA_DIR, 'courses.json');
+const DEFAULT_COURSES_JSON = path.join(DEFAULT_DATA_DIR, 'courses-resources.json');
 const COURSES_JSON = process.env.COURSES_PATH || DEFAULT_COURSES_JSON;
 
 // 运行时上传目录（PDF/图片），支持持久盘配置

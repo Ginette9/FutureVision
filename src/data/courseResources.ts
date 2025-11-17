@@ -88,11 +88,12 @@ async function bootstrapFromServerIfEmpty() {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     const urls = [
       '/api/courses',
-      '/data/courses.json',
+      '/data/courses-resources.json',
       'http://localhost:3001/api/courses',
       'http://localhost:3002/api/courses',
-      'http://localhost:3001/data/courses.json',
-      'http://localhost:3002/data/courses.json'
+      'http://localhost:3001/data/courses-resources.json',
+      'http://localhost:3001/data/courses-resources.json',
+      'http://localhost:3002/data/courses-resources.json'
     ];
     let data: any = null;
     for (const url of urls) {

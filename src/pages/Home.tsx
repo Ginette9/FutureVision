@@ -543,25 +543,29 @@ export default function NewHome() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl lg:text-4xl font-light text-white mb-6">
-              准备开始您的ESG之旅？
+              准备开始您的全球化增长之旅？
             </h2>
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              让我们的专业团队为您提供定制化的ESG解决方案，助力企业可持续发展
+              让我们的专业团队为您提供定制解决方案，助力企业可持续发展
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              {/* 左侧按钮隐藏 */}
               <Link
                 to="/esg-voyant/intro"
-                className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-gray-900 bg-white hover:bg-gray-100 transition-colors duration-300"
+                className="hidden"
               >
                 免费风险评估
               </Link>
+
+              {/* 右侧按钮改成白底样式 */}
               <button
                 onClick={() => setIsContactModalOpen(true)}
-                className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-white border border-gray-600 hover:border-gray-500 transition-colors duration-300"
+                className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-gray-900 bg-white hover:bg-gray-100 border border-gray-300 transition-colors duration-300"
               >
                 联系我们
               </button>
             </div>
+
           </motion.div>
         </div>
       </section>
