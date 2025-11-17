@@ -63,6 +63,15 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
       });
 
       if (response.ok) {
+        try {
+          const endpoints = ['/api/contact', 'http://localhost:3001/api/contact', 'http://localhost:3002/api/contact'];
+          for (const ep of endpoints) {
+            try {
+              const resp2 = await fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
+              if (resp2.ok) break;
+            } catch {}
+          }
+        } catch {}
         setSubmitStatus('success');
         // 重置表单
         setFormData({

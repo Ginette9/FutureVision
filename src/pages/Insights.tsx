@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { getAllInsightReports, InsightReport } from '../data/insightReports';
 import InsightReportDetail from '../components/InsightReportDetail';
 
@@ -127,8 +128,36 @@ export default function Insights() {
               type="email"
               placeholder="输入您的邮箱地址"
               className="flex-1 px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-500"
+              id="insights-subscribe-email"
             />
-            <button className="px-8 py-3 text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300 font-medium">
+            <button
+              className="px-8 py-3 text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300 font-medium"
+              onClick={async () => {
+                try {
+                  const el = document.getElementById('insights-subscribe-email') as HTMLInputElement | null;
+                  const email = (el?.value || '').trim();
+                  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+                  if (!emailOk) { toast('请输入有效邮箱地址'); return; }
+                  const category = 'insights';
+                  const endpoints = ['/api/subscribe', 'http://localhost:3001/api/subscribe', 'http://localhost:3002/api/subscribe'];
+                  let ok = false;
+                  for (const ep of endpoints) {
+                    try {
+                      const resp = await fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, category }) });
+                      if (resp.ok) { ok = true; break; }
+                    } catch {}
+                  }
+                  if (ok) {
+                    toast('订阅成功');
+                    if (el) el.value = '';
+                  } else {
+                    toast('订阅失败，请稍后再试');
+                  }
+                } catch {
+                  toast('订阅失败，请稍后再试');
+                }
+              }}
+            >
               订阅
             </button>
           </div>

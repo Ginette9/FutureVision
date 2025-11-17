@@ -222,6 +222,10 @@ const DEFAULT_MUST_READS_JSON = path.join(DEFAULT_DATA_DIR, 'must-reads.json');
 const MUST_READS_JSON = process.env.MUST_READS_PATH || DEFAULT_MUST_READS_JSON;
 const DEFAULT_COURSES_JSON = path.join(DEFAULT_DATA_DIR, 'courses-resources.json');
 const COURSES_JSON = process.env.COURSES_PATH || DEFAULT_COURSES_JSON;
+const DEFAULT_SUBSCRIPTIONS_JSON = path.join(DEFAULT_DATA_DIR, 'subscriptions.json');
+const SUBSCRIPTIONS_JSON = process.env.SUBSCRIPTIONS_PATH || DEFAULT_SUBSCRIPTIONS_JSON;
+const DEFAULT_CONTACTS_JSON = path.join(DEFAULT_DATA_DIR, 'contacts.json');
+const CONTACTS_JSON = process.env.CONTACTS_PATH || DEFAULT_CONTACTS_JSON;
 
 // 运行时上传目录（PDF/图片），支持持久盘配置
 const ENV_UPLOADS_DIR = process.env.UPLOADS_DIR;
@@ -381,6 +385,79 @@ function ensureUploadsDir() {
 }
 ensureUploadsDir();
 
+function ensureSubscriptionsFile() {
+  try {
+    const dir = path.dirname(SUBSCRIPTIONS_JSON);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(SUBSCRIPTIONS_JSON)) {
+      fs.writeFileSync(SUBSCRIPTIONS_JSON, JSON.stringify([], null, 2), 'utf8');
+    }
+  } catch (e) {
+    console.error('[subscriptions] ensure data file failed:', e.message);
+  }
+}
+function readSubscriptions() {
+  try {
+    ensureSubscriptionsFile();
+    const raw = fs.readFileSync(SUBSCRIPTIONS_JSON, 'utf8');
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr : [];
+  } catch (e) {
+    console.error('[subscriptions] read failed:', e.message);
+    return [];
+  }
+}
+function writeSubscriptions(arr) {
+  try {
+    ensureSubscriptionsFile();
+    const list = Array.isArray(arr) ? arr : [];
+    const seen = new Set();
+    const uniq = [];
+    for (const it of list) {
+      const key = `${String(it?.email || '').toLowerCase()}__${String(it?.category || '')}`;
+      if (key && !seen.has(key)) { seen.add(key); uniq.push(it); }
+    }
+    fs.writeFileSync(SUBSCRIPTIONS_JSON, JSON.stringify(uniq, null, 2), 'utf8');
+    return true;
+  } catch (e) {
+    console.error('[subscriptions] write failed:', e.message);
+    return false;
+  }
+}
+
+function ensureContactsFile() {
+  try {
+    const dir = path.dirname(CONTACTS_JSON);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(CONTACTS_JSON)) {
+      fs.writeFileSync(CONTACTS_JSON, JSON.stringify([], null, 2), 'utf8');
+    }
+  } catch (e) {
+    console.error('[contacts] ensure data file failed:', e.message);
+  }
+}
+function readContacts() {
+  try {
+    ensureContactsFile();
+    const raw = fs.readFileSync(CONTACTS_JSON, 'utf8');
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr : [];
+  } catch (e) {
+    console.error('[contacts] read failed:', e.message);
+    return [];
+  }
+}
+function writeContacts(arr) {
+  try {
+    ensureContactsFile();
+    fs.writeFileSync(CONTACTS_JSON, JSON.stringify(arr ?? [], null, 2), 'utf8');
+    return true;
+  } catch (e) {
+    console.error('[contacts] write failed:', e.message);
+    return false;
+  }
+}
+
 // 获取线上报告列表
 app.get('/api/insights', (req, res) => {
   const data = readInsights();
@@ -415,6 +492,63 @@ app.post('/api/news', (req, res) => {
   const ok = writeNews(items);
   if (!ok) return res.status(500).json({ error: 'write_failed' });
   return res.json({ success: true, count: items.length });
+});
+
+app.get('/api/subscriptions', (req, res) => {
+  const items = readSubscriptions();
+  res.json({ items, count: items.length });
+});
+
+app.post('/api/subscribe', (req, res) => {
+  try {
+    const { email, category } = req.body || {};
+    const e = String(email || '').trim();
+    if (!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
+      return res.status(400).json({ error: 'invalid_email' });
+    }
+    const cat = String(category || 'general').trim();
+    const items = readSubscriptions();
+    const exists = items.some(x => String(x?.email).toLowerCase() === e.toLowerCase() && String(x?.category) === cat);
+    if (!exists) items.push({ email: e, category: cat, ts: new Date().toISOString() });
+    const ok = writeSubscriptions(items);
+    if (!ok) return res.status(500).json({ error: 'write_failed' });
+    return res.json({ success: true });
+  } catch (e) {
+    console.error('[subscribe] failed:', e.message);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+app.get('/api/contacts', (req, res) => {
+  const items = readContacts();
+  res.json({ items, count: items.length });
+});
+
+app.post('/api/contact', (req, res) => {
+  try {
+    const { name, email, company, position, phone, message } = req.body || {};
+    const e = String(email || '').trim();
+    if (!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
+      return res.status(400).json({ error: 'invalid_email' });
+    }
+    const rec = {
+      name: String(name || ''),
+      email: e,
+      company: String(company || ''),
+      position: String(position || ''),
+      phone: String(phone || ''),
+      message: String(message || ''),
+      ts: new Date().toISOString()
+    };
+    const items = readContacts();
+    items.push(rec);
+    const ok = writeContacts(items);
+    if (!ok) return res.status(500).json({ error: 'write_failed' });
+    return res.json({ success: true });
+  } catch (e) {
+    console.error('[contact] failed:', e.message);
+    return res.status(500).json({ error: 'internal_error' });
+  }
 });
 
 app.get('/api/must-reads', (req, res) => {
