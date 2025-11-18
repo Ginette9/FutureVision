@@ -1,12 +1,33 @@
 'use client';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { convertToTraditional } from '@/locales/zh-HK';
 import { ReportSection } from './parseReportHtml';
 
 
 export default function Toc({ sections }: { sections: ReportSection[] }) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isScrolling, setIsScrolling] = useState(false);
+  const { language } = useLanguage();
+
+  const zhTitles: Record<string, string> = {
+    'introduction': '介绍',
+    'important-to-consider': '重要注意事项',
+    'risk-analysis': '风险分析',
+    'relevant-organizations': '相关组织',
+    'esg-labels-supply-chain-initiatives-guidelines': 'ESG标签、供应链倡议与指南',
+    'due-diligence': '尽职调查',
+    'about-us': '关于我们',
+    'contact': '联系我们',
+    'disclaimer': '免责声明'
+  };
+
+  const getDisplayTitle = (sec: ReportSection) => {
+    if (language === 'en-US') return sec.title;
+    const base = zhTitles[sec.id] || sec.title;
+    return language === 'zh-HK' ? convertToTraditional(base) : base;
+  };
 
   useEffect(() => {
     const getHeaderOffset = () => {
@@ -106,7 +127,9 @@ export default function Toc({ sections }: { sections: ReportSection[] }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
           </svg>
         </div>
-        <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Navigation</span>
+        <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+          {language === 'en-US' ? 'Table of Contents' : language === 'zh-HK' ? '目錄' : '目录'}
+        </span>
       </div>
       
       <ul className="space-y-2">
@@ -184,7 +207,7 @@ export default function Toc({ sections }: { sections: ReportSection[] }) {
                   )}>
                     {index + 1}
                   </div>
-                  <span className="flex-1 leading-tight">{sec.title}</span>
+                  <span className="flex-1 leading-tight">{getDisplayTitle(sec)}</span>
                 </div>
                 
                 {isActive && (

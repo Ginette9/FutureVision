@@ -421,7 +421,9 @@ function ReportResult() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="min-w-0 flex-1">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 truncate">ESG Risk Analysis Report</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 truncate">
+                  {language === 'en-US' ? 'ESG Risk Analysis Report' : language === 'zh-HK' ? 'ESG 風險分析報告' : 'ESG 风险分析报告'}
+                </h1>
                 {formData && (
                   <p className="mt-1 sm:mt-2 text-base sm:text-lg text-gray-600 truncate">
                     {formData.industry.name} • {formData.country.name}
@@ -438,8 +440,10 @@ function ReportResult() {
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                   </svg>
-                  <span className="hidden sm:inline">Print Report</span>
-                  <span className="sm:hidden">Print</span>
+                  <span className="hidden sm:inline">
+                    {language === 'en-US' ? 'Print Report' : language === 'zh-HK' ? '列印報告' : '打印报告'}
+                  </span>
+                  <span className="sm:hidden">{language === 'en-US' ? 'Print' : language === 'zh-HK' ? '列印' : '打印'}</span>
                 </button>
                 {/* 暂时隐藏PDF导出功能 - 待调试完成后恢复 */}
                 {false && formData && (
@@ -454,8 +458,10 @@ function ReportResult() {
                   onClick={() => navigate('/esg-voyant/form')}
                   className="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                  <span className="hidden sm:inline">New Analysis</span>
-                  <span className="sm:hidden">New</span>
+                  <span className="hidden sm:inline">
+                    {language === 'en-US' ? 'New Analysis' : language === 'zh-HK' ? '新建分析' : '新建分析'}
+                  </span>
+                  <span className="sm:hidden">{language === 'en-US' ? 'New' : language === 'zh-HK' ? '新建' : '新建'}</span>
                 </button>
               </div>
             </div>
@@ -469,7 +475,9 @@ function ReportResult() {
             <aside className="w-full lg:w-80 order-2 lg:order-1">
               <div className="lg:sticky lg:top-8">
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">Table of Contents</h2>
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                    {language === 'en-US' ? 'Table of Contents' : language === 'zh-HK' ? '目錄' : '目录'}
+                  </h2>
                   <Toc sections={sections} />
                 </div>
               </div>
