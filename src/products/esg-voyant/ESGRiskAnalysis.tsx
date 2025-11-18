@@ -8,6 +8,7 @@ import LogoCarousel from '@/components/LogoCarousel';
 import { getCountryId, getProductId } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
 import zhCNTranslations from '@/locales/zh-CN';
+import { convertToTraditional } from '@/locales/zh-HK';
 
 // 定义表单验证模式
 const contactSchema = z.object({
@@ -243,9 +244,23 @@ export default function ESGRiskAnalysis() {
        <h1 className="text-4xl lg:text-5xl font-light text-gray-900 mb-6">
          ESGVoyant
        </h1>
-       <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8">
-         基于全球可靠数据来源及领先算法，全面覆盖合规及隐性ESG风险<br />为您提供全面、精准的评估、预警及建议
-       </p>
+      <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8">
+        {language === 'en-US' ? (
+          <>
+            Powered by trusted global data sources and leading algorithms, covering compliant and hidden ESG risks
+            <br />
+            Provides accurate assessments, alerts and recommendations
+          </>
+        ) : language === 'zh-HK' ? (
+          <>
+            {convertToTraditional('基於全球可靠數據來源及領先算法，全面覆蓋合規及隱性ESG風險')}
+            <br />
+            {convertToTraditional('為您提供全面、精準的評估、預警及建議')}
+          </>
+        ) : (
+          <>基于全球可靠数据来源及领先算法，全面覆盖合规及隐性ESG风险<br />为您提供全面、精准的评估、预警及建议</>
+        )}
+      </p>
        
        {/* 核心价值主张 */}
        <div className="grid md:grid-cols-3 gap-8 mt-12">
@@ -253,24 +268,36 @@ export default function ESGRiskAnalysis() {
            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
              <i className="fa-solid fa-chart-line text-2xl text-gray-600"></i>
            </div>
-           <h3 className="text-lg font-medium text-gray-900 mb-2">实时数据监测</h3>
-           <p className="text-gray-600">全球ESG事件实时追踪，确保信息时效性</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            {language === 'en-US' ? 'Real-time Data Monitoring' : language === 'zh-HK' ? '實時數據監測' : '实时数据监测'}
+          </h3>
+          <p className="text-gray-600">
+            {language === 'en-US' ? 'Track global ESG events in real time to ensure timeliness' : language === 'zh-HK' ? convertToTraditional('全球ESG事件實時追蹤，確保信息時效性') : '全球ESG事件实时追踪，确保信息时效性'}
+          </p>
          </div>
          
          <div className="text-center">
            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
              <i className="fa-solid fa-shield-alt text-2xl text-gray-600"></i>
            </div>
-           <h3 className="text-lg font-medium text-gray-900 mb-2">全面风险评估</h3>
-           <p className="text-gray-600">多维度分析，覆盖环境、社会、治理各个层面</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            {language === 'en-US' ? 'Comprehensive Risk Assessment' : language === 'zh-HK' ? '全面風險評估' : '全面风险评估'}
+          </h3>
+          <p className="text-gray-600">
+            {language === 'en-US' ? 'Multi-dimensional analysis covering environmental, social and governance' : language === 'zh-HK' ? convertToTraditional('多維度分析，覆蓋環境、社會、治理各個層面') : '多维度分析，覆盖环境、社会、治理各个层面'}
+          </p>
          </div>
          
          <div className="text-center">
            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
              <i className="fa-solid fa-lightbulb text-2xl text-gray-600"></i>
            </div>
-           <h3 className="text-lg font-medium text-gray-900 mb-2">智能分析报告</h3>
-           <p className="text-gray-600">AI驱动的深度分析，提供可操作的洞察建议</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            {language === 'en-US' ? 'Intelligent Analysis Reports' : language === 'zh-HK' ? '智能分析報告' : '智能分析报告'}
+          </h3>
+          <p className="text-gray-600">
+            {language === 'en-US' ? 'AI-driven deep analysis with actionable insights' : language === 'zh-HK' ? convertToTraditional('AI驅動的深度分析，提供可操作的洞察建議') : 'AI驱动的深度分析，提供可操作的洞察建议'}
+          </p>
          </div>
        </div>
      </motion.div>
@@ -283,10 +310,14 @@ export default function ESGRiskAnalysis() {
          transition={{ duration: 0.6, delay: 0.2 }}
          className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden"
        >
-         <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-           <h2 className="text-xl font-medium text-gray-900">开始您的风险分析</h2>
-           <p className="text-gray-600 mt-1">请填写以下信息，我们将为您生成专业的ESG风险分析报告</p>
-         </div>
+          <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl font-medium text-gray-900">
+              {language === 'en-US' ? 'Start Your Risk Analysis' : language === 'zh-HK' ? '開始您的風險分析' : '开始您的风险分析'}
+            </h2>
+            <p className="text-gray-600 mt-1">
+              {language === 'en-US' ? 'Please fill in the information below and we will generate a professional ESG risk analysis report for you' : language === 'zh-HK' ? convertToTraditional('請填寫以下信息，我們將為您生成專業的ESG風險分析報告') : '请填写以下信息，我们将为您生成专业的ESG风险分析报告'}
+            </p>
+          </div>
          
          <div className="p-6">
            <RiskForm 
@@ -310,22 +341,22 @@ export default function ESGRiskAnalysis() {
        >
          <div className="text-center p-6 bg-gray-50 rounded-lg">
            <div className="text-3xl font-light text-blue-600 mb-2">252</div>
-           <div className="text-sm text-gray-600">国家与地区</div>
+           <div className="text-sm text-gray-600">{language === 'en-US' ? 'Countries & Regions' : language === 'zh-HK' ? '國家與地區' : '国家与地区'}</div>
          </div>
          
          <div className="text-center p-6 bg-gray-50 rounded-lg">
            <div className="text-3xl font-light text-green-600 mb-2">471</div>
-           <div className="text-sm text-gray-600">GICS行业</div>
+           <div className="text-sm text-gray-600">{language === 'en-US' ? 'GICS Industries' : language === 'zh-HK' ? 'GICS行業' : 'GICS行业'}</div>
          </div>
          
          <div className="text-center p-6 bg-gray-50 rounded-lg">
            <div className="text-3xl font-light text-purple-600 mb-2">22</div>
-           <div className="text-sm text-gray-600">ESG核心主题</div>
+           <div className="text-sm text-gray-600">{language === 'en-US' ? 'Core ESG Topics' : language === 'zh-HK' ? 'ESG核心主題' : 'ESG核心主题'}</div>
          </div>
          
          <div className="text-center p-6 bg-gray-50 rounded-lg">
            <div className="text-3xl font-light text-orange-600 mb-2">80%</div>
-           <div className="text-sm text-gray-600">隐性ESG风险占比</div>
+           <div className="text-sm text-gray-600">{language === 'en-US' ? 'Proportion of Hidden ESG Risks' : language === 'zh-HK' ? '隱性ESG風險占比' : '隐性ESG风险占比'}</div>
          </div>
        </motion.div>
        
@@ -337,7 +368,7 @@ export default function ESGRiskAnalysis() {
          className="mt-20"
        >
          <h3 className="text-center text-lg font-medium text-gray-900 mb-8">
-           全球企业信赖之选
+           {language === 'en-US' ? 'Trusted by Global Enterprises' : language === 'zh-HK' ? '全球企業信賴之選' : '全球企业信赖之选'}
          </h3>
          <LogoCarousel />
        </motion.div>

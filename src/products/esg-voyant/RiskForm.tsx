@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { convertToTraditional } from '@/locales/zh-HK';
 import IndustryTreeSelect from './IndustryTreeSelect';
 
 interface RiskFormProps {
@@ -49,7 +50,33 @@ export default function RiskForm({
   onSubmit,
   isLoading,
 }: RiskFormProps) {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
+  const labels = {
+    industry: language === 'en-US' ? 'Industry' : language === 'zh-HK' ? '行業' : '行业',
+    industryPh: language === 'en-US' ? 'Please select or search industry' : language === 'zh-HK' ? '請選擇或搜索行業' : '请选择或搜索行业',
+    clearIndustry: language === 'en-US' ? 'Clear industry' : language === 'zh-HK' ? '清除行業' : '清除行业',
+    country: language === 'en-US' ? 'Target Country/Region' : language === 'zh-HK' ? '目標地區' : '目标地区',
+    countryPh: language === 'en-US' ? 'Please select or search region' : language === 'zh-HK' ? '請選擇或搜索地區' : '请选择或搜索地区',
+    clearCountry: language === 'en-US' ? 'Clear region' : language === 'zh-HK' ? '清除地區' : '清除地区',
+    name: language === 'en-US' ? 'Name' : language === 'zh-HK' ? '姓名' : '姓名',
+    namePh: language === 'en-US' ? 'Please enter your name' : language === 'zh-HK' ? '請輸入您的姓名' : '请输入您的姓名',
+    email: language === 'en-US' ? 'Email' : language === 'zh-HK' ? '郵箱' : '邮箱',
+    emailPh: language === 'en-US' ? 'Please enter your email' : language === 'zh-HK' ? '請輸入您的郵箱' : '请输入您的邮箱',
+    position: language === 'en-US' ? 'Position' : language === 'zh-HK' ? '職位' : '职位',
+    positionPh: language === 'en-US' ? 'Please enter your position' : language === 'zh-HK' ? '請輸入您的職位' : '请输入您的职位',
+    organization: language === 'en-US' ? 'Company/Organization' : language === 'zh-HK' ? '公司/組織' : '公司/组织',
+    organizationPh: language === 'en-US' ? 'Please enter your company or organization' : language === 'zh-HK' ? '請輸入您的公司或組織' : '请输入您的公司或组织',
+    phone: language === 'en-US' ? 'Phone' : language === 'zh-HK' ? '聯繫電話' : '联系电话',
+    phonePh: language === 'en-US' ? 'Please enter your phone number' : language === 'zh-HK' ? '請輸入您的聯繫電話' : '请输入您的联系电话',
+    submit: language === 'en-US' ? 'Generate ESG Risk Analysis Report' : language === 'zh-HK' ? '生成ESG風險分析報告' : '生成ESG风险分析报告',
+    loading: language === 'en-US' ? 'Generating report...' : language === 'zh-HK' ? '正在生成報告...' : '正在生成报告...'
+  };
+  const terms = {
+    prefix: language === 'en-US' ? 'By clicking “Generate Report”, you agree to our ' : language === 'zh-HK' ? '點擊生成報告即表示您同意我們的' : '点击生成报告即表示您同意我们的',
+    tos: language === 'en-US' ? 'Terms of Service' : language === 'zh-HK' ? '服務條款' : '服务条款',
+    and: language === 'en-US' ? ' and ' : language === 'zh-HK' ? '和' : '和',
+    privacy: language === 'en-US' ? 'Privacy Policy' : language === 'zh-HK' ? '隱私政策' : '隐私政策'
+  };
   const [industrySearch, setIndustrySearch] = useState('');
   const [countrySearch, setCountrySearch] = useState('');
   // 行业改为分级组件控制（保留搜索输入用于过滤）
@@ -96,7 +123,7 @@ export default function RiskForm({
         {/* 行业选择 */}
         <AnimatedFormField delay={0.1}>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            行业 <span className="text-red-500">*</span>
+            {labels.industry} <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <input
@@ -111,13 +138,13 @@ export default function RiskForm({
                 }
               }}
               onFocus={() => setShowIndustryDropdown(true)}
-              placeholder="请选择或搜索行业"
+              placeholder={labels.industryPh}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             />
             {(formData.industry || industrySearch) && (
               <button
                 type="button"
-                aria-label="清除行业"
+                aria-label={labels.clearIndustry}
                 onClick={() => {
                   setIndustrySearch('');
                   onSelectChange('industry', '');
@@ -146,7 +173,7 @@ export default function RiskForm({
         {/* 地区选择 */}
         <AnimatedFormField delay={0.2}>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            目标地区 <span className="text-red-500">*</span>
+            {labels.country} <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <input
@@ -161,13 +188,13 @@ export default function RiskForm({
                 }
               }}
               onFocus={() => setShowCountryDropdown(true)}
-              placeholder="请选择或搜索地区"
+              placeholder={labels.countryPh}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             />
             {(formData.country || countrySearch) && (
               <button
                 type="button"
-                aria-label="清除地区"
+                aria-label={labels.clearCountry}
                 onClick={() => {
                   setCountrySearch('');
                   onSelectChange('country', '');
@@ -203,14 +230,14 @@ export default function RiskForm({
       <div className="grid md:grid-cols-2 gap-6">
         <AnimatedFormField delay={0.3}>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            姓名 <span className="text-red-500">*</span>
+            {labels.name} <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={onInputChange}
-            placeholder="请输入您的姓名"
+            placeholder={labels.namePh}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             required
           />
@@ -218,14 +245,14 @@ export default function RiskForm({
 
         <AnimatedFormField delay={0.4}>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            邮箱 <span className="text-red-500">*</span>
+            {labels.email} <span className="text-red-500">*</span>
           </label>
           <input
             type="email"
             name="email"
             value={formData.email}
             onChange={onInputChange}
-            placeholder="请输入您的邮箱"
+            placeholder={labels.emailPh}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             required
           />
@@ -235,14 +262,14 @@ export default function RiskForm({
       <div className="grid md:grid-cols-2 gap-6">
         <AnimatedFormField delay={0.5}>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            职位 <span className="text-red-500">*</span>
+            {labels.position} <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             name="position"
             value={formData.position}
             onChange={onInputChange}
-            placeholder="请输入您的职位"
+            placeholder={labels.positionPh}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             required
           />
@@ -250,14 +277,14 @@ export default function RiskForm({
 
         <AnimatedFormField delay={0.6}>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            公司/组织 <span className="text-red-500">*</span>
+            {labels.organization} <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             name="organization"
             value={formData.organization}
             onChange={onInputChange}
-            placeholder="请输入您的公司或组织"
+            placeholder={labels.organizationPh}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             required
           />
@@ -266,14 +293,14 @@ export default function RiskForm({
 
       <AnimatedFormField delay={0.7}>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          联系电话 <span className="text-red-500">*</span>
+          {labels.phone} <span className="text-red-500">*</span>
         </label>
         <input
           type="tel"
           name="phone"
           value={formData.phone}
           onChange={onInputChange}
-          placeholder="请输入您的联系电话"
+          placeholder={labels.phonePh}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
           required
         />
@@ -289,12 +316,12 @@ export default function RiskForm({
           {isLoading ? (
             <>
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              <span>正在生成报告...</span>
+              <span>{labels.loading}</span>
             </>
           ) : (
             <>
               <i className="fa-solid fa-chart-line"></i>
-              <span>生成ESG风险分析报告</span>
+              <span>{labels.submit}</span>
             </>
           )}
         </button>
@@ -303,13 +330,12 @@ export default function RiskForm({
       {/* 说明文字 */}
       <AnimatedFormField delay={0.9}>
         <p className="text-sm text-gray-500 text-center">
-          点击生成报告即表示您同意我们的
-          <a href="#" className="text-gray-600 hover:text-gray-700 underline">服务条款</a>
-          和
-          <a href="#" className="text-gray-600 hover:text-gray-700 underline">隐私政策</a>
+          {terms.prefix}
+          <a href="#" className="text-gray-600 hover:text-gray-700 underline">{terms.tos}</a>
+          {terms.and}
+          <a href="#" className="text-gray-600 hover:text-gray-700 underline">{terms.privacy}</a>
         </p>
       </AnimatedFormField>
     </form>
   );
 }
-

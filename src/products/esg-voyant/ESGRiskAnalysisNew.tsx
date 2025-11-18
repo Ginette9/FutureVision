@@ -3,10 +3,84 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import LogoCarousel from '@/components/LogoCarousel';
 import ContactModal from '@/components/ContactModal';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { convertToTraditional } from '@/locales/zh-HK';
 
 export default function ESGRiskAnalysisNew() {
   const navigate = useNavigate();
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const { language } = useLanguage();
+
+  const L = {
+    hero1: language === 'en-US' ? 'Stop Paying Tuition Overseas' : language === 'zh-HK' ? '停止在海外交學費' : '停止在海外交学费',
+    hero2: language === 'en-US' ? 'Avoid failing beyond compliance on ESG risks' : language === 'zh-HK' ? '避免ESG風險層面合規卻失守' : '避免ESG风险层面合规却失守',
+    productSubtitle: language === 'en-US' ? 'AI-driven global ESG risk identification tool' : language === 'zh-HK' ? '人工智能驅動的全球ESG風險識別工具' : '人工智能驱动的全球ESG风险识别工具',
+    vp1t: language === 'en-US' ? 'No more paying for' : language === 'zh-HK' ? '不再需要支付' : '不再需要支付',
+    vp1d: language === 'en-US' ? 'expensive local due diligence' : language === 'zh-HK' ? '高額在地化背調成本' : '高额在地化背调成本',
+    vp2t: language === 'en-US' ? 'No more worrying about' : language === 'zh-HK' ? '不再需要擔心' : '不再需要担心',
+    vp2d: language === 'en-US' ? 'missing hidden risks beyond compliance' : language === 'zh-HK' ? '遺漏合規之外的隱性風險' : '遗漏合规之外的隐性风险',
+    vp3t: language === 'en-US' ? 'No more suffering' : language === 'zh-HK' ? '不再需要承受' : '不再需要承受',
+    vp3d: language === 'en-US' ? 'heavy financial and reputational losses' : language === 'zh-HK' ? '高昂的財務損失與聲譽損害' : '高昂的财务损失与声誉损害',
+    coreStmt: language === 'en-US' ? 'Build 100% ESG risk defense with just 1% input' : language === 'zh-HK' ? '只需1%的投入，構築100%的ESG風險防線' : '只需1%的投入，构筑100%的ESG风险防线',
+    coverage: language === 'en-US' ? 'Comprehensive Coverage' : language === 'zh-HK' ? '全面覆蓋' : '全面覆盖',
+    chip1: language === 'en-US' ? 'Business Conduct' : language === 'zh-HK' ? '商業行為規範' : '商业行为规范',
+    chip2: language === 'en-US' ? 'Human Rights & Ethics' : language === 'zh-HK' ? '人權與商業倫理' : '人权与商业伦理',
+    chip3: language === 'en-US' ? 'Labor Rights & Protection' : language === 'zh-HK' ? '勞工權益與勞動保障' : '劳工权益与劳动保障',
+    chip4: language === 'en-US' ? 'Environmental Management & Impact' : language === 'zh-HK' ? '環境管理與影響' : '环境管理与影响',
+    stat1: language === 'en-US' ? 'Countries & Regions' : language === 'zh-HK' ? '國家與地區' : '国家与地区',
+    stat2: language === 'en-US' ? 'GICS Industries' : language === 'zh-HK' ? 'GICS行業' : 'GICS行业',
+    stat3: language === 'en-US' ? 'Trusted Data Sources' : language === 'zh-HK' ? '可靠數據來源' : '可靠数据来源',
+    stat4: language === 'en-US' ? 'Risk Items' : language === 'zh-HK' ? '風險事項' : '风险事项',
+    stat5: language === 'en-US' ? 'Global ESG Conflict Cases' : language === 'zh-HK' ? '全球ESG衝突案例' : '全球ESG冲突案例',
+    stat6: language === 'en-US' ? 'Localized NGOs & Sustainability Communities' : language === 'zh-HK' ? '在地化NGO與可持續關注社群' : '在地化NGO与可持续关注社群',
+    feat1: language === 'en-US' ? 'Sensitive Topic Assessment' : language === 'zh-HK' ? '敏感議題評估' : '敏感议题评估',
+    feat2: language === 'en-US' ? 'Supply Chain Risk Analysis' : language === 'zh-HK' ? '供應鏈風險分析' : '供应链风险分析',
+    feat3: language === 'en-US' ? 'ESG Trend Forecast' : language === 'zh-HK' ? 'ESG趨勢預判' : 'ESG趋势预判',
+    feat4: language === 'en-US' ? 'High-Risk Alerts' : language === 'zh-HK' ? '高風險預警' : '高风险预警',
+    feat5: language === 'en-US' ? 'Conflict Case Analysis' : language === 'zh-HK' ? '衝突案例分析' : '冲突案例分析',
+    feat6: language === 'en-US' ? 'Localized Risk Management' : language === 'zh-HK' ? '在地化風險管理' : '在地化风险管理',
+    flowTitle: language === 'en-US' ? '4 Steps to Your ESG Risk Analysis Report' : language === 'zh-HK' ? '4步獲得專屬ESG風險分析報告' : '4步获得专属ESG风险分析报告',
+    flowSub: language === 'en-US' ? 'Comprehensively covers compliant and hidden ESG risks' : language === 'zh-HK' ? '全面覆蓋合規及隱性ESG風險' : '全面覆盖合规及隐性ESG风险',
+    step1: language === 'en-US' ? 'Step 1' : 'Step 1',
+    step1t: language === 'en-US' ? 'Choose your industry' : language === 'zh-HK' ? '選擇你的行業' : '选择你的行业',
+    step2: language === 'en-US' ? 'Step 2' : 'Step 2',
+    step2t: language === 'en-US' ? 'Choose target region' : language === 'zh-HK' ? '選擇目標地區' : '选择目标地区',
+    step3: language === 'en-US' ? 'Step 3' : 'Step 3',
+    step3t: language === 'en-US' ? 'Get general report' : language === 'zh-HK' ? '獲取通用報告' : '获取通用报告',
+    step4: language === 'en-US' ? 'Step 4' : 'Step 4',
+    step4t: language === 'en-US' ? 'Customize dedicated report' : language === 'zh-HK' ? '定制專屬報告' : '定制专属报告',
+    ctaUse: language === 'en-US' ? 'Use ESGVoyant to get full report' : language === 'zh-HK' ? '使用ESGVoyant，獲取完整報告' : '使用ESGVoyant，获取完整报告',
+    nexusTitle: 'ESGNexus',
+    nexusDesc: language === 'en-US' ? 'Global localized ESG risk management consulting suite, ensuring your business is secure, resilient and sustainable worldwide' : language === 'zh-HK' ? '全球在地化ESG風險管理諮詢服務套件，確保您的業務在全球安全、穩健、可持續' : '全球在地化ESG风险管理咨询服务套件，确保您的业务在全球安全、稳健、可持续',
+    nexusList: (language === 'en-US'
+      ? [
+          'Localized ESG risk assessment (cross-border compliance + hidden risks)',
+          'ESG risk monitoring and alerts',
+          'Sustainability strategy execution and ESG governance building',
+          'Stakeholder engagement and relationship building',
+          'ESG crisis planning and conflict response',
+          'Ongoing ESG disclosure and communication'
+        ]
+      : language === 'zh-HK'
+        ? [
+            '全球在地化ESG風險評估（跨國合規+隱性風險）',
+            'ESG風險監控與告警',
+            '可持續發展戰略落地與ESG治理體系建設',
+            '在地化利害關係人溝通與關係搭建',
+            'ESG危機預案與衝突應對',
+            'ESG持續披露與溝通'
+          ]
+        : [
+            '全球在地化ESG风险评估（跨国合规+隐性风险）',
+            'ESG风险监控与告警',
+            '可持续发展战略落地与ESG治理体系建设',
+            '在地化利益相关方沟通与关系搭建',
+            'ESG危机预案与冲突应对',
+            'ESG持续披露与沟通'
+          ]),
+    contactAdvisor: language === 'en-US' ? 'Contact Your Advisor' : language === 'zh-HK' ? '聯繫專屬顧問' : '联系专属顾问',
+    trustTitle: language === 'en-US' ? 'Trusted by These Leading Companies' : language === 'zh-HK' ? '已獲得這些知名企業信任' : '已获得这些知名企业信任'
+  };
 
   const handleGetStarted = () => {
     navigate('/esg-voyant/form');
@@ -36,12 +110,8 @@ export default function ESGRiskAnalysisNew() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-3xl md:text-4xl font-light text-slate-900 mb-8 tracking-tight leading-tight">
-              停止在海外交学费
-            </h1>
-            <h2 className="text-xl md:text-2xl font-light text-slate-600 mb-6">
-              避免ESG风险层面合规却失守
-            </h2>
+            <h1 className="text-3xl md:text-4xl font-light text-slate-900 mb-8 tracking-tight leading-tight">{L.hero1}</h1>
+            <h2 className="text-xl md:text-2xl font-light text-slate-600 mb-6">{L.hero2}</h2>
           </motion.div>
         </div>
       </section>
@@ -58,9 +128,7 @@ export default function ESGRiskAnalysisNew() {
             <h3 className="text-4xl md:text-5xl font-light text-slate-900 mb-6">
               ESGVoyant
             </h3>
-            <p className="text-xl text-slate-600 mb-3 leading-relaxed">
-              人工智能驱动的全球ESG风险识别工具
-            </p>
+            <p className="text-xl text-slate-600 mb-3 leading-relaxed">{L.productSubtitle}</p>
           </motion.div>
 
           {/* Value Propositions */}
@@ -71,8 +139,8 @@ export default function ESGRiskAnalysisNew() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="text-center"
             >
-              <h4 className="text-xl font-medium text-slate-900 mb-4">不再需要支付</h4>
-              <p className="text-slate-600 leading-relaxed text-lg">高额在地化背调成本</p>
+              <h4 className="text-xl font-medium text-slate-900 mb-4">{L.vp1t}</h4>
+              <p className="text-slate-600 leading-relaxed text-lg">{L.vp1d}</p>
             </motion.div>
 
             <motion.div
@@ -81,8 +149,8 @@ export default function ESGRiskAnalysisNew() {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="text-center"
             >
-              <h4 className="text-xl font-medium text-slate-900 mb-4">不再需要担心</h4>
-              <p className="text-slate-600 leading-relaxed text-lg">遗漏合规之外的隐性风险</p>
+              <h4 className="text-xl font-medium text-slate-900 mb-4">{L.vp2t}</h4>
+              <p className="text-slate-600 leading-relaxed text-lg">{L.vp2d}</p>
             </motion.div>
 
             <motion.div
@@ -91,8 +159,8 @@ export default function ESGRiskAnalysisNew() {
               transition={{ duration: 0.6, delay: 0.5 }}
               className="text-center"
             >
-              <h4 className="text-xl font-medium text-slate-900 mb-4">不再需要承受</h4>
-              <p className="text-slate-600 leading-relaxed text-lg">高昂的财务损失与声誉损害</p>
+              <h4 className="text-xl font-medium text-slate-900 mb-4">{L.vp3t}</h4>
+              <p className="text-slate-600 leading-relaxed text-lg">{L.vp3d}</p>
             </motion.div>
           </div>
 
@@ -103,55 +171,53 @@ export default function ESGRiskAnalysisNew() {
             transition={{ duration: 0.6, delay: 0.6 }}
             className="text-center mb-16"
           >
-            <h3 className="text-2xl md:text-3xl font-light text-slate-900 mb-8 md:mb-10 leading-relaxed">
-              只需1%的投入，构筑100%的ESG风险防线
-            </h3>
+            <h3 className="text-2xl md:text-3xl font-light text-slate-900 mb-8 md:mb-10 leading-relaxed">{L.coreStmt}</h3>
             <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-100 p-8 md:p-10">
               <div className="mb-6 md:mb-8">
-                <span className="inline-block text-2xl md:text-2xl font-medium text-slate-900 tracking-tight">全面覆盖</span>
+                <span className="inline-block text-2xl md:text-2xl font-medium text-slate-900 tracking-tight">{L.coverage}</span>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 text-slate-700 mb-16 md:mb-20">
-                <div className="text-center text-sm md:text-base bg-slate-50 rounded-lg py-3 px-4">商业行为规范</div>
-                <div className="text-center text-sm md:text-base bg-slate-50 rounded-lg py-3 px-4">人权与商业伦理</div>
-                <div className="text-center text-sm md:text-base bg-slate-50 rounded-lg py-3 px-4">劳工权益与劳动保障</div>
-                <div className="text-center text-sm md:text-base bg-slate-50 rounded-lg py-3 px-4">环境管理与影响</div>
+                <div className="text-center text-sm md:text-base bg-slate-50 rounded-lg py-3 px-4">{L.chip1}</div>
+                <div className="text-center text-sm md:text-base bg-slate-50 rounded-lg py-3 px-4">{L.chip2}</div>
+                <div className="text-center text-sm md:text-base bg-slate-50 rounded-lg py-3 px-4">{L.chip3}</div>
+                <div className="text-center text-sm md:text-base bg-slate-50 rounded-lg py-3 px-4">{L.chip4}</div>
               </div>
               <div className="mt-8 md:mt-10">
                 <div className="grid grid-cols-2 md:grid-cols-6 gap-4 md:gap-6 text-center mb-8 md:mb-10">
                   <div>
                     <div className="text-2xl md:text-3xl font-light text-slate-900 mb-1 md:mb-2">252</div>
-                    <div className="text-xs md:text-sm text-slate-500">国家与地区</div>
+                    <div className="text-xs md:text-sm text-slate-500">{L.stat1}</div>
                   </div>
                   <div>
                     <div className="text-2xl md:text-3xl font-light text-slate-900 mb-1 md:mb-2">471</div>
-                    <div className="text-xs md:text-sm text-slate-500">GICS行业</div>
+                    <div className="text-xs md:text-sm text-slate-500">{L.stat2}</div>
                   </div>
                   <div>
                     <div className="text-2xl md:text-3xl font-light text-slate-900 mb-1 md:mb-2">4,000+</div>
-                    <div className="text-xs md:text-sm text-slate-500">可靠数据来源</div>
+                    <div className="text-xs md:text-sm text-slate-500">{L.stat3}</div>
                   </div>
                   <div>
                     <div className="text-2xl md:text-3xl font-light text-slate-900 mb-1 md:mb-2">5,500+</div>
-                    <div className="text-xs md:text-sm text-slate-500">风险事项</div>
+                    <div className="text-xs md:text-sm text-slate-500">{L.stat4}</div>
                   </div>
                   <div>
                     <div className="text-2xl md:text-3xl font-light text-slate-900 mb-1 md:mb-2">10,000+</div>
-                    <div className="text-xs md:text-sm text-slate-500">全球ESG冲突案例</div>
+                    <div className="text-xs md:text-sm text-slate-500">{L.stat5}</div>
                   </div>
                   <div>
                     <div className="text-2xl md:text-3xl font-light text-slate-900 mb-1 md:mb-2">30,000+</div>
-                    <div className="text-xs md:text-sm text-slate-500">在地化NGO与可持续关注社群</div>
+                    <div className="text-xs md:text-sm text-slate-500">{L.stat6}</div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-3 md:grid-cols-6 gap-4 md:gap-6">
                   {[
-                    { icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', title: '敏感议题评估' },
-                    { icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6', title: '供应链风险分析' },
-                    { icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z', title: 'ESG趋势预判' },
-                    { icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z', title: '高风险预警' },
-                    { icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', title: '冲突案例分析' },
-                    { icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z', title: '在地化风险管理' }
+                    { icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', title: L.feat1 },
+                    { icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6', title: L.feat2 },
+                    { icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z', title: L.feat3 },
+                    { icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z', title: L.feat4 },
+                    { icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', title: L.feat5 },
+                    { icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z', title: L.feat6 }
                   ].map((item, index) => (
                     <div key={index} className="flex flex-col items-center">
                       <div className="w-14 h-14 md:w-16 md:h-16 bg-slate-50 rounded-full flex items-center justify-center hover:bg-slate-100 transition-colors mb-2 md:mb-3">
@@ -179,10 +245,8 @@ export default function ESGRiskAnalysisNew() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-center mb-20"
           >
-            <h3 className="text-3xl md:text-4xl font-light text-slate-900 mb-8">4步获得专属ESG风险分析报告</h3>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              全面覆盖合规及隐性ESG风险
-            </p>
+            <h3 className="text-3xl md:text-4xl font-light text-slate-900 mb-8">{L.flowTitle}</h3>
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto">{L.flowSub}</p>
           </motion.div>
 
           <div className="grid md:grid-cols-4 gap-8 mb-16">
@@ -205,8 +269,8 @@ export default function ESGRiskAnalysisNew() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
                     </svg>
                   </div>
-                  <h4 className="text-base font-medium text-slate-900 mb-3">{item.step}</h4>
-                  <p className="text-sm text-slate-600">{item.title}</p>
+                  <h4 className="text-base font-medium text-slate-900 mb-3">{[L.step1, L.step2, L.step3, L.step4][index]}</h4>
+                  <p className="text-sm text-slate-600">{[L.step1t, L.step2t, L.step3t, L.step4t][index]}</p>
                 </div>
               </motion.div>
             ))}
@@ -216,7 +280,7 @@ export default function ESGRiskAnalysisNew() {
               onClick={handleGetStarted}
               className="bg-slate-900 text-white px-12 py-4 rounded-lg hover:bg-slate-800 transition-colors font-medium text-lg shadow-lg hover:shadow-xl"
             >
-              使用ESGVoyant，获取完整报告
+              {L.ctaUse}
             </button>
           </div>
 
@@ -240,20 +304,11 @@ export default function ESGRiskAnalysisNew() {
           >
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 md:p-12">
               <div className="text-center mb-3">
-                <h3 className="text-2xl md:text-3xl font-medium text-slate-900">ESGNexus</h3>
+                <h3 className="text-2xl md:text-3xl font-medium text-slate-900">{L.nexusTitle}</h3>
               </div>
-              <p className="text-slate-600 text-center max-w-3xl mx-auto mb-8 md:mb-10">
-                全球在地化ESG风险管理咨询服务套件，确保您的业务在全球安全、稳健、可持续
-              </p>
+              <p className="text-slate-600 text-center max-w-3xl mx-auto mb-8 md:mb-10">{L.nexusDesc}</p>
               <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                {[
-                  '全球在地化ESG风险评估（跨国合规+隐性风险）',
-                  'ESG风险监控与告警',
-                  '可持续发展战略落地与ESG治理体系建设',
-                  '在地化利益相关方沟通与关系搭建',
-                  'ESG危机预案与冲突应对',
-                  'ESG持续披露与沟通'
-                ].map((item, idx) => (
+                {L.nexusList.map((item, idx) => (
                   <div key={idx} className="flex items-start gap-3 bg-slate-50 rounded-lg p-4">
                     <div className="flex-shrink-0 w-7 h-7 rounded-full bg-slate-900 text-white text-sm flex items-center justify-center">
                       {idx + 1}
@@ -267,7 +322,7 @@ export default function ESGRiskAnalysisNew() {
                   onClick={handleContactAdvisor}
                   className="bg-slate-900 text-white px-8 py-3 rounded-lg hover:bg-slate-800 transition-colors font-medium"
                 >
-                  联系专属顾问
+                  {L.contactAdvisor}
                 </button>
               </div>
             </div>
@@ -284,7 +339,7 @@ export default function ESGRiskAnalysisNew() {
             transition={{ duration: 0.6, delay: 0.9 }}
             className="text-center mb-12"
           >
-            <h3 className="text-2xl font-light text-slate-900 mb-6">已获得这些知名企业信任</h3>
+            <h3 className="text-2xl font-light text-slate-900 mb-6">{L.trustTitle}</h3>
           </motion.div>
           <LogoCarousel />
         </div>
