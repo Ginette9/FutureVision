@@ -2,23 +2,31 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import LanguageSelector from './LanguageSelector';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const { language } = useLanguage();
+
+  const labels = {
+    services: language === 'en-US' ? 'Services' : language === 'zh-HK' ? '專業服務' : '专业服务',
+    insights: language === 'en-US' ? 'Insights' : language === 'zh-HK' ? '獨家洞察' : '独家洞察',
+    knowledge: language === 'en-US' ? 'Knowledge' : language === 'zh-HK' ? '知識中心' : '知识中心',
+    cases: language === 'en-US' ? 'Cases' : language === 'zh-HK' ? '成功案例' : '成功案例',
+    membership: language === 'en-US' ? 'Member Portal' : language === 'zh-HK' ? '會員入口' : '会员入口',
+    about: language === 'en-US' ? 'About Us' : language === 'zh-HK' ? '關於我們' : '关于我们',
+    logoTagline: language === 'en-US' ? 'Insight into Future Growth' : language === 'zh-HK' ? '洞悉未來商業增長' : '洞悉未来商业增长',
+    mobileCta: language === 'en-US' ? 'Risk Analysis' : language === 'zh-HK' ? '風險分析' : '风险分析'
+  };
 
   const navItems = [
-    // 首页从导航移除，改为点击左侧 logo + 文案回到首页
-    { name: '专业服务', path: '/services' },
-    // { name: '产品', path: '/products', subItems: [
-    //   { name: 'ESG风险分析', path: '/esg-voyant/form' }
-    // ]},
-    { name: '独家洞察', path: '/insights' },
-    { name: '知识中心', path: '/knowledge' },
-    { name: '成功案例', path: '/cases' },
-    // 会员入口（外链），位于“成功案例”和“关于我们”之间
-    { name: '会员入口', href: 'https://mscfv.com/futureVision/' },
-    { name: '关于我们', path: '/about' },
+    { name: labels.services, path: '/services' },
+    { name: labels.insights, path: '/insights' },
+    { name: labels.knowledge, path: '/knowledge' },
+    { name: labels.cases, path: '/cases' },
+    { name: labels.membership, href: 'https://mscfv.com/futureVision/' },
+    { name: labels.about, path: '/about' },
   ] as Array<{ name: string; path?: string; href?: string }>;
 
   const isActive = (path: string) => {
@@ -41,7 +49,7 @@ const Navigation = () => {
             />
             <div className="hidden sm:block">
               <h1 className="text-2xl font-light text-gray-900 tracking-tight">Future Vision</h1>
-              <p className="text-sm text-gray-500 font-light" style={{ letterSpacing: '0.08em' }}>洞悉未来商业增长</p>
+              <p className="text-sm text-gray-500 font-light" style={{ letterSpacing: '0.08em' }}>{labels.logoTagline}</p>
             </div>
           </Link>
 
@@ -153,7 +161,7 @@ const Navigation = () => {
                 onClick={() => setIsMenuOpen(false)}
                 className="block py-3 px-6 text-base font-medium text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300 text-center mt-6"
               >
-                风险分析
+                {labels.mobileCta}
               </Link>
             </div>
           </motion.div>

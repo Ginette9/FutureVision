@@ -18,6 +18,8 @@ import ReportResultNew from "./products/esg-voyant/ReportResultNew";
 import Pay from "./products/esg-voyant/Pay";
 import Navigation from './components/Navigation';
 import { AuthContext } from './contexts/authContext';
+import { useLanguage } from './contexts/LanguageContext';
+import { convertToTraditional } from './locales/zh-HK';
 
 /* 使用 src/images 中的本地图，确保打包后地址正确 */
 // 已移除封面/尾页资源
@@ -120,6 +122,7 @@ export default function App() {
   const [showHeader, setShowHeader] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const location = useLocation();
+  const { language } = useLanguage();
 
   // 页面跳转时自动滚动到顶部
   useEffect(() => {
@@ -178,52 +181,87 @@ export default function App() {
         <footer className="no-print bg-slate-900 text-white py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row gap-6">
-              {/* 第一列：About Future Vision - 3.5列宽度 */}
               <div className="md:w-[29.17%]" style={{letterSpacing: '-0.03em'}}>
                 <div className="flex items-center mb-10"></div>
-                <h3 className="font-semibold mb-4" style={{fontSize: '13px', letterSpacing: '-0.01em'}}>About Future Vision</h3>
-                <p className="text-slate-400 mb-3" style={{fontSize: '12px', letterSpacing: '-0.01em'}}>Your 1st Intelligent Consultant</p>
-                <p className="text-slate-400 mb-4" style={{fontSize: '12px', letterSpacing: '-0.01em'}}>For Global Business Sustainable Growth</p>
+                <h3 className="font-semibold mb-4" style={{fontSize: '13px', letterSpacing: '-0.01em'}}>
+                  {language === 'en-US' ? 'About Future Vision' : language === 'zh-HK' ? '關於 Future Vision' : '关于 Future Vision'}
+                </h3>
+                <p className="text-slate-400 mb-3" style={{fontSize: '12px', letterSpacing: '-0.01em'}}>
+                  {language === 'en-US' ? 'Your 1st Intelligent Consultant' : language === 'zh-HK' ? '您的第一位智能顧問' : '您的第一位智能顾问'}
+                </p>
+                <p className="text-slate-400 mb-4" style={{fontSize: '12px', letterSpacing: '-0.01em'}}>
+                  {language === 'en-US' ? 'For Global Business Sustainable Growth' : language === 'zh-HK' ? '助力全球業務的可持續增長' : '助力全球业务的可持续增长'}
+                </p>
                 <ul className="space-y-2 text-slate-400" style={{fontSize: '12px', letterSpacing: '-0.01em'}}>
-                  <li>- International Market Expansion</li>
-                  <li>- Global ESG Risk Management</li>
-                  <li>- Sustainable Development Strategy</li>
-                  <li>- ESG Rating Enhancement</li>
+                  <li>- {language === 'en-US' ? 'International Market Expansion' : language === 'zh-HK' ? '國際市場拓展' : '国际市场拓展'}</li>
+                  <li>- {language === 'en-US' ? 'Global ESG Risk Management' : language === 'zh-HK' ? '全球ESG風險管理' : '全球ESG风险管理'}</li>
+                  <li>- {language === 'en-US' ? 'Sustainable Development Strategy' : language === 'zh-HK' ? '可持續發展戰略' : '可持续发展战略'}</li>
+                  <li>- {language === 'en-US' ? 'ESG Rating Enhancement' : language === 'zh-HK' ? 'ESG評級提升' : 'ESG评级提升'}</li>
                 </ul>
               </div>
 
-              {/* 第二列：Locations - 6.5列宽度 */}
               <div className="md:w-[58.97%]" style={{fontSize: '1px', letterSpacing: '-0.03em'}}>
                 <div className="flex items-center mb-10"></div>
-                <h3 className="font-semibold mb-4" style={{fontSize: '13px', letterSpacing: '-0.01em'}}>Locations</h3>
-                <ul className="space-y-3 text-slate-400 leading-tight" style={{fontSize: '12px', letterSpacing: '-0.02em'}}>
-                  <li>
-                    <strong className="text-slate-300" style={{fontSize: '12px'}}>Hongkong:</strong><br />
-                    Room 1318-19, Hollywood Plaza 610 Nathan Road, Mong Kok, Kowloon
-                  </li>
-                  <li>
-                    <strong className="text-slate-300" style={{fontSize: '12px'}}>Beijing:</strong><br />
-                    Room 1805, Capital Mansion 6 Xinyuan South Road, Chaoyang District
-                  </li>
-                  <li>
-                    <strong className="text-slate-300" style={{fontSize: '12px'}}>Shanghai:</strong><br />
-                    42/F, Magnolia Plaza, 501 East Da Ming Road, Hongkou District
-                  </li>
-                  <li>
-                    <strong className="text-slate-300" style={{fontSize: '12px'}}>Hangzhou:</strong><br />
-                    Room 2402, Guangfu International Center Hongning Road, Xiaoshan District
-                  </li>
-                  <li>
-                    <strong className="text-slate-300" style={{fontSize: '12px'}}>Shenyang:</strong><br />
-                    3/F, Li Shi Economic Zone Committee Bldg Zhangwu Road, Shenfu New District
-                  </li>
-                </ul>
+                <h3 className="font-semibold mb-4" style={{fontSize: '13px', letterSpacing: '-0.01em'}}>
+                  {language === 'en-US' ? 'Locations' : language === 'zh-HK' ? '辦公地點' : '办公地点'}
+                </h3>
+                {(() => {
+                  const items = [
+                    {
+                      cityZh: '香港', cityEn: 'Hongkong:',
+                      zh: '香港新界沙田安耀街3号汇达大厦2605室',
+                      en: 'Room 1318-19, Hollywood Plaza 610 Nathan Road, Mong Kok, Kowloon'
+                    },
+                    {
+                      cityZh: '北京', cityEn: 'Beijing:',
+                      zh: '北京市朝阳区新源南路6号京城大厦 1805 室',
+                      en: 'Room 1805, Capital Mansion 6 Xinyuan South Road, Chaoyang District'
+                    },
+                    {
+                      cityZh: '上海', cityEn: 'Shanghai:',
+                      zh: '上海市虹口区东大名路501号白玉兰广场42层',
+                      en: '42/F, Magnolia Plaza, 501 East Da Ming Road, Hongkou District'
+                    },
+                    {
+                      cityZh: '杭州', cityEn: 'Hangzhou:',
+                      zh: '杭州市萧山区鸿宁路广孚联合国际中心2402室',
+                      en: 'Room 2402, Guangfu International Center Hongning Road, Xiaoshan District'
+                    },
+                    {
+                      cityZh: '沈阳', cityEn: 'Shenyang:',
+                      zh: '沈阳市沈抚新区彰武路李石经济区管委会大楼3层',
+                      en: '3/F, Li Shi Economic Zone Committee Bldg Zhangwu Road, Shenfu New District'
+                    }
+                  ];
+                  return (
+                    <ul className="space-y-3 text-slate-400 leading-tight" style={{fontSize: '12px', letterSpacing: '-0.02em'}}>
+                      {items.map((it, idx) => (
+                        <li key={idx}>
+                          {language === 'en-US' ? (
+                            <>
+                              <strong className="text-slate-300" style={{fontSize: '12px'}}>{it.cityEn}</strong><br />
+                              {it.en}
+                            </>
+                          ) : (
+                            <>
+                              <strong className="text-slate-300" style={{fontSize: '12px'}}>
+                                {language === 'zh-HK' ? convertToTraditional(it.cityZh) + '：' : it.cityZh + '：'}
+                              </strong>
+                              {language === 'zh-HK' ? convertToTraditional(it.zh) : it.zh}
+                            </>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  );
+                })()}
               </div>
 
-              {/* 第三列：联系方式 - 2列宽度 */}
               <div className="md:w-[16.67%]">
                 <div className="flex items-center mb-10"></div>
-                <h3 className="font-semibold mb-4" style={{fontSize: '13px', letterSpacing: '-0.01em'}}>Contacts</h3>
+                <h3 className="font-semibold mb-4" style={{fontSize: '13px', letterSpacing: '-0.01em'}}>
+                  {language === 'en-US' ? 'Contacts' : language === 'zh-HK' ? '聯繫方式' : '联系方式'}
+                </h3>
                 <ul className="space-y-2 text-slate-400" style={{fontSize: '12px', letterSpacing: '-0.01em'}}>
                   <li className="flex items-center">
                     <i className="fa-solid fa-envelope mr-2 text-blue-400"></i>

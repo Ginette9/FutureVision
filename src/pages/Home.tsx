@@ -7,12 +7,38 @@ import { getAllInsightReports, InsightReport } from '../data/insightReports';
 import graphGlobal from '../images/graph-global.png';
 import graphListed from '../images/graph-listed.png';
 import graphSme from '../images/graph-sme.png';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { convertToTraditional } from '@/locales/zh-HK';
 
 export default function NewHome() {
   const [isVisible, setIsVisible] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState<InsightReport | null>(null);
   const [isReportDetailOpen, setIsReportDetailOpen] = useState(false);
+  const { language } = useLanguage();
+
+  const labels = {
+    heroTitleMain: language === 'en-US' ? 'Global ESG Conflict Risk Management' : language === 'zh-HK' ? '企業全球環境與社會' : '企业全球环境与社会',
+    heroTitleSub: language === 'en-US' ? 'for Enterprises' : language === 'zh-HK' ? '衝突風險管理' : '冲突风险管理',
+    heroDesc: language === 'en-US' ? 'Provide comprehensive ESG risk assessment, early warning, and localized management for Chinese enterprises going global, helping avoid ESG conflict events and major financial and reputational losses.' : language === 'zh-HK' ? '為中企出海提供全球ESG風險全面評估、監控預警與在地化管理，幫助企業規避ESG衝突事件，避免重大財務與聲譽損失。' : '为中企出海提供全球ESG风险全面评估、监控预警与在地化管理，帮助企业规避ESG冲突事件，避免重大财务和声誉损失。',
+    heroBtn: language === 'en-US' ? 'Learn More' : language === 'zh-HK' ? '了解服務' : '了解服务',
+    focusTitle: language === 'en-US' ? 'Our Focus Areas' : language === 'zh-HK' ? '我們的專注領域' : '我们的专注领域',
+    focusDesc: language === 'en-US' ? 'Integrate sustainability, consulting methodologies and AI to unlock global growth opportunities' : language === 'zh-HK' ? '融合可持續理念、管理諮詢方法與AI技術，為更多企業解鎖全球增長機會' : '融合可持续发展理念、管理咨询方法与AI技术，为更多企业解锁全球增长机会',
+    learnMore: language === 'en-US' ? 'Learn More' : language === 'zh-HK' ? '了解更多' : '了解更多',
+    insightsTitle: language === 'en-US' ? 'Exclusive Insights' : language === 'zh-HK' ? '獨家洞察' : '独家洞察',
+    insightsDesc: language === 'en-US' ? 'Exclusive data and sustainability perspective reveal future growth opportunities and risks' : language === 'zh-HK' ? '獨家數據與可持續視角分析方法，洞悉未來商業增長機遇及風險' : '独家数据+可持续发展视角分析方法，洞悉未来商业增长机遇及风险',
+    readMore: language === 'en-US' ? 'Read More' : language === 'zh-HK' ? '閱讀更多' : '阅读更多',
+    knowledgeTitle: language === 'en-US' ? 'Knowledge Center' : language === 'zh-HK' ? '知識中心' : '知识中心',
+    knowledgeDesc: language === 'en-US' ? 'A real-time platform aggregating global updates and intelligence' : language === 'zh-HK' ? '實時監控，匯聚全球最新資訊與情報的集成平台' : '实时监控，汇聚全球最新资讯与情报的集成资料平台',
+    knowledgeBtn: language === 'en-US' ? 'View Details' : language === 'zh-HK' ? '了解詳情' : '了解详情',
+    casesTitle: language === 'en-US' ? 'Cases' : '成功案例',
+    casesDesc: language === 'en-US' ? 'Over the past decades, we have helped many enterprises navigate globalization and growth challenges successfully' : language === 'zh-HK' ? '在過去的數十年中，我們幫助眾多企業成功應對全球化與增長挑戰' : '在过去的数十年中，\n我们帮助众多企业成功应对全球化和增长挑战',
+    membershipTitle: language === 'en-US' ? 'Member Portal' : language === 'zh-HK' ? '會員門戶' : '会员门户',
+    membershipDesc: language === 'en-US' ? 'Exclusive resources and services for Future Vision members' : language === 'zh-HK' ? 'Future Vision 會員專屬資源與服務' : 'Future Vision会员专属资源与服务',
+    membershipBtn: language === 'en-US' ? 'Member Portal' : language === 'zh-HK' ? '會員入口' : '会员入口',
+    ctaTitle: language === 'en-US' ? 'Ready to start your global growth journey?' : language === 'zh-HK' ? '準備開始您的全球化增長之旅？' : '准备开始您的全球化增长之旅？',
+    ctaDesc: language === 'en-US' ? 'Let our expert team provide tailored solutions to support sustainable development' : language === 'zh-HK' ? '讓我們的專業團隊為您提供定制解決方案，助力企業可持續發展' : '让我们的专业团队为您提供定制解决方案，助力企业可持续发展'
+  };
 
   const handleContactClick = () => {
     setIsContactModalOpen(true);
@@ -123,18 +149,18 @@ export default function NewHome() {
               transition={{ duration: 0.8 }}
             >
               <h1 className="text-3xl lg:text-5xl font-light text-gray-900 mb-6 leading-tight">
-                企业全球环境与社会
-                <span className="block font-normal text-gray-700 mt-2">冲突风险管理</span>
+                {labels.heroTitleMain}
+                <span className="block font-normal text-gray-700 mt-2">{labels.heroTitleSub}</span>
               </h1>
               <p className="text-lg lg:text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl">
-                为中企出海提供全球ESG风险全面评估、监控预警与在地化管理，帮助企业规避ESG冲突事件，避免重大财务和声誉损失。
+                {labels.heroDesc}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   to="/esg-voyant/intro"
                   className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300"
                 >
-                  了解服务
+                  {labels.heroBtn}
                 </Link>
               </div>
             </motion.div>
@@ -168,10 +194,10 @@ export default function NewHome() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-4">
-              我们的专注领域
+              {labels.focusTitle}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              融合可持续发展理念、管理咨询方法与AI技术，为更多企业解锁全球增长机会
+              {labels.focusDesc}
             </p>
           </motion.div>
 
@@ -213,7 +239,7 @@ export default function NewHome() {
               to="/services"  // 可替换成你的统一跳转链接
               className="inline-flex items-center px-6 py-3 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 transition-colors duration-300"
             >
-              了解更多
+              {labels.learnMore}
               <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
@@ -233,10 +259,10 @@ export default function NewHome() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-4">
-              独家洞察
+              {labels.insightsTitle}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              独家数据+可持续发展视角分析方法，洞悉未来商业增长机遇及风险
+              {labels.insightsDesc}
             </p>
           </motion.div>
 
@@ -253,16 +279,16 @@ export default function NewHome() {
                 <div className="aspect-video bg-white-100 overflow-hidden">
                   <img
                     src={insight.coverImage}
-                    alt={insight.title}
+                    alt={language === 'en-US' ? (insight.titleEn || insight.title) : language === 'zh-HK' ? convertToTraditional(insight.title || '') : insight.title}
                     className="w-full h-full object-contain"
                   />
                 </div>
                 <div className="p-6">
                   <h3 className="text-lg font-medium text-gray-900 mb-3 leading-tight">
-                    {insight.title}
+                  {language === 'en-US' ? (insight.titleEn || insight.title) : language === 'zh-HK' ? convertToTraditional(insight.title || '') : insight.title}
                   </h3>
                   <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                    {insight.summary}
+                    {language === 'en-US' ? (insight.summaryEn || insight.summary) : language === 'zh-HK' ? convertToTraditional(insight.summary || '') : insight.summary}
                   </p>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-gray-500">
@@ -272,7 +298,7 @@ export default function NewHome() {
                       onClick={() => handleReportClick(insight)}
                       className="inline-flex items-center text-gray-900 hover:text-gray-700 text-sm font-medium transition-colors duration-300"
                     >
-                      阅读更多
+                      {labels.readMore}
                       <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
@@ -301,10 +327,10 @@ export default function NewHome() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-4">
-              知识中心
+              {labels.knowledgeTitle}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              实时监控，汇聚全球最新资讯与情报的集成资料平台
+              {labels.knowledgeDesc}
             </p>
           </motion.div>
 
@@ -352,7 +378,7 @@ export default function NewHome() {
               to="/knowledge"
               className="inline-flex items-center justify-center px-6 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-700 transition-colors duration-300 font-medium"
             >
-              了解详情
+              {labels.knowledgeBtn}
               <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
@@ -378,17 +404,16 @@ export default function NewHome() {
               viewport={{ once: true }}
               className="md:w-5/12"
             >
-              <h2 className="text-3xl lg:text-4xl font-light mb-4">成功案例</h2>
+              <h2 className="text-3xl lg:text-4xl font-light mb-4">{labels.casesTitle}</h2>
               <p className="text-lg text-gray-600 mb-6">
-                在过去的数十年中，
-                我们帮助众多企业成功应对全球化和增长挑战
+                {labels.casesDesc}
               </p>
               <div className="w-16 h-0.5 bg-gradient-to-r from-gray-400 to-gray-700 rounded-full mb-8"></div>
               <Link
                 to="/cases"
                 className="inline-flex items-center justify-center px-6 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-700 transition-colors duration-300 font-medium"
               >
-                了解更多
+                {labels.learnMore}
                 <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
@@ -436,9 +461,12 @@ export default function NewHome() {
             {(() => {
               const items = [
                 {
-                  en: 'Monitor',
-                  top: ['分析监测', '行业数据实时掌控'],
-                  bottom: '可持续发展 / ESG / 碳数据',
+                  title: language === 'en-US' ? 'Monitor' : language === 'zh-HK' ? '監測' : '监测',
+                  top: [
+                    language === 'en-US' ? 'Analytic Monitoring' : language === 'zh-HK' ? '分析監測' : '分析监测',
+                    language === 'en-US' ? 'Real-time industry data' : language === 'zh-HK' ? '行業數據實時掌控' : '行业数据实时掌控',
+                  ],
+                  bottom: language === 'en-US' ? 'Sustainability / ESG / Carbon Data' : language === 'zh-HK' ? '可持續發展 / ESG / 碳數據' : '可持续发展 / ESG / 碳数据',
                   icon: (
                     <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M4 18h16" />
@@ -447,9 +475,12 @@ export default function NewHome() {
                   ),
                 },
                 {
-                  en: 'Intelligence',
-                  top: ['定期情报', '独家推送专属情报'],
-                  bottom: '新闻 / 政策 / 会议 / 热点',
+                  title: language === 'en-US' ? 'Intelligence' : language === 'zh-HK' ? '情報' : '情报',
+                  top: [
+                    language === 'en-US' ? 'Regular Briefings' : language === 'zh-HK' ? '定期情報' : '定期情报',
+                    language === 'en-US' ? 'Exclusive intelligence push' : language === 'zh-HK' ? '獨家推送專屬情報' : '独家推送专属情报',
+                  ],
+                  bottom: language === 'en-US' ? 'News / Policy / Events / Hotspots' : language === 'zh-HK' ? '新聞 / 政策 / 會議 / 熱點' : '新闻 / 政策 / 会议 / 热点',
                   icon: (
                     <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M6 17 L11 8 L16 17 Z" />
@@ -458,9 +489,12 @@ export default function NewHome() {
                   ),
                 },
                 {
-                  en: 'Insights',
-                  top: ['会员洞察', '多维视角深度报告'],
-                  bottom: '行业 / 议题 / 职能 / 消费者',
+                  title: language === 'en-US' ? 'Insights' : language === 'zh-HK' ? '洞察' : '洞察',
+                  top: [
+                    language === 'en-US' ? 'Member Insights' : language === 'zh-HK' ? '會員洞察' : '会员洞察',
+                    language === 'en-US' ? 'Multi-perspective deep reports' : language === 'zh-HK' ? '多維視角深度報告' : '多维视角深度报告',
+                  ],
+                  bottom: language === 'en-US' ? 'Industry / Topics / Functions / Consumers' : language === 'zh-HK' ? '行業 / 議題 / 職能 / 消費者' : '行业 / 议题 / 职能 / 消费者',
                   icon: (
                     <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                       <rect x="5" y="5" width="14" height="14" rx="2" />
@@ -469,9 +503,12 @@ export default function NewHome() {
                   ),
                 },
                 {
-                  en: 'Links',
-                  top: ['关键链接', '稀缺资源全面直联'],
-                  bottom: '全球专家 / 学者 / 国际组织 / 媒体平台',
+                  title: language === 'en-US' ? 'Links' : language === 'zh-HK' ? '鏈接' : '链接',
+                  top: [
+                    language === 'en-US' ? 'Key Links' : language === 'zh-HK' ? '關鍵鏈接' : '关键链接',
+                    language === 'en-US' ? 'Direct access to scarce resources' : language === 'zh-HK' ? '稀缺資源全面直聯' : '稀缺资源全面直联',
+                  ],
+                  bottom: language === 'en-US' ? 'Global experts / Scholars / International orgs / Media' : language === 'zh-HK' ? '全球專家 / 學者 / 國際組織 / 媒體平台' : '全球专家 / 学者 / 国际组织 / 媒体平台',
                   icon: (
                     <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="9.5" cy="12" r="4" />
@@ -493,7 +530,7 @@ export default function NewHome() {
                     >
                       <div className="flex items-center gap-3 mb-4 text-gray-900">
                         <div className="shrink-0 text-gray-900">{item.icon}</div>
-                        <div className="text-2xl font-semibold tracking-tight">{item.en}</div>
+                        <div className="text-2xl font-semibold tracking-tight">{item.title}</div>
                       </div>
                       <div className="space-y-1.5 mb-4">
                         <p className="text-sm text-gray-800">{item.top[0]}</p>
@@ -514,8 +551,8 @@ export default function NewHome() {
               viewport={{ once: true }}
               className="md:w-5/12 text-right"
             >
-              <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-4">会员门户</h2>
-              <p className="text-lg text-gray-600 mb-6">Future Vision会员专属资源与服务</p>
+              <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-4">{labels.membershipTitle}</h2>
+              <p className="text-lg text-gray-600 mb-6">{labels.membershipDesc}</p>
               <div className="w-16 h-0.5 bg-gradient-to-r from-gray-400 to-gray-700 rounded-full mb-8 ml-auto"></div>
               <a
                 href="https://mscfv.com/futureVision/"
@@ -523,7 +560,7 @@ export default function NewHome() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center px-6 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-700 transition-colors duration-300 font-medium block ml-auto"
               >
-                会员入口
+                {labels.membershipBtn}
                 <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
@@ -543,10 +580,10 @@ export default function NewHome() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl lg:text-4xl font-light text-white mb-6">
-              准备开始您的全球化增长之旅？
+              {labels.ctaTitle}
             </h2>
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              让我们的专业团队为您提供定制解决方案，助力企业可持续发展
+              {labels.ctaDesc}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {/* 左侧按钮隐藏 */}

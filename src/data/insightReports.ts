@@ -5,6 +5,7 @@ export interface InsightReport {
   id: string;
   title: string;
   titleEn?: string; // 英文标题（可选）
+  summaryEn?: string; // 英文摘要（可选）
   industry: string; // 行业
   topic: string; // 议题
   pages: number; // 页数
@@ -63,11 +64,14 @@ export const insightReports: InsightReport[] = [
   {
     id: 'global-esg-conflicts-2025',
     title: '企业出海非常规风险：全球ESG冲突事件洞察（全球篇）',
+    titleEn: 'Unconventional Risks in Overseas Expansion: Global Insights on ESG Conflict Events (Global Edition)',
     industry: '泛行业',
     topic: 'ESG',
     pages: 144,
     summary:
       '综合分析2005-2024年全球企业在海外投资与经营中的ESG冲突事件，呈现全球图景与对中国企业的影响，揭示风险分布不均与行业差异，为企业出海提供关键情报与策略建议。',
+    summaryEn:
+      'Analyzes 2005–2024 global ESG conflict events in overseas investment and operations, presents global patterns and impacts on Chinese enterprises, reveals uneven risk distribution and industry differences, and offers key intelligence and strategic recommendations.',
     detailedSummary:
       `本报告综合分析了2005至2024年间全球企业在海外投资和经营过程中遭遇的社会与环境冲突事件（ESG冲突事件），并探讨了这些事件的全球图景和对中国企业的影响。报告指出，全球对外直接投资（FDI Outward）存量增长与ESG冲突事件数量呈正相关，且增长速度远超投资存量增速。报告通过数据分析发现，不同国家和行业的企业在出海过程中遭遇的ESG风险存在显著差异，且这些风险并非均匀分布。工业、非必需消费品和原材料行业面临的ESG冲突事件数量最多，而医疗健康、通信和公用事业等行业相对较少。
 
@@ -87,11 +91,14 @@ export const insightReports: InsightReport[] = [
   {
     id: 'msci-esg-china-2025',
     title: '中国企业ESG评级跃迁指南：2024年MSCI ESG评级洞察报告',
+    titleEn: 'Chinese Enterprises ESG Rating Leap Guide: 2024 MSCI ESG Rating Insights Report',
     industry: '泛行业',
     topic: 'ESG',
     pages: 99,
     summary:
       '基于近2,500家企业截至2024年的MSCI ESG评级数据，解析全球与中国企业评级变化趋势及行业领先实践，提供评级跃升路径与策略建议。',
+    summaryEn:
+      'Based on ~2,500 enterprises’ MSCI ESG ratings as of 2024, analyzes global and China rating trends and leading practices, and provides improvement pathways and recommendations.',
     detailedSummary:
       '在2025年2月，我们搜集、研究了全球近2,500家MSCI ESG评级企业截止2024年年底的相关数据。从2024年全球企业MSCI ESG评级趋势的变化及行业领先企业的实践中，我们看到中国企业正在金融、信息技术、通信服务等现代服务业，以及房地产、能源、工业这些传统行业上全面追赶全球竞争对手。即便是在面对全球贸易保护主义高墙、地缘政治博弈加剧、供应链重构压力增加等多重挑战下，中国企业在可持续发展竞争力领域的赶超趋势仍然势不可挡。\n\n在ESG评级这个不进则退的游戏中，您的企业ESG竞争力掉队了吗？还在发愁如何逆袭吗？\n\n2024年全球企业MSCI ESG评级洞察报告显示：\n✓ 在全球，金融、信息技术、通信服务三个行业可持续发展竞争力提升最快\n✓ 中国企业整体可持续发展竞争力水平落后，但评级提升趋势强劲，在几乎所有行业迎头赶上\n✓ 2025年超过30%的中国企业实现ESG评级提升，远超全球平均水平\n✓ 全球MSCI ESG评级跳级提升的企业中，中国内地企业占一半以上\n✓ 全球包括中国内地企业ESG评级落后集中体现在公司治理和企业行为两个议题\n✓ 评级表现优异的企业普遍开展可持续发展/ESG赋能商业的探索，头部企业已经构筑ESG护城河\n\n报告核心价值：\n✓ 可持续发展趋势解码：全球及主要国家可持续发展竞争力格局有何变化？哪些行业的企业更容易实现ESG评级跃升？MSCI ESG评级方法有哪些调整，企业应如何应对？\n✓ 评级跃升方法与路径：全球35家实现了评级跳级跃升的企业做对了什么？如何快速高效提升MSCI ESG评级？如何避坑？\n✓ 可持续发展战略：如何在可持续发展中找到商业机会，实现第二增长曲线？',
   date: '2025-02-01',
@@ -106,11 +113,14 @@ export const insightReports: InsightReport[] = [
   {
     id: 'unseen-unconventional-risks-2024',
     title: '未被察觉的致命风险——中企出海面临的新型非常规风险洞察报告',
+    titleEn: 'Unseen Critical Risks — New Unconventional Risks Facing Chinese Enterprises Going Overseas',
     industry: '泛行业',
     topic: '企业环境影响评估与信息披露',
     pages: 72,
     summary:
       '基于2013-2022年数据的典型案例研究，系统梳理中企出海常被忽视的六大非常规风险，并提出可执行的应对策略与建议。',
+    summaryEn:
+      'Based on 2013–2022 typical case studies, systematically outlines six often-overlooked unconventional risks for Chinese enterprises overseas and offers actionable strategies and recommendations.',
     detailedSummary:
       '本报告根据2013至2022年中企出海所产生的环境与社会相关的矛盾冲突事件的详实统计数据，深入剖析了中企在出海过程中，由于受到国内经营管理惯性和习惯的影响，经常被忽视的六大非常规风险。\n数据显示，中企出海几乎都会遭遇到这些非常规风险，但我们的企业往往没有在出海之前进行充分的调查与了解，也未能在思想和应对上提前做好预案，导致风险发生时不能及时作出适当的应对，最终付出惨重的代价。\n报告通过超过30个实际案例，对中企出海的主要行业、热门目的地进行了客观详实的风险分析，并总结出可执行落地的应对策略与建议，力求帮助出海中企能够重视这些非常规风险，并在理解风险成因的基础上采取切实可行的行动以规避和解决上述风险，最终得以在海外成功立足、进一步获得发展。',
   date: '2024-01-01',

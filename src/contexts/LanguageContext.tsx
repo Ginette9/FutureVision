@@ -52,7 +52,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   const [isLoading, setIsLoading] = useState(true);
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('language');
-    return (saved === 'zh-CN' || saved === 'zh-HK') ? (saved as Language) : 'en-US';
+    return (saved === 'en-US' || saved === 'zh-HK' || saved === 'zh-CN') ? (saved as Language) : 'zh-CN';
   });
 
   // 根据当前语言加载翻译资源
@@ -71,6 +71,14 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     };
 
     fetchTranslations();
+
+    try {
+      const root = document.documentElement;
+      root.classList.remove('lang-en', 'lang-zh-cn', 'lang-zh-hk');
+      if (language === 'en-US') root.classList.add('lang-en');
+      else if (language === 'zh-HK') root.classList.add('lang-zh-hk');
+      else root.classList.add('lang-zh-cn');
+    } catch {}
   }, [language]);
 
   // 翻译函数

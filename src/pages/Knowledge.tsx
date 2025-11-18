@@ -26,9 +26,9 @@ export default function Knowledge() {
   const { language } = useLanguage();
 
   const categories = [
-    { id: 'weekly', name: '全球要闻' },
-    { id: 'industry', name: '必读报告' },
-    { id: 'courses', name: '课程资源' }
+    { id: 'weekly', name: language === 'en-US' ? 'Global News' : language === 'zh-HK' ? '全球要聞' : '全球要闻' },
+    { id: 'industry', name: language === 'en-US' ? 'Must-Read Reports' : language === 'zh-HK' ? '必讀報告' : '必读报告' },
+    { id: 'courses', name: language === 'en-US' ? 'Course Resources' : language === 'zh-HK' ? '課程資源' : '课程资源' }
   ];
 
   const knowledgeItems: Record<string, KnowledgeItem[]> = { weekly: [] } as any;
@@ -70,10 +70,10 @@ export default function Knowledge() {
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16"
       >
         <h1 className="text-4xl lg:text-5xl font-light text-gray-900 mb-6">
-          知识中心
+          {language === 'en-US' ? 'Knowledge Center' : language === 'zh-HK' ? '知識中心' : '知识中心'}
         </h1>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-          及时资讯、行业洞察和专业课程，全方位提升您的ESG知识储备
+          {language === 'en-US' ? 'Timely updates, industry insights and professional courses to enhance your ESG knowledge' : language === 'zh-HK' ? '及時資訊、行業洞察與專業課程，全方位提升您的ESG知識儲備' : '及时资讯、行业洞察和专业课程，全方位提升您的ESG知识储备'}
         </p>
       </motion.div>
 
@@ -306,7 +306,7 @@ export default function Knowledge() {
           className="text-center bg-gray-50 p-12"
         >
           <h2 className="text-3xl font-light text-gray-900 mb-6">
-            订阅知识更新
+            {language === 'en-US' ? 'Subscribe to Knowledge Updates' : language === 'zh-HK' ? '訂閱知識更新' : '订阅知识更新'}
           </h2>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
             第一时间获取最新的要闻资讯、专业洞察和课程内容
@@ -314,7 +314,7 @@ export default function Knowledge() {
           <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
             <input
               type="email"
-              placeholder="输入您的邮箱地址"
+              placeholder={language === 'en-US' ? 'Enter your email address' : language === 'zh-HK' ? '輸入您的郵箱地址' : '输入您的邮箱地址'}
               className="flex-1 px-4 py-3 border border-gray-300 focus:outline-none focus:border-gray-500"
               id="knowledge-subscribe-email"
             />
@@ -346,7 +346,7 @@ export default function Knowledge() {
                 }
               }}
             >
-              订阅
+              {language === 'en-US' ? 'Subscribe' : language === 'zh-HK' ? '訂閱' : '订阅'}
             </button>
           </div>
         </motion.div>

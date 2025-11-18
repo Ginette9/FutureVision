@@ -198,6 +198,34 @@ html, body {
 
 
 /* ===================================================== */
+/* —— 语言模式：英文更紧凑 —— */
+.lang-en .text-5xl{ font-size:2.5rem!important; line-height:1.2!important; }
+.lang-en .text-4xl{ font-size:2rem!important; line-height:1.25!important; }
+.lang-en .text-3xl{ font-size:1.75rem!important; line-height:1.3!important; }
+.lang-en .text-2xl{ font-size:1.5rem!important; line-height:1.35!important; }
+.lang-en .text-xl{  font-size:1.125rem!important; line-height:1.5!important; }
+.lang-en .text-lg{  font-size:1rem!important; line-height:1.5!important; }
+
+.lang-en .leading-relaxed{ line-height:1.5!important; }
+.lang-en .leading-tight{ line-height:1.25!important; }
+
+.lang-en .mb-20{ margin-bottom:3rem!important; }
+.lang-en .mb-16{ margin-bottom:2.75rem!important; }
+.lang-en .mb-12{ margin-bottom:2rem!important; }
+.lang-en .mb-8 { margin-bottom:1.25rem!important; }
+.lang-en .mb-6 { margin-bottom:1rem!important; }
+
+.lang-en .py-32{ padding-top:6rem!important; padding-bottom:6rem!important; }
+.lang-en .py-28{ padding-top:5rem!important; padding-bottom:5rem!important; }
+.lang-en .py-24{ padding-top:4.5rem!important; padding-bottom:4.5rem!important; }
+.lang-en .py-20{ padding-top:4rem!important; padding-bottom:4rem!important; }
+.lang-en .py-12{ padding-top:2.5rem!important; padding-bottom:2.5rem!important; }
+
+.lang-en .px-8{ padding-left:1.5rem!important; padding-right:1.5rem!important; }
+.lang-en .p-12{ padding:2.5rem!important; }
+.lang-en .p-8 { padding:1.5rem!important; }
+.lang-en .gap-12{ gap:2.5rem!important; }
+.lang-en .gap-8 { gap:1.5rem!important; }
 /*        打印专用「封面 / 尾页」容器基础                   */
 /* ===================================================== */
 

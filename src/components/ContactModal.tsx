@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -26,6 +27,27 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const { language } = useLanguage();
+  const labels = {
+    title: language === 'en-US' ? 'Contact Us' : language === 'zh-HK' ? '聯繫我們' : '联系我们',
+    success: language === 'en-US' ? 'Thanks for your inquiry! We will contact you shortly.' : language === 'zh-HK' ? '感謝您的諮詢！我們會盡快與您聯繫。' : '感谢您的咨询！我们会尽快与您联系。',
+    error: language === 'en-US' ? 'Submission failed. Please try again or contact us directly.' : language === 'zh-HK' ? '提交失敗，請稍後重試或直接聯繫我們。' : '提交失败，请稍后重试或直接联系我们。',
+    name: language === 'en-US' ? 'Name *' : language === 'zh-HK' ? '姓名 *' : '姓名 *',
+    email: language === 'en-US' ? 'Email *' : language === 'zh-HK' ? '郵箱 *' : '邮箱 *',
+    company: language === 'en-US' ? 'Company *' : language === 'zh-HK' ? '公司 *' : '公司 *',
+    position: language === 'en-US' ? 'Position *' : language === 'zh-HK' ? '職位 *' : '职位 *',
+    phone: language === 'en-US' ? 'Phone *' : language === 'zh-HK' ? '手機號碼 *' : '手机号码 *',
+    message: language === 'en-US' ? 'Requirement Description *' : language === 'zh-HK' ? '需求描述 *' : '需求描述 *',
+    phName: language === 'en-US' ? 'Please enter your name' : language === 'zh-HK' ? '請輸入您的姓名' : '请输入您的姓名',
+    phEmail: language === 'en-US' ? 'Enter your email' : language === 'zh-HK' ? '請輸入您的郵箱' : '请输入您的邮箱',
+    phCompany: language === 'en-US' ? 'Please enter your company name' : language === 'zh-HK' ? '請輸入您的公司名稱' : '请输入您的公司名称',
+    phPosition: language === 'en-US' ? 'Please enter your position' : language === 'zh-HK' ? '請輸入您的職位' : '请输入您的职位',
+    phPhone: language === 'en-US' ? 'Please enter your phone number' : language === 'zh-HK' ? '請輸入您的電話號碼' : '请输入您的电话号码',
+    phMessage: language === 'en-US' ? 'Please describe your requirements in detail...' : language === 'zh-HK' ? '請詳細描述您的需求...' : '请详细描述您的需求...',
+    submitIdle: language === 'en-US' ? 'Submit Inquiry' : language === 'zh-HK' ? '提交諮詢' : '提交咨询',
+    submitting: language === 'en-US' ? 'Submitting...' : language === 'zh-HK' ? '提交中...' : '提交中...',
+    submitted: language === 'en-US' ? 'Submitted' : language === 'zh-HK' ? '提交成功' : '提交成功'
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -135,13 +157,13 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
               {/* 表单内容 */}
               <div className="p-8">
                 <h2 className="text-2xl font-light text-gray-900 mb-8 text-center">
-                  联系我们
+                  {labels.title}
                 </h2>
 
                 {submitStatus === 'success' && (
                   <div className="mb-6 p-4 bg-gray-50 border border-gray-200">
                     <p className="text-gray-900 text-center text-sm">
-                      感谢您的咨询！我们会尽快与您联系。
+                      {labels.success}
                     </p>
                   </div>
                 )}
@@ -149,7 +171,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                 {submitStatus === 'error' && (
                   <div className="mb-6 p-4 bg-gray-50 border border-gray-200">
                     <p className="text-gray-900 text-center text-sm">
-                      提交失败，请稍后重试或直接联系我们。
+                      {labels.error}
                     </p>
                   </div>
                 )}
@@ -157,7 +179,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">
-                      姓名 *
+                      {labels.name}
                     </label>
                     <input
                       type="text"
@@ -167,13 +189,13 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                       value={formData.name}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 bg-white text-gray-900 focus:border-gray-900 focus:outline-none transition-colors"
-                      placeholder="请输入您的姓名"
+                      placeholder={labels.phName}
                     />
                   </div>
 
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium text-gray-900 mb-2">
-                      邮箱 *
+                      {labels.email}
                     </label>
                     <input
                       type="email"
@@ -183,13 +205,13 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                       value={formData.email}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 bg-white text-gray-900 focus:border-gray-900 focus:outline-none transition-colors"
-                      placeholder="请输入您的邮箱"
+                      placeholder={labels.phEmail}
                     />
                   </div>
 
                   <div>
                     <label htmlFor="company" className="block text-sm font-medium text-gray-900 mb-2">
-                      公司 *
+                      {labels.company}
                     </label>
                     <input
                       type="text"
@@ -199,13 +221,13 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                       value={formData.company}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 bg-white text-gray-900 focus:border-gray-900 focus:outline-none transition-colors"
-                      placeholder="请输入您的公司名称"
+                      placeholder={labels.phCompany}
                     />
                   </div>
 
                   <div>
                     <label htmlFor="position" className="block text-sm font-medium text-gray-900 mb-2">
-                      职位 *
+                      {labels.position}
                     </label>
                     <input
                       type="text"
@@ -215,13 +237,13 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                       value={formData.position}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 bg-white text-gray-900 focus:border-gray-900 focus:outline-none transition-colors"
-                      placeholder="请输入您的职位"
+                      placeholder={labels.phPosition}
                     />
                   </div>
 
                   <div>
                     <label htmlFor="phone" className="block text-sm font-medium text-gray-900 mb-2">
-                      手机号码 *
+                      {labels.phone}
                     </label>
                     <input
                       type="tel"
@@ -231,13 +253,13 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                       value={formData.phone}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 bg-white text-gray-900 focus:border-gray-900 focus:outline-none transition-colors"
-                      placeholder="请输入您的电话号码"
+                      placeholder={labels.phPhone}
                     />
                   </div>
 
                   <div>
                     <label htmlFor="message" className="block text-sm font-medium text-gray-900 mb-2">
-                      需求描述 *
+                      {labels.message}
                     </label>
                     <textarea
                       id="message"
@@ -247,7 +269,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                       value={formData.message}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 bg-white text-gray-900 focus:border-gray-900 focus:outline-none transition-colors resize-none"
-                      placeholder="请详细描述您的需求..."
+                      placeholder={labels.phMessage}
                     />
                   </div>
 
@@ -256,7 +278,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                     disabled={isSubmitting || submitStatus === 'success'}
                     className="w-full bg-gray-900 text-white py-3 px-4 font-medium hover:bg-gray-800 focus:outline-none focus:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
                   >
-                    {isSubmitting ? '提交中...' : submitStatus === 'success' ? '提交成功' : '提交咨询'}
+                    {isSubmitting ? labels.submitting : submitStatus === 'success' ? labels.submitted : labels.submitIdle}
                   </button>
                 </form>
               </div>
