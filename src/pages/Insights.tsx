@@ -1,14 +1,21 @@
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { getAllInsightReports, InsightReport } from '../data/insightReports';
 import InsightReportDetail from '../components/InsightReportDetail';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { convertToTraditional } from '@/locales/zh-HK';
+import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist';
+// @ts-ignore
+import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+
+GlobalWorkerOptions.workerSrc = pdfWorkerUrl as any;
 
 export default function Insights() {
   const [selectedReport, setSelectedReport] = useState<InsightReport | null>(null);
   const [isReportDetailOpen, setIsReportDetailOpen] = useState(false);
+  const [renderCache, setRenderCache] = useState<Record<string, string>>({});
+  const [renderingState, setRenderingState] = useState<Record<string, 'loading' | 'error' | 'complete'>>({});
   const { language } = useLanguage();
 
   // 获取所有独家洞察报告（状态 + 事件刷新）
@@ -38,6 +45,96 @@ export default function Insights() {
     if (language === 'zh-HK') return `${y}年${m}月`;
     return `${y}年${m}月`;
   };
+
+  const getCoverImageUrl = useCallback((report: InsightReport): string => {
+    const cacheKey = `${report.id}-${report.coverPage || 1}`;
+    return renderCache[cacheKey] || report.coverImage || '/images/pdf-cover.png';
+  }, [renderCache]);
+
+  const renderCoverPage = useCallback(async (report: InsightReport): Promise<string | null> => {
+    try {
+      const url = report.pdfUrl;
+      const coverPage = report.coverPage || 1;
+      if (!url) return null;
+      
+      const cacheKey = `${report.id}-${coverPage}`;
+      if (renderCache[cacheKey]) return renderCache[cacheKey];
+      
+      // 设置加载状态
+      setRenderingState(prev => ({ ...prev, [cacheKey]: 'loading' }));
+      
+      const loadingTask = getDocument({ url });
+      const pdf = await loadingTask.promise;
+      const page = await pdf.getPage(coverPage);
+      
+      const dpr = (typeof window !== 'undefined' ? window.devicePixelRatio : 1) || 1;
+      const baseScale = 1.0;
+      const targetScale = Math.min(2, Math.max(1.5, dpr * 1.5));
+      const viewport = page.getViewport({ scale: baseScale * targetScale });
+      
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+      
+      canvas.width = Math.floor(viewport.width);
+      canvas.height = Math.floor(viewport.height);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      await page.render({ canvasContext: ctx, viewport }).promise;
+      
+      const dataUrl = canvas.toDataURL('image/png');
+      setRenderCache(prev => ({ ...prev, [cacheKey]: dataUrl }));
+      setRenderingState(prev => ({ ...prev, [cacheKey]: 'complete' }));
+      return dataUrl;
+    } catch (e) {
+      console.warn('Failed to render cover page for report', report.id, e);
+      setRenderingState(prev => ({ ...prev, [`${report.id}-${report.coverPage || 1}`]: 'error' }));
+      return null;
+    }
+  }, [renderCache]);
+
+  const renderPageImage = useCallback(async (report: InsightReport, pageNum: number): Promise<string | null> => {
+    try {
+      const url = report.pdfUrl;
+      if (!url) return null;
+      const loadingTask = getDocument({ url });
+      const pdf = await loadingTask.promise;
+      const page = await pdf.getPage(pageNum);
+      // 提升渲染清晰度：按设备像素比放大
+      const dpr = (typeof window !== 'undefined' ? window.devicePixelRatio : 1) || 1;
+      const baseScale = 1.0;
+      const targetScale = Math.min(3, Math.max(2, dpr * 2));
+      const viewport = page.getViewport({ scale: baseScale * targetScale });
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+      canvas.width = Math.floor(viewport.width);
+      canvas.height = Math.floor(viewport.height);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // 传入 canvas 以符合类型要求
+      await page.render({ canvasContext: ctx, viewport, canvas }).promise;
+
+      const dataUrl = canvas.toDataURL('image/png');
+      return dataUrl;
+    } catch (e) {
+      console.warn('Failed to render PDF page', pageNum, e);
+      return null;
+    }
+  }, []);
+
+  // 添加PDF封面渲染触发机制
+  useEffect(() => {
+    (async () => {
+      // 遍历所有报告，渲染封面页
+      for (const insight of insights) {
+        if (insight.pdfUrl && !renderCache[`${insight.id}-${insight.coverPage || 1}`]) {
+          await renderCoverPage(insight);
+        }
+      }
+    })();
+  }, [insights]);
 
   return (
     <div className="min-h-screen bg-white pt-24 pb-16">
@@ -76,11 +173,50 @@ export default function Insights() {
             >
               {insight.coverImage && (
                 <div className="aspect-video bg-white-100 overflow-hidden mt-8">
-                  <img 
-                    src={insight.coverImage} 
-                    alt={(language === 'en-US' ? (insight.titleEn || insight.title) : language === 'zh-HK' ? convertToTraditional(insight.title || '') : insight.title)}
-                    className="w-full h-full object-contain"
-                  />
+                  {(() => {
+                    const cacheKey = `${insight.id}-${insight.coverPage || 1}`;
+                    const cachedImage = renderCache[cacheKey];
+                    const currentState = renderingState[cacheKey];
+                    
+                    // 如果正在加载，显示加载状态
+                    if (currentState === 'loading') {
+                      return (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-50">
+                          <div className="text-center">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-2"></div>
+                            <div className="text-sm text-gray-500">加载封面...</div>
+                          </div>
+                        </div>
+                      );
+                    }
+                    
+                    // 如果有缓存图像，显示缓存图像
+                    if (cachedImage) {
+                      return (
+                        <img 
+                          src={cachedImage}
+                          alt={(language === 'en-US' ? (insight.titleEn || insight.title) : language === 'zh-HK' ? convertToTraditional(insight.title || '') : insight.title)}
+                          className="w-full h-full object-contain"
+                        />
+                      );
+                    }
+                    
+                    // 如果加载失败，显示备用图片
+                    if (currentState === 'error') {
+                      return (
+                        <img 
+                          src={insight.coverImage || '/images/pdf-cover.png'}
+                          alt={(language === 'en-US' ? (insight.titleEn || insight.title) : language === 'zh-HK' ? convertToTraditional(insight.title || '') : insight.title)}
+                          className="w-full h-full object-contain"
+                        />
+                      );
+                    }
+                    
+                    // 默认情况：显示空白或备用图片
+                    return (
+                      <div className="w-full h-full bg-gray-50"></div>
+                    );
+                  })()}
                 </div>
               )}
               <div className="p-8">

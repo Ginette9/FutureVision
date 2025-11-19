@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import ContactModal from '../components/ContactModal';
 import InsightReportDetail from '../components/InsightReportDetail';
@@ -9,12 +9,19 @@ import graphListed from '../images/graph-listed.png';
 import graphSme from '../images/graph-sme.png';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { convertToTraditional } from '@/locales/zh-HK';
+import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist';
+// @ts-ignore
+import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+
+GlobalWorkerOptions.workerSrc = pdfWorkerUrl as any;
 
 export default function NewHome() {
   const [isVisible, setIsVisible] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState<InsightReport | null>(null);
   const [isReportDetailOpen, setIsReportDetailOpen] = useState(false);
+  const [renderCache, setRenderCache] = useState<Record<string, string>>({});
+  const [renderingState, setRenderingState] = useState<Record<string, 'loading' | 'error' | 'complete'>>({});
   const { language } = useLanguage();
 
   const labels = {
@@ -58,6 +65,66 @@ export default function NewHome() {
     setSelectedReport(null);
   };
 
+  // PDF封面渲染函数
+  const renderCoverPage = useCallback(async (report: InsightReport): Promise<string | null> => {
+    console.log(`renderCoverPage called for report: ${report.id}, pdfUrl: ${report.pdfUrl}`);
+    if (!report.pdfUrl) {
+      console.log(`No PDF URL for report: ${report.id}`);
+      return null;
+    }
+    
+    const coverPage = report.coverPage || 1;
+    const cacheKey = `${report.id}-${coverPage}`;
+    
+    if (renderCache[cacheKey]) {
+      console.log(`Cache hit for report: ${report.id}, returning cached image`);
+      return renderCache[cacheKey];
+    }
+    
+    // 设置加载状态
+    setRenderingState(prev => ({ ...prev, [cacheKey]: 'loading' }));
+    console.log(`Cache miss for report: ${report.id}, starting PDF rendering...`);
+    
+    try {
+      const url = report.pdfUrl;
+      console.log(`Loading PDF from URL: ${url}`);
+      const loadingTask = getDocument({ url });
+      const pdf = await loadingTask.promise;
+      console.log(`PDF loaded successfully, numPages: ${pdf.numPages}`);
+      const page = await pdf.getPage(coverPage);
+      console.log(`Page ${coverPage} loaded successfully`);
+      
+      const dpr = (typeof window !== 'undefined' ? window.devicePixelRatio : 1) || 1;
+      const baseScale = 1.0;
+      const targetScale = Math.min(2, Math.max(1.5, dpr * 1.5));
+      const viewport = page.getViewport({ scale: baseScale * targetScale });
+      
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+      
+      canvas.width = Math.floor(viewport.width);
+      canvas.height = Math.floor(viewport.height);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      console.log(`Rendering page ${coverPage} to canvas...`);
+      await page.render({ canvasContext: ctx, viewport }).promise;
+      console.log(`Page rendered successfully`);
+      
+      const dataUrl = canvas.toDataURL('image/png');
+      console.log(`Canvas converted to data URL, length: ${dataUrl.length}`);
+      setRenderCache(prev => ({ ...prev, [cacheKey]: dataUrl }));
+      setRenderingState(prev => ({ ...prev, [cacheKey]: 'complete' }));
+      console.log(`Cache updated for report: ${report.id}`);
+      return dataUrl;
+    } catch (e) {
+      console.error(`Failed to render cover page for report ${report.id}:`, e);
+      setRenderingState(prev => ({ ...prev, [cacheKey]: 'error' }));
+      return null;
+    }
+  }, [renderCache]);
+
   // 添加滚动动画效果
   useEffect(() => {
     const handleScroll = () => {
@@ -69,29 +136,33 @@ export default function NewHome() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // 独家洞察数据 - 使用新的数据结构
+  // 首页展示顺序与管理页一致：直接按数组顺序取前3个
+  const [insights, setInsights] = useState<InsightReport[]>(getAllInsightReports().slice(0, 3));
+
   // 核心服务数据
   const coreServices = [
     {
       id: 1,
-      title: '跨国企业',
-      subtitle: '全球化运营ESG风险管理',
-      description: '帮助出海企业识别、预防和解决全球市场的环境、社会与治理风险，构建安全、稳健、可持续的供应链与运营体系，获得监管安全与长期增长的确定性。',
+      title: language === 'en-US' ? 'Multinational Enterprises' : language === 'zh-HK' ? '跨國企業' : '跨国企业',
+      subtitle: language === 'en-US' ? 'Global ESG Risk Management' : language === 'zh-HK' ? '全球化運營ESG風險管理' : '全球化运营ESG风险管理',
+      description: language === 'en-US' ? 'Help global enterprises identify, prevent and resolve environmental, social and governance risks in global markets, build safe, stable and sustainable supply chains and operational systems, ensuring regulatory compliance and long-term growth certainty.' : language === 'zh-HK' ? '幫助出海企業識別、預防和解決全球市場的環境、社會與治理風險，構建安全、穩健、可持續的供應鏈與運營體系，獲得監管安全與長期增長的確定性。' : '帮助出海企业识别、预防和解决全球市场的环境、社会与治理风险，构建安全、稳健、可持续的供应链与运营体系，获得监管安全与长期增长的确定性。',
       image: graphGlobal,
       link: '/services'
     },
     {
       id: 2,
-      title: '上市公司',
-      subtitle: '可持续增长战略与ESG评级提升',
-      description: '通过构建可持续增长战略、升级ESG治理体系，提升上市公司稳健增长能力与长期估值韧性，提升市场信任与品牌溢价。',
+      title: language === 'en-US' ? 'Listed Companies' : language === 'zh-HK' ? '上市公司' : '上市公司',
+      subtitle: language === 'en-US' ? 'Sustainable Growth Strategy & ESG Rating Improvement' : language === 'zh-HK' ? '可持續增長戰略與ESG評級提升' : '可持续增长战略与ESG评级提升',
+      description: language === 'en-US' ? 'By building sustainable growth strategies and upgrading ESG governance systems, enhance listed companies steady growth capabilities and long-term valuation resilience, improving market trust and brand premium.' : language === 'zh-HK' ? '通過構建可持續增長戰略、升級ESG治理體系，提升上市公司穩健增長能力與長期估值韌性，提升市場信任與品牌溢價。' : '通过构建可持续增长战略、升级ESG治理体系，提升上市公司稳健增长能力与长期估值韧性，提升市场信任与品牌溢价。',
       image: graphListed,
       link: '/services'
     },
     {
       id: 3,
-      title: '中小企业',
-      subtitle: '简便可行的产品出海策略',
-      description: '帮助中小企业提炼产品及服务的可持续价值并形成出海差异化竞争力，提供海外渠道落地与代理销售服务，显著提升出海成功率与利润空间。',
+      title: language === 'en-US' ? 'SMEs' : language === 'zh-HK' ? '中小企業' : '中小企业',
+      subtitle: language === 'en-US' ? 'Simple & Feasible Product Globalization Strategy' : language === 'zh-HK' ? '簡便可行的產品出海策略' : '简便可行的产品出海策略',
+      description: language === 'en-US' ? 'Help SMEs extract sustainable value from products and services to form differentiated competitiveness for global expansion, provide overseas channel establishment and sales agency services, significantly improving globalization success rate and profit margins.' : language === 'zh-HK' ? '幫助中小企業提煉產品及服務的可持續價值並形成出海差異化競爭力，提供海外渠道落地與代理銷售服務，顯著提升出海成功率與利潤空間。' : '帮助中小企业提炼产品及服务的可持续价值并形成出海差异化竞争力，提供海外渠道落地与代理销售服务，显著提升出海成功率与利润空间。',
       image: graphSme,
       link: '/services'
     }
@@ -101,27 +172,23 @@ export default function NewHome() {
   const expertResources = [
     {
       id: 1,
-      title: '全球要闻',
-      description: '全球最新可持续发展动态',
+      title: language === 'en-US' ? 'Global News' : language === 'zh-HK' ? '全球要聞' : '全球要闻',
+      description: language === 'en-US' ? 'Latest global sustainable development updates' : language === 'zh-HK' ? '全球最新可持續發展動態' : '全球最新可持续发展动态',
       link: '/knowledge'
     },
     {
       id: 2,
-      title: '必读报告',
-      description: '全球可持续发展领域最新重磅报告',
+      title: language === 'en-US' ? 'Must-Read Reports' : language === 'zh-HK' ? '必讀報告' : '必读报告',
+      description: language === 'en-US' ? 'Latest major reports in global sustainable development' : language === 'zh-HK' ? '全球可持續發展領域最新重磅報告' : '全球可持续发展领域最新重磅报告',
       link: '/knowledge'
     },
     {
       id: 3,
-      title: '课程资源',
-      description: '可持续发展领域最新课程、工具与指引',
+      title: language === 'en-US' ? 'Course Resources' : language === 'zh-HK' ? '課程資源' : '课程资源',
+      description: language === 'en-US' ? 'Latest courses, tools and guidelines in sustainable development' : language === 'zh-HK' ? '可持續發展領域最新課程、工具與指引' : '可持续发展领域最新课程、工具与指引',
       link: '/knowledge'
     }
   ];
-
-  // 独家洞察数据 - 使用新的数据结构
-  // 首页展示顺序与管理页一致：直接按数组顺序取前3个
-  const [insights, setInsights] = useState<InsightReport[]>(getAllInsightReports().slice(0, 3));
 
   // 监听数据层更新事件，自动刷新首页展示
   useEffect(() => {
@@ -130,11 +197,70 @@ export default function NewHome() {
     return () => window.removeEventListener('insights-store-updated', handler);
   }, []);
 
+  // 添加PDF封面渲染触发机制
+  useEffect(() => {
+    (async () => {
+      console.log('Home page PDF rendering triggered for insights:', insights.length);
+      // 遍历首页展示的报告，渲染封面页
+      for (const insight of insights) {
+        const cacheKey = `${insight.id}-${insight.coverPage || 1}`;
+        console.log(`Checking insight: ${insight.id}, hasPdfUrl: ${!!insight.pdfUrl}, inCache: ${!!renderCache[cacheKey]}`);
+        if (insight.pdfUrl && !renderCache[cacheKey]) {
+          console.log(`Rendering cover page for: ${insight.id}`);
+          const result = await renderCoverPage(insight);
+          console.log(`Render result for ${insight.id}:`, result ? 'Success' : 'Failed');
+        }
+      }
+      
+      // 调试用：显示当前缓存状态
+      console.log('Current renderCache keys:', Object.keys(renderCache));
+      console.log('First few insights data:', insights.map(i => ({id: i.id, title: i.title, pdfUrl: i.pdfUrl, coverPage: i.coverPage})));
+    })();
+  }, [insights]);
+
+
+
   const formatDate = (dateString: string) => {
     const d = new Date(dateString);
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, '0');
+    if (language === 'en-US') return `${y}-${m}`;
+    if (language === 'zh-HK') return `${y}年${m}月`;
     return `${y}年${m}月`;
+  };
+
+  // 调试用：手动测试PDF渲染
+  const testPdfRendering = async () => {
+    console.log('Manual PDF rendering test started');
+    if (insights.length > 0) {
+      const testInsight = insights[0];
+      console.log('Testing with first insight:', testInsight.id, testInsight.title);
+      const result = await renderCoverPage(testInsight);
+      console.log('PDF rendering result:', result ? 'Success' : 'Failed');
+      if (result) {
+        alert('PDF渲染成功！数据URL长度: ' + result.length);
+      } else {
+        alert('PDF渲染失败，请查看控制台');
+      }
+    }
+  };
+
+  // 调试用：显示缓存状态
+  const getCacheDebugInfo = () => {
+    const cacheKeys = Object.keys(renderCache);
+    return {
+      cacheKeys,
+      cacheSize: cacheKeys.length,
+      insightsCount: insights.length,
+      firstInsight: insights.length > 0 ? {
+        id: insights[0].id,
+        title: insights[0].title,
+        pdfUrl: insights[0].pdfUrl,
+        coverPage: insights[0].coverPage,
+        cacheKey: `${insights[0].id}-${insights[0].coverPage || 1}`,
+        hasCachedImage: !!renderCache[`${insights[0].id}-${insights[0].coverPage || 1}`]
+      } : null
+    };
   };
   
   return (
@@ -277,11 +403,50 @@ export default function NewHome() {
                 className="bg-white overflow-hidden hover:shadow-lg transition-shadow duration-300"
               >
                 <div className="aspect-video bg-white-100 overflow-hidden">
-                  <img
-                    src={insight.coverImage}
-                    alt={language === 'en-US' ? (insight.titleEn || insight.title) : language === 'zh-HK' ? convertToTraditional(insight.title || '') : insight.title}
-                    className="w-full h-full object-contain"
-                  />
+                  {(() => {
+                    const cacheKey = `${insight.id}-${insight.coverPage || 1}`;
+                    const cachedImage = renderCache[cacheKey];
+                    const currentState = renderingState[cacheKey];
+                    
+                    // 如果正在加载，显示加载状态
+                    if (currentState === 'loading') {
+                      return (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-50">
+                          <div className="text-center">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-2"></div>
+                            <div className="text-sm text-gray-500">加载封面...</div>
+                          </div>
+                        </div>
+                      );
+                    }
+                    
+                    // 如果有缓存图像，显示缓存图像
+                    if (cachedImage) {
+                      return (
+                        <img
+                          src={cachedImage}
+                          alt={language === 'en-US' ? (insight.titleEn || insight.title) : language === 'zh-HK' ? convertToTraditional(insight.title || '') : insight.title}
+                          className="w-full h-full object-contain"
+                        />
+                      );
+                    }
+                    
+                    // 如果加载失败，显示备用图片
+                    if (currentState === 'error') {
+                      return (
+                        <img
+                          src={insight.coverImage || '/images/pdf-cover.png'}
+                          alt={language === 'en-US' ? (insight.titleEn || insight.title) : language === 'zh-HK' ? convertToTraditional(insight.title || '') : insight.title}
+                          className="w-full h-full object-contain"
+                        />
+                      );
+                    }
+                    
+                    // 默认情况：显示空白或备用图片
+                    return (
+                      <div className="w-full h-full bg-gray-50"></div>
+                    );
+                  })()}
                 </div>
                 <div className="p-6">
                   <h3 className="text-lg font-medium text-gray-900 mb-3 leading-tight">
@@ -423,10 +588,38 @@ export default function NewHome() {
             {/* 右侧：四项案例数字与描述 */}
             {(() => {
               const caseItems = [
-                { count: '100+', text: '以可口可乐、宝洁、强生、百威英博、欧莱雅为代表的外企' },
-                { count: '50+', text: '以国家电网、中国福彩、华润集团为代表的国企央企' },
-                { count: '500+', text: '以隆基、吉利、三一重工、vivo为代表的民营企业' },
-                { count: '200+', text: '以腾讯、阿里巴巴、快手、美团点评为代表的独角兽企业' },
+                { 
+                  count: '100+', 
+                  text: language === 'en-US' 
+                    ? 'Foreign enterprises represented by Coca-Cola, P&G, Johnson & Johnson, AB InBev, and L\'Oréal' 
+                    : language === 'zh-HK' 
+                      ? '以可口可樂、寶潔、強生、百威英博、歐萊雅為代表的外企' 
+                      : '以可口可乐、宝洁、强生、百威英博、欧莱雅为代表的外企' 
+                },
+                { 
+                  count: '50+', 
+                  text: language === 'en-US' 
+                    ? 'State-owned enterprises represented by State Grid, China Welfare Lottery, and China Resources Group' 
+                    : language === 'zh-HK' 
+                      ? '以國家電網、中國福彩、華潤集團為代表的國企央企' 
+                      : '以国家电网、中国福彩、华润集团为代表的国企央企' 
+                },
+                { 
+                  count: '500+', 
+                  text: language === 'en-US' 
+                    ? 'Private enterprises represented by LONGi, Geely, Sany Heavy Industry, and vivo' 
+                    : language === 'zh-HK' 
+                      ? '以隆基、吉利、三一重工、vivo為代表的民營企業' 
+                      : '以隆基、吉利、三一重工、vivo为代表的民营企业' 
+                },
+                { 
+                  count: '200+', 
+                  text: language === 'en-US' 
+                    ? 'Unicorn companies represented by Tencent, Alibaba, Kuaishou, and Meituan-Dianping' 
+                    : language === 'zh-HK' 
+                      ? '以騰訊、阿里巴巴、快手、美團點評為代表的獨角獸企業' 
+                      : '以腾讯、阿里巴巴、快手、美团点评为代表的独角兽企业' 
+                },
               ];
               return (
                 <div className="md:w-7/12 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -591,7 +784,7 @@ export default function NewHome() {
                 to="/esg-voyant/intro"
                 className="hidden"
               >
-                免费风险评估
+                {language === 'en-US' ? 'Free Risk Assessment' : language === 'zh-HK' ? '免費風險評估' : '免费风险评估'}
               </Link>
 
               {/* 右侧按钮改成白底样式 */}
@@ -599,7 +792,7 @@ export default function NewHome() {
                 onClick={() => setIsContactModalOpen(true)}
                 className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-gray-900 bg-white hover:bg-gray-100 border border-gray-300 transition-colors duration-300"
               >
-                联系我们
+                {language === 'en-US' ? 'Contact Us' : language === 'zh-HK' ? '聯繫我們' : '联系我们'}
               </button>
             </div>
 

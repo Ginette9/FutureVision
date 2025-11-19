@@ -5,6 +5,8 @@ import ReportPurchaseModal from './ReportPurchaseModal';
 import fvLogoUrl from '@/images/future-vision-logo.png';
 import { PDFDocument, degrees } from 'pdf-lib';
 import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { convertToTraditional } from '@/locales/zh-HK';
 // 使用ESM worker入口以兼容最新版本
 // @ts-ignore
 import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
@@ -21,11 +23,15 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
   const [activeTab, setActiveTab] = useState<'overview' | 'contents'>('overview');
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [renderCache, setRenderCache] = useState<Record<string, string>>({});
+  const [renderingState, setRenderingState] = useState<Record<string, 'loading' | 'error' | 'complete'>>({});
+  const { language } = useLanguage();
 
   const formatYearMonth = (dateString: string) => {
     const d = new Date(dateString);
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, '0');
+    if (language === 'en-US') return `${y}-${m}`;
+    if (language === 'zh-HK') return `${y}年${m}月`;
     return `${y}年${m}月`;
   };
 
@@ -41,6 +47,10 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
     try {
       const url = report.pdfUrl;
       if (!url) return null;
+      
+      // 设置加载状态
+      setRenderingState(prev => ({ ...prev, [String(pageNum)]: 'loading' }));
+      
       const loadingTask = getDocument({ url });
       const pdf = await loadingTask.promise;
       const page = await pdf.getPage(pageNum);
@@ -59,13 +69,13 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
       // 传入 canvas 以符合类型要求
       await page.render({ canvasContext: ctx, viewport, canvas }).promise;
 
-      
-
       const dataUrl = canvas.toDataURL('image/png');
       setRenderCache((c) => ({ ...c, [String(pageNum)]: dataUrl }));
+      setRenderingState(prev => ({ ...prev, [String(pageNum)]: 'complete' }));
       return dataUrl;
     } catch (e) {
       console.warn('Failed to render PDF page', pageNum, e);
+      setRenderingState(prev => ({ ...prev, [String(pageNum)]: 'error' }));
       return null;
     }
   }, [report.pdfUrl]);
@@ -135,11 +145,50 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
               {/* Header */}
               <div className="relative">
                 <div className="aspect-video bg-white-100 overflow-hidden">
-                  <img
-                    src={(renderCache[String(report.coverPage || 1)] || report.coverImage) as string}
-                    alt={report.title}
-                    className="w-full h-full object-contain"
-                  />
+                  {(() => {
+                    const cacheKey = String(report.coverPage || 1);
+                    const cachedImage = renderCache[cacheKey];
+                    const currentState = renderingState[cacheKey];
+                    
+                    // 如果正在加载，显示加载状态
+                    if (currentState === 'loading') {
+                      return (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-50">
+                          <div className="text-center">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-2"></div>
+                            <div className="text-sm text-gray-500">加载封面...</div>
+                          </div>
+                        </div>
+                      );
+                    }
+                    
+                    // 如果有缓存图像，显示缓存图像
+                    if (cachedImage) {
+                      return (
+                        <img
+                          src={cachedImage}
+                          alt={language === 'en-US' ? (report.titleEn || report.title) : language === 'zh-HK' ? convertToTraditional(report.title || '') : report.title}
+                          className="w-full h-full object-contain"
+                        />
+                      );
+                    }
+                    
+                    // 如果加载失败，显示备用图片
+                    if (currentState === 'error') {
+                      return (
+                        <img
+                          src={report.coverImage || '/images/pdf-cover.png'}
+                          alt={language === 'en-US' ? (report.titleEn || report.title) : language === 'zh-HK' ? convertToTraditional(report.title || '') : report.title}
+                          className="w-full h-full object-contain"
+                        />
+                      );
+                    }
+                    
+                    // 默认情况：显示空白或备用图片
+                    return (
+                      <div className="w-full h-full bg-gray-50"></div>
+                    );
+                  })()}
                 </div>
                 <button
                   onClick={onClose}
@@ -156,28 +205,28 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                 {/* Title and Meta */}
                 <div className="mb-6">
                   <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
-                    {report.title}
+                    {language === 'en-US' ? (report.titleEn || report.title) : language === 'zh-HK' ? convertToTraditional(report.title || '') : report.title}
                   </h1>
                   
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
                     <div>
-                      <span className="text-sm text-gray-500">行业</span>
-                      <p className="font-medium">{report.industry}</p>
+                      <span className="text-sm text-gray-500">{language === 'en-US' ? 'Industry' : language === 'zh-HK' ? '行業' : '行业'}</span>
+                      <p className="font-medium">{language === 'en-US' ? (report.industryEn || report.industry) : language === 'zh-HK' ? convertToTraditional(report.industry || '') : report.industry}</p>
                     </div>
                     <div>
-                      <span className="text-sm text-gray-500">议题</span>
-                      <p className="font-medium">{report.topic}</p>
+                      <span className="text-sm text-gray-500">{language === 'en-US' ? 'Topic' : language === 'zh-HK' ? '議題' : '议题'}</span>
+                      <p className="font-medium">{language === 'en-US' ? (report.topicEn || report.topic) : language === 'zh-HK' ? convertToTraditional(report.topic || '') : report.topic}</p>
                     </div>
                     <div>
-                      <span className="text-sm text-gray-500">页数</span>
-                      <p className="font-medium">{report.pages}页</p>
+                      <span className="text-sm text-gray-500">{language === 'en-US' ? 'Pages' : language === 'zh-HK' ? '頁數' : '页数'}</span>
+                      <p className="font-medium">{report.pages}{language === 'en-US' ? ' pages' : language === 'zh-HK' ? '頁' : '页'}</p>
                     </div>
                     <div>
-                      <span className="text-sm text-gray-500">来源</span>
-                      <p className="font-medium">{report.source || '未来视界研究院'}</p>
+                      <span className="text-sm text-gray-500">{language === 'en-US' ? 'Source' : language === 'zh-HK' ? '來源' : '来源'}</span>
+                      <p className="font-medium">{report.source || (language === 'en-US' ? 'Future Vision Research Institute' : language === 'zh-HK' ? '未來視界研究院' : '未来视界研究院')}</p>
                     </div>
                     <div>
-                      <span className="text-sm text-gray-500">发布时间</span>
+                      <span className="text-sm text-gray-500">{language === 'en-US' ? 'Publish Date' : language === 'zh-HK' ? '發佈時間' : '发布时间'}</span>
                       <p className="font-medium">{formatYearMonth(report.date)}</p>
                     </div>
                   </div>
@@ -187,8 +236,8 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                 <div className="border-b border-gray-200 mb-6">
                   <nav className="flex space-x-8">
                     {[
-                      { id: 'overview', label: '报告概览' },
-                      { id: 'contents', label: '目录结构' }
+                      { id: 'overview', label: language === 'en-US' ? 'Report Overview' : language === 'zh-HK' ? '報告概覽' : '报告概览' },
+                      { id: 'contents', label: language === 'en-US' ? 'Table of Contents' : language === 'zh-HK' ? '目錄結構' : '目录结构' }
                     ].map((tab) => (
                       <button
                         key={tab.id}
@@ -210,9 +259,11 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                   {activeTab === 'overview' && (
                     <div className="space-y-6">
                       <div>
-                        <h3 className="text-lg font-semibold mb-3">报告摘要</h3>
+                        <h3 className="text-lg font-semibold mb-3">{language === 'en-US' ? 'Report Summary' : language === 'zh-HK' ? '報告摘要' : '报告摘要'}</h3>
                         {(() => {
-                          const raw = (report.detailedSummary || report.summary || '').trim();
+                          const summary = language === 'en-US' ? (report.summaryEn || report.summary) : language === 'zh-HK' ? convertToTraditional(report.summary || '') : report.summary;
+                          const detailed = language === 'en-US' ? (report.detailedSummaryEn || report.detailedSummary || report.summaryEn || report.summary) : language === 'zh-HK' ? convertToTraditional(report.detailedSummary || '') : report.detailedSummary;
+                          const raw = (detailed || summary || '').trim();
                           const parts = raw.includes('\n\n') ? raw.split(/\n{2,}/) : raw.split(/\n/);
                           return (
                             <div className="space-y-3">
@@ -232,13 +283,13 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                         {report.pdfUrl ? (
                           <div className="space-y-4">
                             {((report.tocPages && report.tocPages.length > 0) ? report.tocPages : [report.coverPage || 1]).map((p) => (
-                              <PdfPreview key={p} page={p} getImage={renderPageImage} cache={renderCache} />
+                              <PdfPreview key={p} page={p} getImage={renderPageImage} cache={renderCache} language={language} />
                             ))}
                           </div>
                         ) : (
                           <img
                             src={report.tocImageUrl || report.coverImage}
-                            alt="目录结构"
+                            alt={language === 'en-US' ? 'Table of Contents' : language === 'zh-HK' ? '目錄結構' : '目录结构'}
                             className="w-full h-auto object-contain"
                           />
                         )}
@@ -251,27 +302,30 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
 
                 {/* Action Buttons */}
                 <div className="flex justify-between items-center mt-6 pt-6 border-t border-gray-200">
-                  <div className="text-sm text-gray-500">报告免费下载；如需解读/定制，请联系我们。</div>
+                  <div className="text-sm text-gray-500">
+                    {language === 'en-US' ? 'Report is free to download; for interpretation/customization, please contact us.' : 
+                     language === 'zh-HK' ? '報告免費下載；如需解讀/定制，請聯繫我們。' : '报告免费下载；如需解读/定制，请联系我们。'}
+                  </div>
                   <div className="flex gap-3">
                     <button
                       onClick={onClose}
                       className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200"
                     >
-                      关闭
+                      {language === 'en-US' ? 'Close' : language === 'zh-HK' ? '關閉' : '关闭'}
                     </button>
                     {report.pdfUrl && (
                       <button
                         onClick={openWatermarkedPdf}
                         className="px-6 py-2 bg-gray-100 text-gray-900 hover:bg-gray-200 transition-colors duration-200 rounded"
                       >
-                        在线查看PDF
+                        {language === 'en-US' ? 'View Online' : language === 'zh-HK' ? '在線查看PDF' : '在线查看PDF'}
                       </button>
                     )}
                     <button
                       onClick={handleContactPurchase}
                       className="px-6 py-2 bg-gray-900 text-white hover:bg-gray-800 transition-colors duration-200 rounded"
                     >
-                      联系解读/定制
+                      {language === 'en-US' ? 'Customization Request' : language === 'zh-HK' ? '聯繫解讀/定制' : '联系解读/定制'}
                     </button>
                   </div>
                 </div>
@@ -291,18 +345,40 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
   );
 }
 
-function PdfPreview({ page, getImage, cache }: { page: number; getImage: (p: number) => Promise<string | null>; cache: Record<string, string>; }) {
+function PdfPreview({ page, getImage, cache, language }: { page: number; getImage: (p: number) => Promise<string | null>; cache: Record<string, string>; language: string; }) {
   const [url, setUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  
   useEffect(() => {
     (async () => {
-      if (cache[String(page)]) { setUrl(cache[String(page)]); return; }
+      if (cache[String(page)]) { 
+        setUrl(cache[String(page)]); 
+        return; 
+      }
+      setIsLoading(true);
       const u = await getImage(page);
       setUrl(u);
+      setIsLoading(false);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
-  if (!url) return <div className="w-full h-64 rounded border bg-gray-50 animate-pulse" />;
+  
+  const altText = language === 'en-US' ? `Page ${page}` : language === 'zh-HK' ? `第${page}頁` : `第${page}页`;
+  
+  if (isLoading) {
+    return (
+      <div className="w-full h-64 rounded border bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-2"></div>
+          <div className="text-sm text-gray-500">加载页面...</div>
+        </div>
+      </div>
+    );
+  }
+  
+  if (!url) return <div className="w-full h-64 rounded border bg-gray-50" />;
+  
   return (
-    <img src={url} alt={`第${page}页`} className="w-full h-auto object-contain rounded border bg-white" />
+    <img src={url} alt={altText} className="w-full h-auto object-contain rounded border bg-white" />
   );
 }

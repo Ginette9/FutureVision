@@ -13,7 +13,11 @@ const ADMIN_TOKEN = process.env.ADMIN_TOKEN;
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
-// 静态文件服务（生产环境）
+// 静态文件服务
+app.use('/images', express.static('public/images'));
+app.use(express.static('public'));
+
+// 生产环境特殊处理
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('dist/static'));
   
@@ -27,6 +31,10 @@ if (process.env.NODE_ENV === 'production') {
   app.get(/^(?!\/(api|proxy)(\/|$)|\/health(\/|$)).*/, (req, res) => {
     res.sendFile('dist/static/index.html', { root: '.' });
   });
+} else {
+  // 开发环境静态文件服务
+  app.use('/images', express.static('public/images'));
+  app.use(express.static('public'));
 }
 
 // ============== PayPal 配置（可选，启用即生效） ==============
