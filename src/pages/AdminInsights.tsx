@@ -11,10 +11,12 @@ import {
   moveInsightReportToTop,
   replaceInsightReports
 } from '@/data/insightReports';
-import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist';
-import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min?url";
+import { getDocument } from 'pdfjs-dist';
+import { GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf';
+// @ts-ignore
+import workerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.js?url';
 
-GlobalWorkerOptions.workerSrc = pdfWorkerUrl as any;
+GlobalWorkerOptions.workerSrc = workerUrl;
 
 type EditMode = { id?: string } | null;
 

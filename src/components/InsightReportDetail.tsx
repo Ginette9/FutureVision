@@ -4,14 +4,16 @@ import { InsightReport } from '../data/insightReports';
 import ReportPurchaseModal from './ReportPurchaseModal';
 import fvLogoUrl from '@/images/future-vision-logo.png';
 import { PDFDocument, degrees } from 'pdf-lib';
-import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist';
+import { getDocument } from 'pdfjs-dist';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { convertToTraditional } from '@/locales/zh-HK';
 // 使用ESM worker入口以兼容最新版本
 // @ts-ignore
-import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min?url";
+import { GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf';
+// @ts-ignore
+import workerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.js?url';
 
-GlobalWorkerOptions.workerSrc = pdfWorkerUrl as any;
+GlobalWorkerOptions.workerSrc = workerUrl;
 
 interface InsightReportDetailProps {
   report: InsightReport;
