@@ -431,16 +431,6 @@ export default function NewHome() {
                       );
                     }
                     
-                    // 如果加载失败，显示备用图片
-                    if (currentState === 'error') {
-                      return (
-                        <img
-                          src={insight.coverImage}
-                          alt={language === 'en-US' ? (insight.titleEn || insight.title) : language === 'zh-HK' ? convertToTraditional(insight.title || '') : insight.title}
-                          className="w-full h-full object-contain"
-                        />
-                      );
-                    
                     // 默认情况：显示空白或备用图片
                     return (
                       <div className="w-full h-full bg-gray-50"></div>
