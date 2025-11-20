@@ -13,7 +13,7 @@ import {
 } from '@/data/insightReports';
 import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist';
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min?url";
-
+GlobalWorkerOptions.disableWorker = true;
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl as any;
 
 type EditMode = { id?: string } | null;

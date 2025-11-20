@@ -10,7 +10,7 @@ import { convertToTraditional } from '@/locales/zh-HK';
 // 使用ESM worker入口以兼容最新版本
 // @ts-ignore
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min?url";
-
+GlobalWorkerOptions.disableWorker = true;
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl as any;
 
 interface InsightReportDetailProps {

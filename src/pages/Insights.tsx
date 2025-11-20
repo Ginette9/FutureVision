@@ -8,7 +8,7 @@ import { convertToTraditional } from '@/locales/zh-HK';
 import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist';
 // @ts-ignore
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min?url";
-
+GlobalWorkerOptions.disableWorker = true;
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl as any;
 
 export default function Insights() {
