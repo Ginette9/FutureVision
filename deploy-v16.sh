@@ -109,6 +109,9 @@ server {
     root ${NGINX_SITE_ROOT};
     index index.html;
 
+    ssl_certificate      /home/cert/mscfv.com.pem;
+    ssl_certificate_key  /home/cert/mscfv.com.key;
+
     # 静态资源
     location / {
         try_files \$uri \$uri/ /index.html;
