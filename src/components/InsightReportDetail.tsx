@@ -173,17 +173,6 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                       );
                     }
                     
-                    // 如果加载失败，显示备用图片
-                    if (currentState === 'error') {
-                      return (
-                        <img
-                          src={report.coverImage}
-                          alt={language === 'en-US' ? (report.titleEn || report.title) : language === 'zh-HK' ? convertToTraditional(report.title || '') : report.title}
-                          className="w-full h-full object-contain"
-                        />
-                      );
-                    }
-                    
                     // 默认情况：显示空白或备用图片
                     return (
                       <div className="w-full h-full bg-gray-50"></div>
@@ -288,7 +277,7 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                           </div>
                         ) : (
                           <img
-                            src={report.tocImageUrl || report.coverImage}
+                            src={report.tocImageUrl}
                             alt={language === 'en-US' ? 'Table of Contents' : language === 'zh-HK' ? '目錄結構' : '目录结构'}
                             className="w-full h-auto object-contain"
                           />
