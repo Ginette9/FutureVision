@@ -8,6 +8,7 @@ import { getDocument } from 'pdfjs-dist';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { convertToTraditional } from '@/locales/zh-HK';
 // 使用ESM worker入口以兼容最新版本
+import { GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf';
 // @ts-ignore
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min?url";
 GlobalWorkerOptions.disableWorker = true;
