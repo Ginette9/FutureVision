@@ -48,7 +48,7 @@ export default function Insights() {
 
   const getCoverImageUrl = useCallback((report: InsightReport): string => {
     const cacheKey = `${report.id}-${report.coverPage || 1}`;
-    return renderCache[cacheKey] || report.coverImage || '/images/pdf-cover.png';
+    return renderCache[cacheKey] || report.coverImage;
   }, [renderCache]);
 
   const renderCoverPage = useCallback(async (report: InsightReport): Promise<string | null> => {
@@ -205,7 +205,7 @@ export default function Insights() {
                     if (currentState === 'error') {
                       return (
                         <img 
-                          src={insight.coverImage || '/images/pdf-cover.png'}
+                          src={insight.coverImage}
                           alt={(language === 'en-US' ? (insight.titleEn || insight.title) : language === 'zh-HK' ? convertToTraditional(insight.title || '') : insight.title)}
                           className="w-full h-full object-contain"
                         />

@@ -435,7 +435,7 @@ export default function NewHome() {
                     if (currentState === 'error') {
                       return (
                         <img
-                          src={insight.coverImage || '/images/pdf-cover.png'}
+                          src={insight.coverImage}
                           alt={language === 'en-US' ? (insight.titleEn || insight.title) : language === 'zh-HK' ? convertToTraditional(insight.title || '') : insight.title}
                           className="w-full h-full object-contain"
                         />

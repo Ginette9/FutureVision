@@ -177,7 +177,7 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                     if (currentState === 'error') {
                       return (
                         <img
-                          src={report.coverImage || '/images/pdf-cover.png'}
+                          src={report.coverImage}
                           alt={language === 'en-US' ? (report.titleEn || report.title) : language === 'zh-HK' ? convertToTraditional(report.title || '') : report.title}
                           className="w-full h-full object-contain"
                         />
