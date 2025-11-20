@@ -440,7 +440,6 @@ export default function NewHome() {
                           className="w-full h-full object-contain"
                         />
                       );
-                    }
                     
                     // 默认情况：显示空白或备用图片
                     return (
