@@ -9,7 +9,9 @@ import graphListed from '../images/graph-listed.png';
 import graphSme from '../images/graph-sme.png';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { convertToTraditional } from '@/locales/zh-HK';
-import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist';
+import { getDocument } from 'pdfjs-dist';
+// @ts-ignore
+import { GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf';
 // @ts-ignore
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min?url";
 GlobalWorkerOptions.disableWorker = true;

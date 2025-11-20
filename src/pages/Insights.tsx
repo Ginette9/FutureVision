@@ -5,7 +5,9 @@ import { getAllInsightReports, InsightReport } from '../data/insightReports';
 import InsightReportDetail from '../components/InsightReportDetail';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { convertToTraditional } from '@/locales/zh-HK';
-import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist';
+import { getDocument } from 'pdfjs-dist';
+// @ts-ignore
+import { GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf';
 // @ts-ignore
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min?url";
 GlobalWorkerOptions.disableWorker = true;
