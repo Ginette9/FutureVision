@@ -7,7 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { convertToTraditional } from '@/locales/zh-HK';
 import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist';
 // @ts-ignore
-import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min?url";
 
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl as any;
 

@@ -12,7 +12,7 @@ import {
   replaceInsightReports
 } from '@/data/insightReports';
 import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist';
-import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min?url";
 
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl as any;
 
