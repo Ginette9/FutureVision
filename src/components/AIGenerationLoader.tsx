@@ -118,32 +118,60 @@ const AIGenerationLoader: React.FC<AIGenerationLoaderProps> = ({
   // 步骤文案：不把 formData 作为依赖触发重跑，而是每次"渲染"读取最新值
   const steps = useMemo(
     () => [
-      { title: '正在连接AI分析引擎...', description: '初始化风险评估模型，加载深度学习算法', icon: '🤖' },
-      { title: '抓取最新政策动态', description: `分析${formData?.country?.name || '目标国家'}相关ESG法规政策，获取最新监管要求`, icon: '📋' },
-      { title: '收集全球资讯数据', description: '获取ESG相关新闻、行业动态和可持续发展趋势', icon: '🌍' },
-      { title: '分析供应链风险', description: `评估${formData?.industry?.name || '目标行业'}供应链风险因素，识别潜在ESG风险点`, icon: '🔗' },
-      { title: '计算风险评分', description: '基于多维度数据计算综合风险指数，生成风险评估矩阵', icon: '📊' },
-      { title: '生成个性化报告', description: '为您量身定制ESG风险评估报告，包含针对性建议', icon: '📄' },
-      { title: '报告生成完成', description: '正在为您呈现专业分析结果，报告已准备就绪', icon: '✅' },
+      { 
+        title: t('aiLoader.step1.title'), 
+        description: t('aiLoader.step1.desc'), 
+        icon: '🤖' 
+      },
+      { 
+        title: t('aiLoader.step2.title'), 
+        description: t('aiLoader.step2.desc').replace('{country}', formData?.country?.name || t('aiLoader.targetCountry')), 
+        icon: '📋' 
+      },
+      { 
+        title: t('aiLoader.step3.title'), 
+        description: t('aiLoader.step3.desc'), 
+        icon: '🌍' 
+      },
+      { 
+        title: t('aiLoader.step4.title'), 
+        description: t('aiLoader.step4.desc').replace('{industry}', formData?.industry?.name || t('aiLoader.targetIndustry')), 
+        icon: '🔗' 
+      },
+      { 
+        title: t('aiLoader.step5.title'), 
+        description: t('aiLoader.step5.desc'), 
+        icon: '📊' 
+      },
+      { 
+        title: t('aiLoader.step6.title'), 
+        description: t('aiLoader.step6.desc'), 
+        icon: '📄' 
+      },
+      { 
+        title: t('aiLoader.step7.title'), 
+        description: t('aiLoader.step7.desc'), 
+        icon: '✅' 
+      },
     ],
     // 只依赖必要的基本类型，避免对象引用变化触发重建
-    [formData?.country?.name, formData?.industry?.name]
+    [formData?.country?.name, formData?.industry?.name, t]
   );
 
   const processingMessages = useMemo(
     () => [
-      '正在分析环境法规变化...',
-      '评估社会影响指标...',
-      '计算治理风险系数...',
-      '整合供应链数据...',
-      '生成风险评估矩阵...',
-      '优化报告结构...',
-      '验证数据准确性...',
-      '应用机器学习算法...',
-      '生成可视化图表...',
-      '完善风险建议...',
+      t('aiLoader.analyzingRegulations') || '正在分析环境法规变化...',
+      t('aiLoader.evaluatingSocialImpact') || '评估社会影响指标...',
+      t('aiLoader.calculatingGovernanceRisk') || '计算治理风险系数...',
+      t('aiLoader.integratingSupplyChain') || '整合供应链数据...',
+      t('aiLoader.generatingRiskMatrix') || '生成风险评估矩阵...',
+      t('aiLoader.optimizingReport') || '优化报告结构...',
+      t('aiLoader.validatingData') || '验证数据准确性...',
+      t('aiLoader.applyingML') || '应用机器学习算法...',
+      t('aiLoader.generatingCharts') || '生成可视化图表...',
+      t('aiLoader.refiningRecommendations') || '完善风险建议...',
     ],
-    []
+    [t]
   );
 
   // 简单打字器
@@ -317,24 +345,24 @@ const AIGenerationLoader: React.FC<AIGenerationLoaderProps> = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
           </div>
-          <h1 className="text-3xl font-light text-gray-900 mb-4">AI智能风险评估</h1>
-          <p className="text-lg text-gray-600 mb-8">正在为您生成专业的ESG风险评估报告</p>
+          <h1 className="text-3xl font-light text-gray-900 mb-4">{t('aiLoader.title')}</h1>
+          <p className="text-lg text-gray-600 mb-8">{t('aiLoader.subtitle')}</p>
 
           {formData && (
             <div className="bg-white border border-gray-200 p-6 w-full break-words">
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-500">目标行业</span>
-                  <span className="text-gray-900 font-medium break-words break-all">{formData?.industry?.name || '未选择'}</span>
+                  <span className="text-gray-500">{t('aiLoader.targetIndustry')}</span>
+                  <span className="text-gray-900 font-medium break-words break-all">{formData?.industry?.name || t('aiLoader.notSelected')}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-500">目标国家</span>
-                  <span className="text-gray-900 font-medium break-words break-all">{formData?.country?.name || '未选择'}</span>
+                  <span className="text-gray-500">{t('aiLoader.targetCountry')}</span>
+                  <span className="text-gray-900 font-medium break-words break-all">{formData?.country?.name || t('aiLoader.notSelected')}</span>
                 </div>
                 {formData?.name && (
                   <div className="pt-3 border-t border-gray-100">
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-500">客户信息</span>
+                      <span className="text-gray-500">{t('aiLoader.clientInfo')}</span>
                       <span className="text-gray-900 font-medium break-words break-all">
                         {formData.name} - {formData.email}
                       </span>
@@ -349,7 +377,7 @@ const AIGenerationLoader: React.FC<AIGenerationLoaderProps> = ({
         {/* 进度条 */}
         <div className="mb-12">
           <div className="flex justify-between text-sm text-gray-600 mb-3">
-            <span className="font-medium">生成进度</span>
+            <span className="font-medium">{t('aiLoader.progress')}</span>
             <span className="font-medium text-gray-900 tabular-nums" ref={percentElRef}>{percentText}%</span>
           </div>
           <div className="w-full bg-gray-200 h-2 overflow-hidden" ref={progressContainerRef}>
@@ -406,9 +434,9 @@ const AIGenerationLoader: React.FC<AIGenerationLoaderProps> = ({
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">报告生成完成</h3>
-                  <p className="text-gray-600">正在为您呈现专业的ESG风险评估报告...</p>
-                  <p className="text-sm text-gray-500 mt-2">即将跳转到报告页面</p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">{t('aiLoader.reportComplete')}</h3>
+                  <p className="text-gray-600">{t('aiLoader.presentingReport')}</p>
+                  <p className="text-sm text-gray-500 mt-2">{t('aiLoader.redirecting')}</p>
                 </div>
               </div>
             </div>
@@ -461,24 +489,24 @@ const AIGenerationLoader: React.FC<AIGenerationLoaderProps> = ({
           <div className="mb-8 p-4 bg-gray-100 border border-gray-200">
             <div className="flex items-center space-x-3">
               <div className="w-2 h-2 bg-gray-600 rounded-full animate-pulse"></div>
-              <p className="text-sm text-gray-700 font-medium">{currentMessage}</p>
+              <p className="text-sm text-gray-700 font-medium">{currentMessage || t('aiLoader.processing')}</p>
             </div>
           </div>
         )}
 
         {/* 底部信息 */}
         <div className="text-center">
-          <p className="text-sm text-gray-500 mb-6">请耐心等待，AI正在为您进行深度分析</p>
+          <p className="text-sm text-gray-500 mb-6">{t('aiLoader.pleaseWait')}</p>
 
           <div className="bg-white border border-gray-200 p-6 mb-4">
-            <h4 className="text-sm font-medium text-gray-900 mb-4 text-center">实时处理数据</h4>
+            <h4 className="text-sm font-medium text-gray-900 mb-4 text-center">{t('aiLoader.processing')}</h4>
             <div className="grid grid-cols-2 gap-6 text-sm">
               <div className="text-center">
-                <p className="text-gray-500 mb-1">已分析数据点</p>
+                <p className="text-gray-500 mb-1">{t('aiLoader.analyzedDataPoints')}</p>
                 <p className="text-gray-900 font-light text-2xl">{dataPoints.toLocaleString()}</p>
               </div>
               <div className="text-center">
-                <p className="text-gray-500 mb-1">已处理项目</p>
+                <p className="text-gray-500 mb-1">{t('aiLoader.processedItems')}</p>
                 <p className="text-gray-900 font-light text-2xl">{processedItems.toLocaleString()}</p>
               </div>
             </div>
@@ -487,20 +515,20 @@ const AIGenerationLoader: React.FC<AIGenerationLoaderProps> = ({
           <div className="bg-gray-50 border border-gray-200 p-4">
             <div className="grid grid-cols-2 gap-4 text-xs">
               <div className="text-left">
-                <p className="font-medium text-gray-700">分析引擎</p>
-                <p className="text-gray-500">GPT-4 + 专业ESG模型</p>
+                <p className="font-medium text-gray-700">{t('aiLoader.analysisEngine')}</p>
+                <p className="text-gray-500">{t('aiLoader.gpt4Model')}</p>
               </div>
               <div className="text-left">
-                <p className="font-medium text-gray-700">数据源</p>
-                <p className="text-gray-500">全球ESG数据库</p>
+                <p className="font-medium text-gray-700">{t('aiLoader.dataSource')}</p>
+                <p className="text-gray-500">{t('aiLoader.globalESGDatabase')}</p>
               </div>
               <div className="text-left">
-                <p className="font-medium text-gray-700">更新时间</p>
+                <p className="font-medium text-gray-700">{t('aiLoader.updateTime')}</p>
                 <p className="text-gray-500">{new Date().toLocaleDateString()}</p>
               </div>
               <div className="text-left">
-                <p className="font-medium text-gray-700">报告版本</p>
-                <p className="text-gray-500">v2.1.0</p>
+                <p className="font-medium text-gray-700">{t('aiLoader.reportVersion')}</p>
+                <p className="text-gray-500">{t('aiLoader.v2.1.0')}</p>
               </div>
             </div>
           </div>

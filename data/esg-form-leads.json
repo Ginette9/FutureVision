@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Chenyi Xu",
+    "email": "xuchenyi@mscfv.com",
+    "position": "PD",
+    "organization": "MSC",
+    "phone": "18067879798",
+    "industryId": "2",
+    "industryName": "固定植物油脂",
+    "countryId": "3",
+    "countryName": "安圭拉",
+    "ts": "2025-11-20T01:06:22.712Z"
+  },
+  {
+    "name": "Chenyi Xu",
+    "email": "xuchenyi@mscfv.com",
+    "position": "PD",
+    "organization": "MSC",
+    "phone": "+86 18067879798",
+    "industryId": "37",
+    "industryName": "化工材料與产品",
+    "countryId": "36",
+    "countryName": "直布罗陀",
+    "ts": "2025-11-20T01:06:49.300Z"
+  },
+  {
+    "name": "Chenyi Xu",
+    "email": "xuchenyi@mscfv.com",
+    "position": "PD",
+    "organization": "MSC",
+    "phone": "+86 18067879798",
+    "industryId": "5",
+    "industryName": "Soy oil",
+    "countryId": "1",
+    "countryName": "Andorra",
+    "ts": "2025-11-20T01:07:13.989Z"
+  }
+]
