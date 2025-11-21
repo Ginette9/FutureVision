@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { InsightReport } from '../data/insightReports';
 import ReportPurchaseModal from './ReportPurchaseModal';
@@ -11,7 +11,6 @@ import { convertToTraditional } from '@/locales/zh-HK';
 import { GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf';
 // @ts-ignore
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min?url";
-GlobalWorkerOptions.disableWorker = true;
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl as any;
 
 interface InsightReportDetailProps {
@@ -44,14 +43,80 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
     setIsContactModalOpen(false);
   };
 
+  /**
+   * 尝试检查图片是否存在（先 HEAD，若失败再用 GET）
+   */
+  async function checkImageExists(url: string): Promise<boolean> {
+    try {
+      // 先尝试 HEAD（较轻量）
+      const head = await fetch(url, { method: 'HEAD' });
+      if (head.ok) return true;
+      // 有些服务器不允许 HEAD，退回到 GET
+      const get = await fetch(url, { method: 'GET' });
+      return get.ok;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * 根据 report.id / report.slug 等，尝试一组常见的 toc 图片命名并返回第一个存在的 URL
+   * 优先使用 report.tocImageUrls（如果在数据里指定了），否则尝试基于 id 的命名规则
+   */
+  async function findExistingTocImage(reportObj: Partial<InsightReport>, page: number): Promise<string | null> {
+    // 如果数据源里有 tocImageUrls，优先使用（避免运行时探测，推荐在构建阶段写入）
+    const preconfigured = (reportObj as any)?.tocImageUrls;
+    if (Array.isArray(preconfigured) && preconfigured.length > 0) {
+      for (const url of preconfigured) {
+        // some urls may include {page} template - replace if needed
+        const templated = url.includes('{page}') ? url.replace('{page}', String(page)) : url;
+        // eslint-disable-next-line no-await-in-loop
+        if (await checkImageExists(templated)) return templated;
+      }
+    }
+
+    // 继续按 id-based pattern 探测
+    const reportIdOrSlug = (reportObj as any)?.id || (reportObj as any)?.slug || '';
+    if (!reportIdOrSlug) return null;
+
+    const exts = ['png', 'jpg', 'webp'];
+    const candidates: string[] = [];
+
+    // 主方案： {id}-toc-{page}.{ext}
+    for (const ext of exts) {
+      candidates.push(`/images/insights/${reportIdOrSlug}-toc-${page}.${ext}`);
+    }
+    // 兼容 page 偏移（page-1 / page+1）
+    for (const offset of [-1, 1]) {
+      const p = page + offset;
+      if (p > 0) {
+        for (const ext of exts) {
+          candidates.push(`/images/insights/${reportIdOrSlug}-toc-${p}.${ext}`);
+        }
+      }
+    }
+    // 也尝试不带 '-toc' 的备用命名（有的系统会命名为 {id}-page-{n} 或 {id}-tocpage-{n}）
+    for (const ext of exts) {
+      candidates.push(`/images/insights/${reportIdOrSlug}-page-${page}.${ext}`);
+      candidates.push(`/images/insights/${reportIdOrSlug}-tocpage-${page}.${ext}`);
+    }
+
+    for (const c of candidates) {
+      // eslint-disable-next-line no-await-in-loop
+      const ok = await checkImageExists(c);
+      if (ok) return c;
+    }
+    return null;
+  }
+
   const renderPageImage = useCallback(async (pageNum: number): Promise<string | null> => {
     try {
       const url = report.pdfUrl;
       if (!url) return null;
-      
+
       // 设置加载状态
       setRenderingState(prev => ({ ...prev, [String(pageNum)]: 'loading' }));
-      
+
       const loadingTask = getDocument({ url });
       const pdf = await loadingTask.promise;
       const page = await pdf.getPage(pageNum);
@@ -68,7 +133,7 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       // 传入 canvas 以符合类型要求
-      await page.render({ canvasContext: ctx, viewport, canvas }).promise;
+      await page.render({ canvasContext: ctx, viewport }).promise;
 
       const dataUrl = canvas.toDataURL('image/png');
       setRenderCache((c) => ({ ...c, [String(pageNum)]: dataUrl }));
@@ -77,9 +142,24 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
     } catch (e) {
       console.warn('Failed to render PDF page', pageNum, e);
       setRenderingState(prev => ({ ...prev, [String(pageNum)]: 'error' }));
+
+      // --- 新增：尝试从 /images/insights 找到备选 toc 图 ---
+      try {
+        const fallback = await findExistingTocImage(report, pageNum);
+        if (fallback) {
+          // 把找到的本地图片加入缓存，作为页面图像
+          setRenderCache((c) => ({ ...c, [String(pageNum)]: fallback }));
+          setRenderingState(prev => ({ ...prev, [String(pageNum)]: 'complete' }));
+          return fallback;
+        }
+      } catch (e2) {
+        console.warn('toc fallback check failed', e2);
+      }
+
       return null;
     }
-  }, [report.pdfUrl]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [report]);
 
   const openWatermarkedPdf = useCallback(async () => {
     try {
@@ -106,7 +186,7 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
         page.drawImage(logo, { x, y, width: scaled.width, height: scaled.height, rotate: degrees(30), opacity: 0.12 });
       }
       const out = await pdf.save();
-      const blob = new Blob([out], { type: 'application/pdf' });
+      const blob = new Blob([out.buffer as ArrayBuffer], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
     } catch {
@@ -150,7 +230,7 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                     const cacheKey = String(report.coverPage || 1);
                     const cachedImage = renderCache[cacheKey];
                     const currentState = renderingState[cacheKey];
-                    
+
                     // 如果正在加载，显示加载状态
                     if (currentState === 'loading') {
                       return (
@@ -162,7 +242,7 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                         </div>
                       );
                     }
-                    
+
                     // 如果有缓存图像，显示缓存图像
                     if (cachedImage) {
                       return (
@@ -173,7 +253,18 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                         />
                       );
                     }
-                    
+
+                    // 如果加载失败，显示备用图片
+                    if (currentState === 'error') {
+                      return (
+                        <img
+                          src={report.coverImage}
+                          alt={language === 'en-US' ? (report.titleEn || report.title) : language === 'zh-HK' ? convertToTraditional(report.title || '') : report.title}
+                          className="w-full h-full object-contain"
+                        />
+                      );
+                    }
+
                     // 默认情况：显示空白或备用图片
                     return (
                       <div className="w-full h-full bg-gray-50"></div>
@@ -197,7 +288,7 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                   <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
                     {language === 'en-US' ? (report.titleEn || report.title) : language === 'zh-HK' ? convertToTraditional(report.title || '') : report.title}
                   </h1>
-                  
+
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
                     <div>
                       <span className="text-sm text-gray-500">{language === 'en-US' ? 'Industry' : language === 'zh-HK' ? '行業' : '行业'}</span>
@@ -273,7 +364,7 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                         {report.pdfUrl ? (
                           <div className="space-y-4">
                             {((report.tocPages && report.tocPages.length > 0) ? report.tocPages : [report.coverPage || 1]).map((p) => (
-                              <PdfPreview key={p} page={p} getImage={renderPageImage} cache={renderCache} language={language} />
+                              <PdfPreview key={p} page={p} getImage={renderPageImage} cache={renderCache} language={language} report={report} />
                             ))}
                           </div>
                         ) : (
@@ -287,13 +378,12 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                     </div>
                   )}
 
-                  {/* 已移除“示例页面”标签：PDF可自由查看，避免冗余 */}
                 </div>
 
                 {/* Action Buttons */}
                 <div className="flex justify-between items-center mt-6 pt-6 border-t border-gray-200">
                   <div className="text-sm text-gray-500">
-                    {language === 'en-US' ? 'Report is free to download; for interpretation/customization, please contact us.' : 
+                    {language === 'en-US' ? 'Report is free to download; for interpretation/customization, please contact us.' :
                      language === 'zh-HK' ? '報告免費下載；如需解讀/定制，請聯繫我們。' : '报告免费下载；如需解读/定制，请联系我们。'}
                   </div>
                   <div className="flex gap-3">
@@ -335,26 +425,57 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
   );
 }
 
-function PdfPreview({ page, getImage, cache, language }: { page: number; getImage: (p: number) => Promise<string | null>; cache: Record<string, string>; language: string; }) {
+/**
+ * PdfPreview：展示单页预览，若 PDF 渲染失败，会尝试通过 findExistingTocImage 查找本地备选图片
+ */
+function PdfPreview({
+  page,
+  getImage,
+  cache,
+  language,
+  report
+}: {
+  page: number;
+  getImage: (p: number) => Promise<string | null>;
+  cache: Record<string, string>;
+  language: string;
+  report: Partial<InsightReport> | any;
+}) {
   const [url, setUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   useEffect(() => {
     (async () => {
-      if (cache[String(page)]) { 
-        setUrl(cache[String(page)]); 
-        return; 
+      if (cache[String(page)]) {
+        setUrl(cache[String(page)]);
+        return;
       }
       setIsLoading(true);
       const u = await getImage(page);
-      setUrl(u);
-      setIsLoading(false);
+      if (u) {
+        setUrl(u);
+        setIsLoading(false);
+        return;
+      }
+      // getImage 返回 null（渲染失败），再尝试本地 /images/insights 备选文件
+      try {
+        const fallback = await (window as any).findExistingTocImage(report, page);
+        if (fallback) {
+          setUrl(fallback);
+        }
+      } catch (e) {
+        // ignore
+        // eslint-disable-next-line no-console
+        console.warn('PdfPreview fallback lookup failed', e);
+      } finally {
+        setIsLoading(false);
+      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
-  
+
   const altText = language === 'en-US' ? `Page ${page}` : language === 'zh-HK' ? `第${page}頁` : `第${page}页`;
-  
+
   if (isLoading) {
     return (
       <div className="w-full h-64 rounded border bg-gray-50 flex items-center justify-center">
@@ -365,9 +486,9 @@ function PdfPreview({ page, getImage, cache, language }: { page: number; getImag
       </div>
     );
   }
-  
+
   if (!url) return <div className="w-full h-64 rounded border bg-gray-50" />;
-  
+
   return (
     <img src={url} alt={altText} className="w-full h-auto object-contain rounded border bg-white" />
   );

@@ -10,7 +10,6 @@ import { getDocument } from 'pdfjs-dist';
 import { GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf';
 // @ts-ignore
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min?url";
-GlobalWorkerOptions.disableWorker = true;
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl as any;
 
 export default function Insights() {
@@ -198,6 +197,17 @@ export default function Insights() {
                         <img 
                           src={cachedImage}
                           alt={(language === 'en-US' ? (insight.titleEn || insight.title) : language === 'zh-HK' ? convertToTraditional(insight.title || '') : insight.title)}
+                          className="w-full h-full object-contain"
+                        />
+                      );
+                    }
+                                        
+                    // 如果加载失败，显示备用图片
+                    if (currentState === 'error') {
+                      return (
+                        <img
+                          src={insight.coverImage}
+                          alt={language === 'en-US' ? (insight.titleEn || insight.title) : language === 'zh-HK' ? convertToTraditional(insight.title || '') : insight.title}
                           className="w-full h-full object-contain"
                         />
                       );

@@ -15,14 +15,20 @@
     "date": "2025-10-01",
     "category": "独家洞察",
     "source": "Future Vision",
-    "coverImage": "/images/pdf-cover.png",
+    "coverImage": "/images/insights/unconventional-cover.png",
     "tableOfContents": [],
     "isPurchasable": true,
     "currency": "CNY",
     "pdfUrl": "/reports/企业出海非常规风险：全球ESG冲突事件洞察（全球篇）.pdf",
     "coverPage": 1,
     "tocPages": [3, 4, 5, 6],
-    "coverCropY": 26
+    "coverCropY": 26,
+    "tocImageUrls": [
+      "/images/insights/unconventional-2025-toc-1.png",
+      "/images/insights/unconventional-2025-toc-2.png",
+      "/images/insights/unconventional-2025-toc-3.png",
+      "/images/insights/unconventional-2025-toc-4.png"
+    ]
   },
   {
     "id": "ins_wjrvj8mhuhlnak",
@@ -42,14 +48,17 @@
     "source": "MSC",
     "keywords": [],
     "featured": false,
-    "coverImage": "/images/pdf-cover.png",
+    "coverImage": "/images/insights/africa-cover.png",
     "tableOfContents": [],
     "isPurchasable": true,
     "currency": "CNY",
     "pdfUrl": "/reports/出海非洲：再次看见金字塔底层的财富.pdf",
     "coverPage": 1,
     "tocPages": [2],
-    "coverCropY": 0
+    "coverCropY": 0,
+    "tocImageUrls": [
+      "/images/insights/africa-toc-1.png"
+    ]
   },
   {
     "id": "ins_tj9j1emhuic2ib",
@@ -69,13 +78,18 @@
     "source": "Future Vision",
     "keywords": [],
     "featured": false,
-    "coverImage": "/images/pdf-cover.png",
+    "coverImage": "/images/insights/msci-cover.png",
     "tableOfContents": [],
     "isPurchasable": true,
     "currency": "CNY",
     "pdfUrl": "/reports/中国企业ESG评级跃迁指南：2024年MSCI ESG评级洞察报告.pdf",
     "coverPage": 1,
     "tocPages": [3, 4, 5],
-    "coverCropY": 0
+    "coverCropY": 0,
+    "tocImageUrls": [
+      "/images/insights/msci-toc-1.png",
+      "/images/insights/msci-toc-2.png",
+      "/images/insights/msci-toc-3.png"
+    ]
   }
 ]
