@@ -62,29 +62,38 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
    * 优先使用 report.tocImageUrls（如果在数据里指定了），否则尝试基于 id 的命名规则
    */
   async function findExistingTocImage(reportObj: Partial<InsightReport>, page: number): Promise<string | null> {
-    // 如果数据源里有 tocImageUrls，优先使用（避免运行时探测，推荐在构建阶段写入）
     const preconfigured = (reportObj as any)?.tocImageUrls;
+    const tocPages = Array.isArray((reportObj as any)?.tocPages) ? (reportObj as any).tocPages : [];
     if (Array.isArray(preconfigured) && preconfigured.length > 0) {
-      for (const url of preconfigured) {
-        // some urls may include {page} template - replace if needed
-        const templated = url.includes('{page}') ? url.replace('{page}', String(page)) : url;
-        // eslint-disable-next-line no-await-in-loop
-        if (await checkImageExists(templated)) return templated;
+      const hasTemplate = preconfigured.some((u: string) => typeof u === 'string' && u.includes('{page}'));
+      if (hasTemplate) {
+        for (const url of preconfigured) {
+          const templated = url.includes('{page}') ? url.replace('{page}', String(page)) : url;
+          if (await checkImageExists(templated)) return templated;
+        }
+      } else if (tocPages.length > 0) {
+        const idx = tocPages.indexOf(page);
+        if (idx >= 0 && typeof preconfigured[idx] === 'string') {
+          const u = preconfigured[idx];
+          if (await checkImageExists(u)) return u;
+        }
+      } else {
+        const idx = Math.max(0, page - 1);
+        if (typeof preconfigured[idx] === 'string') {
+          const u = preconfigured[idx];
+          if (await checkImageExists(u)) return u;
+        }
       }
     }
 
-    // 继续按 id-based pattern 探测
     const reportIdOrSlug = (reportObj as any)?.id || (reportObj as any)?.slug || '';
     if (!reportIdOrSlug) return null;
 
     const exts = ['png', 'jpg', 'webp'];
     const candidates: string[] = [];
-
-    // 主方案： {id}-toc-{page}.{ext}
     for (const ext of exts) {
       candidates.push(`/images/insights/${reportIdOrSlug}-toc-${page}.${ext}`);
     }
-    // 兼容 page 偏移（page-1 / page+1）
     for (const offset of [-1, 1]) {
       const p = page + offset;
       if (p > 0) {
@@ -93,14 +102,11 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
         }
       }
     }
-    // 也尝试不带 '-toc' 的备用命名（有的系统会命名为 {id}-page-{n} 或 {id}-tocpage-{n}）
     for (const ext of exts) {
       candidates.push(`/images/insights/${reportIdOrSlug}-page-${page}.${ext}`);
       candidates.push(`/images/insights/${reportIdOrSlug}-tocpage-${page}.${ext}`);
     }
-
     for (const c of candidates) {
-      // eslint-disable-next-line no-await-in-loop
       const ok = await checkImageExists(c);
       if (ok) return c;
     }
@@ -141,11 +147,15 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
       console.warn('Failed to render PDF page', pageNum, e);
       setRenderingState(prev => ({ ...prev, [String(pageNum)]: 'error' }));
 
-      // --- 新增：尝试从 /images/insights 找到备选 toc 图 ---
       try {
+        const coverPg = report.coverPage || 1;
+        if (pageNum === coverPg && report.coverImage) {
+          setRenderCache((c) => ({ ...c, [String(pageNum)]: report.coverImage as string }));
+          setRenderingState(prev => ({ ...prev, [String(pageNum)]: 'complete' }));
+          return report.coverImage as string;
+        }
         const fallback = await findExistingTocImage(report, pageNum);
         if (fallback) {
-          // 把找到的本地图片加入缓存，作为页面图像
           setRenderCache((c) => ({ ...c, [String(pageNum)]: fallback }));
           setRenderingState(prev => ({ ...prev, [String(pageNum)]: 'complete' }));
           return fallback;
@@ -366,11 +376,19 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                             ))}
                           </div>
                         ) : (
-                          <img
-                            src={report.tocImageUrl}
-                            alt={language === 'en-US' ? 'Table of Contents' : language === 'zh-HK' ? '目錄結構' : '目录结构'}
-                            className="w-full h-auto object-contain"
-                          />
+                          Array.isArray((report as any)?.tocImageUrls) && (report as any).tocImageUrls.length > 0 ? (
+                            <div className="space-y-4">
+                              {((report as any).tocImageUrls as string[]).map((u, idx) => (
+                                <img key={idx} src={u} alt={language === 'en-US' ? 'Table of Contents' : language === 'zh-HK' ? '目錄結構' : '目录结构'} className="w-full h-auto object-contain" />
+                              ))}
+                            </div>
+                          ) : (
+                            <img
+                              src={report.tocImageUrl}
+                              alt={language === 'en-US' ? 'Table of Contents' : language === 'zh-HK' ? '目錄結構' : '目录结构'}
+                              className="w-full h-auto object-contain"
+                            />
+                          )
                         )}
                       </div>
                     </div>
@@ -457,7 +475,7 @@ function PdfPreview({
       }
       // getImage 返回 null（渲染失败），再尝试本地 /images/insights 备选文件
       try {
-        const fallback = await (window as any).findExistingTocImage(report, page);
+        const fallback = await findExistingTocImage(report, page);
         if (fallback) {
           setUrl(fallback);
         }
