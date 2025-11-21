@@ -20,9 +20,6 @@ import Navigation from './components/Navigation';
 import { AuthContext } from './contexts/authContext';
 import { useLanguage } from './contexts/LanguageContext';
 import { convertToTraditional } from './locales/zh-HK';
-import { GlobalWorkerOptions } from 'pdfjs-dist/build/pdf';
-import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min?url';
-GlobalWorkerOptions.workerSrc = pdfWorkerUrl as string;
 
 /* 使用 src/images 中的本地图，确保打包后地址正确 */
 // 已移除封面/尾页资源

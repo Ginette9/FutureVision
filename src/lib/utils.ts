@@ -17,7 +17,7 @@ export function getBackendBase(): { type: 'same-origin' | 'absolute', base: stri
   // 2) 如果当前页面是 HTTPS，浏览器会拦截去 http://ip:3001 的明文请求（混合内容）。
   //    这时 *必须* 用同源路径 `/proxy`（交由 Vite 或反向代理转发到后端）。
   if (window.location.protocol === 'https:') {
-    return { type: 'same-origin', base: '/api' };
+    return { type: 'same-origin', base: '/proxy' };
   }
 
   // 3) 其余情况（页面是 http），可以直接访问同一主机的 3001 端口，
@@ -850,7 +850,7 @@ export const scrapeUrlContent = async (targetUrl: string, retryCount = 3): Promi
   // 生成代理请求地址
   // same-origin 情况：/proxy?url=...
   // absolute 情况：  http://<host>:3001/proxy?url=...
-  const proxyUrl = new URL(`${base}/proxy`, window.location.origin);
+  const proxyUrl = new URL(type === 'same-origin' ? base : `${base}/proxy`, window.location.origin);
   proxyUrl.searchParams.set('url', targetUrl); // 只包一层 encode（不会产生 %255B%255D）
   // console.log('[scrape] request', { proxy: proxyUrl.toString(), targetUrl });
 

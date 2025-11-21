@@ -98,7 +98,7 @@ Finally, the report summarizes global enterprise response rates to social and en
   categoryEn: 'Exclusive Insights',
   source: 'Future Vision',
   sourceEn: 'Future Vision',
-  coverImage: '/images/pdf-cover.png',
+  coverImage: '/images/insights/unconventional-cover.png',
   tableOfContents: [],
   isPurchasable: true,
   currency: 'CNY'
@@ -125,7 +125,7 @@ Finally, the report summarizes global enterprise response rates to social and en
   sourceEn: 'Future Vision Exclusive Release',
   keywords: ['MSCI', 'ESG', '评级'],
   keywordsEn: ['MSCI', 'ESG', 'Rating'],
-  coverImage: '/images/pdf-cover.png',
+  coverImage: '/images/insights/msci-cover.png',
   tableOfContents: [],
   isPurchasable: true,
   currency: 'CNY'
@@ -152,7 +152,7 @@ Finally, the report summarizes global enterprise response rates to social and en
   sourceEn: 'MSC Exclusive Release',
   keywords: ['劳工权益', '冲突矿产', '生物多样性', '社区矛盾', '种族与文化冲突', '野生动物保护', '环保问题'],
   keywordsEn: ['Labor Rights', 'Conflict Minerals', 'Biodiversity', 'Community Conflicts', 'Racial and Cultural Conflicts', 'Wildlife Protection', 'Environmental Issues'],
-  coverImage: '/images/pdf-cover.png',
+  coverImage: '/images/insights/africa-cover.png',
   tableOfContents: [],
   isPurchasable: true,
   currency: 'CNY'

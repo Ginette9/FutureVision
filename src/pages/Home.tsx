@@ -434,7 +434,7 @@ export default function NewHome() {
                       return (
                         <img
                           src={insight.coverImage}
-                          alt={language === 'en-US' ? (report.titleEn || report.title) : language === 'zh-HK' ? convertToTraditional(report.title || '') : report.title}
+                          alt={language === 'en-US' ? (insight.titleEn || insight.title) : language === 'zh-HK' ? convertToTraditional(insight.title || '') : insight.title}
                           className="w-full h-full object-contain"
                         />
                       );
