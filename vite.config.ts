@@ -12,21 +12,19 @@ function getPlugins() {
 }
 
 export default defineConfig({
+  base: './',
   plugins: getPlugins(),
   build: {
-    outDir: 'dist/static',
-    assetsDir: '.',
+    assetsDir: 'assets',
     rollupOptions: {
       output: {
-        assetFileNames: (assetInfo) => {
-          // 保持数据库文件在根目录
-          if (assetInfo.name === 'csr_database.db') {
-            return '[name][extname]';
-          }
-          return 'assets/[name]-[hash][extname]';
-        }
+        // JavaScript 入口文件
+        entryFileNames: "assets/[name]-[hash].js",
+        // 动态拆分的 JS chunk
+        chunkFileNames: "assets/[name]-[hash].js",
+        // 静态资源（CSS、图片、字体等）
+        assetFileNames: "assets/[name]-[hash].[ext]"
       }
     }
-  },
-  publicDir: 'public'
+  }
 });
