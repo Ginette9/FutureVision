@@ -5,12 +5,9 @@ import { getAllInsightReports, InsightReport } from '../data/insightReports';
 import InsightReportDetail from '../components/InsightReportDetail';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { convertToTraditional } from '@/locales/zh-HK';
-import { getDocument } from 'pdfjs-dist';
-// @ts-ignore
-import { GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf';
-// @ts-ignore
+import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/build/pdf';
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min?url";
-GlobalWorkerOptions.workerSrc = pdfWorkerUrl as any;
+GlobalWorkerOptions.workerSrc = pdfWorkerUrl as string;
 
 export default function Insights() {
   const [selectedReport, setSelectedReport] = useState<InsightReport | null>(null);

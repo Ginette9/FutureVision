@@ -9,12 +9,9 @@ import graphListed from '../images/graph-listed.png';
 import graphSme from '../images/graph-sme.png';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { convertToTraditional } from '@/locales/zh-HK';
-import { getDocument } from 'pdfjs-dist';
-// @ts-ignore
-import { GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf';
-// @ts-ignore
+import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/build/pdf';
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min?url";
-GlobalWorkerOptions.workerSrc = pdfWorkerUrl as any;
+GlobalWorkerOptions.workerSrc = pdfWorkerUrl as string;
 
 export default function NewHome() {
   const [isVisible, setIsVisible] = useState(false);
