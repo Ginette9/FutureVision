@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AIGenerationLoader from '@/components/AIGenerationLoader';
 
@@ -19,7 +19,8 @@ import { DueDiligenceSection } from './ReportResultNew/DueDiligenceSection';
 import { AboutMvoSection } from './ReportResultNew/AboutMvoSection';
 import { ContactSection } from './ReportResultNew/ContactSection';
 import { DisclaimerSection } from './ReportResultNew/DisclaimerSection';
-import PDFReportGenerator from '@/components/PDFReportGenerator';
+import React from 'react';
+const PDFReportGenerator = React.lazy(() => import('@/components/PDFReportGenerator'));
 
 // 打印封面/尾页所需静态资源（通过打包器处理路径）
 import CoverBg from '@/images/bg.jpg';
@@ -494,12 +495,14 @@ function ReportResultNew() {
                 </button>
                 {/* PDF导出功能已恢复 */}
                 {formData && (
-                  <PDFReportGenerator 
-                    countryId={formData.country.id}
-                    industryId={formData.industry.id}
-                    countryName={englishCountryName}
-                    industryName={englishIndustryName}
-                  />
+                  <React.Suspense fallback={<div className="px-3 py-2 text-sm text-gray-500">Loading PDF tools…</div>}>
+                    <PDFReportGenerator 
+                      countryId={formData.country.id}
+                      industryId={formData.industry.id}
+                      countryName={englishCountryName}
+                      industryName={englishIndustryName}
+                    />
+                  </React.Suspense>
                 )}
                 <button 
                   onClick={() => navigate('/esg-voyant/form')}

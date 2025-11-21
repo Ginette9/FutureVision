@@ -8,6 +8,8 @@ dotenv.config();
 const app = express();
 const PORT = Number(process.env.PORT || 3001);
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN;
+const PROXY_CACHE = new Map();
+const PROXY_TTL_MS = Number(process.env.PROXY_TTL_MS || 21600000);
 
 // 启用CORS
 app.use(cors());
@@ -90,7 +92,11 @@ app.get('/proxy', async (req, res) => {
       return res.status(400).json({ error: 'URL parameter is required' });
     }
 
-    //console.log('Proxying request to:', url);
+    const cached = PROXY_CACHE.get(url);
+    if (cached && (Date.now() - cached.ts) < PROXY_TTL_MS) {
+      res.set('Content-Type', 'text/html');
+      return res.send(cached.data);
+    }
 
     const response = await axios.get(url, {
       headers: {
@@ -116,7 +122,52 @@ app.get('/proxy', async (req, res) => {
 
     res.set('Content-Type', 'text/html');
     res.send(response.data);
+    try { PROXY_CACHE.set(url, { ts: Date.now(), data: response.data }); } catch {}
     
+  } catch (error) {
+    const status = error.response?.status;
+    console.error('[proxy] error', { url: req.query?.url, status, message: error.message });
+    res.status(status || 500).json({ 
+      error: 'Failed to fetch content',
+      details: error.message 
+    });
+  }
+});
+
+app.get('/api/proxy', async (req, res) => {
+  try {
+    const { url } = req.query;
+    if (!url) {
+      return res.status(400).json({ error: 'URL parameter is required' });
+    }
+    const cached = PROXY_CACHE.get(url);
+    if (cached && (Date.now() - cached.ts) < PROXY_TTL_MS) {
+      res.set('Content-Type', 'text/html');
+      return res.send(cached.data);
+    }
+    const response = await axios.get(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'DNT': '1',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Sec-Fetch-User': '?1',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      },
+      timeout: 10000
+    });
+    const length = typeof response.data === 'string' ? response.data.length : undefined;
+    console.log('[proxy] fetch ok', { url, status: response.status, contentType: response.headers['content-type'], length });
+    res.set('Content-Type', 'text/html');
+    res.send(response.data);
+    try { PROXY_CACHE.set(url, { ts: Date.now(), data: response.data }); } catch {}
   } catch (error) {
     const status = error.response?.status;
     console.error('[proxy] error', { url: req.query?.url, status, message: error.message });
@@ -146,6 +197,33 @@ app.get('/proxy/image', async (req, res) => {
       timeout: 10000
     });
 
+    const contentType = response.headers['content-type'] || 'application/octet-stream';
+    res.set('Content-Type', contentType);
+    res.set('Access-Control-Allow-Origin', '*');
+    res.send(Buffer.from(response.data));
+  } catch (error) {
+    const status = error.response?.status;
+    console.error('[proxy-image] error', { url: req.query?.url, status, message: error.message });
+    res.status(status || 500).json({ error: 'proxy_image_failed', message: error.message });
+  }
+});
+
+app.get('/api/proxy/image', async (req, res) => {
+  try {
+    const { url } = req.query;
+    if (!url) {
+      return res.status(400).json({ error: 'URL parameter is required' });
+    }
+    const response = await axios.get(url, {
+      responseType: 'arraybuffer',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      },
+      timeout: 10000
+    });
     const contentType = response.headers['content-type'] || 'application/octet-stream';
     res.set('Content-Type', contentType);
     res.set('Access-Control-Allow-Origin', '*');
