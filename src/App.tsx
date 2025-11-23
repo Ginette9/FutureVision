@@ -20,6 +20,7 @@ import Navigation from './components/Navigation';
 import { AuthContext } from './contexts/authContext';
 import { useLanguage } from './contexts/LanguageContext';
 import { convertToTraditional } from './locales/zh-HK';
+import { prefetchAllDatabases } from '@/lib/database';
 
 /* 使用 src/images 中的本地图，确保打包后地址正确 */
 // 已移除封面/尾页资源
@@ -128,6 +129,11 @@ export default function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
+
+  // 应用启动时预取三个语言数据库，减少后续页面首次等待
+  useEffect(() => {
+    void prefetchAllDatabases();
+  }, []);
 
   // 屏幕端：滚动时隐藏/显示顶部导航
   useEffect(() => {

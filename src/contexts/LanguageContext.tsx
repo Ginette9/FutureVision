@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { warmupDatabases } from '@/lib/database';
 
 // 支持的语言类型
 type Language = 'en-US' | 'zh-CN' | 'zh-HK';
@@ -78,6 +79,10 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
       if (language === 'en-US') root.classList.add('lang-en');
       else if (language === 'zh-HK') root.classList.add('lang-zh-hk');
       else root.classList.add('lang-zh-cn');
+      // 将当前语言同步到全局与本地存储，确保其他模块（如数据库加载）立即读取正确语言
+      localStorage.setItem('language', language);
+      (window as any).__fvLanguage = language;
+      void warmupDatabases();
     } catch {}
   }, [language]);
 

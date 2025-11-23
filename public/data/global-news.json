@@ -26,7 +26,7 @@
     "coverImage": "/news-pics/20251104_3.avif",
     "titleZh": "国际能源署呼吁全球工业部门整合能源与水资源管理以减少消耗",
     "titleEn": "Industrial sector integration of energy and water resource management can achieve significant savings.",
-    "summaryZh": "国际能源署（IEA）于2025年11月4日发布评论文章，指出工业部门作为全球第二大淡水用户（占淡水取水量近20%）和最大能源消费者（占全球年能耗近40%），可通过整合能源与水资源管理实现显著节约。文章强调，采用集成方法可减少能源与水资源浪费，例如能源需求减少28%将对应减少170亿立方米淡水取用，相当于撒哈拉以南非洲所有城市2020年的用水量。同时，水审计与效率措施可实现10–50%的节水，并额外节省高达20%的能源与水处理化学品成本。文章建议通过联合审计、数据基准测试、政策协调与培训计划推动工业部门向综合管理转型。",
+    "summaryZh": "国际能源署（IEA）于2025年11月4日发布评论文章，指出工业部门作为全球第二大淡水用户（占淡水取水量近20%）和最大能源消费者（占全球年能耗近40%），可通过整合能源与水资源管理实现显著节约。文章强调，采用集成方法可减少能源和水资源浪费，例如能源需求减少28%将对应减少170亿立方米淡水取用，相当于撒哈拉以南非洲所有城市2020年的用水量。同时，水审计和效率措施可实现10-50%的节水，并额外节省高达20%的能源和水处理化学品成本。文章建议通过联合审计、数据基准测试、政策协调和培训计划推动工业部门向综合管理转型。",
     "summaryEn": "The IEA calls for integrated energy and water management in industry, noting potential savings of up to 50% in water use and 20% in related energy costs through coordinated efficiency measures.",
     "linkZh": "https://www.iea.org/commentaries/integrated-energy-and-water-management-will-boost-savings-in-industry",
     "linkEn": "https://www.iea.org/commentaries/integrated-energy-and-water-management-will-boost-savings-in-industry",
@@ -42,5 +42,71 @@
     "linkZh": "https://www.icmagroup.org/News/news-in-brief/icma-publishes-a-new-paper-on-understanding-the-opportunity-from-carbon-markets-for-sustainable-finance-and-the-wider-market-2/",
     "linkEn": "https://www.icmagroup.org/News/news-in-brief/icma-publishes-a-new-paper-on-understanding-the-opportunity-from-carbon-markets-for-sustainable-finance-and-the-wider-market-2/",
     "date": "2025-11-06"
+  },
+  {
+    "id": "news-1762924372661-4",
+    "coverImage": "/news-pics/20251105_5.jpg",
+    "titleZh": "欧盟就2040气候目标达成协议，扩大碳信用额作用",
+    "titleEn": "EU reaches agreement on 2040 climate targets, expanding role of carbon credits.",
+    "summaryZh": "欧盟成员国于2025年11月5日就2040年气候目标达成妥协协议，该协议显著扩大了碳信用额在实现减排目标中的作用。这一政策调整意味着欧盟将更加依赖碳市场机制来推动各行业减排，可能影响包括建筑和基础设施在内的多个高排放行业的碳成本结构和合规要求。",
+    "summaryEn": "The EU’s new 2040 climate target agreement increases reliance on carbon credits, reshaping carbon cost structures and compliance expectations across high-emission industries.",
+    "linkZh": "https://www.consilium.europa.eu/en/press/press-releases/2025/11/05/paris-agreement-the-eu-submits-its-updated-ndc-with-an-indicative-target-for-2035-to-the-un-ahead-of-cop30/",
+    "linkEn": "https://www.consilium.europa.eu/en/press/press-releases/2025/11/05/paris-agreement-the-eu-submits-its-updated-ndc-with-an-indicative-target-for-2035-to-the-un-ahead-of-cop30/",
+    "date": "2025-11-05"
+  },
+  {
+    "id": "news-1763107415390-0",
+    "coverImage": "/news-pics/20251028_1.png",
+    "titleZh": "中共中央通过“十五五”规划建议，明确发展方针目标。",
+    "titleEn": "The Central Committee of the Communist Party of China adopts the \"15th Five-Year Plan\" proposal, clarifying development guidelines and goals.",
+    "summaryZh": "中共中央于2025年10月23日通过《关于制定国民经济和社会发展第十五个五年规划的建议》，提出“十五五”时期经济社会发展指导方针和主要目标。规划强调建设现代化产业体系，巩固壮大实体经济根基，优化提升传统产业包括建筑产业在全球分工中的地位和竞争力；加快构建现代化基础设施体系，加强基础设施统筹规划；推动绿色低碳转型，实现碳达峰目标。",
+    "summaryEn": "On Oct 23, 2025, the CCP approved the 15th Five-Year Plan proposal, outlining guidelines focused on industrial modernization, infrastructure development and green transition goals.",
+    "linkZh": "https://www.gov.cn/zhengce/202510/content_7046052.htm",
+    "linkEn": "https://www.gov.cn/zhengce/202510/content_7046052.htm",
+    "date": "2025-10-23"
+  },
+  {
+    "id": "news-1763107415390-1",
+    "coverImage": "/news-pics/20251028_2.png",
+    "titleZh": "可持续银行与金融网络发布2025年进展报告",
+    "titleEn": "Sustainable Banking and Finance Network Releases 2025 Progress Report",
+    "summaryZh": "气候行动100+于2025年10月28日发布了2025年净零企业基准报告。该报告是全球最大的投资者气候行动倡议组织对主要企业净零排放进展的年度评估，为投资者和企业提供了衡量气候行动表现的重要基准。报告涵盖了企业在气候治理、排放目标设定、转型计划等方面的表现评估，为建筑与工程行业企业应对气候变化提供了重要的参考标准和行业对标依据。",
+    "summaryEn": "Climate Action 100+ released its 2025 Net-Zero Company Benchmark on Oct 28, assessing major firms’ progress on governance, targets and transition planning.",
+    "linkZh": "https://www.sbfnetwork.org/2025-global-progress-report",
+    "linkEn": "https://www.sbfnetwork.org/2025-global-progress-report",
+    "date": "2025-10-28"
+  },
+  {
+    "id": "news-1763107415390-2",
+    "coverImage": "/news-pics/20251028_3.webp",
+    "titleZh": "气候行动100+发布2025年净零企业基准报告",
+    "titleEn": "Climate Action 100+ Releases 2025 Net-Zero Company Benchmark Report",
+    "summaryZh": "可持续银行与金融网络于2025年10月27日发布了2025年进展报告，该报告详细阐述了全球金融机构在可持续金融领域的实践进展、投资趋势和政策导向，重点关注绿色建筑、低碳基础设施等领域的融资支持机制，为建筑行业企业提供了融资环境变化的重要参考。",
+    "summaryEn": "The SBFN’s 2025 progress report, released Oct 27, details financial institutions’ sustainable finance practices, investment trends and policy signals, focusing on green buildings and low-carbon infrastructure finance.",
+    "linkZh": "https://www.climateaction100.org/net-zero-company-benchmark/",
+    "linkEn": "https://www.climateaction100.org/net-zero-company-benchmark/",
+    "date": "2025-10-27"
+  },
+  {
+    "id": "news-1763107415390-3",
+    "coverImage": "/news-pics/20251028_4.jpg",
+    "titleZh": "挪威主权基金将扩大与投资组合公司气候接触。",
+    "titleEn": "Norway's sovereign wealth fund to expand climate engagement with portfolio companies.",
+    "summaryZh": "挪威2万亿美元主权财富基金于2025年10月29日宣布将扩大与投资组合公司的气候重点接触。作为全球最大的主权财富基金，该基金计划加强对被投资企业的气候风险管理要求，推动企业制定更严格的减排目标和气候适应策略。这一举措预计将影响全球数千家上市公司，特别是高碳排放行业的企业，要求它们提升气候信息披露质量和应对气候变化的能力。",
+    "summaryEn": "Norway’s $2 trillion sovereign fund announced on Oct 29 it will expand climate engagement, pressing portfolio companies for stricter targets and improved climate risk disclosures.",
+    "linkZh": "https://www.nbim.no/en/responsible-investment/2025-climate-action-plan/",
+    "linkEn": "https://www.nbim.no/en/responsible-investment/2025-climate-action-plan/",
+    "date": "2025-10-29"
+  },
+  {
+    "id": "news-1763107415390-4",
+    "coverImage": "/news-pics/20251028_5.png",
+    "titleZh": "国际能源署报告：碳清除技术扩张，成本为主要障碍需创新。",
+    "titleEn": "IEA Report: Carbon Removal Technology Expansion, Cost is Main Obstacle Requiring Innovation",
+    "summaryZh": "国际能源署于2025年10月27日发布碳清除技术发展报告，指出碳清除技术组合正在快速扩张，包括直接空气捕获、生物能源碳捕获与封存、矿物化建筑材料和海洋碳捕获等。目前全球碳清除能力约100万吨/年，预计到2035年可能增长80倍。成本仍是主要障碍，直接空气捕获成本为500-1900美元/吨，生物能源碳捕获成本约40美元/吨。报告强调持续创新对降低成本至关重要，政府支持可催化行业发展，带来投资和就业机会。",
+    "summaryEn": "IEA’s Oct 27 report finds carbon removal capacity could grow sharply by 2035, but high costs—especially for direct air capture—mean innovation and policy support remain essential.",
+    "linkZh": "https://www.iea.org/commentaries/driving-down-the-cost-of-carbon-removal-why-innovation-matters",
+    "linkEn": "https://www.iea.org/commentaries/driving-down-the-cost-of-carbon-removal-why-innovation-matters",
+    "date": "2025-10-27"
   }
 ]

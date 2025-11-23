@@ -95,6 +95,28 @@ function ReportResultNew() {
         const countryNameEn = getCountryNameById(String(parsed.country.id));
         const industryNameEn = getProductNameById(String(parsed.industry.id));
 
+        const cacheKey = `riskAdvice:${language}:${countryNameEn}:${industryNameEn}`;
+        const cached = sessionStorage.getItem(cacheKey);
+        if (cached) {
+          const payload = JSON.parse(cached);
+          const isZh = language === 'zh-CN' || language === 'zh-HK';
+          const content = getSectionsContent(language);
+          const localSections: ReportSection[] = [
+            { id: 'introduction', title: isZh ? '介绍' : 'Introduction', type: 'text', html: '1' },
+            { id: 'important-to-consider', title: isZh ? '重要注意事项' : 'Important to Consider', type: 'text', html: '1' },
+            { id: 'risk-analysis', title: isZh ? '风险分析' : 'Risk Analysis', type: 'risk', categories: payload.categories },
+            { id: 'relevant-organizations', title: isZh ? '相关组织' : 'Relevant Organizations', type: 'text', html: '1' },
+            { id: 'esg-labels-supply-chain-initiatives-guidelines', title: isZh ? 'ESG 标签与供应链倡议指南' : 'ESG labels, supply chain initiatives & guidelines', type: 'text', html: '1' },
+            { id: 'due-diligence', title: isZh ? '尽职调查' : 'Due diligence', type: 'text', html: content.dueDiligenceHtml },
+            { id: 'about-us', title: isZh ? '关于我们' : 'About Us', type: 'text', html: content.aboutMvoHtml },
+            { id: 'contact', title: isZh ? '联系方式' : 'Contact', type: 'text', html: content.contactHtml },
+            { id: 'disclaimer', title: isZh ? '免责声明' : 'Disclaimer', type: 'text', html: content.disclaimerHtml }
+          ];
+          setSections(localSections);
+          setDataLoaded(true);
+          return;
+        }
+
         const [riskIds, adviceIds] = await Promise.all([
           getRiskIdsByCountryAndIndustry(countryNameEn, industryNameEn),
           getAdviceIdsByCountryAndIndustry(countryNameEn, industryNameEn)
@@ -163,6 +185,7 @@ function ReportResultNew() {
         ];
 
         setSections(localSections);
+        try { sessionStorage.setItem(cacheKey, JSON.stringify({ categories })); } catch {}
         setDataLoaded(true);
 
         // 移除：避免在数据加载完毕时提前隐藏 Loader，由 AIGenerationLoader 完成后再隐藏

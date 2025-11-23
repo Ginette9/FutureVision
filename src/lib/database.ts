@@ -502,3 +502,14 @@ export async function warmupDatabases(): Promise<void> {
     await fetch(url);
   } catch {}
 }
+
+export async function prefetchAllDatabases(): Promise<void> {
+  try { await loadSQL(); } catch {}
+  try {
+    await Promise.all([
+      fetch(enDbUrl),
+      fetch(cnDbUrl),
+      fetch(hkDbUrl)
+    ]);
+  } catch {}
+}

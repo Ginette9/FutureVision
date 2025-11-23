@@ -210,7 +210,7 @@ export default function ESGRiskAnalysis() {
       } catch {}
     }
     if (!saved) {
-      toast.error('信息保存失败');
+      //toast.error('信息保存失败');
     }
      
      // 清除之前的报告生成记录，确保新的报告会显示loading动画
