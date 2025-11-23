@@ -1,4 +1,5 @@
 import initSqlJs from 'sql.js';
+import sqlWasmUrl from 'sql.js/dist/sql-wasm.wasm?url';
 import enDbUrl from '@/data/csr_database.db?url';
 import cnDbUrl from '@/data/csr_database_CN.db?url';
 import hkDbUrl from '@/data/csr_database_HK.db?url';
@@ -11,7 +12,7 @@ let dbLocalizedLang: 'en-US' | 'zh-CN' | 'zh-HK' | null = null;
 
 async function loadSQL() {
   if (SQLLib) return SQLLib;
-  SQLLib = await initSqlJs({ locateFile: (file: string) => `https://sql.js.org/dist/${file}` });
+  SQLLib = await initSqlJs({ locateFile: () => sqlWasmUrl });
   return SQLLib;
 }
 
@@ -490,4 +491,14 @@ export async function getAdviceByIds(ids: string[]): Promise<Array<{
     console.error('Failed to get advice:', error);
     return [];
   }
+}
+
+export async function warmupDatabases(): Promise<void> {
+  try { await loadSQL(); } catch {}
+  try { await fetch(enDbUrl); } catch {}
+  try {
+    const lang = (typeof window !== 'undefined' && (window as any).__fvLanguage) || localStorage.getItem('language') || 'en-US';
+    const url = lang === 'zh-CN' ? cnDbUrl : (lang === 'zh-HK' ? hkDbUrl : enDbUrl);
+    await fetch(url);
+  } catch {}
 }

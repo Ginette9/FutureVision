@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AIGenerationLoader from '@/components/AIGenerationLoader';
 
-import { parseReportHtml, ReportSection } from './ReportResultNew/parseReportHtml';
+import { ReportSection } from './ReportResultNew/parseReportHtml';
 import Toc from './ReportResultNew/Toc';
 import PrintToc from './ReportResultNew/PrintToc';
 import PrintReportSection from './ReportResultNew/PrintReportSection';
 import ReportSectionBlock from './ReportResultNew/ReportSection';
 import ReportSectionPrint from './ReportResultNew/ReportSectionPrint';
-import { scrapeUrlContent, buildScrapeUrl, getCountryNameById, getProductNameById } from '@/lib/utils';
+import { getCountryNameById, getProductNameById } from '@/lib/utils';
+import { getRiskIdsByCountryAndIndustry, getRisksByIds, getAdviceIdsByCountryAndIndustry, getAdviceByIds } from '@/lib/database';
+import { getSectionsContent } from './ReportResultNew/sectionsContent';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 import { IntroductionSection } from './ReportResultNew/IntroductionSection';
@@ -90,15 +92,78 @@ function ReportResultNew() {
         const parsed = JSON.parse(savedData);
         setFormData(parsed);
 
-        // 获取报告内容
-        const url = buildScrapeUrl(parsed.industry.id, parsed.country.id);
-        const htmlContent = await scrapeUrlContent(url);
-        
-        if (htmlContent) {
-          const parsedSections = parseReportHtml(htmlContent);
-          setSections(parsedSections);
-          setDataLoaded(true);
-        }
+        const countryNameEn = getCountryNameById(String(parsed.country.id));
+        const industryNameEn = getProductNameById(String(parsed.industry.id));
+
+        const [riskIds, adviceIds] = await Promise.all([
+          getRiskIdsByCountryAndIndustry(countryNameEn, industryNameEn),
+          getAdviceIdsByCountryAndIndustry(countryNameEn, industryNameEn)
+        ]);
+
+        const [risks, advice] = await Promise.all([
+          getRisksByIds(riskIds),
+          getAdviceByIds(adviceIds)
+        ]);
+
+        const categoryMap: Record<string, { categoryTitle: string; themes: { themeName: string; risks: any[]; recommendations: any[]; riskCount?: number; recommendationCount?: number }[] }> = {};
+
+        risks.forEach(risk => {
+          const categoryTitle = risk.issue_name || 'Unknown Issue';
+          const themeName = risk.sub_issue_name || 'Unknown Sub-issue';
+          if (!categoryMap[categoryTitle]) {
+            categoryMap[categoryTitle] = { categoryTitle, themes: [] };
+          }
+          let theme = categoryMap[categoryTitle].themes.find(t => t.themeName === themeName);
+          if (!theme) {
+            theme = { themeName, risks: [], recommendations: [], riskCount: 0, recommendationCount: 0 };
+            categoryMap[categoryTitle].themes.push(theme);
+          }
+          theme.risks.push({
+            riskTitle: themeName,
+            riskDescription: risk.content,
+            rawHtml: risk.content_html || undefined,
+            sources: risk.source ? [risk.source] : []
+          });
+          theme.riskCount = (theme.risks.length);
+        });
+
+        advice.forEach(adviceItem => {
+          const categoryTitle = adviceItem.issue_name || 'Unknown Issue';
+          const themeName = adviceItem.sub_issue_name || 'Unknown Sub-issue';
+          if (!categoryMap[categoryTitle]) {
+            categoryMap[categoryTitle] = { categoryTitle, themes: [] };
+          }
+          let theme = categoryMap[categoryTitle].themes.find(t => t.themeName === themeName);
+          if (!theme) {
+            theme = { themeName, risks: [], recommendations: [], riskCount: 0, recommendationCount: 0 };
+            categoryMap[categoryTitle].themes.push(theme);
+          }
+          theme.recommendations.push({
+            recommendationText: adviceItem.content,
+            rawHtml: adviceItem.content_html || undefined
+          });
+          theme.recommendationCount = (theme.recommendations.length);
+        });
+
+        const categories = Object.values(categoryMap);
+
+        const isZh = language === 'zh-CN' || language === 'zh-HK';
+        const content = getSectionsContent(language);
+
+        const localSections: ReportSection[] = [
+          { id: 'introduction', title: isZh ? '介绍' : 'Introduction', type: 'text', html: '1' },
+          { id: 'important-to-consider', title: isZh ? '重要注意事项' : 'Important to Consider', type: 'text', html: '1' },
+          { id: 'risk-analysis', title: isZh ? '风险分析' : 'Risk Analysis', type: 'risk', categories },
+          { id: 'relevant-organizations', title: isZh ? '相关组织' : 'Relevant Organizations', type: 'text', html: '1' },
+          { id: 'esg-labels-supply-chain-initiatives-guidelines', title: isZh ? 'ESG 标签与供应链倡议指南' : 'ESG labels, supply chain initiatives & guidelines', type: 'text', html: '1' },
+          { id: 'due-diligence', title: isZh ? '尽职调查' : 'Due diligence', type: 'text', html: content.dueDiligenceHtml },
+          { id: 'about-us', title: isZh ? '关于我们' : 'About Us', type: 'text', html: content.aboutMvoHtml },
+          { id: 'contact', title: isZh ? '联系方式' : 'Contact', type: 'text', html: content.contactHtml },
+          { id: 'disclaimer', title: isZh ? '免责声明' : 'Disclaimer', type: 'text', html: content.disclaimerHtml }
+        ];
+
+        setSections(localSections);
+        setDataLoaded(true);
 
         // 移除：避免在数据加载完毕时提前隐藏 Loader，由 AIGenerationLoader 完成后再隐藏
         // if (showLoader) {
@@ -113,7 +178,7 @@ function ReportResultNew() {
     };
 
     fetchData();
-  }, [navigate]);
+  }, [navigate, language]);
 
   // 显示AI加载器
   if (shouldShowLoader && (!dataLoaded || isLoading)) {

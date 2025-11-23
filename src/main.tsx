@@ -5,6 +5,9 @@ import { Toaster } from 'sonner';
 import { LanguageProvider } from './contexts/LanguageContext';
 import App from "./App.tsx";
 import "./index.css";
+import { warmupDatabases } from './lib/database';
+
+warmupDatabases().catch(() => {});
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -16,4 +19,3 @@ createRoot(document.getElementById("root")!).render(
     </LanguageProvider>
   </StrictMode>
 );
-

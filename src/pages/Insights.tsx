@@ -289,7 +289,8 @@ export default function Insights() {
                   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
                   if (!emailOk) { toast('请输入有效邮箱地址'); return; }
                   const category = 'insights';
-                  const endpoints = ['/api/subscribe', 'http://localhost:3001/api/subscribe', 'http://localhost:3002/api/subscribe'];
+                  const envEp = (typeof import.meta !== 'undefined' && (import.meta as any).env && (import.meta as any).env.VITE_SUBSCRIBE_ENDPOINT) ? String((import.meta as any).env.VITE_SUBSCRIBE_ENDPOINT) : null;
+                  const endpoints = [envEp, '/api/subscribe', 'http://localhost:3001/api/subscribe', 'http://localhost:3002/api/subscribe'].filter(Boolean) as string[];
                   let ok = false;
                   for (const ep of endpoints) {
                     try {

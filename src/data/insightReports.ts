@@ -14,8 +14,11 @@ export interface InsightReport {
   summary: string; // 摘要
   date: string; // 发布日期
   category: string; // 分类
+  categoryEn?: string;
   source?: string; // 来源
+  sourceEn?: string;
   keywords?: string[]; // 关键词（可选）
+  keywordsEn?: string[];
   featured?: boolean; // 是否为精选报告
 
   // PDF来源与页面映射（可选）
@@ -28,6 +31,7 @@ export interface InsightReport {
   // 封面裁剪（垂直偏移百分比，0=顶部，100=底部）
   coverCropY?: number;
   tocImageUrl?: string; // 目录截图（可选，便捷展示）
+  tocImageUrls?: string[];
   tableOfContents: TableOfContentsItem[]; // 目录页
   // 已移除“示例页面”相关字段（统一用完整PDF在线查看）
   
@@ -237,30 +241,19 @@ function saveStore() {
 }
 bootstrapStore();
 
-// 首次加载（localStorage为空）时尝试从服务端拉取并覆盖内存与本地存储
-async function bootstrapFromServerIfEmpty() {
+async function bootstrapFromPublicJson() {
   try {
     if (typeof window === 'undefined') return;
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    // 依次尝试同源与本地开发端口
-    const urls = ['/api/insights', 'http://localhost:3001/api/insights', 'http://localhost:3002/api/insights'];
-    let data: any = null;
-    for (const url of urls) {
-      try {
-        const resp = await fetch(url);
-        if (resp.ok) { data = await resp.json(); break; }
-      } catch {}
-    }
-    if (!data) return;
-    const arr = Array.isArray(data?.items) ? data.items : [];
+    const resp = await fetch('/data/insights.json');
+    if (!resp.ok) return;
+    const arr = await resp.json();
     if (Array.isArray(arr) && arr.length > 0) {
-      insightReports.splice(0, insightReports.length, ...arr);
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(insightReports));
-      dispatchUpdateEvent();
+      insightReports.splice(0, insightReports.length, ...arr as InsightReport[]);
+      saveStore();
     }
   } catch {}
 }
-void bootstrapFromServerIfEmpty();
+void bootstrapFromPublicJson();
 
 // 获取所有报告
 export function getAllInsightReports(): InsightReport[] {
