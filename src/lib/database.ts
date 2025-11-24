@@ -67,6 +67,11 @@ export async function getConsiderationsByIds(considerationIds: string): Promise<
   content_html: string;
   }>> {
   try {
+    try {
+      const lang = (typeof window !== 'undefined' && (window as any).__fvLanguage) || localStorage.getItem('language') || 'en-US';
+      const resp = await apiGet<{ items: any[] }>(`/api/db/considerations`, { ids: considerationIds, lang });
+      if (Array.isArray(resp?.items)) return resp.items as any[];
+    } catch {}
     const database = await initDatabaseLocalized();
     
     // 解析 consideration_ids (格式: "1,2,3")
@@ -110,6 +115,10 @@ export async function getConsiderationIdsByCountryAndIndustry(
   industryName: string
 ): Promise<string> {
   try {
+    try {
+      const resp = await apiGet<{ ids: string[] }>(`/api/db/consideration-ids`, { countryName, industryName });
+      if (Array.isArray(resp?.ids)) return (resp.ids || []).join(',');
+    } catch {}
     const database = await initDatabaseEnglish();
     
     const query = `
@@ -183,7 +192,11 @@ export async function getInitiativesByIds(ids: string[]): Promise<Array<{
     if (ids.length === 0) {
       return [];
     }
-    
+    try {
+      const lang = (typeof window !== 'undefined' && (window as any).__fvLanguage) || localStorage.getItem('language') || 'en-US';
+      const resp = await apiGet<{ items: any[] }>(`/api/db/initiatives`, { ids: ids.join(','), lang });
+      if (Array.isArray(resp?.items)) return resp.items as any[];
+    } catch {}
     const database = await initDatabaseLocalized();
     
     // 构建 SQL 查询
@@ -223,6 +236,10 @@ export async function getOrganizationIdsByCountryAndIndustry(
   industryName: string
 ): Promise<string[]> {
   try {
+    try {
+      const resp = await apiGet<{ ids: string[] }>(`/api/db/organization-ids`, { countryName, industryName });
+      if (Array.isArray(resp?.ids)) return resp.ids;
+    } catch {}
     const database = await initDatabaseEnglish();
     const stmt = database.prepare(`
       SELECT organization_ids 
@@ -260,7 +277,11 @@ export async function getOrganizationsByIds(ids: string[]): Promise<Array<{
   }>> {
   try {
     if (ids.length === 0) return [];
-    
+    try {
+      const lang = (typeof window !== 'undefined' && (window as any).__fvLanguage) || localStorage.getItem('language') || 'en-US';
+      const resp = await apiGet<{ items: any[] }>(`/api/db/organizations`, { ids: ids.join(','), lang });
+      if (Array.isArray(resp?.items)) return resp.items as any[];
+    } catch {}
     const database = await initDatabaseLocalized();
     const placeholders = ids.map(() => '?').join(',');
     const stmt = database.prepare(`

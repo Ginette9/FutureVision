@@ -1,6 +1,8 @@
 // 独家洞察报告数据结构
 // 用于管理和展示独家洞察报告内容
 
+import { getApiBaseUrl } from '@/lib/utils';
+
 export interface InsightReport {
   id: string;
   title: string;
@@ -185,7 +187,8 @@ async function saveToServerIfAvailable() {
     if (typeof window === 'undefined') return;
     // 同源API；失败则尝试本地开发端口（3002）
     const payload = { items: insightReports };
-    const tryUrls = ['/api/insights', 'http://localhost:3001/api/insights', 'http://localhost:3002/api/insights'];
+    const base = getApiBaseUrl();
+    const tryUrls = [`${base}/api/insights`, 'http://localhost:3001/api/insights', 'http://localhost:3002/api/insights'];
     for (const url of tryUrls) {
       try {
         const resp = await fetch(url, {
@@ -233,9 +236,9 @@ function saveStore() {
   try {
     if (typeof window === 'undefined') return;
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(insightReports));
-    // 同步到服务端（若可用），并通知前端刷新
-    // 不阻塞：异步触发，忽略错误
-    void saveToServerIfAvailable();
+    if (ENABLE_SERVER_SYNC) {
+      void saveToServerIfAvailable();
+    }
     dispatchUpdateEvent();
   } catch {}
 }

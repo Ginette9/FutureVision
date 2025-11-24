@@ -1,0 +1,167 @@
+[
+  {
+    "id": "course-1763179296643-11",
+    "coverImage": "https://tech.eib.org/_tools/front/css/framework/images/logos/en-eib-logogroup.png",
+    "titleZh": "欧洲投资银行绿色项目评估工具",
+    "titleEn": "European Investment Bank Green Project Assessment Tool",
+    "summaryZh": "欧洲投资银行推出的免费工具（EIB Group Green Checker），帮助银行识别和评估绿色项目，为金融机构提供标准化框架筛选可持续发展投资项目。",
+    "summaryEn": "EIB's free tool (Green Checker) helps banks identify and evaluate green projects, providing a standardized framework for screening sustainable investments.",
+    "linkZh": "https://www.eib.org/en/videos/discover-the-eib-group-green-checker-supporting-green-investments",
+    "linkEn": "https://www.eib.org/en/videos/discover-the-eib-group-green-checker-supporting-green-investments",
+    "date": "2025-11-12"
+  },
+  {
+    "id": "course-1763179296643-12",
+    "coverImage": "https://www.ngfs.net/sites/bdf_espaces2/themes/custom/bdf_ngfs/logo.svg",
+    "titleZh": "绿色金融网络气候情景分析指南",
+    "titleEn": "Green Finance Network Climate Scenario Analysis Guidelines",
+    "summaryZh": "绿色金融网络更新的中央银行气候情景分析指南，提供评估气候变化对金融稳定影响的方法论框架和风险分析工具。",
+    "summaryEn": "Updated NGFS guidelines for central banks on climate scenario analysis, offering methodologies to assess climate impacts on financial stability.",
+    "linkZh": "https://www.ngfs.net/en/publications-and-statistics/publications/2025-guide-climate-scenario-analysis-central-banks-and-supervisors",
+    "linkEn": "https://www.ngfs.net/en/publications-and-statistics/publications/2025-guide-climate-scenario-analysis-central-banks-and-supervisors",
+    "date": "2025-11-21"
+  },
+  {
+    "id": "course-1763179296643-13",
+    "coverImage": "https://ethicalmarketingnews.com/wp-content/uploads/2023/11/GRI.jpg",
+    "titleZh": "GRI气候报告对齐工具",
+    "titleEn": "GRI Climate Reporting Alignment Tool",
+    "summaryZh": "全球报告倡议组织发布的新工具，帮助企业将气候报告与联合国净零排放指南保持一致，确保信息披露的一致性和可比性。",
+    "summaryEn": "GRI's new tool helps companies align climate reporting with UN net-zero guidelines, ensuring consistent and comparable disclosures.",
+    "linkZh": "https://www.globalreporting.org/news/news-center/gri-launches-new-tool-for-corporate-climate-action/",
+    "linkEn": "https://www.globalreporting.org/news/news-center/gri-launches-new-tool-for-corporate-climate-action/",
+    "date": "2025-11-17"
+  },
+  {
+    "id": "course-1763179296643-14",
+    "coverImage": "https://www.gstatic.com/marketing-cms/assets/images/c8/eb/b0c4cad6448ebcb30687b91ff52a/ea-tool-release-images-hero-image-2.webp=w950-h550",
+    "titleZh": "Google能源效率评估工具",
+    "titleEn": "Google Energy Efficiency Assessment Tool",
+    "summaryZh": "Google推出的免费工具，帮助制造商识别能源效率提升机会，提供能源消耗监测、效率评估和优化建议功能。",
+    "summaryEn": "Google's free tool helps manufacturers identify energy efficiency opportunities through consumption monitoring and optimization recommendations.",
+    "linkZh": "https://energyassessment.eco/",
+    "linkEn": "https://energyassessment.eco/",
+    "date": "2025-11-20"
+  },
+  {
+    "id": "course-1763179296643-0",
+    "coverImage": "https://sdghelpdesk.unescap.org/sites/default/files/2019-11/UN%20SDG%20Learn.png",
+    "titleZh": "联合国可持续发展学习平台（UN SDG Learn）",
+    "titleEn": "UN SDG Learn",
+    "summaryZh": "由联合国系统主导，提供有关 Agenda 2030、17 项可持续发展目标 (SDG) 的微学习、路径式课程及能力测评。",
+    "summaryEn": "Led by the United Nations system, the platform offers micro-learning, learning pathways and competency assessments related to Agenda 2030 and the 17 Sustainable Development Goals (SDGs).",
+    "linkZh": "https://www.unsdglearn.org/",
+    "linkEn": "https://www.unsdglearn.org/",
+    "date": "2025-11-15"
+  },
+  {
+    "id": "course-1763179296643-1",
+    "coverImage": "https://sdgacademy.org/wp-content/uploads/2018/07/3_mini-1.jpg",
+    "titleZh": "SDG 学院（SDG Academy）",
+    "titleEn": "SDG Academy",
+    "summaryZh": "提供 50+ 个免费 MOOC，聚焦可持续发展目标（SDG）议题，从全球发展、制度、政策到行业专题皆有覆盖。",
+    "summaryEn": "Offers 50+ free MOOCs focusing on Sustainable Development Goals (SDGs), covering global development, institutions, policy and industry-specific topics.",
+    "linkZh": "https://sdgacademy.org/",
+    "linkEn": "https://sdgacademy.org/",
+    "date": "2025-11-15"
+  },
+  {
+    "id": "course-1763179296643-2",
+    "coverImage": "https://unglobalcompact.org/sites/default/themes/custom/ungc/ungc_opengraph.png",
+    "titleZh": "联合国全球契约学院（UN Global Compact Academy）",
+    "titleEn": "UN Global Compact Academy",
+    "summaryZh": "联合国全球契约组织的学习平台，聚焦企业可持续发展策略与 ESG 议题，从初学者到高级课程均有。",
+    "summaryEn": "The learning platform of the UN Global Compact, focusing on corporate sustainability strategies and ESG topics, offering content from beginner to advanced levels.",
+    "linkZh": "https://unglobalcompact.org/",
+    "linkEn": "https://unglobalcompact.org/",
+    "date": "2025-11-15"
+  },
+  {
+    "id": "course-1763179296643-3",
+    "coverImage": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWYiA8wfuQPNOMW6LzSGJ4Bkx0Bmtx9x7Gow&s",
+    "titleZh": "联合国气候变化学习平台（UN CC Learn）",
+    "titleEn": "UN CC Learn",
+    "summaryZh": "联合国气候变化学习平台，专攻气候变化议题，提供自主节奏在线课程，并与联合国体系挂钩。",
+    "summaryEn": "The UN climate change learning platform, offering self-paced online courses linked to the UN system, specializing in climate change topics.",
+    "linkZh": "https://unccelearn.org/courses",
+    "linkEn": "https://unccelearn.org/courses",
+    "date": "2025-11-15"
+  },
+  {
+    "id": "course-1763179296643-4",
+    "coverImage": "https://cse-net.org/wp-content/uploads/2022/05/sustainability_academy_logo-1.png",
+    "titleZh": "可持续发展学院（Sustainability Academy）",
+    "titleEn": "Sustainability Academy",
+    "summaryZh": "提供自主节奏、自付费的 ESG、净零、循环经济等线上培训，适合专业人士提升实操能力。",
+    "summaryEn": "Provides self-paced, paid online training on ESG, net-zero, circular economy and related practical competencies for professionals.",
+    "linkZh": "https://sustainability-academy.org/",
+    "linkEn": "https://sustainability-academy.org/",
+    "date": "2025-11-15"
+  },
+  {
+    "id": "course-1763179296643-5",
+    "coverImage": "https://www.accountabilitycounsel.org/wp-content/uploads/2018/10/ifc-logo-550x302.jpg",
+    "titleZh": "国际金融公司（IFC）ESG 学习资源",
+    "titleEn": "IFC ESG Learning Resources",
+    "summaryZh": "提供免费公开的 ESG、环境社会风险管理以及金融机构可持续能力建设工具。",
+    "summaryEn": "Offers free, open ESG/environmental and social risk management resources and sustainability capacity-building tools for financial institutions.",
+    "linkZh": "https://www.ifc.org/en/what-we-do/sector-expertise/sustainability/tools-for-clients",
+    "linkEn": "https://www.ifc.org/en/what-we-do/sector-expertise/sustainability/tools-for-clients",
+    "date": "2025-11-15"
+  },
+  {
+    "id": "course-1763179296643-6",
+    "coverImage": "https://www.open.ac.uk/ouheaders/gui/Open_University_OG_Image.png",
+    "titleZh": "英国开放大学 OpenLearn — 自然与环境免费课程",
+    "titleEn": "OpenLearn – Nature & Environment Free Courses",
+    "summaryZh": "英国开放大学免费提供的环境与可持续主题课程。",
+    "summaryEn": "Free environment and sustainability-themed courses offered by The Open University.",
+    "linkZh": "https://www.open.edu/openlearn/nature-environment/free-courses",
+    "linkEn": "https://www.open.edu/openlearn/nature-environment/free-courses",
+    "date": "2025-11-15"
+  },
+  {
+    "id": "course-1763179296643-7",
+    "coverImage": "https://ocw.mit.edu/static_shared/images/ocw_logo_white_on_black.dc6662ab918cec1c2f31.png",
+    "titleZh": "麻省理工开放课件 — 环境与可持续发展课程合集",
+    "titleEn": "MIT OpenCourseWare – Environment & Sustainability Collection",
+    "summaryZh": "麻省理工开放课件免费开放环境、可持续发展相关课程内容。",
+    "summaryEn": "A freely accessible collection of MIT course materials focusing on environment and sustainability topics.",
+    "linkZh": "https://ocw.mit.edu/collections/environment/",
+    "linkEn": "https://ocw.mit.edu/collections/environment/",
+    "date": "2025-11-15"
+  },
+  {
+    "id": "course-1763179296643-8",
+    "coverImage": "https://www.unssc.org//themes/custom/unsscwebsite/ogimage.jpg",
+    "titleZh": "联合国系统职员学院（UN SSC）“可持续生活方式”课程",
+    "titleEn": "UN SSC “Sustainable Lifestyles” Course",
+    "summaryZh": "专注于从日常生活方式维度探讨可持续发展议题的课程。",
+    "summaryEn": "A course focusing on sustainable development from the perspective of daily lifestyles.",
+    "linkZh": "https://www.unssc.org/courses/sustainable-lifestyles-1",
+    "linkEn": "https://www.unssc.org/courses/sustainable-lifestyles-1",
+    "date": "2025-11-15"
+  },
+  {
+    "id": "course-1763179296643-9",
+    "coverImage": "https://www.undp.org/sites/g/files/zskgke326/files/styles/scaled_image_large/public/2022-06/UNSSC2%20LOGO.jpg?itok=TfmnApy6",
+    "titleZh": "联合国系统职员学院（UN SSC）2025–2026 年免费课程目录",
+    "titleEn": "UN SSC Free Course Catalogue 2025–2026",
+    "summaryZh": "2025–26 年免费课程目录可供下载，涵盖气候、和平建设、人权等主题，可用于持续追踪学习资源。",
+    "summaryEn": "Downloadable catalogue of free courses for 2025–2026, covering climate, peacebuilding, human rights and other topics, useful for continuous resource tracking.",
+    "linkZh": "https://www.unssc.org/news-and-insights/resources/free-course-catalogue-20252026",
+    "linkEn": "https://www.unssc.org/news-and-insights/resources/free-course-catalogue-20252026",
+    "date": "2025-11-15"
+  },
+  {
+    "id": "course-1763179296643-10",
+    "coverImage": "https://cdn01.alison-static.net/public/html/site/img/media-kit/alison-logo-primary.jpg",
+    "titleZh": "Alison —《ESG 绩效衡量指南》课程",
+    "titleEn": "Alison – “A Guide to ESG Performance Measurement”",
+    "summaryZh": "免费线上课程，专门讲解 ESG 报告标准和绩效测量方法。",
+    "summaryEn": "A free online course dedicated to explaining ESG reporting standards and performance measurement.",
+    "linkZh": "https://alison.com/course/a-guide-to-esg-performance-measurement",
+    "linkEn": "https://alison.com/course/a-guide-to-esg-performance-measurement",
+    "date": "2025-11-15"
+  }
+]

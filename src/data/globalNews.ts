@@ -1,4 +1,5 @@
 import { InsightReport } from './insightReports';
+import { getApiBaseUrl } from '@/lib/utils';
 
 export interface GlobalNewsItem {
   id: string;
@@ -33,7 +34,8 @@ async function saveToServerIfAvailable() {
   try {
     if (typeof window === 'undefined') return;
     const payload = { items: globalNews };
-    const tryUrls = ['/api/news', 'http://localhost:3001/api/news', 'http://localhost:3002/api/news'];
+    const base = getApiBaseUrl();
+    const tryUrls = [`${base}/api/news`, 'http://localhost:3001/api/news', 'http://localhost:3002/api/news'];
     for (const url of tryUrls) {
       try {
         const resp = await fetch(url, {
@@ -77,7 +79,9 @@ function saveStore() {
   try {
     if (typeof window === 'undefined') return;
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(globalNews));
-    void saveToServerIfAvailable();
+    if (ENABLE_SERVER_SYNC) {
+      void saveToServerIfAvailable();
+    }
     dispatchUpdateEvent();
   } catch {}
 }
@@ -88,8 +92,9 @@ async function bootstrapFromServerIfEmpty() {
   try {
     if (typeof window === 'undefined') return;
     const raw = window.localStorage.getItem(STORAGE_KEY);
+    const base = getApiBaseUrl();
     const urls = [
-      '/api/news',
+      `${base}/api/news`,
       '/data/news.json',
       '/data/global-news.json',
       'http://localhost:3001/api/news',

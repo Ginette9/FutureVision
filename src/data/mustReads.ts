@@ -31,7 +31,8 @@ async function saveToServerIfAvailable() {
   try {
     if (typeof window === 'undefined') return;
     const payload = { items: mustReads } as any;
-    const tryUrls = ['/api/must-reads', 'http://localhost:3001/api/must-reads', 'http://localhost:3002/api/must-reads'];
+    const base = getApiBaseUrl();
+    const tryUrls = [`${base}/api/must-reads`, 'http://localhost:3001/api/must-reads', 'http://localhost:3002/api/must-reads'];
     for (const url of tryUrls) {
       try {
         const resp = await fetch(url, {
@@ -75,7 +76,9 @@ function saveStore() {
   try {
     if (typeof window === 'undefined') return;
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(mustReads));
-    void saveToServerIfAvailable();
+    if (ENABLE_SERVER_SYNC) {
+      void saveToServerIfAvailable();
+    }
     dispatchUpdateEvent();
   } catch {}
 }
@@ -86,8 +89,9 @@ async function bootstrapFromServerIfEmpty() {
   try {
     if (typeof window === 'undefined') return;
     const raw = window.localStorage.getItem(STORAGE_KEY);
+    const base = getApiBaseUrl();
     const urls = [
-      '/api/must-reads',
+      `${base}/api/must-reads`,
       '/data/must-reads.json',
       'http://localhost:3001/api/must-reads',
       'http://localhost:3002/api/must-reads',
@@ -160,3 +164,4 @@ export function deleteMustRead(id: string): boolean {
   }
   return false;
 }
+import { getApiBaseUrl } from '@/lib/utils';
