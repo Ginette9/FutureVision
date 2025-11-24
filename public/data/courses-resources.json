@@ -1,5 +1,49 @@
 [
   {
+    "id": "course-1763179296643-11",
+    "coverImage": "https://tech.eib.org/_tools/front/css/framework/images/logos/en-eib-logogroup.png",
+    "titleZh": "欧洲投资银行绿色项目评估工具",
+    "titleEn": "European Investment Bank Green Project Assessment Tool",
+    "summaryZh": "欧洲投资银行推出的免费工具（EIB Group Green Checker），帮助银行识别和评估绿色项目，为金融机构提供标准化框架筛选可持续发展投资项目。",
+    "summaryEn": "EIB's free tool (Green Checker) helps banks identify and evaluate green projects, providing a standardized framework for screening sustainable investments.",
+    "linkZh": "https://www.eib.org/en/videos/discover-the-eib-group-green-checker-supporting-green-investments",
+    "linkEn": "https://www.eib.org/en/videos/discover-the-eib-group-green-checker-supporting-green-investments",
+    "date": "2025-11-12"
+  },
+  {
+    "id": "course-1763179296643-12",
+    "coverImage": "https://www.ngfs.net/sites/bdf_espaces2/themes/custom/bdf_ngfs/logo.svg",
+    "titleZh": "绿色金融网络气候情景分析指南",
+    "titleEn": "Green Finance Network Climate Scenario Analysis Guidelines",
+    "summaryZh": "绿色金融网络更新的中央银行气候情景分析指南，提供评估气候变化对金融稳定影响的方法论框架和风险分析工具。",
+    "summaryEn": "Updated NGFS guidelines for central banks on climate scenario analysis, offering methodologies to assess climate impacts on financial stability.",
+    "linkZh": "https://www.ngfs.net/en/publications-and-statistics/publications/2025-guide-climate-scenario-analysis-central-banks-and-supervisors",
+    "linkEn": "https://www.ngfs.net/en/publications-and-statistics/publications/2025-guide-climate-scenario-analysis-central-banks-and-supervisors",
+    "date": "2025-11-21"
+  },
+  {
+    "id": "course-1763179296643-13",
+    "coverImage": "https://ethicalmarketingnews.com/wp-content/uploads/2023/11/GRI.jpg",
+    "titleZh": "GRI气候报告对齐工具",
+    "titleEn": "GRI Climate Reporting Alignment Tool",
+    "summaryZh": "全球报告倡议组织发布的新工具，帮助企业将气候报告与联合国净零排放指南保持一致，确保信息披露的一致性和可比性。",
+    "summaryEn": "GRI's new tool helps companies align climate reporting with UN net-zero guidelines, ensuring consistent and comparable disclosures.",
+    "linkZh": "https://www.globalreporting.org/news/news-center/gri-launches-new-tool-for-corporate-climate-action/",
+    "linkEn": "https://www.globalreporting.org/news/news-center/gri-launches-new-tool-for-corporate-climate-action/",
+    "date": "2025-11-17"
+  },
+  {
+    "id": "course-1763179296643-14",
+    "coverImage": "https://www.gstatic.com/marketing-cms/assets/images/c8/eb/b0c4cad6448ebcb30687b91ff52a/ea-tool-release-images-hero-image-2.webp=w950-h550",
+    "titleZh": "Google能源效率评估工具",
+    "titleEn": "Google Energy Efficiency Assessment Tool",
+    "summaryZh": "Google推出的免费工具，帮助制造商识别能源效率提升机会，提供能源消耗监测、效率评估和优化建议功能。",
+    "summaryEn": "Google's free tool helps manufacturers identify energy efficiency opportunities through consumption monitoring and optimization recommendations.",
+    "linkZh": "https://energyassessment.eco/",
+    "linkEn": "https://energyassessment.eco/",
+    "date": "2025-11-20"
+  },
+  {
     "id": "course-1763179296643-0",
     "coverImage": "https://sdghelpdesk.unescap.org/sites/default/files/2019-11/UN%20SDG%20Learn.png",
     "titleZh": "联合国可持续发展学习平台（UN SDG Learn）",

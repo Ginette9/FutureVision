@@ -1,5 +1,71 @@
 [
   {
+    "id": "news-1762924372661-17",
+    "coverImage": "https://iea.imgix.net/148b0cd7-386a-4566-b41f-661082252fea/CoverPhotoEEMR25.jpg?auto=compress%2Cformat&fit=min&q=80&rect=0%2C0%2C6000%2C3377&w=2120&fit=crop&fm=jpg&q=70&auto=format&h=1193",
+    "titleZh": "2025全球能源效率改善加速，中国等经济体进展更强",
+    "titleEn": "Global Energy Efficiency Improvements Accelerate in 2025, with Stronger Progress in Economies Including China",
+    "summaryZh": "国际能源署于2025年11月20日发布《能源效率2025》年度报告，指出全球能源效率改善速度正在加快，2025年全球一次能源强度预计改善1.8%，高于2024年的1%。报告显示中国等主要经济体相比2019年以来平均水平显示出更强进展迹象。报告分析了阻碍更快进展的关键趋势，包括工业部门能源强度进展放缓、政策滞后于技术进步等，并提出了通过提高现有政策雄心和填补政策空白来加速效率改进的途径。",
+    "summaryEn": "IEA's 2025 energy efficiency report shows accelerated global progress, with China and other major economies leading improvements amid industrial and policy challenges.",
+    "linkZh": "https://www.iea.org/news/global-progress-on-energy-efficiency-picks-up-in-2025",
+    "linkEn": "https://www.iea.org/news/global-progress-on-energy-efficiency-picks-up-in-2025",
+    "date": "2025-11-20"
+  },
+  {
+    "id": "news-1762924372661-18",
+    "coverImage": "https://www.politico.eu/cdn-cgi/image/width=1200,height=675,fit=crop,quality=80,onerror=redirect,format=auto/wp-content/uploads/2022/09/30/GettyImages-1233917955-scaled.jpg",
+    "titleZh": "欧洲数据中心扩容目标面临严峻能源基础设施挑战",
+    "titleEn": "Europe's Data Center Expansion Goals Face Severe Energy Infrastructure Challenges",
+    "summaryZh": "国际能源署于2025年11月16日发布分析报告指出，欧洲为实现《AI大陆行动计划》中5-7年内数据中心容量翻三倍的目标，面临严峻的能源基础设施挑战。报告显示，现有数据中心枢纽如法兰克福、伦敦、阿姆斯特丹、巴黎和都柏林因电网容量不足已暂停新项目，而规划中的项目平均规模显著扩大，在西班牙和荷兰分别达到现有平均容量的7倍和3倍。IEA建议通过简化电网连接流程、采用非固定电网连接、选址电网容量充裕区域、部署智能电网技术和储能系统等措施应对能源瓶颈。",
+    "summaryEn": "IEA reports Europe faces major energy infrastructure challenges in tripling data center capacity, with grid constraints halting projects in key hubs.",
+    "linkZh": "https://www.iea.org/commentaries/overcoming-energy-constraints-is-key-to-delivering-on-europe-s-data-centre-goals",
+    "linkEn": "https://www.iea.org/commentaries/overcoming-energy-constraints-is-key-to-delivering-on-europe-s-data-centre-goals",
+    "date": "2025-11-16"
+  },
+  {
+    "id": "news-1762924372661-19",
+    "coverImage": "https://www.todayesg.com/wp-content/uploads/2025/11/GSIA-1140x570.jpg?v=1763020254",
+    "titleZh": "全球可持续投资联盟发布2024年可持续投资报告",
+    "titleEn": "Global Sustainable Investment Alliance Releases 2024 Sustainable Investment Report",
+    "summaryZh": "全球可持续投资联盟于2025年11月14日发布了2024年全球可持续投资报告。该报告系统性地分析了全球可持续投资的发展趋势、市场规模、投资策略和区域分布情况，为投资者和政策制定者提供了关于ESG投资领域的重要数据参考和行业洞察。",
+    "summaryEn": "GSIA's 2024 sustainable investment report provides comprehensive analysis of global ESG investment trends, market size and regional distribution patterns.",
+    "linkZh": "https://www.gsi-alliance.org/members-resources/gsir2024/",
+    "linkEn": "https://www.gsi-alliance.org/members-resources/gsir2024/",
+    "date": "2025-11-14"
+  },
+  {
+    "id": "news-1762924372661-20",
+    "coverImage": "https://esgpost.com/wp-content/uploads/2024/08/stacks-money-with-small-artificial-trees-top-symbolizing-investment-growth-green-finance-concept-sustainable-development-financial-growth-1536x861-1-800x500.jpg",
+    "titleZh": "绿色金融网络发布气候不作为经济成本声明",
+    "titleEn": "Green Finance Network Releases Statement on Economic Costs of Climate Inaction",
+    "summaryZh": "绿色金融网络于2025年11月19日发布气候不作为经济成本声明，该声明详细阐述了全球范围内因未能及时采取有效气候行动而可能产生的重大经济代价，包括对基础设施建设、投资回报和长期经济发展的潜在负面影响，强调了金融机构和实体企业在应对气候变化方面需要承担的责任与风险。",
+    "summaryEn": "The Green Finance Network warned of significant economic costs from climate inaction, highlighting infrastructure and investment risks for financial institutions.",
+    "linkZh": "https://www.ngfs.net/en/publications-and-statistics/publications/ngfs-declaration-economic-cost-climate-inaction",
+    "linkEn": "https://www.ngfs.net/en/publications-and-statistics/publications/ngfs-declaration-economic-cost-climate-inaction",
+    "date": "2025-11-19"
+  },
+  {
+    "id": "news-1762924372661-15",
+    "coverImage": "https://www.todayesg.com/wp-content/uploads/2025/11/WEF-657x375.jpg?v=1762871776",
+    "titleZh": "世界经济论坛发布私营部门气候融资报告",
+    "titleEn": "World Economic Forum releases report on private sector climate finance",
+    "summaryZh": "世界经济论坛于2025年11月12日发布了私营部门气候融资报告，该报告聚焦私营企业在应对气候变化方面的投资现状、趋势和挑战。报告分析了全球私营部门在气候相关项目中的资金投入规模、投资方向分布以及融资机制创新，为私营企业参与气候行动提供了数据支持和政策建议。报告还探讨了不同行业在气候融资中的表现差异，并提出了促进私营资本流向低碳转型领域的相关建议。",
+    "summaryEn": "WEF's Nov 12, 2025 report analyzes private sector climate investments, highlighting funding trends and innovative financing mechanisms for low-carbon transition.",
+    "linkZh": "https://www.weforum.org/publications/from-risk-to-reward-unlocking-private-capital-for-climate-and-growth/",
+    "linkEn": "https://www.weforum.org/publications/from-risk-to-reward-unlocking-private-capital-for-climate-and-growth/",
+    "date": "2025-11-12"
+  },
+  {
+    "id": "news-1762924372661-16",
+    "coverImage": "https://dynamicmedia.accenture.com/is/image/accenture/Accenture-KF1-DNZ-1707x1138%3Arad-3x2?ts=1763689837620&fit=constrain&qlt=20&dpr=off",
+    "titleZh": "全球大企业去年暂停后重订净零排放目标",
+    "titleEn": "Global corporations reaffirm net-zero emission targets after pause last year",
+    "summaryZh": "埃森哲于2025年11月12日发布调查报告显示，全球大型企业在去年暂停设定净零排放目标后已重新开始制定相关目标。该报告基于对全球大型企业的调查，反映了企业在应对气候变化承诺方面的最新趋势和态度变化，表明企业界对实现碳中和目标的重视程度正在回升。",
+    "summaryEn": "Accenture's Nov 12, 2025 survey shows global corporations are resetting net-zero targets after last year's pause, signaling renewed climate commitment.",
+    "linkZh": "https://www.accenture.com/hk-en/insights/sustainability/destination-net-zero-2025",
+    "linkEn": "https://www.accenture.com/hk-en/insights/sustainability/destination-net-zero-2025",
+    "date": "2025-11-12"
+  },
+  {
     "id": "must-1763112429300-0",
     "coverImage": "https://media.deloitte.com/is/image/deloitte/c-suite_banner_v3:750-x-395?$Responsive$&fmt=webp",
     "titleZh": "德勤调查：83%受调企业过去一年增加可持续发展投资",

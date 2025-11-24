@@ -4,6 +4,7 @@ import { InsightReport } from '../data/insightReports';
 import ReportPurchaseModal from './ReportPurchaseModal';
 import fvLogoUrl from '@/images/future-vision-logo.png';
 import { PDFDocument, degrees } from 'pdf-lib';
+import { getApiBaseUrl } from '@/lib/utils';
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/build/pdf';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { convertToTraditional } from '@/locales/zh-HK';
@@ -172,31 +173,10 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
   const openWatermarkedPdf = useCallback(async () => {
     try {
       if (!report.pdfUrl) return;
-      const resp = await fetch(report.pdfUrl);
-      const buf = await resp.arrayBuffer();
-      const pdf = await PDFDocument.load(buf);
-      const logoResp = await fetch(fvLogoUrl);
-      const logoBuf = await logoResp.arrayBuffer();
-      const logo = await pdf.embedPng(logoBuf);
-      const pageCount = pdf.getPageCount();
-      for (let i = 0; i < pageCount; i++) {
-        if (i === 0 || i === pageCount - 1) continue;
-        const page = pdf.getPage(i);
-        const { width, height } = page.getSize();
-        const dims = logo.scale(1);
-        const base = Math.min(width, height) * 0.9;
-        const scale = base / Math.min(dims.width, dims.height);
-        const scaled = logo.scale(scale);
-        const offsetX = 150; // 右移 20
-        const offsetY = -100; // 下移 30
-        const x = (width - scaled.width) / 2 + offsetX;
-        const y = (height - scaled.height) / 2 + offsetY;
-        page.drawImage(logo, { x, y, width: scaled.width, height: scaled.height, rotate: degrees(30), opacity: 0.12 });
-      }
-      const out = await pdf.save();
-      const blob = new Blob([out.buffer as ArrayBuffer], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
+      const base = getApiBaseUrl();
+      const u = new URL(`${base}/api/pdf/watermark`, window.location.origin);
+      u.searchParams.set('url', report.pdfUrl);
+      window.open(u.toString(), '_blank');
     } catch {
       if (report.pdfUrl) window.open(report.pdfUrl, '_blank');
     }

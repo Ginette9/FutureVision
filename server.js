@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 import initSqlJs from 'sql.js';
+import { PDFDocument, degrees } from 'pdf-lib';
 dotenv.config();
 const app = express();
 const PORT = Number(process.env.PORT || 3001);
@@ -698,6 +699,57 @@ app.post('/api/uploads', (req, res) => {
   } catch (e) {
     console.error('[uploads] save failed:', e.message);
     return res.status(500).json({ error: 'save_failed' });
+  }
+});
+app.get('/api/pdf/watermark', async (req, res) => {
+  try {
+    const rawUrl = String(req.query.url || '').trim();
+    if (!rawUrl) return res.status(400).json({ error: 'missing_url' });
+
+    let pdfBytes;
+    if (rawUrl.startsWith('/')) {
+      const localPath = path.join(process.cwd(), rawUrl.replace(/^\/+/, ''));
+      if (!fs.existsSync(localPath)) return res.status(404).json({ error: 'pdf_not_found' });
+      pdfBytes = fs.readFileSync(localPath);
+    } else {
+      const resp = await axios.get(rawUrl, { responseType: 'arraybuffer' });
+      pdfBytes = resp.data;
+    }
+
+    const pdf = await PDFDocument.load(pdfBytes);
+
+    const fallbackLogoPublic = path.join(process.cwd(), 'public', 'images', 'future-vision-logo-graph.png');
+    const fallbackLogoSrc = path.join(process.cwd(), 'src', 'images', 'future-vision-logo.png');
+    let logoBuffer = null;
+    try {
+      const logoPath = fs.existsSync(fallbackLogoPublic) ? fallbackLogoPublic : fallbackLogoSrc;
+      if (fs.existsSync(logoPath)) logoBuffer = fs.readFileSync(logoPath);
+    } catch {}
+
+    if (logoBuffer) {
+      const logo = await pdf.embedPng(logoBuffer);
+      const pageCount = pdf.getPageCount();
+      for (let i = 0; i < pageCount; i++) {
+        if (i === 0 || i === pageCount - 1) continue;
+        const page = pdf.getPage(i);
+        const { width, height } = page.getSize();
+        const dims = logo.scale(1);
+        const base = Math.min(width, height) * 0.9;
+        const scale = base / Math.min(dims.width, dims.height);
+        const scaled = logo.scale(scale);
+        const x = (width - scaled.width) / 2 + 150;
+        const y = (height - scaled.height) / 2 - 100;
+        page.drawImage(logo, { x, y, width: scaled.width, height: scaled.height, rotate: degrees(30), opacity: 0.12 });
+      }
+    }
+
+    const out = await pdf.save();
+    res.set('Content-Type', 'application/pdf');
+    res.set('Cache-Control', 'no-store');
+    return res.send(Buffer.from(out));
+  } catch (e) {
+    console.error('[api/pdf/watermark] failed:', e.message);
+    return res.status(500).json({ error: 'internal_error' });
   }
 });
 
