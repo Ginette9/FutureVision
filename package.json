@@ -9,7 +9,7 @@
     "dev": "pnpm dev:client",
     "fetch:logos": "node scripts/download-logos.js",
     "build:client": "vite build --outDir dist/static",
-    "build": "rm -rf dist && pnpm build:client && cp package.json dist && cp public/csr_database.db dist/static/csr_database.db && cp src/data/csr_database_CN.db dist/static/csr_database_CN.db && cp src/data/csr_database_HK.db dist/static/csr_database_HK.db && touch dist/build.flag"
+    "build": "rm -rf dist && pnpm build:client && cp package.json dist && cp public/csr_database.db dist/static/csr_database.db && touch dist/build.flag"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.3.0",

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getOrganizationIdsByCountryAndIndustry, getOrganizationsByIds } from '../../../lib/database';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { convertToTraditional } from '@/locales/zh-HK';
 
 interface OrganizationData {
   id: number;
@@ -52,8 +53,9 @@ export const CSRSection: React.FC<{
   }, [countryName, industryName]);
 
   const isZh = language === 'zh-CN' || language === 'zh-HK';
-  const sectionTitle = isZh ? '相关组织与标准' : 'Relevant organizations';
-  const sectionSubtitle = isZh ? '行业中关键组织与规范' : 'Key organizations and standards in your industry';
+  const toZhHK = (s: string) => (language === 'zh-HK' ? convertToTraditional(s) : s);
+  const sectionTitle = isZh ? toZhHK('相关组织') : 'Relevant Organizations';
+  const sectionSubtitle = isZh ? toZhHK('行业中关键组织与规范') : 'Key organizations and standards in your industry';
 
   if (loading) {
     return (
@@ -130,7 +132,7 @@ export const CSRSection: React.FC<{
         </div>
         <div>
           <h2 className="text-3xl font-light text-gray-900">{sectionTitle}</h2>
-          <p className="text-gray-600 mt-1">Key organizations and standards in your industry</p>
+          <p className="text-gray-600 mt-1">{sectionSubtitle}</p>
         </div>
       </div>
 

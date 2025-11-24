@@ -8,6 +8,7 @@ import { convertToTraditional } from '@/locales/zh-HK';
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/build/pdf';
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min?url";
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl as string;
+import { getBackendBase } from '@/lib/utils';
 
 export default function Insights() {
   const [selectedReport, setSelectedReport] = useState<InsightReport | null>(null);
@@ -51,9 +52,19 @@ export default function Insights() {
 
   const renderCoverPage = useCallback(async (report: InsightReport): Promise<string | null> => {
     try {
-      const url = report.pdfUrl;
+      let url = report.pdfUrl;
       const coverPage = report.coverPage || 1;
       if (!url) return null;
+      try {
+        const { type, base } = getBackendBase();
+        const isExternal = /^https?:\/\//.test(String(url));
+        if (isExternal) {
+          const proxied = type === 'same-origin' ? `${base}/pdf` : `${base}/proxy/pdf`;
+          const u = new URL(proxied, window.location.origin);
+          u.searchParams.set('url', String(url));
+          url = u.toString();
+        }
+      } catch {}
       
       const cacheKey = `${report.id}-${coverPage}`;
       if (renderCache[cacheKey]) return renderCache[cacheKey];
@@ -94,8 +105,18 @@ export default function Insights() {
 
   const renderPageImage = useCallback(async (report: InsightReport, pageNum: number): Promise<string | null> => {
     try {
-      const url = report.pdfUrl;
+      let url = report.pdfUrl;
       if (!url) return null;
+      try {
+        const { type, base } = getBackendBase();
+        const isExternal = /^https?:\/\//.test(String(url));
+        if (isExternal) {
+          const proxied = type === 'same-origin' ? `${base}/pdf` : `${base}/proxy/pdf`;
+          const u = new URL(proxied, window.location.origin);
+          u.searchParams.set('url', String(url));
+          url = u.toString();
+        }
+      } catch {}
       const loadingTask = getDocument({ url });
       const pdf = await loadingTask.promise;
       const page = await pdf.getPage(pageNum);

@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { getRiskIdsByCountryAndIndustry, getRisksByIds, getAdviceIdsByCountryAndIndustry, getAdviceByIds } from '../../../lib/database';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { convertToTraditional } from '@/locales/zh-HK';
 
 // 处理 TBD 标签替换的工具函数
 const replaceTBDTags = (html: string, classification: string, countryName: string, industryName: string): string => {
@@ -296,6 +297,7 @@ const ReportSection: React.FC<Props> = ({ countryName, industryName }) => {
 };
 
 const ExpandableThemeBlock: React.FC<{ theme: ThemeEntry; countryName: string; industryName: string }> = ({ theme, countryName, industryName }) => {
+  const { language } = useLanguage();
   const [riskOpen, setRiskOpen] = useState(false);
   const [adviceOpen, setAdviceOpen] = useState(false);
   const rowRef = useRef<HTMLDivElement>(null);
@@ -359,20 +361,20 @@ const ExpandableThemeBlock: React.FC<{ theme: ThemeEntry; countryName: string; i
                   riskOpen ? 'text-red-700' : 'text-gray-700 group-hover:text-red-600'
                 }`}
               >
-                {theme.riskCount} 项风险
+                {theme.riskCount} {language === 'en-US' ? 'risks' : language === 'zh-HK' ? convertToTraditional('项风险') : '项风险'}
               </span>
-            </div>
           </div>
-        ) : (
-          <div className="lg:col-span-3 flex items-center space-x-3">
-            <div className="w-8 h-8 flex items-center justify-center rounded-full bg-green-100">
-              <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <span className="text-sm font-medium text-green-600">无风险</span>
+        </div>
+      ) : (
+        <div className="lg:col-span-3 flex items-center space-x-3">
+          <div className="w-8 h-8 flex items-center justify-center rounded-full bg-green-100">
+            <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
           </div>
-        )}
+          <span className="text-sm font-medium text-green-600">{language === 'en-US' ? 'No risks' : language === 'zh-HK' ? convertToTraditional('无风险') : '无风险'}</span>
+        </div>
+      )}
 
         {theme.recommendationCount > 0 ? (
           <div
@@ -395,20 +397,20 @@ const ExpandableThemeBlock: React.FC<{ theme: ThemeEntry; countryName: string; i
                   adviceOpen ? 'text-gray-700' : 'text-gray-700 group-hover:text-gray-600'
                 }`}
               >
-                查看建议 ({theme.recommendationCount})
+                {language === 'en-US' ? 'View advice' : language === 'zh-HK' ? convertToTraditional('查看建议') : '查看建议'} ({theme.recommendationCount})
               </span>
-            </div>
           </div>
-        ) : (
-          <div className="lg:col-span-4 flex items-center space-x-3">
-            <div className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <span className="text-sm text-gray-500">暂无建议</span>
+        </div>
+      ) : (
+        <div className="lg:col-span-4 flex items-center space-x-3">
+          <div className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100">
+            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
           </div>
-        )}
+          <span className="text-sm text-gray-500">{language === 'en-US' ? 'No recommendations' : language === 'zh-HK' ? convertToTraditional('暂无建议') : '暂无建议'}</span>
+        </div>
+      )}
       </div>
 
       {riskOpen && theme.risks.length > 0 && (
@@ -419,7 +421,7 @@ const ExpandableThemeBlock: React.FC<{ theme: ThemeEntry; countryName: string; i
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
               </svg>
             </div>
-            <h5 className="text-lg font-semibold text-red-900">风险详情</h5>
+            <h5 className="text-lg font-semibold text-red-900">{language === 'en-US' ? 'Risk Details' : language === 'zh-HK' ? convertToTraditional('风险详情') : '风险详情'}</h5>
           </div>
           <div className="space-y-4">
             {theme.risks.map((risk, idx) => (
@@ -442,7 +444,7 @@ const ExpandableThemeBlock: React.FC<{ theme: ThemeEntry; countryName: string; i
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
               </svg>
             </div>
-            <h5 className="text-lg font-semibold text-green-900">建议措施</h5>
+            <h5 className="text-lg font-semibold text-green-900">{language === 'en-US' ? 'Recommendations' : language === 'zh-HK' ? convertToTraditional('建议措施') : '建议措施'}</h5>
           </div>
           <div className="space-y-4">
             {theme.recommendations.map((recommendation, idx) => (

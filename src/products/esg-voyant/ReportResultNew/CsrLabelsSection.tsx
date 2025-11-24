@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getInitiativeIdsByCountryAndIndustry, getInitiativesByIds } from '../../../lib/database';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { convertToTraditional } from '@/locales/zh-HK';
 
 interface Initiative {
   id: number;
@@ -22,8 +23,9 @@ export const CsrLabelsSection: React.FC<{
   const [error, setError] = useState<string | null>(null);
 
   const isZh = language === 'zh-CN' || language === 'zh-HK';
-  const sectionTitle = isZh ? 'ESG标签、供应链倡议与指南' : 'ESG labels, supply chain initiatives & guidelines';
-  const sectionSubtitle = isZh ? '行业标准与认证项目' : 'Industry standards and certification programs';
+  const toZhHK = (s: string) => (language === 'zh-HK' ? convertToTraditional(s) : s);
+  const sectionTitle = isZh ? toZhHK('ESG标签、供应链倡议与指南') : 'ESG labels, supply chain initiatives & guidelines';
+  const sectionSubtitle = isZh ? toZhHK('行业标准与认证项目') : 'Industry standards and certification programs';
 
   useEffect(() => {
     const fetchInitiatives = async () => {
@@ -133,7 +135,7 @@ export const CsrLabelsSection: React.FC<{
         </div>
         <div>
           <h2 className="text-3xl font-light text-gray-900">{sectionTitle}</h2>
-          <p className="text-gray-600 mt-1">Industry standards and certification programs</p>
+          <p className="text-gray-600 mt-1">{sectionSubtitle}</p>
         </div>
       </div>
 

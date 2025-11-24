@@ -138,9 +138,30 @@ export const disclaimerHtmlZh = `
   </p>
 `;
 
-export const getSectionsContent = (language: 'en-US' | 'zh-CN' | 'zh-HK') => ({
-  dueDiligenceHtml: language === 'zh-CN' || language === 'zh-HK' ? dueDiligenceHtmlZh : dueDiligenceHtml,
-  aboutMvoHtml: language === 'zh-CN' || language === 'zh-HK' ? aboutMvoHtmlZh : aboutMvoHtml,
-  contactHtml: language === 'zh-CN' || language === 'zh-HK' ? contactHtmlZh : contactHtml,
-  disclaimerHtml: language === 'zh-CN' || language === 'zh-HK' ? disclaimerHtmlZh : disclaimerHtml,
-});
+import { convertToTraditional } from '@/locales/zh-HK';
+
+export const getSectionsContent = (language: 'en-US' | 'zh-CN' | 'zh-HK') => {
+  const zh = {
+    dueDiligenceHtml: dueDiligenceHtmlZh,
+    aboutMvoHtml: aboutMvoHtmlZh,
+    contactHtml: contactHtmlZh,
+    disclaimerHtml: disclaimerHtmlZh,
+  };
+  if (language === 'zh-HK') {
+    return {
+      dueDiligenceHtml: convertToTraditional(zh.dueDiligenceHtml),
+      aboutMvoHtml: convertToTraditional(zh.aboutMvoHtml),
+      contactHtml: convertToTraditional(zh.contactHtml),
+      disclaimerHtml: convertToTraditional(zh.disclaimerHtml),
+    };
+  }
+  if (language === 'zh-CN') {
+    return zh;
+  }
+  return {
+    dueDiligenceHtml,
+    aboutMvoHtml,
+    contactHtml,
+    disclaimerHtml,
+  };
+};

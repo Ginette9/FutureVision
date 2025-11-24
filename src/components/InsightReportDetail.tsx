@@ -4,10 +4,10 @@ import { InsightReport } from '../data/insightReports';
 import ReportPurchaseModal from './ReportPurchaseModal';
 import fvLogoUrl from '@/images/future-vision-logo.png';
 import { PDFDocument, degrees } from 'pdf-lib';
-import { getApiBaseUrl } from '@/lib/utils';
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/build/pdf';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { convertToTraditional } from '@/locales/zh-HK';
+import { getBackendBase } from '@/lib/utils';
 // 使用ESM worker入口以兼容最新版本
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min?url";
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl as string;
@@ -116,8 +116,18 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
 
   const renderPageImage = useCallback(async (pageNum: number): Promise<string | null> => {
     try {
-      const url = report.pdfUrl;
+      let url = report.pdfUrl;
       if (!url) return null;
+      try {
+        const { type, base } = getBackendBase();
+        const isExternal = /^https?:\/\//.test(String(url));
+        if (isExternal) {
+          const proxied = type === 'same-origin' ? `${base}/pdf` : `${base}/proxy/pdf`;
+          const u = new URL(proxied, window.location.origin);
+          u.searchParams.set('url', String(url));
+          url = u.toString();
+        }
+      } catch {}
 
       // 设置加载状态
       setRenderingState(prev => ({ ...prev, [String(pageNum)]: 'loading' }));
@@ -173,10 +183,31 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
   const openWatermarkedPdf = useCallback(async () => {
     try {
       if (!report.pdfUrl) return;
-      const base = getApiBaseUrl();
-      const u = new URL(`${base}/api/pdf/watermark`, window.location.origin);
-      u.searchParams.set('url', report.pdfUrl);
-      window.open(u.toString(), '_blank');
+      const resp = await fetch(report.pdfUrl);
+      const buf = await resp.arrayBuffer();
+      const pdf = await PDFDocument.load(buf);
+      const logoResp = await fetch(fvLogoUrl);
+      const logoBuf = await logoResp.arrayBuffer();
+      const logo = await pdf.embedPng(logoBuf);
+      const pageCount = pdf.getPageCount();
+      for (let i = 0; i < pageCount; i++) {
+        if (i === 0 || i === pageCount - 1) continue;
+        const page = pdf.getPage(i);
+        const { width, height } = page.getSize();
+        const dims = logo.scale(1);
+        const base = Math.min(width, height) * 0.9;
+        const scale = base / Math.min(dims.width, dims.height);
+        const scaled = logo.scale(scale);
+        const offsetX = 150; // 右移 20
+        const offsetY = -100; // 下移 30
+        const x = (width - scaled.width) / 2 + offsetX;
+        const y = (height - scaled.height) / 2 + offsetY;
+        page.drawImage(logo, { x, y, width: scaled.width, height: scaled.height, rotate: degrees(30), opacity: 0.12 });
+      }
+      const out = await pdf.save();
+      const blob = new Blob([out.buffer as ArrayBuffer], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
     } catch {
       if (report.pdfUrl) window.open(report.pdfUrl, '_blank');
     }

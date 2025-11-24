@@ -364,7 +364,11 @@ function ReportResultNew() {
                   </div>
                   <div>
                     <h2 className="text-3xl font-light text-gray-900">{riskAnalysisSection.title}</h2>
-                    <p className="text-gray-600 mt-1">Comprehensive risk assessment and recommendations</p>
+                    <p className="text-gray-600 mt-1">
+                      {language === 'zh-HK'
+                        ? '全面的風險評估與建議'
+                        : (language === 'zh-CN' ? '全面的风险评估与建议' : 'Comprehensive risk assessment and recommendations')}
+                    </p>
                   </div>
                 </div>
 
@@ -657,8 +661,12 @@ function ReportResultNew() {
                           </svg>
                         </div>
                         <div>
-                          <h2 className="text-3xl font-light text-gray-900">Risk Analysis</h2>
-                          <p className="text-gray-600 mt-1">Comprehensive risk assessment for your business operations</p>
+                          <h2 className="text-3xl font-light text-gray-900">
+                            {language === 'en-US' ? 'Risk Analysis' : language === 'zh-HK' ? '風險分析' : '风险分析'}
+                          </h2>
+                          <p className="text-gray-600 mt-1">
+                            {language === 'en-US' ? 'Comprehensive risk assessment for your business operations' : language === 'zh-HK' ? '為您的業務運營提供全面風險評估' : '为您的业务运营提供全面风险评估'}
+                          </p>
                         </div>
                       </div>
                     </div>

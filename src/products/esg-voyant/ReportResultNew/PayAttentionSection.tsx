@@ -1,5 +1,6 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { convertToTraditional } from '@/locales/zh-HK';
 import { getConsiderationIdsByCountryAndIndustry, getConsiderationsByIds } from '@/lib/database';
 
 type CardData = {
@@ -74,10 +75,11 @@ export const PayAttentionSection: React.FC<Props> = ({ countryName, industryName
     }
   }, [countryName, industryName]);
 
-  const sectionTitle = isZh ? '重要注意事项' : 'Important to Consider';
-  const sectionSubtitle = isZh ? 'ESG 风险评估中的关键考量' : 'Critical factors for your ESG risk assessment';
+  const toZhHK = (s: string) => (language === 'zh-HK' ? convertToTraditional(s) : s);
+  const sectionTitle = isZh ? toZhHK('重要注意事项') : 'Important to Consider';
+  const sectionSubtitle = isZh ? toZhHK('ESG 风险评估中的关键考量') : 'Critical factors for your ESG risk assessment';
   const introParagraph = isZh
-    ? '以下是与您选择的国家和行业组合相关的关键注意事项。这些因素需要在您的 ESG 风险评估中进行仔细考量。'
+    ? toZhHK('以下是与您选择的国家和行业组合相关的关键注意事项。这些因素需要在您的 ESG 风险评估中进行仔细考量。')
     : 'Below are important considerations specific to your selected country and industry combination. These factors should be carefully evaluated in your ESG risk assessment.';
 
   // 没有数据时兜底

@@ -1,19 +1,22 @@
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { convertToTraditional } from '@/locales/zh-HK';
 
 export const ContactSection: React.FC = () => {
   const { language } = useLanguage();
   const isZh = language === 'zh-CN' || language === 'zh-HK';
-  const sectionTitle = isZh ? '联系' : 'Contact';
+  const sectionTitle = language === 'zh-HK' ? '聯繫我們' : isZh ? '联系我们' : 'Contact';
+  const sectionSubtitle = language === 'zh-HK' ? '聯絡我們的 ESG 專家' : isZh ? '与我们的 ESG 专家取得联系' : 'Get in touch with our ESG experts';
+  const toZhHK = (s: string) => (language === 'zh-HK' ? convertToTraditional(s) : s);
 
   const cards = [
     {
       tags:
         isZh
           ? [
-              'ESG 评级提升',
-              'ESG 风险检查与评估',
-              'ESG 冲突事件应急预案与处置流程',
+              toZhHK('ESG 评级提升'),
+              toZhHK('ESG 风险检查与评估'),
+              toZhHK('ESG 冲突事件应急预案与处置流程'),
             ]
           : [
               'ESG Rating Enhancement',
@@ -22,11 +25,15 @@ export const ContactSection: React.FC = () => {
             ],
       html:
         isZh
-          ? `
+          ? (language === 'zh-HK' ? convertToTraditional(`
         <p>
           如对风险与建议有疑问，或正遭遇 ESG 冲突事件并因此承受财务损失，欢迎邮件联系 <a href="mailto:jinxia@mscfv.com"><strong>jinxia@mscfv.com</strong></a>。
         </p>
-      `
+      `) : `
+        <p>
+          如对风险与建议有疑问，或正遭遇 ESG 冲突事件并因此承受财务损失，欢迎邮件联系 <a href="mailto:jinxia@mscfv.com"><strong>jinxia@mscfv.com</strong></a>。
+        </p>
+      `)
           : `
         <p>
           Do you have questions or comments about the risks and recommendations? Or if you are currently grappling with ESG conflict incidents or sustaining financial losses as a result, please send email to <a href="mailto:jinxia@mscfv.com"><strong>jinxia@mscfv.com</strong></a> to reach out to us.
@@ -36,15 +43,19 @@ export const ContactSection: React.FC = () => {
     {
       tags:
         isZh
-          ? ['可持续战略与增长', '全球化拓展与本地化执行']
+          ? [toZhHK('可持续战略与增长'), toZhHK('全球化拓展与本地化执行')]
           : ['Sustainability Strategy & Growth', 'Globalized Expansion & Localized Execution'],
       html:
         isZh
-          ? `
+          ? (language === 'zh-HK' ? convertToTraditional(`
         <p>
           若您在开拓新市场或本地化运营方面面临挑战，请联系 <a href="mailto:jacobtomas@msc-world.com"><strong>jacobtomas@msc-world.com</strong></a>，我们助您畅通国际增长路径。
         </p>
-      `
+      `) : `
+        <p>
+          若您在开拓新市场或本地化运营方面面临挑战，请联系 <a href="mailto:jacobtomas@msc-world.com"><strong>jacobtomas@msc-world.com</strong></a>，我们助您畅通国际增长路径。
+        </p>
+      `)
           : `
         <p>
           If you are struggling to crack new markets or go local, please contact <a href="mailto:jacobtomas@msc-world.com"><strong>jacobtomas@msc-world.com</strong></a>, we unblock international growth for you.
@@ -52,14 +63,18 @@ export const ContactSection: React.FC = () => {
       `,
     },
     {
-      tags: isZh ? ['合作伙伴'] : ['Collaboration partners'],
+      tags: isZh ? [toZhHK('合作伙伴')] : ['Collaboration partners'],
       html:
         isZh
-          ? `
+          ? (language === 'zh-HK' ? convertToTraditional(`
         <p>
           我们帮助客户与伙伴利用 ESG 融合的增长引擎——从可持续战略设计到跨境风险缓释。请联系 <a href="mailto:leon@msc-world.com"><strong>leon@msc-world.com</strong></a>，携手把 ESG 风险转化为可持续增长。
         </p>
-      `
+      `) : `
+        <p>
+          我们帮助客户与伙伴利用 ESG 融合的增长引擎——从可持续战略设计到跨境风险缓释。请联系 <a href="mailto:leon@msc-world.com"><strong>leon@msc-world.com</strong></a>，携手把 ESG 风险转化为可持续增长。
+        </p>
+      `)
           : `
         <p>
           We enable clients and partners to leverage our ESG-integrated growth engines – from sustainability strategy design to cross-border risk mitigation. Please contact <a href="mailto:leon@msc-world.com"><strong>leon@msc-world.com</strong></a>, partner with us to transform ESG risks into sustainable growth.
@@ -79,7 +94,7 @@ export const ContactSection: React.FC = () => {
         </div>
         <div>
           <h2 className="text-3xl font-light text-gray-900">{sectionTitle}</h2>
-          <p className="text-gray-600 mt-1">Get in touch with our ESG experts</p>
+          <p className="text-gray-600 mt-1">{sectionSubtitle}</p>
         </div>
       </div>
 

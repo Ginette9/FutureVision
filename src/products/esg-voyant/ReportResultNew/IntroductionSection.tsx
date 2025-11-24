@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../../contexts/LanguageContext';
+import { convertToTraditional } from '@/locales/zh-HK';
 
 interface Props {
   productNames: string[];
@@ -42,6 +43,7 @@ export const IntroductionSection: React.FC<Props> = ({
   const location = useLocation();
   const { language } = useLanguage();
   const isZh = language === 'zh-CN' || language === 'zh-HK';
+  const toZhHK = (s: string) => (language === 'zh-HK' ? convertToTraditional(s) : s);
 
   // 固定的详细分析内容
   const intro_prose_en = `
@@ -206,8 +208,8 @@ export const IntroductionSection: React.FC<Props> = ({
           </svg>
         </div>
         <div>
-          <h2 className="text-3xl font-light text-gray-900">{isZh ? 'ESG 风险分析报告' : 'ESG Risk Analysis Report'}</h2>
-          <p className="text-gray-600 mt-1">{isZh ? '全面的风险评估与建议' : 'Comprehensive risk assessment and recommendations'}</p>
+          <h2 className="text-3xl font-light text-gray-900">{isZh ? toZhHK('ESG 风险分析报告') : 'ESG Risk Analysis Report'}</h2>
+          <p className="text-gray-600 mt-1">{isZh ? toZhHK('全面的风险评估与建议') : 'Comprehensive risk assessment and recommendations'}</p>
         </div>
       </div>
 
@@ -236,8 +238,8 @@ export const IntroductionSection: React.FC<Props> = ({
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-light text-gray-900">{isZh ? '行业焦点' : 'Industry Focus'}</h3>
-              <p className="text-gray-600 text-sm">{isZh ? '目标行业分析' : 'Target sectors analyzed'}</p>
+              <h3 className="text-lg font-light text-gray-900">{isZh ? toZhHK('行业焦点') : 'Industry Focus'}</h3>
+              <p className="text-gray-600 text-sm">{isZh ? toZhHK('目标行业分析') : 'Target sectors analyzed'}</p>
             </div>
           </div>
           <div className="space-y-2">
@@ -258,8 +260,8 @@ export const IntroductionSection: React.FC<Props> = ({
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-light text-gray-900">{isZh ? '地理范围' : 'Geographic Scope'}</h3>
-              <p className="text-gray-600 text-sm">{isZh ? '重点审查市场' : 'Markets under review'}</p>
+              <h3 className="text-lg font-light text-gray-900">{isZh ? toZhHK('地理范围') : 'Geographic Scope'}</h3>
+              <p className="text-gray-600 text-sm">{isZh ? toZhHK('重点审查市场') : 'Markets under review'}</p>
             </div>
           </div>
           <div className="space-y-2">

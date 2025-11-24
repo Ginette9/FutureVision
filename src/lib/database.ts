@@ -1,9 +1,9 @@
 import initSqlJs from 'sql.js';
-import { apiGet, apiPost } from '@/lib/utils';
 import sqlWasmUrl from 'sql.js/dist/sql-wasm.wasm?url';
 import enDbUrl from '@/data/csr_database.db?url';
 import cnDbUrl from '@/data/csr_database_CN.db?url';
 import hkDbUrl from '@/data/csr_database_HK.db?url';
+import { apiGet } from '@/lib/utils';
 
 // 缓存 SQL.js 和两个数据库实例（英文库用于ID映射，本地化库用于内容）
 let SQLLib: any = null;
@@ -67,18 +67,10 @@ export async function getConsiderationsByIds(considerationIds: string): Promise<
   content_html: string;
   }>> {
   try {
-    const ids = considerationIds.split(',').map(id => id.trim()).filter(id => id);
-    if (ids.length > 0) {
-      try {
-        const lang = (typeof window !== 'undefined' && (window as any).__fvLanguage) || localStorage.getItem('language') || 'en-US';
-        const data = await apiPost<Array<{ id: number; content: string; classification: string; content_html: string }>>('/api/db/considerations', { ids, lang });
-        if (Array.isArray(data)) return data;
-      } catch {}
-    }
     const database = await initDatabaseLocalized();
     
     // 解析 consideration_ids (格式: "1,2,3")
-    // ids 已在上方解析
+    const ids = considerationIds.split(',').map(id => id.trim()).filter(id => id);
     
     if (ids.length === 0) {
       return [];
@@ -118,10 +110,6 @@ export async function getConsiderationIdsByCountryAndIndustry(
   industryName: string
 ): Promise<string> {
   try {
-    try {
-      const data = await apiGet<{ consideration_ids: string }>("/api/applicability", { country: countryName, industry: industryName });
-      if (data && typeof data.consideration_ids === 'string') return data.consideration_ids;
-    } catch {}
     const database = await initDatabaseEnglish();
     
     const query = `
@@ -153,10 +141,6 @@ export async function getInitiativeIdsByCountryAndIndustry(
   industryName: string
 ): Promise<string[]> {
   try {
-    try {
-      const data = await apiGet<{ initiative_ids: string[] }>("/api/applicability", { country: countryName, industry: industryName });
-      if (data && Array.isArray(data.initiative_ids)) return data.initiative_ids;
-    } catch {}
     const database = await initDatabaseEnglish();
     
     const query = `
@@ -196,11 +180,6 @@ export async function getInitiativesByIds(ids: string[]): Promise<Array<{
   intro_html: string;
   }>> {
   try {
-    try {
-      const lang = (typeof window !== 'undefined' && (window as any).__fvLanguage) || localStorage.getItem('language') || 'en-US';
-      const data = await apiPost<Array<{ id: number; name: string; intro: string; logo: string; link: string; classification: string; intro_html: string }>>('/api/db/initiatives', { ids, lang });
-      if (Array.isArray(data)) return data;
-    } catch {}
     if (ids.length === 0) {
       return [];
     }
@@ -244,10 +223,6 @@ export async function getOrganizationIdsByCountryAndIndustry(
   industryName: string
 ): Promise<string[]> {
   try {
-    try {
-      const data = await apiGet<{ organization_ids: string[] }>("/api/applicability", { country: countryName, industry: industryName });
-      if (data && Array.isArray(data.organization_ids)) return data.organization_ids;
-    } catch {}
     const database = await initDatabaseEnglish();
     const stmt = database.prepare(`
       SELECT organization_ids 
@@ -284,11 +259,6 @@ export async function getOrganizationsByIds(ids: string[]): Promise<Array<{
   intro_html: string;
   }>> {
   try {
-    try {
-      const lang = (typeof window !== 'undefined' && (window as any).__fvLanguage) || localStorage.getItem('language') || 'en-US';
-      const data = await apiPost<Array<{ id: number; name: string; intro: string; logo: string; link: string; classification: string; intro_html: string }>>('/api/db/organizations', { ids, lang });
-      if (Array.isArray(data)) return data;
-    } catch {}
     if (ids.length === 0) return [];
     
     const database = await initDatabaseLocalized();
@@ -339,27 +309,19 @@ export async function getRiskIdsByCountryAndIndustry(
 ): Promise<string[]> {
   try {
     try {
-      const data = await apiGet<{ risk_ids: string[] }>("/api/applicability", { country: countryName, industry: industryName });
-      if (data && Array.isArray(data.risk_ids)) return data.risk_ids;
+      const resp = await apiGet<{ ids: string[] }>(`/api/db/risk-ids`, { countryName, industryName });
+      if (Array.isArray(resp?.ids)) return resp.ids;
     } catch {}
     const database = await initDatabaseEnglish();
-    
-    const query = `
-      SELECT risk_ids 
-      FROM applicability_grouped 
-      WHERE country_name = ? AND industry_name = ?
-    `;
-    
+    const query = `SELECT risk_ids FROM applicability_grouped WHERE country_name = ? AND industry_name = ?`;
     const stmt = database.prepare(query);
     stmt.bind([countryName, industryName]);
-    
     let riskIds: string[] = [];
     if (stmt.step()) {
       const row = stmt.getAsObject();
       const riskIdsStr = row.risk_ids as string || '';
       riskIds = riskIdsStr.split(',').map(id => id.trim()).filter(id => id);
     }
-    
     stmt.free();
     return riskIds;
   } catch (error) {
@@ -381,54 +343,22 @@ export async function getRisksByIds(ids: string[]): Promise<Array<{
   sub_issue_name?: string;
   }>> {
   try {
+    if (ids.length === 0) return [];
     try {
       const lang = (typeof window !== 'undefined' && (window as any).__fvLanguage) || localStorage.getItem('language') || 'en-US';
-      const data = await apiPost<Array<{ id: number; issue_id: number; sub_issue_id: number; content: string; classification: string; source: string; content_html: string; issue_name?: string; sub_issue_name?: string }>>('/api/db/risks', { ids, lang });
-      if (Array.isArray(data)) return data;
+      const resp = await apiGet<{ items: any[] }>(`/api/db/risks`, { ids: ids.join(','), lang });
+      if (Array.isArray(resp?.items)) return resp.items as any[];
     } catch {}
     const database = await initDatabaseLocalized();
-    
-    if (ids.length === 0) {
-      return [];
-    }
-    
     const placeholders = ids.map(() => '?').join(',');
-    const query = `
-      SELECT 
-        r.id, 
-        r.issue_id, 
-        r.sub_issue_id, 
-        r.content, 
-        r.classification, 
-        r.source,
-        r.content_html,
-        i.issue_name,
-        s.sub_issue_name
-      FROM risks r
-      LEFT JOIN issues i ON r.issue_id = i.id
-      LEFT JOIN sub_issues s ON r.sub_issue_id = s.id
-      WHERE r.id IN (${placeholders})
-    `;
-    
+    const query = `SELECT r.id, r.issue_id, r.sub_issue_id, r.content, r.classification, r.source, r.content_html, i.issue_name, s.sub_issue_name FROM risks r LEFT JOIN issues i ON r.issue_id = i.id LEFT JOIN sub_issues s ON r.sub_issue_id = s.id WHERE r.id IN (${placeholders})`;
     const stmt = database.prepare(query);
     stmt.bind(ids);
-    
     const risks = [];
     while (stmt.step()) {
       const row = stmt.getAsObject();
-      risks.push({
-        id: row.id as number,
-        issue_id: row.issue_id as number,
-        sub_issue_id: row.sub_issue_id as number,
-        content: row.content as string,
-        classification: row.classification as string,
-        source: row.source as string,
-        content_html: row.content_html as string,
-        issue_name: row.issue_name as string,
-        sub_issue_name: row.sub_issue_name as string
-      });
+      risks.push(row);
     }
-    
     stmt.free();
     return risks;
   } catch (error) {
@@ -444,27 +374,19 @@ export async function getAdviceIdsByCountryAndIndustry(
 ): Promise<string[]> {
   try {
     try {
-      const data = await apiGet<{ advice_ids: string[] }>("/api/applicability", { country: countryName, industry: industryName });
-      if (data && Array.isArray(data.advice_ids)) return data.advice_ids;
+      const resp = await apiGet<{ ids: string[] }>(`/api/db/advice-ids`, { countryName, industryName });
+      if (Array.isArray(resp?.ids)) return resp.ids;
     } catch {}
     const database = await initDatabaseEnglish();
-    
-    const query = `
-      SELECT advice_ids 
-      FROM applicability_grouped 
-      WHERE country_name = ? AND industry_name = ?
-    `;
-    
+    const query = `SELECT advice_ids FROM applicability_grouped WHERE country_name = ? AND industry_name = ?`;
     const stmt = database.prepare(query);
     stmt.bind([countryName, industryName]);
-    
     let adviceIds: string[] = [];
     if (stmt.step()) {
       const row = stmt.getAsObject();
       const adviceIdsStr = row.advice_ids as string || '';
       adviceIds = adviceIdsStr.split(',').map(id => id.trim()).filter(id => id);
     }
-    
     stmt.free();
     return adviceIds;
   } catch (error) {
@@ -486,54 +408,19 @@ export async function getAdviceByIds(ids: string[]): Promise<Array<{
   sub_issue_name?: string;
   }>> {
   try {
+    if (ids.length === 0) return [];
     try {
       const lang = (typeof window !== 'undefined' && (window as any).__fvLanguage) || localStorage.getItem('language') || 'en-US';
-      const data = await apiPost<Array<{ id: number; issue_id: number; sub_issue_id: number; content: string; classification: string; source: string; content_html: string; issue_name?: string; sub_issue_name?: string }>>('/api/db/advice', { ids, lang });
-      if (Array.isArray(data)) return data;
+      const resp = await apiGet<{ items: any[] }>(`/api/db/advice`, { ids: ids.join(','), lang });
+      if (Array.isArray(resp?.items)) return resp.items as any[];
     } catch {}
     const database = await initDatabaseLocalized();
-    
-    if (ids.length === 0) {
-      return [];
-    }
-    
     const placeholders = ids.map(() => '?').join(',');
-    const query = `
-      SELECT 
-        a.id, 
-        a.issue_id, 
-        a.sub_issue_id, 
-        a.content, 
-        a.classification, 
-        a.source,
-        a.content_html,
-        i.issue_name,
-        s.sub_issue_name
-      FROM advice a
-      LEFT JOIN issues i ON a.issue_id = i.id
-      LEFT JOIN sub_issues s ON a.sub_issue_id = s.id
-      WHERE a.id IN (${placeholders})
-    `;
-    
+    const query = `SELECT a.id, a.issue_id, a.sub_issue_id, a.content, a.classification, a.source, a.content_html, i.issue_name, s.sub_issue_name FROM advice a LEFT JOIN issues i ON a.issue_id = i.id LEFT JOIN sub_issues s ON a.sub_issue_id = s.id WHERE a.id IN (${placeholders})`;
     const stmt = database.prepare(query);
     stmt.bind(ids);
-    
     const advice = [];
-    while (stmt.step()) {
-      const row = stmt.getAsObject();
-      advice.push({
-        id: row.id as number,
-        issue_id: row.issue_id as number,
-        sub_issue_id: row.sub_issue_id as number,
-        content: row.content as string,
-        classification: row.classification as string,
-        source: row.source as string,
-        content_html: row.content_html as string,
-        issue_name: row.issue_name as string,
-        sub_issue_name: row.sub_issue_name as string
-      });
-    }
-    
+    while (stmt.step()) advice.push(stmt.getAsObject());
     stmt.free();
     return advice;
   } catch (error) {
