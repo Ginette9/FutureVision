@@ -5,7 +5,7 @@
     "titleZh": "Google推出免费工具助制造商识别能源效率提升机会",
     "titleEn": "Google Launches Free Tool to Help Manufacturers Identify Energy Efficiency Improvement Opportunities",
     "summaryZh": "Google于2025年11月20日推出了一款新的免费工具，旨在帮助制造商识别能源效率提升机会。该工具利用Google在数据分析和技术创新方面的优势，为企业提供能源消耗监测、效率评估和优化建议等功能，帮助制造企业降低能源成本、减少碳排放，并提升可持续发展能力。",
-    "summaryEn": "Google launched a new free tool on November 20, 2025, designed to help manufacturers identify energy efficiency improvement opportunities. Leveraging Google's advantages in data analysis and technological innovation, the tool provides functions such as energy consumption monitoring, efficiency assessment, and optimization recommendations, helping manufacturing enterprises reduce energy costs, decrease carbon emissions, and enhance sustainable development capabilities.",
+    "summaryEn": "Google launched a free tool on Nov 20, 2025 to help manufacturers identify energy efficiency opportunities, using data analytics to monitor consumption and provide optimization recommendations.",
     "linkZh": "https://energyassessment.eco/",
     "linkEn": "https://energyassessment.eco/",
     "date": "2025-11-20"
@@ -16,7 +16,7 @@
     "titleZh": "2025全球能源效率改善加速，中国等经济体进展更强",
     "titleEn": "Global Energy Efficiency Improvements Accelerate in 2025, with Stronger Progress in Economies Including China",
     "summaryZh": "国际能源署于2025年11月20日发布《能源效率2025》年度报告，指出全球能源效率改善速度正在加快，2025年全球一次能源强度预计改善1.8%，高于2024年的1%。报告显示中国等主要经济体相比2019年以来平均水平显示出更强进展迹象。报告分析了阻碍更快进展的关键趋势，包括工业部门能源强度进展放缓、政策滞后于技术进步等，并提出了通过提高现有政策雄心和填补政策空白来加速效率改进的途径。",
-    "summaryEn": "The International Energy Agency released its 'Energy Efficiency 2025' annual report on November 20, 2025, indicating that global energy efficiency improvements are accelerating, with global primary energy intensity expected to improve by 1.8% in 2025, higher than 1% in 2024. The report shows that major economies including China demonstrate stronger progress compared to the average level since 2019. The report analyzes key trends hindering faster progress, including slowed energy intensity improvements in the industrial sector and policies lagging behind technological advancements, and proposes pathways to accelerate efficiency improvements by enhancing existing policy ambitions and filling policy gaps.",
+    "summaryEn": "IEA's 2025 report shows global energy efficiency improvements accelerating, with China and other major economies making stronger progress amid industrial and policy challenges.",
     "linkZh": "https://www.iea.org/news/global-progress-on-energy-efficiency-picks-up-in-2025",
     "linkEn": "https://www.iea.org/news/global-progress-on-energy-efficiency-picks-up-in-2025",
     "date": "2025-11-20"
@@ -27,7 +27,7 @@
     "titleZh": "绿色金融网络发布气候不作为经济成本声明",
     "titleEn": "Green Finance Network Releases Statement on Economic Costs of Climate Inaction",
     "summaryZh": "绿色金融网络于2025年11月19日发布气候不作为经济成本声明，该声明详细阐述了全球范围内因未能及时采取有效气候行动而可能产生的重大经济代价，包括对基础设施建设、投资回报和长期经济发展的潜在负面影响，强调了金融机构和实体企业在应对气候变化方面需要承担的责任与风险。",
-    "summaryEn": "The Green Finance Network released a statement on the economic costs of climate inaction on November 19, 2025, detailing the significant economic consequences that may arise globally due to failure to take timely and effective climate action, including potential negative impacts on infrastructure construction, investment returns, and long-term economic development, emphasizing the responsibilities and risks that financial institutions and实体企业 need to bear in addressing climate change.",
+    "summaryEn": "The Green Finance Network warned of significant economic costs from climate inaction, highlighting infrastructure and investment risks for financial institutions and businesses.",
     "linkZh": "https://www.ngfs.net/en/publications-and-statistics/publications/ngfs-declaration-economic-cost-climate-inaction",
     "linkEn": "https://www.ngfs.net/en/publications-and-statistics/publications/ngfs-declaration-economic-cost-climate-inaction",
     "date": "2025-11-19"
@@ -38,7 +38,7 @@
     "titleZh": "香港发行全球最大规模数字绿色债券",
     "titleEn": "Hong Kong issues world's largest digital green bond",
     "summaryZh": "香港于2025年11月17日发行了全球最大规模的数字绿色债券。该债券采用数字化技术发行，募集资金将专门用于符合绿色标准的项目，包括绿色建筑、可再生能源、清洁交通等环保领域。此次发行标志着香港在绿色金融创新方面的重要突破，为全球绿色债券市场树立了新的标杆，同时也展示了数字技术在绿色金融领域的应用潜力。",
-    "summaryEn": "Hong Kong issued the world's largest digital green bond on November 17, 2025. The bond was issued using digital technology, and the raised funds will be specifically used for projects meeting green standards, including green buildings, renewable energy, clean transportation, and other environmental fields. This issuance marks a significant breakthrough in Hong Kong's green finance innovation, setting a new benchmark for the global green bond market while demonstrating the application potential of digital technology in the green finance sector.",
+    "summaryEn": "Hong Kong issued the world's largest digital green bond on Nov 17, 2025, funding green building and renewable energy projects through innovative digital financing.",
     "linkZh": "https://www.hkgb.gov.hk/en/news/sustainbondpress/press_20251111.html",
     "linkEn": "https://www.hkgb.gov.hk/en/news/sustainbondpress/press_20251111.html",
     "date": "2025-11-17"
@@ -49,7 +49,7 @@
     "titleZh": "欧洲数据中心扩容目标面临严峻能源基础设施挑战",
     "titleEn": "Europe's Data Center Expansion Goals Face Severe Energy Infrastructure Challenges",
     "summaryZh": "国际能源署于2025年11月16日发布分析报告指出，欧洲为实现《AI大陆行动计划》中5-7年内数据中心容量翻三倍的目标，面临严峻的能源基础设施挑战。报告显示，现有数据中心枢纽如法兰克福、伦敦、阿姆斯特丹、巴黎和都柏林因电网容量不足已暂停新项目，而规划中的项目平均规模显著扩大，在西班牙和荷兰分别达到现有平均容量的7倍和3倍。IEA建议通过简化电网连接流程、采用非固定电网连接、选址电网容量充裕区域、部署智能电网技术和储能系统等措施应对能源瓶颈。",
-    "summaryEn": "The International Energy Agency released an analysis report on November 16, 2025, indicating that Europe faces severe energy infrastructure challenges in achieving the goal of tripling data center capacity within 5-7 years as outlined in the 'AI Continent Action Plan'. The report shows that existing data center hubs such as Frankfurt, London, Amsterdam, Paris, and Dublin have suspended new projects due to insufficient grid capacity, while planned projects have significantly larger average sizes, reaching 7 times and 3 times the existing average capacity in Spain and the Netherlands respectively. IEA recommends addressing energy bottlenecks through measures such as simplifying grid connection processes, adopting non-fixed grid connections, selecting locations with ample grid capacity, deploying smart grid technologies, and energy storage systems.",
+    "summaryEn": "IEA reports Europe faces major energy infrastructure challenges in tripling data center capacity, with grid constraints halting projects in key hubs like Frankfurt and London.",
     "linkZh": "https://www.iea.org/commentaries/overcoming-energy-constraints-is-key-to-delivering-on-europe-s-data-centre-goals",
     "linkEn": "https://www.iea.org/commentaries/overcoming-energy-constraints-is-key-to-delivering-on-europe-s-data-centre-goals",
     "date": "2025-11-16"
@@ -60,7 +60,7 @@
     "titleZh": "欧盟议会投票削减企业可持续发展报告及尽职调查要求",
     "titleEn": "EU Parliament votes to cut corporate sustainability reporting and due diligence requirements",
     "summaryZh": "欧盟议会于2025年11月13日投票决定大幅削减企业可持续发展报告和尽职调查要求。这一政策变化涉及对企业ESG信息披露义务的简化，可能减轻企业在环境、社会和治理方面的合规负担。该决议反映了欧盟在平衡企业监管负担与可持续发展目标之间的政策调整，将对在欧盟市场运营的企业产生直接影响。",
-    "summaryEn": "The European Parliament voted on November 13, 2025, to significantly reduce corporate sustainability reporting and due diligence requirements. This policy change involves simplifying corporate ESG disclosure obligations and may reduce compliance burdens in environmental, social, and governance aspects. The resolution reflects EU policy adjustments in balancing regulatory burdens with sustainable development goals and will directly impact companies operating in the EU market.",
+    "summaryEn": "The EU Parliament voted to reduce sustainability reporting requirements on Nov 13, 2025, easing ESG compliance burdens for companies operating in the EU market.",
     "linkZh": "https://www.europarl.europa.eu/news/en/press-room/20251106IPR31296/sustainability-reporting-and-due-diligence-meps-back-simplification-changes",
     "linkEn": "https://www.europarl.europa.eu/news/en/press-room/20251106IPR31296/sustainability-reporting-and-due-diligence-meps-back-simplification-changes",
     "date": "2025-11-13"
@@ -71,7 +71,7 @@
     "titleZh": "香港2025年11月发行史上最大规模数字绿色债券",
     "titleEn": "Hong Kong to Issue Largest-Ever Digital Green Bond in November 2025",
     "summaryZh": "香港特别行政区政府于2025年11月12日发行了有史以来规模最大的数字绿色债券。该债券发行旨在为符合绿色建筑标准的环保项目提供资金支持，包括节能建筑、可再生能源设施、绿色基础设施等领域的投资建设。此次大规模数字绿色债券的发行标志着香港在绿色金融领域的重大进展，为本地及大湾区绿色建筑和可持续发展项目提供了新的融资渠道。",
-    "summaryEn": "The Hong Kong SAR government issued its largest-ever digital green bond on November 12, 2025, to fund environmental projects meeting green building standards, including energy-efficient buildings, renewable energy facilities, and green infrastructure. This issuance marks significant progress in Hong Kong's green finance development, providing new financing channels for local and Greater Bay Area green building and sustainable development projects.",
+    "summaryEn": "Hong Kong SAR issued its largest digital green bond on Nov 12, 2025, funding green building projects and advancing sustainable finance in the Greater Bay Area.",
     "linkZh": "https://www.info.gov.hk/gia/general/202511/11/P2025111100724.htm",
     "linkEn": "https://www.info.gov.hk/gia/general/202511/11/P2025111100724.htm",
     "date": "2025-11-12"
@@ -82,7 +82,7 @@
     "titleZh": "欧洲投资银行推出助银行识别评估绿色项目工具",
     "titleEn": "European Investment Bank launches tool to help banks identify and evaluate green projects",
     "summaryZh": "欧洲投资银行于2025年11月12日宣布全球推出一款免费工具（EIB Group Green Checker），旨在帮助银行识别和评估绿色项目。该工具将为金融机构提供标准化框架，用于筛选符合可持续发展标准的投资项目，促进绿色金融的规范化和规模化发展。",
-    "summaryEn": "The European Investment Bank launched a free tool (EIB Group Green Checker) on November 12, 2025, to help banks identify and evaluate green projects, providing a standardized framework for screening sustainable investment projects and promoting the standardization and scaling of green finance.",
+    "summaryEn": "EIB launched a free tool (Green Checker) on Nov 12, 2025, providing banks with a standardized framework to identify and evaluate sustainable investment projects.",
     "linkZh": "https://www.eib.org/en/videos/discover-the-eib-group-green-checker-supporting-green-investments",
     "linkEn": "https://www.eib.org/en/videos/discover-the-eib-group-green-checker-supporting-green-investments",
     "date": "2025-11-12"
@@ -93,7 +93,7 @@
     "titleZh": "ISSB宣布制定自然相关披露标准以统一企业报告框架",
     "titleEn": "ISSB Announces Development of Nature-related Disclosure Standards to Unify Corporate Reporting Framework",
     "summaryZh": "国际可持续发展准则理事会（ISSB）于2025年11月11日宣布将制定自然相关披露标准，旨在为企业提供统一的自然相关风险和机遇报告框架。该标准将重点关注生物多样性、生态系统服务等自然资本要素的披露要求，预计将影响全球企业的环境信息披露实践，推动自然相关财务信息披露的标准化进程。",
-    "summaryEn": "The International Sustainability Standards Board (ISSB) announced on November 11, 2025, that it will develop nature-related disclosure standards to provide companies with a unified reporting framework for nature-related risks and opportunities. The standards will focus on disclosure requirements for natural capital elements such as biodiversity and ecosystem services, and are expected to impact global corporate environmental disclosure practices.",
+    "summaryEn": "ISSB announced nature-related disclosure standards on Nov 11, 2025, creating a unified reporting framework for biodiversity and ecosystem risks.",
     "linkZh": "https://www.ifrs.org/news-and-events/news/2025/11/issb-welcomes-tnfd-support-nature-related-disclosure/",
     "linkEn": "https://www.ifrs.org/news-and-events/news/2025/11/issb-welcomes-tnfd-support-nature-related-disclosure/",
     "date": "2025-11-11"
@@ -104,7 +104,7 @@
     "titleZh": "SBTi于2025年11月提出更灵活企业净零排放标准",
     "titleEn": "SBTi Proposes More Flexible Corporate Net-Zero Emission Standards in November 2025",
     "summaryZh": "科学碳目标倡议（SBTi）于2025年11月10日提出了更灵活的企业净零排放标准。该提案旨在为企业实现净零目标提供更多操作空间和适应性，可能包括延长达标时间表、增加抵消机制灵活性或调整范围三排放计算规则。这一标准修订将影响全球企业的碳排放管理策略和可持续发展路径。",
-    "summaryEn": "The Science Based Targets initiative (SBTi) proposed more flexible corporate net-zero emission standards on November 10, 2025, offering companies greater operational flexibility in achieving net-zero targets, potentially including extended timelines, more flexible offset mechanisms, or adjusted Scope 3 emission calculation rules.",
+    "summaryEn": "SBTi proposed more flexible net-zero standards on Nov 10, 2025, offering companies extended timelines and adjusted Scope 3 emission rules.",
     "linkZh": "https://sciencebasedtargets.org/news/sbti-releases-second-draft-corporate-net-zero-standard-v2-for-consultation",
     "linkEn": "https://sciencebasedtargets.org/news/sbti-releases-second-draft-corporate-net-zero-standard-v2-for-consultation",
     "date": "2025-11-10"
