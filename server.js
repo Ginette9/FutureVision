@@ -9,6 +9,38 @@ dotenv.config();
 const app = express();
 const PORT = Number(process.env.PORT || 3001);
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN;
+const BLOCKED_EMAILS = new Set(['xuchenyi@mscfv.com']);
+function isBlockedEmail(e) {
+  return BLOCKED_EMAILS.has(String(e || '').toLowerCase());
+}
+
+async function prepareDbFiles() {
+  try {
+    const isProd = process.env.NODE_ENV === 'production';
+    const targetDir = isProd ? path.join(process.cwd(), 'dist/static') : path.join(process.cwd(), 'public');
+    try { if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true }); } catch {}
+    const tasks = [
+      { env: 'DB_URL_EN', name: 'csr_database.db' },
+      { env: 'DB_URL_CN', name: 'csr_database_CN.db' },
+      { env: 'DB_URL_HK', name: 'csr_database_HK.db' }
+    ];
+    for (const t of tasks) {
+      const p = path.join(targetDir, t.name);
+      if (fs.existsSync(p)) continue;
+      const url = process.env[t.env];
+      if (!url) continue;
+      try {
+        const resp = await axios.get(url, { responseType: 'arraybuffer', timeout: 60000 });
+        fs.writeFileSync(p, Buffer.from(resp.data));
+        console.log(`[db] downloaded ${t.name} from ${url}`);
+      } catch (e) {
+        console.error(`[db] download failed ${t.name}:`, e.message);
+      }
+    }
+  } catch (e) {
+    console.error('[db] prepare failed:', e.message);
+  }
+}
 
 // 启用CORS
 app.use(cors());
@@ -25,6 +57,12 @@ if (process.env.NODE_ENV === 'production') {
   // 特殊处理数据库文件
   app.get('/csr_database.db', (req, res) => {
     res.sendFile('dist/static/csr_database.db', { root: '.' });
+  });
+  app.get('/csr_database_CN.db', (req, res) => {
+    res.sendFile('dist/static/csr_database_CN.db', { root: '.' });
+  });
+  app.get('/csr_database_HK.db', (req, res) => {
+    res.sendFile('dist/static/csr_database_HK.db', { root: '.' });
   });
   
   // 所有非 API 路由都返回 index.html（排除 /api 与 /proxy 与 /health，允许可选的结尾或斜杠）
@@ -580,6 +618,9 @@ app.post('/api/subscribe', (req, res) => {
     if (!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
       return res.status(400).json({ error: 'invalid_email' });
     }
+    if (isBlockedEmail(e)) {
+      return res.json({ success: true, ignored: true });
+    }
     const cat = String(category || 'general').trim();
     const items = readSubscriptions();
     const exists = items.some(x => String(x?.email).toLowerCase() === e.toLowerCase() && String(x?.category) === cat);
@@ -604,6 +645,9 @@ app.post('/api/contact', (req, res) => {
     const e = String(email || '').trim();
     if (!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
       return res.status(400).json({ error: 'invalid_email' });
+    }
+    if (isBlockedEmail(e)) {
+      return res.json({ success: true, ignored: true });
     }
     const rec = {
       name: String(name || ''),
@@ -636,6 +680,9 @@ app.post('/api/esg-form', (req, res) => {
     const e = String(email || '').trim();
     if (!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
       return res.status(400).json({ error: 'invalid_email' });
+    }
+    if (isBlockedEmail(e)) {
+      return res.json({ success: true, ignored: true });
     }
     const rec = {
       name: String(name || ''),
@@ -775,7 +822,8 @@ async function getLocalizedDb(lang) {
   const key = (lang === 'zh-CN' || lang === 'zh-HK') ? lang : 'en-US';
   if (dbLocalized[key]) return dbLocalized[key];
   const SQL = await getSQL();
-  const p = key === 'zh-CN' ? DB_PATHS.cn() : (key === 'zh-HK' ? DB_PATHS.hk() : DB_PATHS.en());
+  let p = key === 'zh-CN' ? DB_PATHS.cn() : (key === 'zh-HK' ? DB_PATHS.hk() : DB_PATHS.en());
+  if (!p) p = DB_PATHS.en();
   if (!p) throw new Error('localized_db_not_found');
   const uint8 = new Uint8Array(fs.readFileSync(p));
   dbLocalized[key] = new SQL.Database(uint8);
@@ -1001,6 +1049,7 @@ app.get('/health', (req, res) => {
   });
 });
 
+await prepareDbFiles();
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Payment server running on http://localhost:${PORT}`);
   console.log(`Health check: http://localhost:${PORT}/health`);
