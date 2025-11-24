@@ -228,7 +228,7 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+              className="bg-white rounded-lg w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
@@ -290,7 +290,7 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
               </div>
 
               {/* Content */}
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 {/* Title and Meta */}
                 <div className="mb-6">
                   <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
@@ -323,8 +323,8 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
 
                 {/* Tabs */}
                 <div className="border-b border-gray-200 mb-6">
-                  <nav className="flex space-x-8">
-                    {[
+                  <nav className="flex flex-wrap gap-4">
+                    {[ 
                       { id: 'overview', label: language === 'en-US' ? 'Report Overview' : language === 'zh-HK' ? '報告概覽' : '报告概览' },
                       { id: 'contents', label: language === 'en-US' ? 'Table of Contents' : language === 'zh-HK' ? '目錄結構' : '目录结构' }
                     ].map((tab) => (

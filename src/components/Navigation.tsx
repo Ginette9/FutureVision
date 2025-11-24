@@ -39,13 +39,13 @@ const Navigation = () => {
   return (
     <nav className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center h-20">
+        <div className="flex items-center h-16 md:h-20">
           {/* Logo - 左侧 */}
-          <Link to="/" className="flex items-center space-x-3 mr-8">
+          <Link to="/" className="flex items-center space-x-3 mr-6 md:mr-8">
             <img
               src="/images/future-vision-logo-graph.png"
               alt="Future Vision Logo"
-              className="h-12 w-auto"
+              className="h-10 md:h-12 w-auto"
             />
             <div className="hidden sm:block">
               <h1 className="text-2xl font-light text-gray-900 tracking-tight">Future Vision</h1>

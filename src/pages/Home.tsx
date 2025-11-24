@@ -264,19 +264,19 @@ export default function NewHome() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative bg-white py-24 lg:py-32">
+      <section className="relative bg-white py-16 md:py-24 lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <h1 className="text-3xl lg:text-5xl font-light text-gray-900 mb-6 leading-tight">
+              <h1 className="text-2xl md:text-3xl lg:text-5xl font-light text-gray-900 mb-4 md:mb-6 leading-tight">
                 {labels.heroTitleMain}
                 <span className="block font-normal text-gray-700 mt-2">{labels.heroTitleSub}</span>
               </h1>
-              <p className="text-lg lg:text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl">
+              <p className="text-base md:text-lg lg:text-xl text-gray-600 mb-6 md:mb-8 leading-relaxed max-w-2xl">
                 {labels.heroDesc}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
@@ -295,7 +295,7 @@ export default function NewHome() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="relative"
             >
-              <div className="aspect-square bg-white-50 rounded-lg overflow-hidden">
+              <div className="aspect-[4/3] lg:aspect-square bg-white-50 rounded-lg overflow-hidden">
                 <img
                   src="/images/square_earth.png"
                   alt="ESG咨询服务"

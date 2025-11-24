@@ -4,6 +4,7 @@ import axios from 'axios';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
+import initSqlJs from 'sql.js';
 dotenv.config();
 const app = express();
 const PORT = Number(process.env.PORT || 3001);
@@ -697,6 +698,176 @@ app.post('/api/uploads', (req, res) => {
   } catch (e) {
     console.error('[uploads] save failed:', e.message);
     return res.status(500).json({ error: 'save_failed' });
+  }
+});
+
+// ============== 数据库查询 API（服务端查询，减轻前端负载） ==============
+let SQLLib = null;
+const dbCache = new Map();
+
+async function getSQL() {
+  if (SQLLib) return SQLLib;
+  SQLLib = await initSqlJs({ locateFile: (file) => path.join(process.cwd(), 'node_modules', 'sql.js', 'dist', file) });
+  return SQLLib;
+}
+
+function resolveDbPathByLang(lang) {
+  const root = process.cwd();
+  const prodEn = path.join(root, 'dist', 'static', 'csr_database.db');
+  const prodCn = path.join(root, 'dist', 'static', 'csr_database_CN.db');
+  const prodHk = path.join(root, 'dist', 'static', 'csr_database_HK.db');
+  const devEn = path.join(root, 'src', 'data', 'csr_database.db');
+  const devCn = path.join(root, 'src', 'data', 'csr_database_CN.db');
+  const devHk = path.join(root, 'src', 'data', 'csr_database_HK.db');
+  const en = fs.existsSync(prodEn) ? prodEn : devEn;
+  const cn = fs.existsSync(prodCn) ? prodCn : devCn;
+  const hk = fs.existsSync(prodHk) ? prodHk : devHk;
+  const localized = lang === 'zh-CN' ? cn : (lang === 'zh-HK' ? hk : en);
+  return { english: en, localized };
+}
+
+async function openDatabase(filePath) {
+  const SQL = await getSQL();
+  const key = `db:${filePath}`;
+  if (dbCache.has(key)) return dbCache.get(key);
+  const bytes = fs.readFileSync(filePath);
+  const db = new SQL.Database(new Uint8Array(bytes));
+  dbCache.set(key, db);
+  return db;
+}
+
+app.get('/api/applicability', async (req, res) => {
+  try {
+    const country = String(req.query.country || '').trim();
+    const industry = String(req.query.industry || '').trim();
+    if (!country || !industry) return res.status(400).json({ error: 'missing_params' });
+    const { english } = resolveDbPathByLang('en-US');
+    const dbEn = await openDatabase(english);
+    const stmt = dbEn.prepare(`SELECT risk_ids, advice_ids, consideration_ids, initiative_ids, organization_ids FROM applicability_grouped WHERE country_name = ? AND industry_name = ?`);
+    stmt.bind([country, industry]);
+    let payload = { risk_ids: [], advice_ids: [], consideration_ids: '', initiative_ids: [], organization_ids: [] };
+    if (stmt.step()) {
+      const row = stmt.getAsObject();
+      payload = {
+        risk_ids: String(row.risk_ids || '').split(',').map(s => s.trim()).filter(Boolean),
+        advice_ids: String(row.advice_ids || '').split(',').map(s => s.trim()).filter(Boolean),
+        consideration_ids: String(row.consideration_ids || ''),
+        initiative_ids: String(row.initiative_ids || '').split(',').map(s => s.trim()).filter(Boolean),
+        organization_ids: String(row.organization_ids || '').split(',').map(s => s.trim()).filter(Boolean),
+      };
+    }
+    stmt.free();
+    return res.json(payload);
+  } catch (e) {
+    console.error('[api/applicability] failed:', e.message);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+app.post('/api/db/risks', async (req, res) => {
+  try {
+    const { ids = [], lang = 'en-US' } = req.body || {};
+    const { localized } = resolveDbPathByLang(lang);
+    const dbLoc = await openDatabase(localized);
+    if (!Array.isArray(ids) || ids.length === 0) return res.json([]);
+    const placeholders = ids.map(() => '?').join(',');
+    const stmt = dbLoc.prepare(`
+      SELECT r.id, r.issue_id, r.sub_issue_id, r.content, r.classification, r.source, r.content_html, i.issue_name, s.sub_issue_name
+      FROM risks r
+      LEFT JOIN issues i ON r.issue_id = i.id
+      LEFT JOIN sub_issues s ON r.sub_issue_id = s.id
+      WHERE r.id IN (${placeholders})
+    `);
+    stmt.bind(ids);
+    const out = [];
+    while (stmt.step()) out.push(stmt.getAsObject());
+    stmt.free();
+    return res.json(out);
+  } catch (e) {
+    console.error('[api/db/risks] failed:', e.message);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+app.post('/api/db/advice', async (req, res) => {
+  try {
+    const { ids = [], lang = 'en-US' } = req.body || {};
+    const { localized } = resolveDbPathByLang(lang);
+    const dbLoc = await openDatabase(localized);
+    if (!Array.isArray(ids) || ids.length === 0) return res.json([]);
+    const placeholders = ids.map(() => '?').join(',');
+    const stmt = dbLoc.prepare(`
+      SELECT a.id, a.issue_id, a.sub_issue_id, a.content, a.classification, a.source, a.content_html, i.issue_name, s.sub_issue_name
+      FROM advice a
+      LEFT JOIN issues i ON a.issue_id = i.id
+      LEFT JOIN sub_issues s ON a.sub_issue_id = s.id
+      WHERE a.id IN (${placeholders})
+    `);
+    stmt.bind(ids);
+    const out = [];
+    while (stmt.step()) out.push(stmt.getAsObject());
+    stmt.free();
+    return res.json(out);
+  } catch (e) {
+    console.error('[api/db/advice] failed:', e.message);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+app.post('/api/db/considerations', async (req, res) => {
+  try {
+    const { ids = [], lang = 'en-US' } = req.body || {};
+    const { localized } = resolveDbPathByLang(lang);
+    const dbLoc = await openDatabase(localized);
+    if (!Array.isArray(ids) || ids.length === 0) return res.json([]);
+    const placeholders = ids.map(() => '?').join(',');
+    const stmt = dbLoc.prepare(`SELECT id, content, classification, content_html FROM considerations WHERE id IN (${placeholders})`);
+    stmt.bind(ids);
+    const out = [];
+    while (stmt.step()) out.push(stmt.getAsObject());
+    stmt.free();
+    return res.json(out);
+  } catch (e) {
+    console.error('[api/db/considerations] failed:', e.message);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+app.post('/api/db/initiatives', async (req, res) => {
+  try {
+    const { ids = [], lang = 'en-US' } = req.body || {};
+    const { localized } = resolveDbPathByLang(lang);
+    const dbLoc = await openDatabase(localized);
+    if (!Array.isArray(ids) || ids.length === 0) return res.json([]);
+    const placeholders = ids.map(() => '?').join(',');
+    const stmt = dbLoc.prepare(`SELECT id, name, intro, logo, link, classification, intro_html FROM initiatives WHERE id IN (${placeholders})`);
+    stmt.bind(ids);
+    const out = [];
+    while (stmt.step()) out.push(stmt.getAsObject());
+    stmt.free();
+    return res.json(out);
+  } catch (e) {
+    console.error('[api/db/initiatives] failed:', e.message);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+app.post('/api/db/organizations', async (req, res) => {
+  try {
+    const { ids = [], lang = 'en-US' } = req.body || {};
+    const { localized } = resolveDbPathByLang(lang);
+    const dbLoc = await openDatabase(localized);
+    if (!Array.isArray(ids) || ids.length === 0) return res.json([]);
+    const placeholders = ids.map(() => '?').join(',');
+    const stmt = dbLoc.prepare(`SELECT id, name, intro, logo, link, classification, intro_html FROM organizations WHERE id IN (${placeholders})`);
+    stmt.bind(ids);
+    const out = [];
+    while (stmt.step()) out.push(stmt.getAsObject());
+    stmt.free();
+    return res.json(out);
+  } catch (e) {
+    console.error('[api/db/organizations] failed:', e.message);
+    return res.status(500).json({ error: 'internal_error' });
   }
 });
 

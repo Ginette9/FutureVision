@@ -1,4 +1,5 @@
 import initSqlJs from 'sql.js';
+import { apiGet, apiPost } from '@/lib/utils';
 import sqlWasmUrl from 'sql.js/dist/sql-wasm.wasm?url';
 import enDbUrl from '@/data/csr_database.db?url';
 import cnDbUrl from '@/data/csr_database_CN.db?url';
@@ -66,10 +67,18 @@ export async function getConsiderationsByIds(considerationIds: string): Promise<
   content_html: string;
   }>> {
   try {
+    const ids = considerationIds.split(',').map(id => id.trim()).filter(id => id);
+    if (ids.length > 0) {
+      try {
+        const lang = (typeof window !== 'undefined' && (window as any).__fvLanguage) || localStorage.getItem('language') || 'en-US';
+        const data = await apiPost<Array<{ id: number; content: string; classification: string; content_html: string }>>('/api/db/considerations', { ids, lang });
+        if (Array.isArray(data)) return data;
+      } catch {}
+    }
     const database = await initDatabaseLocalized();
     
     // 解析 consideration_ids (格式: "1,2,3")
-    const ids = considerationIds.split(',').map(id => id.trim()).filter(id => id);
+    // ids 已在上方解析
     
     if (ids.length === 0) {
       return [];
@@ -109,6 +118,10 @@ export async function getConsiderationIdsByCountryAndIndustry(
   industryName: string
 ): Promise<string> {
   try {
+    try {
+      const data = await apiGet<{ consideration_ids: string }>("/api/applicability", { country: countryName, industry: industryName });
+      if (data && typeof data.consideration_ids === 'string') return data.consideration_ids;
+    } catch {}
     const database = await initDatabaseEnglish();
     
     const query = `
@@ -140,6 +153,10 @@ export async function getInitiativeIdsByCountryAndIndustry(
   industryName: string
 ): Promise<string[]> {
   try {
+    try {
+      const data = await apiGet<{ initiative_ids: string[] }>("/api/applicability", { country: countryName, industry: industryName });
+      if (data && Array.isArray(data.initiative_ids)) return data.initiative_ids;
+    } catch {}
     const database = await initDatabaseEnglish();
     
     const query = `
@@ -179,6 +196,11 @@ export async function getInitiativesByIds(ids: string[]): Promise<Array<{
   intro_html: string;
   }>> {
   try {
+    try {
+      const lang = (typeof window !== 'undefined' && (window as any).__fvLanguage) || localStorage.getItem('language') || 'en-US';
+      const data = await apiPost<Array<{ id: number; name: string; intro: string; logo: string; link: string; classification: string; intro_html: string }>>('/api/db/initiatives', { ids, lang });
+      if (Array.isArray(data)) return data;
+    } catch {}
     if (ids.length === 0) {
       return [];
     }
@@ -222,6 +244,10 @@ export async function getOrganizationIdsByCountryAndIndustry(
   industryName: string
 ): Promise<string[]> {
   try {
+    try {
+      const data = await apiGet<{ organization_ids: string[] }>("/api/applicability", { country: countryName, industry: industryName });
+      if (data && Array.isArray(data.organization_ids)) return data.organization_ids;
+    } catch {}
     const database = await initDatabaseEnglish();
     const stmt = database.prepare(`
       SELECT organization_ids 
@@ -258,6 +284,11 @@ export async function getOrganizationsByIds(ids: string[]): Promise<Array<{
   intro_html: string;
   }>> {
   try {
+    try {
+      const lang = (typeof window !== 'undefined' && (window as any).__fvLanguage) || localStorage.getItem('language') || 'en-US';
+      const data = await apiPost<Array<{ id: number; name: string; intro: string; logo: string; link: string; classification: string; intro_html: string }>>('/api/db/organizations', { ids, lang });
+      if (Array.isArray(data)) return data;
+    } catch {}
     if (ids.length === 0) return [];
     
     const database = await initDatabaseLocalized();
@@ -307,6 +338,10 @@ export async function getRiskIdsByCountryAndIndustry(
   industryName: string
 ): Promise<string[]> {
   try {
+    try {
+      const data = await apiGet<{ risk_ids: string[] }>("/api/applicability", { country: countryName, industry: industryName });
+      if (data && Array.isArray(data.risk_ids)) return data.risk_ids;
+    } catch {}
     const database = await initDatabaseEnglish();
     
     const query = `
@@ -346,6 +381,11 @@ export async function getRisksByIds(ids: string[]): Promise<Array<{
   sub_issue_name?: string;
   }>> {
   try {
+    try {
+      const lang = (typeof window !== 'undefined' && (window as any).__fvLanguage) || localStorage.getItem('language') || 'en-US';
+      const data = await apiPost<Array<{ id: number; issue_id: number; sub_issue_id: number; content: string; classification: string; source: string; content_html: string; issue_name?: string; sub_issue_name?: string }>>('/api/db/risks', { ids, lang });
+      if (Array.isArray(data)) return data;
+    } catch {}
     const database = await initDatabaseLocalized();
     
     if (ids.length === 0) {
@@ -403,6 +443,10 @@ export async function getAdviceIdsByCountryAndIndustry(
   industryName: string
 ): Promise<string[]> {
   try {
+    try {
+      const data = await apiGet<{ advice_ids: string[] }>("/api/applicability", { country: countryName, industry: industryName });
+      if (data && Array.isArray(data.advice_ids)) return data.advice_ids;
+    } catch {}
     const database = await initDatabaseEnglish();
     
     const query = `
@@ -442,6 +486,11 @@ export async function getAdviceByIds(ids: string[]): Promise<Array<{
   sub_issue_name?: string;
   }>> {
   try {
+    try {
+      const lang = (typeof window !== 'undefined' && (window as any).__fvLanguage) || localStorage.getItem('language') || 'en-US';
+      const data = await apiPost<Array<{ id: number; issue_id: number; sub_issue_id: number; content: string; classification: string; source: string; content_html: string; issue_name?: string; sub_issue_name?: string }>>('/api/db/advice', { ids, lang });
+      if (Array.isArray(data)) return data;
+    } catch {}
     const database = await initDatabaseLocalized();
     
     if (ids.length === 0) {
