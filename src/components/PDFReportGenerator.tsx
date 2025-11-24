@@ -3492,7 +3492,7 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
       }
       
       // 保存前合并静态页面（保留超链接）并添加尾页
-      const fileName = `ESG_Risk_Report_${industryName}_${countryName}_${new Date().toISOString().split('T')[0]}.pdf`;
+      const fileName = `ESG_Voyant_Report_${industryName}_${countryName}_${new Date().toISOString().split('T')[0]}.pdf`;
       
       try {
         // 1) 将当前 jsPDF 输出为字节

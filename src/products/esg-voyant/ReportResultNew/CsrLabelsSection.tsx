@@ -55,7 +55,7 @@ export const CsrLabelsSection: React.FC<{
     if (countryName && industryName) {
       fetchInitiatives();
     }
-  }, [countryName, industryName]);
+  }, [countryName, industryName, language]);
 
   // 加载状态
   if (loading) {

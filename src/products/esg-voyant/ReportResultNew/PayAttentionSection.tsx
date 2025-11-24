@@ -73,7 +73,7 @@ export const PayAttentionSection: React.FC<Props> = ({ countryName, industryName
     if (countryName && industryName) {
       loadConsiderations();
     }
-  }, [countryName, industryName]);
+  }, [countryName, industryName, language]);
 
   const toZhHK = (s: string) => (language === 'zh-HK' ? convertToTraditional(s) : s);
   const sectionTitle = isZh ? toZhHK('重要注意事项') : 'Important to Consider';

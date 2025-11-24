@@ -58,5 +58,29 @@
     "countryId": "100",
     "countryName": "瓦努阿圖",
     "ts": "2025-11-24T07:03:42.159Z"
+  },
+  {
+    "name": "xcy",
+    "email": "xuchenyi@mscfv.com",
+    "position": "pd",
+    "organization": "msc",
+    "phone": "18067879798",
+    "industryId": "298",
+    "industryName": "Facility management, cleaning & landscape services",
+    "countryId": "82",
+    "countryName": "Rwanda",
+    "ts": "2025-11-24T07:42:01.176Z"
+  },
+  {
+    "name": "xcy",
+    "email": "xuchenyi@mscfv.com",
+    "position": "pd",
+    "organization": "msc",
+    "phone": "18067879798",
+    "industryId": "426",
+    "industryName": "林业与伐木",
+    "countryId": "89",
+    "countryName": "萨尔瓦多",
+    "ts": "2025-11-24T07:46:16.397Z"
   }
 ]

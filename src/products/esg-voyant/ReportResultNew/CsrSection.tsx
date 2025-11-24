@@ -50,7 +50,7 @@ export const CSRSection: React.FC<{
     if (countryName && industryName) {
       fetchOrganizations();
     }
-  }, [countryName, industryName]);
+  }, [countryName, industryName, language]);
 
   const isZh = language === 'zh-CN' || language === 'zh-HK';
   const toZhHK = (s: string) => (language === 'zh-HK' ? convertToTraditional(s) : s);
