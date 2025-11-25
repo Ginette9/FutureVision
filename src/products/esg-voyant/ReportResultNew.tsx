@@ -188,7 +188,6 @@ function ReportResultNew() {
         try { sessionStorage.setItem(cacheKey, JSON.stringify({ categories })); } catch {}
         setDataLoaded(true);
         setIsLoading(false);
-        setShouldShowLoader(false);
 
         // 移除：避免在数据加载完毕时提前隐藏 Loader，由 AIGenerationLoader 完成后再隐藏
         // if (showLoader) {
