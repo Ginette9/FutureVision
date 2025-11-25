@@ -817,6 +817,7 @@ async function getEnglishDb() {
   const SQL = await getSQL();
   const p = DB_PATHS.en();
   if (!p) throw new Error('english_db_not_found');
+  console.log('[db] english file:', p);
   const uint8 = new Uint8Array(fs.readFileSync(p));
   dbEnglish = new SQL.Database(uint8);
   return dbEnglish;
@@ -829,6 +830,7 @@ async function getLocalizedDb(lang) {
   let p = key === 'zh-CN' ? DB_PATHS.cn() : (key === 'zh-HK' ? DB_PATHS.hk() : DB_PATHS.en());
   if (!p) p = DB_PATHS.en();
   if (!p) throw new Error('localized_db_not_found');
+  console.log('[db] localized file:', key, p);
   const uint8 = new Uint8Array(fs.readFileSync(p));
   dbLocalized[key] = new SQL.Database(uint8);
   return dbLocalized[key];
