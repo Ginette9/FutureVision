@@ -158,7 +158,7 @@ Finally, the report summarizes global enterprise response rates to social and en
   sourceEn: 'MSC Exclusive Release',
   keywords: ['劳工权益', '冲突矿产', '生物多样性', '社区矛盾', '种族与文化冲突', '野生动物保护', '环保问题'],
   keywordsEn: ['Labor Rights', 'Conflict Minerals', 'Biodiversity', 'Community Conflicts', 'Racial and Cultural Conflicts', 'Wildlife Protection', 'Environmental Issues'],
-  coverImage: '/images/insights/africa-cover.png',
+  coverImage: '/images/insights/africa-cover.jpeg',
   tableOfContents: [],
   isPurchasable: true,
   currency: 'CNY'

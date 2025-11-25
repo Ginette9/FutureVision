@@ -23,6 +23,7 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [renderCache, setRenderCache] = useState<Record<string, string>>({});
   const [renderingState, setRenderingState] = useState<Record<string, 'loading' | 'error' | 'complete'>>({});
+  const [isOpeningOnline, setIsOpeningOnline] = useState(false);
   const { language } = useLanguage();
 
   const formatYearMonth = (dateString: string) => {
@@ -181,6 +182,7 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
   }, [report]);
 
   const openWatermarkedPdf = useCallback(async () => {
+    setIsOpeningOnline(true);
     try {
       if (!report.pdfUrl) return;
       const resp = await fetch(report.pdfUrl);
@@ -198,8 +200,8 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
         const base = Math.min(width, height) * 0.9;
         const scale = base / Math.min(dims.width, dims.height);
         const scaled = logo.scale(scale);
-        const offsetX = 150; // 右移 20
-        const offsetY = -100; // 下移 30
+        const offsetX = 150;
+        const offsetY = -100;
         const x = (width - scaled.width) / 2 + offsetX;
         const y = (height - scaled.height) / 2 + offsetY;
         page.drawImage(logo, { x, y, width: scaled.width, height: scaled.height, rotate: degrees(30), opacity: 0.12 });
@@ -210,6 +212,8 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
       window.open(url, '_blank');
     } catch {
       if (report.pdfUrl) window.open(report.pdfUrl, '_blank');
+    } finally {
+      setIsOpeningOnline(false);
     }
   }, [report.pdfUrl]);
 
@@ -423,9 +427,17 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
                     {report.pdfUrl && (
                       <button
                         onClick={openWatermarkedPdf}
-                        className="px-6 py-2 bg-gray-100 text-gray-900 hover:bg-gray-200 transition-colors duration-200 rounded"
+                        disabled={isOpeningOnline}
+                        className={`px-6 py-2 rounded transition-colors duration-200 ${isOpeningOnline ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
                       >
-                        {language === 'en-US' ? 'View Online' : language === 'zh-HK' ? '在線查看PDF' : '在线查看PDF'}
+                        {isOpeningOnline ? (
+                          <span className="inline-flex items-center gap-2">
+                            <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900"></span>
+                            {language === 'en-US' ? 'Opening…' : language === 'zh-HK' ? '正在打開…' : '正在打开…'}
+                          </span>
+                        ) : (
+                          language === 'en-US' ? 'View Online' : language === 'zh-HK' ? '在線查看PDF' : '在线查看PDF'
+                        )}
                       </button>
                     )}
                     <button
