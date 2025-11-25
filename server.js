@@ -1049,7 +1049,26 @@ app.get('/health', (req, res) => {
   });
 });
 
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    inviteCodesConfigured: VALID_CODES.size > 0
+  });
+});
+
 await prepareDbFiles();
+async function preloadAllDbs() {
+  try {
+    await getEnglishDb();
+    await getLocalizedDb('en-US');
+    await getLocalizedDb('zh-CN');
+    await getLocalizedDb('zh-HK');
+  } catch (e) {
+    console.error('[db] preload failed:', e.message);
+  }
+}
+await preloadAllDbs();
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Payment server running on http://localhost:${PORT}`);
   console.log(`Health check: http://localhost:${PORT}/health`);

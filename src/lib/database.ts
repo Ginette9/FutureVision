@@ -452,6 +452,10 @@ export async function getAdviceByIds(ids: string[]): Promise<Array<{
 
 export async function warmupDatabases(): Promise<void> {
   try { await loadSQL(); } catch {}
+  try {
+    await apiGet('/api/health');
+    return;
+  } catch {}
   try { await fetch(enDbUrl); } catch {}
   try {
     const lang = (typeof window !== 'undefined' && (window as any).__fvLanguage) || localStorage.getItem('language') || 'en-US';
@@ -462,6 +466,10 @@ export async function warmupDatabases(): Promise<void> {
 
 export async function prefetchAllDatabases(): Promise<void> {
   try { await loadSQL(); } catch {}
+  try {
+    await apiGet('/api/health');
+    return;
+  } catch {}
   try {
     await Promise.all([
       fetch(enDbUrl),
