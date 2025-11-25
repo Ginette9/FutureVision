@@ -23,7 +23,7 @@ export default function Services() {
         'Ongoing ESG disclosure and communication'
       ],
       buttonText: 'Learn More',
-      action: () => navigate('/esg-voyant/intro')
+      action: () => navigate('/esg-voyant')
     },
     {
       category: 'Public Companies',
@@ -70,7 +70,7 @@ export default function Services() {
         'ESG持續披露與溝通'
       ],
       buttonText: '了解更多',
-      action: () => navigate('/esg-voyant/intro')
+      action: () => navigate('/esg-voyant')
     },
     {
       category: '上市公司',
@@ -117,7 +117,7 @@ export default function Services() {
         "ESG持续披露与沟通"
       ],
       buttonText: "了解详情",
-      action: () => navigate('/esg-voyant/intro')
+      action: () => navigate('/esg-voyant')
     },
     {
       category: "上市公司",

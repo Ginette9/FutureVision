@@ -281,7 +281,7 @@ export default function NewHome() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
-                  to="/esg-voyant/intro"
+                  to="/esg-voyant"
                   className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300"
                 >
                   {labels.heroBtn}
@@ -779,7 +779,7 @@ export default function NewHome() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {/* 左侧按钮隐藏 */}
               <Link
-                to="/esg-voyant/intro"
+                to="/esg-voyant"
                 className="hidden"
               >
                 {language === 'en-US' ? 'Free Risk Assessment' : language === 'zh-HK' ? '免費風險評估' : '免费风险评估'}

@@ -157,7 +157,7 @@ const Navigation = () => {
               
               {/* Mobile CTA */}
               <Link
-                to="/esg-voyant/intro"
+                to="/esg-voyant"
                 onClick={() => setIsMenuOpen(false)}
                 className="block py-3 px-6 text-base font-medium text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300 text-center mt-6"
               >

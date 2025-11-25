@@ -169,7 +169,7 @@ export default function App() {
               <Route path="/services" element={<Services />} />
               <Route path="/products" element={<Products />} />
               <Route path="/esg-voyant/form" element={<ESGRiskAnalysis />} />
-              <Route path="/esg-voyant/intro" element={<ESGRiskAnalysisNew />} />
+              <Route path="/esg-voyant" element={<ESGRiskAnalysisNew />} />
               <Route path="/insights" element={<Insights />} />
               <Route path="/admin/insights" element={<AdminInsights />} />
               <Route path="/admin/news" element={<AdminKnowledge />} />
