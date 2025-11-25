@@ -13,6 +13,10 @@ const BLOCKED_EMAILS = new Set(['xuchenyi@mscfv.com']);
 function isBlockedEmail(e) {
   return BLOCKED_EMAILS.has(String(e || '').toLowerCase());
 }
+const CACHE = new Map();
+function ck(name, params) { return name + '|' + JSON.stringify(params || {}); }
+function cget(k) { const v = CACHE.get(k); if (!v) return null; if (v.exp && v.exp < Date.now()) { CACHE.delete(k); return null; } return v.data; }
+function cset(k, data, ttlMs) { CACHE.set(k, { data, exp: Date.now() + (ttlMs || 3600000) }); }
 
 async function prepareDbFiles() {
   try {
@@ -838,6 +842,9 @@ function splitIds(raw) {
 app.get('/api/db/risk-ids', async (req, res) => {
   try {
     const { countryName, industryName } = req.query;
+    const k = ck('risk-ids', { countryName, industryName });
+    const cached = cget(k);
+    if (cached) return res.json({ ids: cached });
     const db = await getEnglishDb();
     const stmt = db.prepare(`SELECT risk_ids FROM applicability_grouped WHERE country_name = ? AND industry_name = ?`);
     stmt.bind([String(countryName || ''), String(industryName || '')]);
@@ -846,6 +853,7 @@ app.get('/api/db/risk-ids', async (req, res) => {
       ids = splitIds(stmt.getAsObject().risk_ids || '');
     }
     stmt.free();
+    cset(k, ids);
     res.json({ ids });
   } catch (e) {
     console.error('[db] risk-ids failed:', e.message);
@@ -856,6 +864,9 @@ app.get('/api/db/risk-ids', async (req, res) => {
 app.get('/api/db/advice-ids', async (req, res) => {
   try {
     const { countryName, industryName } = req.query;
+    const k = ck('advice-ids', { countryName, industryName });
+    const cached = cget(k);
+    if (cached) return res.json({ ids: cached });
     const db = await getEnglishDb();
     const stmt = db.prepare(`SELECT advice_ids FROM applicability_grouped WHERE country_name = ? AND industry_name = ?`);
     stmt.bind([String(countryName || ''), String(industryName || '')]);
@@ -864,6 +875,7 @@ app.get('/api/db/advice-ids', async (req, res) => {
       ids = splitIds(stmt.getAsObject().advice_ids || '');
     }
     stmt.free();
+    cset(k, ids);
     res.json({ ids });
   } catch (e) {
     console.error('[db] advice-ids failed:', e.message);
@@ -874,6 +886,9 @@ app.get('/api/db/advice-ids', async (req, res) => {
 app.get('/api/db/organization-ids', async (req, res) => {
   try {
     const { countryName, industryName } = req.query;
+    const k = ck('organization-ids', { countryName, industryName });
+    const cached = cget(k);
+    if (cached) return res.json({ ids: cached });
     const db = await getEnglishDb();
     const stmt = db.prepare(`SELECT organization_ids FROM applicability_grouped WHERE country_name = ? AND industry_name = ?`);
     stmt.bind([String(countryName || ''), String(industryName || '')]);
@@ -882,6 +897,7 @@ app.get('/api/db/organization-ids', async (req, res) => {
       ids = splitIds(stmt.getAsObject().organization_ids || '');
     }
     stmt.free();
+    cset(k, ids);
     res.json({ ids });
   } catch (e) {
     console.error('[db] organization-ids failed:', e.message);
@@ -892,6 +908,9 @@ app.get('/api/db/organization-ids', async (req, res) => {
 app.get('/api/db/initiative-ids', async (req, res) => {
   try {
     const { countryName, industryName } = req.query;
+    const k = ck('initiative-ids', { countryName, industryName });
+    const cached = cget(k);
+    if (cached) return res.json({ ids: cached });
     const db = await getEnglishDb();
     const stmt = db.prepare(`SELECT initiative_ids FROM applicability_grouped WHERE country_name = ? AND industry_name = ?`);
     stmt.bind([String(countryName || ''), String(industryName || '')]);
@@ -900,6 +919,7 @@ app.get('/api/db/initiative-ids', async (req, res) => {
       ids = splitIds(stmt.getAsObject().initiative_ids || '');
     }
     stmt.free();
+    cset(k, ids);
     res.json({ ids });
   } catch (e) {
     console.error('[db] initiative-ids failed:', e.message);
@@ -928,6 +948,9 @@ app.get('/api/db/consideration-ids', async (req, res) => {
 app.get('/api/db/risks', async (req, res) => {
   try {
     const { ids, lang } = req.query;
+    const k = ck('risks', { ids, lang });
+    const cached = cget(k);
+    if (cached) return res.json({ items: cached });
     const db = await getLocalizedDb(String(lang || 'en-US'));
     const arr = splitIds(ids || '');
     if (arr.length === 0) return res.json({ items: [] });
@@ -947,6 +970,7 @@ app.get('/api/db/risks', async (req, res) => {
       items.push(row);
     }
     stmt.free();
+    cset(k, items);
     res.json({ items });
   } catch (e) {
     console.error('[db] risks failed:', e.message);
@@ -957,6 +981,9 @@ app.get('/api/db/risks', async (req, res) => {
 app.get('/api/db/advice', async (req, res) => {
   try {
     const { ids, lang } = req.query;
+    const k = ck('advice', { ids, lang });
+    const cached = cget(k);
+    if (cached) return res.json({ items: cached });
     const db = await getLocalizedDb(String(lang || 'en-US'));
     const arr = splitIds(ids || '');
     if (arr.length === 0) return res.json({ items: [] });
@@ -976,6 +1003,7 @@ app.get('/api/db/advice', async (req, res) => {
       items.push(row);
     }
     stmt.free();
+    cset(k, items);
     res.json({ items });
   } catch (e) {
     console.error('[db] advice failed:', e.message);
@@ -986,6 +1014,9 @@ app.get('/api/db/advice', async (req, res) => {
 app.get('/api/db/organizations', async (req, res) => {
   try {
     const { ids, lang } = req.query;
+    const k = ck('organizations', { ids, lang });
+    const cached = cget(k);
+    if (cached) return res.json({ items: cached });
     const db = await getLocalizedDb(String(lang || 'en-US'));
     const arr = splitIds(ids || '');
     if (arr.length === 0) return res.json({ items: [] });
@@ -995,6 +1026,7 @@ app.get('/api/db/organizations', async (req, res) => {
     const items = [];
     while (stmt.step()) items.push(stmt.getAsObject());
     stmt.free();
+    cset(k, items);
     res.json({ items });
   } catch (e) {
     console.error('[db] organizations failed:', e.message);
@@ -1005,6 +1037,9 @@ app.get('/api/db/organizations', async (req, res) => {
 app.get('/api/db/initiatives', async (req, res) => {
   try {
     const { ids, lang } = req.query;
+    const k = ck('initiatives', { ids, lang });
+    const cached = cget(k);
+    if (cached) return res.json({ items: cached });
     const db = await getLocalizedDb(String(lang || 'en-US'));
     const arr = splitIds(ids || '');
     if (arr.length === 0) return res.json({ items: [] });
@@ -1014,6 +1049,7 @@ app.get('/api/db/initiatives', async (req, res) => {
     const items = [];
     while (stmt.step()) items.push(stmt.getAsObject());
     stmt.free();
+    cset(k, items);
     res.json({ items });
   } catch (e) {
     console.error('[db] initiatives failed:', e.message);
@@ -1024,6 +1060,9 @@ app.get('/api/db/initiatives', async (req, res) => {
 app.get('/api/db/considerations', async (req, res) => {
   try {
     const { ids, lang } = req.query;
+    const k = ck('considerations', { ids, lang });
+    const cached = cget(k);
+    if (cached) return res.json({ items: cached });
     const db = await getLocalizedDb(String(lang || 'en-US'));
     const arr = splitIds(ids || '');
     if (arr.length === 0) return res.json({ items: [] });
@@ -1033,6 +1072,7 @@ app.get('/api/db/considerations', async (req, res) => {
     const items = [];
     while (stmt.step()) items.push(stmt.getAsObject());
     stmt.free();
+    cset(k, items);
     res.json({ items });
   } catch (e) {
     console.error('[db] considerations failed:', e.message);
