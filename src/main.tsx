@@ -6,8 +6,20 @@ import { LanguageProvider } from './contexts/LanguageContext';
 import App from "./App.tsx";
 import "./index.css";
 import { warmupDatabases } from './lib/database';
+import { getApiBaseUrl } from './lib/utils';
 
-warmupDatabases().catch(() => {});
+async function maybeWarmupLocalDb() {
+  try {
+    const base = getApiBaseUrl();
+    const resp = await fetch(`${base}/health`, { method: 'GET' });
+    if (resp.ok) {
+      return;
+    }
+  } catch {}
+  try { await warmupDatabases(); } catch {}
+}
+
+void maybeWarmupLocalDb();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

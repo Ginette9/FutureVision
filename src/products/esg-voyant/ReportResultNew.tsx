@@ -203,6 +203,11 @@ function ReportResultNew() {
     fetchData();
   }, [navigate, language]);
 
+  useEffect(() => {
+    setShouldShowLoader(true);
+    setIsLoading(true);
+  }, [language]);
+
   // 显示AI加载器
   if (shouldShowLoader && (!dataLoaded || isLoading)) {
     return (

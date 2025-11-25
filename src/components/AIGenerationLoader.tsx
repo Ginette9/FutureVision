@@ -237,7 +237,7 @@ const AIGenerationLoader: React.FC<AIGenerationLoaderProps> = ({
 
     // 5.6 秒总时长
     // 缩短总时长以加速进度条
-    const totalMs = 10000;
+    const totalMs = 30000;
     const stepCount = steps.length;
 
     // 轻量的统计变化（单一 interval）
