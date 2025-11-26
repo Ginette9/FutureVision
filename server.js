@@ -302,6 +302,8 @@ const DEFAULT_CONTACTS_JSON = path.join(DEFAULT_DATA_DIR, 'contacts.json');
 const CONTACTS_JSON = process.env.CONTACTS_PATH || DEFAULT_CONTACTS_JSON;
 const DEFAULT_LEADS_JSON = path.join(DEFAULT_DATA_DIR, 'esg-form-leads.json');
 const LEADS_JSON = process.env.LEADS_PATH || DEFAULT_LEADS_JSON;
+const DEFAULT_VISITORS_JSON = path.join(DEFAULT_DATA_DIR, 'visitors.json');
+const VISITORS_JSON = process.env.VISITORS_PATH || DEFAULT_VISITORS_JSON;
 
 // 运行时上传目录（PDF/图片），支持持久盘配置
 const ENV_UPLOADS_DIR = process.env.UPLOADS_DIR;
@@ -574,6 +576,40 @@ function writeLeads(arr) {
   }
 }
 
+function ensureVisitorsFile() {
+  try {
+    const dir = path.dirname(VISITORS_JSON);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(VISITORS_JSON)) {
+      fs.writeFileSync(VISITORS_JSON, JSON.stringify([], null, 2), 'utf8');
+    }
+  } catch (e) {
+    console.error('[visitors] ensure data file failed:', e.message);
+  }
+}
+function readVisitors() {
+  try {
+    ensureVisitorsFile();
+    const raw = fs.readFileSync(VISITORS_JSON, 'utf8');
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr : [];
+  } catch (e) {
+    console.error('[visitors] read failed:', e.message);
+    return [];
+  }
+}
+function writeVisitors(arr) {
+  try {
+    ensureVisitorsFile();
+    const list = Array.isArray(arr) ? arr : [];
+    fs.writeFileSync(VISITORS_JSON, JSON.stringify(list, null, 2), 'utf8');
+    return true;
+  } catch (e) {
+    console.error('[visitors] write failed:', e.message);
+    return false;
+  }
+}
+
 // 获取线上报告列表
 app.get('/api/insights', (req, res) => {
   const data = readInsights();
@@ -708,6 +744,55 @@ app.post('/api/esg-form', (req, res) => {
   } catch (e) {
     console.error('[esg-form] failed:', e.message);
     return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+app.post('/api/visit', (req, res) => {
+  try {
+    const ip = String(req.headers['x-forwarded-for'] || req.ip || '');
+    const ua = String(req.headers['user-agent'] || '');
+    const { path: p, referrer, lang } = req.body || {};
+    const rec = { path: String(p || ''), referrer: String(referrer || ''), lang: String(lang || ''), ua, ip, ts: new Date().toISOString() };
+    const items = readVisitors();
+    items.push(rec);
+    const ok = writeVisitors(items);
+    if (!ok) return res.status(500).json({ error: 'write_failed' });
+    return res.json({ success: true });
+  } catch (e) {
+    console.error('[visit] failed:', e.message);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+app.get('/api/visitors', (req, res) => {
+  const items = readVisitors();
+  res.json({ items, count: items.length });
+});
+
+app.get('/api/visitors/summary', (req, res) => {
+  try {
+    const { from, to } = req.query || {};
+    const items = readVisitors();
+    let filtered = items;
+    if (from || to) {
+      filtered = items.filter(x => {
+        const t = new Date(String(x.ts || '')).getTime();
+        if (!isFinite(t)) return false;
+        const f = from ? new Date(String(from)).getTime() : -Infinity;
+        const tt = to ? new Date(String(to)).getTime() : Infinity;
+        return t >= f && t <= tt;
+      });
+    }
+    const byPath = new Map();
+    for (const it of filtered) {
+      const k = String(it.path || '');
+      byPath.set(k, (byPath.get(k) || 0) + 1);
+    }
+    const summary = Array.from(byPath.entries()).map(([path, count]) => ({ path, count })).sort((a, b) => b.count - a.count);
+    res.json({ items: summary, total: filtered.length });
+  } catch (e) {
+    console.error('[visitors/summary] failed:', e.message);
+    res.status(500).json({ error: 'internal_error' });
   }
 });
 

@@ -13,6 +13,7 @@ import About from "./pages/About";
 import AdminInsights from "./pages/AdminInsights";
 import AdminNews from "./pages/AdminNews";
 import AdminKnowledge from "./pages/AdminKnowledge";
+import AdminAnalytics from "./pages/AdminAnalytics";
 import ReportResult from "./products/esg-voyant/ReportResult";
 import ReportResultNew from "./products/esg-voyant/ReportResultNew";
 import Pay from "./products/esg-voyant/Pay";
@@ -21,6 +22,7 @@ import { AuthContext } from './contexts/authContext';
 import { useLanguage } from './contexts/LanguageContext';
 import { convertToTraditional } from './locales/zh-HK';
 import { prefetchAllDatabases } from '@/lib/database';
+import { apiPost } from '@/lib/utils';
 
 /* 使用 src/images 中的本地图，确保打包后地址正确 */
 // 已移除封面/尾页资源
@@ -130,6 +132,15 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const ref = typeof document !== 'undefined' ? document.referrer || '' : '';
+        await apiPost('/api/visit', { path: location.pathname, referrer: ref, lang: language });
+      } catch {}
+    })();
+  }, [location.pathname, language]);
+
   // 应用启动时预取三个语言数据库，减少后续页面首次等待
   useEffect(() => {
     void prefetchAllDatabases();
@@ -174,6 +185,7 @@ export default function App() {
               <Route path="/admin/insights" element={<AdminInsights />} />
               <Route path="/admin/news" element={<AdminKnowledge />} />
               <Route path="/admin/knowledge" element={<AdminKnowledge />} />
+              <Route path="/admin/analytics" element={<AdminAnalytics />} />
               <Route path="/knowledge" element={<Knowledge />} />
               <Route path="/cases" element={<Cases />} />
               <Route path="/about" element={<About />} />

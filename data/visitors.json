@@ -1,0 +1,98 @@
+[
+  {
+    "path": "/",
+    "referrer": "",
+    "lang": "zh-CN",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Trae/1.104.3 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36",
+    "ip": "127.0.0.1",
+    "ts": "2025-11-26T08:37:18.575Z"
+  },
+  {
+    "path": "/",
+    "referrer": "",
+    "lang": "zh-CN",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Trae/1.104.3 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36",
+    "ip": "127.0.0.1",
+    "ts": "2025-11-26T08:37:18.577Z"
+  },
+  {
+    "path": "/",
+    "referrer": "http://localhost:3003/?ide_webview_request_time=1764146233763",
+    "lang": "zh-CN",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Trae/1.104.3 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36",
+    "ip": "127.0.0.1",
+    "ts": "2025-11-26T08:37:49.238Z"
+  },
+  {
+    "path": "/",
+    "referrer": "http://localhost:3003/?ide_webview_request_time=1764146233763",
+    "lang": "zh-CN",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Trae/1.104.3 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36",
+    "ip": "127.0.0.1",
+    "ts": "2025-11-26T08:37:49.240Z"
+  },
+  {
+    "path": "/",
+    "referrer": "http://localhost:3003/?ide_webview_request_time=1764146233763",
+    "lang": "zh-CN",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Trae/1.104.3 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36",
+    "ip": "127.0.0.1",
+    "ts": "2025-11-26T08:44:30.750Z"
+  },
+  {
+    "path": "/",
+    "referrer": "http://localhost:3003/?ide_webview_request_time=1764146233763",
+    "lang": "zh-CN",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Trae/1.104.3 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36",
+    "ip": "127.0.0.1",
+    "ts": "2025-11-26T08:44:30.753Z"
+  },
+  {
+    "path": "/",
+    "referrer": "",
+    "lang": "zh-CN",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Trae/1.104.3 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36",
+    "ip": "127.0.0.1",
+    "ts": "2025-11-26T08:51:18.971Z"
+  },
+  {
+    "path": "/",
+    "referrer": "",
+    "lang": "zh-CN",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Trae/1.104.3 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36",
+    "ip": "127.0.0.1",
+    "ts": "2025-11-26T08:51:18.976Z"
+  },
+  {
+    "path": "/",
+    "referrer": "",
+    "lang": "zh-CN",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "ip": "127.0.0.1",
+    "ts": "2025-11-26T08:54:15.375Z"
+  },
+  {
+    "path": "/",
+    "referrer": "",
+    "lang": "zh-CN",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "ip": "127.0.0.1",
+    "ts": "2025-11-26T08:54:15.379Z"
+  },
+  {
+    "path": "/admin/analytics",
+    "referrer": "",
+    "lang": "zh-CN",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "ip": "127.0.0.1",
+    "ts": "2025-11-26T09:02:07.758Z"
+  },
+  {
+    "path": "/admin/analytics",
+    "referrer": "",
+    "lang": "zh-CN",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "ip": "127.0.0.1",
+    "ts": "2025-11-26T09:02:07.762Z"
+  }
+]
