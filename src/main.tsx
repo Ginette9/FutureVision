@@ -7,6 +7,8 @@ import App from "./App.tsx";
 import "./index.css";
 import { warmupDatabases } from './lib/database';
 import { getApiBaseUrl } from './lib/utils';
+import { GlobalWorkerOptions } from 'pdfjs-dist/build/pdf';
+import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min?url';
 
 async function maybeWarmupLocalDb() {
   try {
@@ -20,6 +22,8 @@ async function maybeWarmupLocalDb() {
 }
 
 void maybeWarmupLocalDb();
+
+GlobalWorkerOptions.workerSrc = pdfWorkerUrl as string;
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

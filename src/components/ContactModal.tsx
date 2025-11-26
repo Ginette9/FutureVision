@@ -87,7 +87,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
       if (response.ok) {
         try {
           const envEp = (typeof import.meta !== 'undefined' && (import.meta as any).env && (import.meta as any).env.VITE_CONTACT_ENDPOINT) ? String((import.meta as any).env.VITE_CONTACT_ENDPOINT) : null;
-          const endpoints = [envEp, '/api/contact', 'http://123.56.247.231:3001/api/contact', 'http://localhost:3001/api/contact', 'http://localhost:3002/api/contact'].filter(Boolean) as string[];
+          const endpoints = [envEp, '/api/contact', ...(window.location.protocol === 'https:' ? [] : ['http://123.56.247.231:3001/api/contact', 'http://localhost:3001/api/contact', 'http://localhost:3002/api/contact'])].filter(Boolean) as string[];
           for (const ep of endpoints) {
             try {
               const resp2 = await fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });

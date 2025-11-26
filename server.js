@@ -56,7 +56,13 @@ app.use(express.static('public'));
 
 // 生产环境特殊处理
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('dist/static'));
+  app.use(express.static('dist/static', {
+    setHeaders: (res, filePath) => {
+      if (filePath && filePath.endsWith('.mjs')) {
+        res.setHeader('Content-Type', 'application/javascript');
+      }
+    }
+  }));
   
   // 特殊处理数据库文件
   app.get('/csr_database.db', (req, res) => {

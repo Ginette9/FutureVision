@@ -15,14 +15,15 @@ export function getBackendBase(): { type: 'same-origin' | 'absolute', base: stri
   }
 
   const host = window.location.hostname;
-  if (host === 'www.mscfv.com' || host === 'mscfv.com') {
-    return { type: 'absolute', base: 'http://123.56.247.231:3001' };
+
+  // HTTPS 下避免混合内容，强制同源访问（使用 /api 前缀）
+  if (window.location.protocol === 'https:') {
+    return { type: 'same-origin', base: '' };
   }
 
-  // 2) 如果当前页面是 HTTPS，浏览器会拦截去 http://ip:3001 的明文请求（混合内容）。
-  //    这时 *必须* 用同源路径 `/proxy`（交由 Vite 或反向代理转发到后端）。
-  if (window.location.protocol === 'https:') {
-    return { type: 'same-origin', base: '/proxy' };
+  // 生产域名（HTTP）时，允许显式使用后端 IP
+  if (host === 'www.mscfv.com' || host === 'mscfv.com') {
+    return { type: 'absolute', base: 'http://123.56.247.231:3001' };
   }
 
   // 3) 其余情况（页面是 http），可以直接访问同一主机的 3001 端口，
