@@ -11,10 +11,10 @@ import { getApiBaseUrl } from './lib/utils';
 async function maybeWarmupLocalDb() {
   try {
     const base = getApiBaseUrl();
-    const resp = await fetch(`${base}/api/health`, { method: 'GET' });
-    if (resp.ok) {
-      return;
-    }
+    const resp1 = await fetch(`${base}/api/health`, { method: 'GET' });
+    if (resp1.ok) return;
+    const resp2 = await fetch(`${base}/health`, { method: 'GET' });
+    if (resp2.ok) return;
   } catch {}
   try { await warmupDatabases(); } catch {}
 }

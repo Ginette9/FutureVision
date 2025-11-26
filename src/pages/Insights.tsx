@@ -317,6 +317,13 @@ export default function Insights() {
                     try {
                       const resp = await fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, category }) });
                       if (resp.ok) { ok = true; break; }
+                      if (resp.status === 405) {
+                        const u = new URL(ep, window.location.origin);
+                        u.searchParams.set('email', email);
+                        u.searchParams.set('category', category);
+                        const r2 = await fetch(u.toString(), { method: 'GET' });
+                        if (r2.ok) { ok = true; break; }
+                      }
                     } catch {}
                   }
                   if (ok) {

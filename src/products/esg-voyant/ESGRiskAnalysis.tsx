@@ -201,12 +201,18 @@ export default function ESGRiskAnalysis() {
       industry: formData.industry,
       country: formData.country
     } as any;
-    const endpoints = ['/api/esg-form', 'http://localhost:3001/api/esg-form', 'http://localhost:3002/api/esg-form'];
+    const endpoints = ['/api/esg-form', 'http://123.56.247.231:3001/api/esg-form', 'http://localhost:3001/api/esg-form', 'http://localhost:3002/api/esg-form'];
     let saved = false;
     for (const ep of endpoints) {
       try {
         const resp = await fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         if (resp.ok) { saved = true; break; }
+        if (resp.status === 405) {
+          const u = new URL(ep, window.location.origin);
+          Object.entries(payload).forEach(([k, v]) => u.searchParams.set(k, typeof v === 'object' ? JSON.stringify(v) : String(v ?? '')));
+          const r2 = await fetch(u.toString(), { method: 'GET' });
+          if (r2.ok) { saved = true; break; }
+        }
       } catch {}
     }
     if (!saved) {

@@ -65,7 +65,7 @@ export default function NewHome() {
 
   // PDF封面渲染函数
   const renderCoverPage = useCallback(async (report: InsightReport): Promise<string | null> => {
-    console.log(`renderCoverPage called for report: ${report.id}, pdfUrl: ${report.pdfUrl}`);
+    //console.log(`renderCoverPage called for report: ${report.id}, pdfUrl: ${report.pdfUrl}`);
     if (!report.pdfUrl) {
       console.log(`No PDF URL for report: ${report.id}`);
       return null;
@@ -81,16 +81,16 @@ export default function NewHome() {
     
     // 设置加载状态
     setRenderingState(prev => ({ ...prev, [cacheKey]: 'loading' }));
-    console.log(`Cache miss for report: ${report.id}, starting PDF rendering...`);
+    //console.log(`Cache miss for report: ${report.id}, starting PDF rendering...`);
     
     try {
       const url = report.pdfUrl;
-      console.log(`Loading PDF from URL: ${url}`);
+      //console.log(`Loading PDF from URL: ${url}`);
       const loadingTask = getDocument({ url });
       const pdf = await loadingTask.promise;
-      console.log(`PDF loaded successfully, numPages: ${pdf.numPages}`);
+      //console.log(`PDF loaded successfully, numPages: ${pdf.numPages}`);
       const page = await pdf.getPage(coverPage);
-      console.log(`Page ${coverPage} loaded successfully`);
+      //console.log(`Page ${coverPage} loaded successfully`);
       
       const dpr = (typeof window !== 'undefined' ? window.devicePixelRatio : 1) || 1;
       const baseScale = 1.0;
@@ -106,15 +106,15 @@ export default function NewHome() {
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      console.log(`Rendering page ${coverPage} to canvas...`);
+      //console.log(`Rendering page ${coverPage} to canvas...`);
       await page.render({ canvasContext: ctx, viewport }).promise;
-      console.log(`Page rendered successfully`);
+      //console.log(`Page rendered successfully`);
       
       const dataUrl = canvas.toDataURL('image/png');
-      console.log(`Canvas converted to data URL, length: ${dataUrl.length}`);
+      //console.log(`Canvas converted to data URL, length: ${dataUrl.length}`);
       setRenderCache(prev => ({ ...prev, [cacheKey]: dataUrl }));
       setRenderingState(prev => ({ ...prev, [cacheKey]: 'complete' }));
-      console.log(`Cache updated for report: ${report.id}`);
+      //console.log(`Cache updated for report: ${report.id}`);
       return dataUrl;
     } catch (e) {
       console.error(`Failed to render cover page for report ${report.id}:`, e);
@@ -198,21 +198,21 @@ export default function NewHome() {
   // 添加PDF封面渲染触发机制
   useEffect(() => {
     (async () => {
-      console.log('Home page PDF rendering triggered for insights:', insights.length);
+      //console.log('Home page PDF rendering triggered for insights:', insights.length);
       // 遍历首页展示的报告，渲染封面页
       for (const insight of insights) {
         const cacheKey = `${insight.id}-${insight.coverPage || 1}`;
-        console.log(`Checking insight: ${insight.id}, hasPdfUrl: ${!!insight.pdfUrl}, inCache: ${!!renderCache[cacheKey]}`);
+        //console.log(`Checking insight: ${insight.id}, hasPdfUrl: ${!!insight.pdfUrl}, inCache: ${!!renderCache[cacheKey]}`);
         if (insight.pdfUrl && !renderCache[cacheKey]) {
-          console.log(`Rendering cover page for: ${insight.id}`);
+          //console.log(`Rendering cover page for: ${insight.id}`);
           const result = await renderCoverPage(insight);
-          console.log(`Render result for ${insight.id}:`, result ? 'Success' : 'Failed');
+          //console.log(`Render result for ${insight.id}:`, result ? 'Success' : 'Failed');
         }
       }
       
       // 调试用：显示当前缓存状态
-      console.log('Current renderCache keys:', Object.keys(renderCache));
-      console.log('First few insights data:', insights.map(i => ({id: i.id, title: i.title, pdfUrl: i.pdfUrl, coverPage: i.coverPage})));
+      //console.log('Current renderCache keys:', Object.keys(renderCache));
+      //console.log('First few insights data:', insights.map(i => ({id: i.id, title: i.title, pdfUrl: i.pdfUrl, coverPage: i.coverPage})));
     })();
   }, [insights]);
 

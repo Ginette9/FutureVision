@@ -674,6 +674,29 @@ app.post('/api/subscribe', (req, res) => {
   }
 });
 
+app.get('/api/subscribe', (req, res) => {
+  try {
+    const { email, category } = req.query || {};
+    const e = String(email || '').trim();
+    if (!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
+      return res.status(400).json({ error: 'invalid_email' });
+    }
+    if (isBlockedEmail(e)) {
+      return res.json({ success: true, ignored: true });
+    }
+    const cat = String(category || 'general').trim();
+    const items = readSubscriptions();
+    const exists = items.some(x => String(x?.email).toLowerCase() === e.toLowerCase() && String(x?.category) === cat);
+    if (!exists) items.push({ email: e, category: cat, ts: new Date().toISOString() });
+    const ok = writeSubscriptions(items);
+    if (!ok) return res.status(500).json({ error: 'write_failed' });
+    return res.json({ success: true });
+  } catch (e) {
+    console.error('[subscribe:get] failed:', e.message);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
 app.get('/api/contacts', (req, res) => {
   const items = readContacts();
   res.json({ items, count: items.length });
@@ -760,6 +783,23 @@ app.post('/api/visit', (req, res) => {
     return res.json({ success: true });
   } catch (e) {
     console.error('[visit] failed:', e.message);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+app.get('/api/visit', (req, res) => {
+  try {
+    const ip = String(req.headers['x-forwarded-for'] || req.ip || '');
+    const ua = String(req.headers['user-agent'] || '');
+    const { path: p, referrer, lang } = req.query || {};
+    const rec = { path: String(p || ''), referrer: String(referrer || ''), lang: String(lang || ''), ua, ip, ts: new Date().toISOString() };
+    const items = readVisitors();
+    items.push(rec);
+    const ok = writeVisitors(items);
+    if (!ok) return res.status(500).json({ error: 'write_failed' });
+    return res.json({ success: true });
+  } catch (e) {
+    console.error('[visit:get] failed:', e.message);
     return res.status(500).json({ error: 'internal_error' });
   }
 });

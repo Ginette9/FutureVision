@@ -14,6 +14,11 @@ export function getBackendBase(): { type: 'same-origin' | 'absolute', base: stri
     return { type: 'absolute', base: envBase.replace(/\/+$/, '') };
   }
 
+  const host = window.location.hostname;
+  if (host === 'www.mscfv.com' || host === 'mscfv.com') {
+    return { type: 'absolute', base: 'http://123.56.247.231:3001' };
+  }
+
   // 2) 如果当前页面是 HTTPS，浏览器会拦截去 http://ip:3001 的明文请求（混合内容）。
   //    这时 *必须* 用同源路径 `/proxy`（交由 Vite 或反向代理转发到后端）。
   if (window.location.protocol === 'https:') {
@@ -22,7 +27,6 @@ export function getBackendBase(): { type: 'same-origin' | 'absolute', base: stri
 
   // 3) 其余情况（页面是 http），可以直接访问同一主机的 3001 端口，
   //    这样本机打开是 localhost:3001，局域网其他设备打开你的前端页面时也会走 <你的局域网IP>:3001
-  const host = window.location.hostname; // 可能是 localhost、127.0.0.1、192.168.x.x、机器名等
   return { type: 'absolute', base: `http://${host}:3001` };
 }
 
@@ -32,14 +36,24 @@ export function getApiBaseUrl(): string {
 }
 
 export async function apiPost<T>(path: string, body?: any): Promise<T> {
-  const url = `${getApiBaseUrl()}${path}`;
+  const base = getApiBaseUrl();
+  const url = `${base}${path}`;
   const resp = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: body ? JSON.stringify(body) : undefined,
   });
-  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-  return resp.json();
+  if (resp.ok) return resp.json();
+  if (resp.status === 405) {
+    const u = new URL(url, window.location.origin);
+    if (body && typeof body === 'object') {
+      Object.entries(body).forEach(([k, v]) => u.searchParams.set(k, String(v ?? '')));
+    }
+    const r2 = await fetch(u.toString(), { method: 'GET' });
+    if (!r2.ok) throw new Error(`HTTP ${r2.status}`);
+    return r2.json();
+  }
+  throw new Error(`HTTP ${resp.status}`);
 }
 
 export async function apiGet<T>(path: string, params?: Record<string, string>): Promise<T> {
