@@ -22,7 +22,7 @@ import { AuthContext } from './contexts/authContext';
 import { useLanguage } from './contexts/LanguageContext';
 import { convertToTraditional } from './locales/zh-HK';
 import { prefetchAllDatabases } from '@/lib/database';
-import { apiPost } from '@/lib/utils';
+import { apiGet } from '@/lib/utils';
 
 /* 使用 src/images 中的本地图，确保打包后地址正确 */
 // 已移除封面/尾页资源
@@ -136,7 +136,7 @@ export default function App() {
     (async () => {
       try {
         const ref = typeof document !== 'undefined' ? document.referrer || '' : '';
-        await apiPost('/api/visit', { path: location.pathname, referrer: ref, lang: language });
+        await apiGet('/api/visit', { path: location.pathname, referrer: ref, lang: String(language) });
       } catch {}
     })();
   }, [location.pathname, language]);
