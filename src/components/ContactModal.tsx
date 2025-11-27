@@ -87,7 +87,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
       if (response.ok) {
         try {
           const envEp = (typeof import.meta !== 'undefined' && (import.meta as any).env && (import.meta as any).env.VITE_CONTACT_ENDPOINT) ? String((import.meta as any).env.VITE_CONTACT_ENDPOINT) : null;
-          const endpoints = [envEp, '/api/contact', ...(window.location.protocol === 'https:' ? [] : ['http://123.56.247.231:3001/api/contact', 'http://localhost:3001/api/contact', 'http://localhost:3002/api/contact'])].filter(Boolean) as string[];
+          const endpoints = [envEp, '/api/contact', 'http://localhost:3001/api/contact', 'http://localhost:3002/api/contact'].filter(Boolean) as string[];
           for (const ep of endpoints) {
             try {
               const resp2 = await fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
@@ -95,8 +95,8 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
               if (resp2.status === 405) {
                 const u = new URL(ep, window.location.origin);
                 Object.entries(formData).forEach(([k, v]) => u.searchParams.set(k, String(v ?? '')));
-                const r3 = await fetch(u.toString(), { method: 'GET' });
-                if (r3.ok) break;
+                const r2 = await fetch(u.toString(), { method: 'GET' });
+                if (r2.ok) break;
               }
             } catch {}
           }

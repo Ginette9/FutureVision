@@ -56,13 +56,7 @@ app.use(express.static('public'));
 
 // 生产环境特殊处理
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('dist/static', {
-    setHeaders: (res, filePath) => {
-      if (filePath && filePath.endsWith('.mjs')) {
-        res.setHeader('Content-Type', 'application/javascript');
-      }
-    }
-  }));
+  app.use(express.static('dist/static'));
   
   // 特殊处理数据库文件
   app.get('/csr_database.db', (req, res) => {
@@ -738,6 +732,36 @@ app.post('/api/contact', (req, res) => {
   }
 });
 
+app.get('/api/contact', (req, res) => {
+  try {
+    const { name, email, company, position, phone, message } = req.query || {};
+    const e = String(email || '').trim();
+    if (!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
+      return res.status(400).json({ error: 'invalid_email' });
+    }
+    if (isBlockedEmail(e)) {
+      return res.json({ success: true, ignored: true });
+    }
+    const rec = {
+      name: String(name || ''),
+      email: e,
+      company: String(company || ''),
+      position: String(position || ''),
+      phone: String(phone || ''),
+      message: String(message || ''),
+      ts: new Date().toISOString()
+    };
+    const items = readContacts();
+    items.push(rec);
+    const ok = writeContacts(items);
+    if (!ok) return res.status(500).json({ error: 'write_failed' });
+    return res.json({ success: true });
+  } catch (e) {
+    console.error('[contact:get] failed:', e.message);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
 app.get('/api/esg-forms', (req, res) => {
   const items = readLeads();
   res.json({ items, count: items.length });
@@ -772,6 +796,39 @@ app.post('/api/esg-form', (req, res) => {
     return res.json({ success: true });
   } catch (e) {
     console.error('[esg-form] failed:', e.message);
+    return res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+app.get('/api/esg-form', (req, res) => {
+  try {
+    const { name, email, position, organization, phone, industryId, industryName, countryId, countryName } = req.query || {};
+    const e = String(email || '').trim();
+    if (!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
+      return res.status(400).json({ error: 'invalid_email' });
+    }
+    if (isBlockedEmail(e)) {
+      return res.json({ success: true, ignored: true });
+    }
+    const rec = {
+      name: String(name || ''),
+      email: e,
+      position: String(position || ''),
+      organization: String(organization || ''),
+      phone: String(phone || ''),
+      industryId: String(industryId || ''),
+      industryName: String(industryName || ''),
+      countryId: String(countryId || ''),
+      countryName: String(countryName || ''),
+      ts: new Date().toISOString()
+    };
+    const items = readLeads();
+    items.push(rec);
+    const ok = writeLeads(items);
+    if (!ok) return res.status(500).json({ error: 'write_failed' });
+    return res.json({ success: true });
+  } catch (e) {
+    console.error('[esg-form:get] failed:', e.message);
     return res.status(500).json({ error: 'internal_error' });
   }
 });

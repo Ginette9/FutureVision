@@ -201,7 +201,7 @@ export default function ESGRiskAnalysis() {
       industry: formData.industry,
       country: formData.country
     } as any;
-    const endpoints = ['/api/esg-form', ...(window.location.protocol === 'https:' ? [] : ['http://123.56.247.231:3001/api/esg-form', 'http://localhost:3001/api/esg-form', 'http://localhost:3002/api/esg-form'])];
+    const endpoints = ['/api/esg-form', 'http://localhost:3001/api/esg-form', 'http://localhost:3002/api/esg-form'];
     let saved = false;
     for (const ep of endpoints) {
       try {
@@ -209,7 +209,15 @@ export default function ESGRiskAnalysis() {
         if (resp.ok) { saved = true; break; }
         if (resp.status === 405) {
           const u = new URL(ep, window.location.origin);
-          Object.entries(payload).forEach(([k, v]) => u.searchParams.set(k, typeof v === 'object' ? JSON.stringify(v) : String(v ?? '')));
+          u.searchParams.set('name', String(payload.name || ''));
+          u.searchParams.set('email', String(payload.email || ''));
+          u.searchParams.set('position', String(payload.position || ''));
+          u.searchParams.set('organization', String(payload.organization || ''));
+          u.searchParams.set('phone', String(payload.phone || ''));
+          u.searchParams.set('industryId', String(payload.industry?.id || ''));
+          u.searchParams.set('industryName', String(payload.industry?.name || ''));
+          u.searchParams.set('countryId', String(payload.country?.id || ''));
+          u.searchParams.set('countryName', String(payload.country?.name || ''));
           const r2 = await fetch(u.toString(), { method: 'GET' });
           if (r2.ok) { saved = true; break; }
         }

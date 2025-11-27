@@ -14,20 +14,15 @@ export function getBackendBase(): { type: 'same-origin' | 'absolute', base: stri
     return { type: 'absolute', base: envBase.replace(/\/+$/, '') };
   }
 
-  const host = window.location.hostname;
-
-  // HTTPS 下避免混合内容，强制同源访问（使用 /api 前缀）
+  // 2) 如果当前页面是 HTTPS，浏览器会拦截去 http://ip:3001 的明文请求（混合内容）。
+  //    这时 *必须* 用同源路径 `/proxy`（交由 Vite 或反向代理转发到后端）。
   if (window.location.protocol === 'https:') {
-    return { type: 'same-origin', base: '' };
-  }
-
-  // 生产域名（HTTP）时，允许显式使用后端 IP
-  if (host === 'www.mscfv.com' || host === 'mscfv.com') {
-    return { type: 'absolute', base: 'http://123.56.247.231:3001' };
+    return { type: 'same-origin', base: '/proxy' };
   }
 
   // 3) 其余情况（页面是 http），可以直接访问同一主机的 3001 端口，
   //    这样本机打开是 localhost:3001，局域网其他设备打开你的前端页面时也会走 <你的局域网IP>:3001
+  const host = window.location.hostname; // 可能是 localhost、127.0.0.1、192.168.x.x、机器名等
   return { type: 'absolute', base: `http://${host}:3001` };
 }
 
