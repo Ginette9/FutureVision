@@ -201,7 +201,8 @@ export default function ESGRiskAnalysis() {
       industry: formData.industry,
       country: formData.country
     } as any;
-    const endpoints = ['/api/esg-form', 'http://localhost:3001/api/esg-form', 'http://localhost:3002/api/esg-form'];
+    const devLocal = (typeof window !== 'undefined') && /localhost|127\.0\.0\.1/.test(window.location.hostname);
+    const endpoints = ['/api/esg-form', devLocal ? 'http://localhost:3001/api/esg-form' : null, devLocal ? 'http://localhost:3002/api/esg-form' : null].filter(Boolean) as string[];
     let saved = false;
     for (const ep of endpoints) {
       try {

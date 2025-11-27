@@ -11,9 +11,11 @@ import {
   moveInsightReportToTop,
   replaceInsightReports
 } from '@/data/insightReports';
-import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist';
-import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min?url";
-GlobalWorkerOptions.workerSrc = pdfWorkerUrl as any;
+import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist/build/pdf';
+import pdfWorkerRaw from "pdfjs-dist/build/pdf.worker.min?raw";
+const __pdfBlob = new Blob([pdfWorkerRaw], { type: 'text/javascript' });
+const __pdfWorkerUrl = URL.createObjectURL(__pdfBlob);
+GlobalWorkerOptions.workerSrc = __pdfWorkerUrl as any;
 
 type EditMode = { id?: string } | null;
 
@@ -201,7 +203,10 @@ export default function AdminInsights() {
           const headers: Record<string, string> = { 'Content-Type': 'application/json' };
           const t = localStorage.getItem('adminToken');
           if (t) headers['X-Admin-Token'] = t;
-          resp = await fetch('http://localhost:3002/api/uploads', { method: 'POST', headers, body: JSON.stringify(payload) });
+          const devLocal = (typeof window !== 'undefined') && /localhost|127\.0\.0\.1/.test(window.location.hostname);
+          if (devLocal) {
+            resp = await fetch('http://localhost:3002/api/uploads', { method: 'POST', headers, body: JSON.stringify(payload) });
+          }
         } catch {}
       }
       if (!resp || !resp.ok) {

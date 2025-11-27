@@ -8,9 +8,10 @@ import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/build/pdf';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { convertToTraditional } from '@/locales/zh-HK';
 import { getBackendBase } from '@/lib/utils';
-// 使用ESM worker入口以兼容最新版本
-import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min?url";
-GlobalWorkerOptions.workerSrc = pdfWorkerUrl as string;
+import pdfWorkerRaw from "pdfjs-dist/build/pdf.worker.min?raw";
+const __pdfBlob = new Blob([pdfWorkerRaw], { type: 'text/javascript' });
+const __pdfWorkerUrl = URL.createObjectURL(__pdfBlob);
+GlobalWorkerOptions.workerSrc = __pdfWorkerUrl as string;
 
 interface InsightReportDetailProps {
   report: InsightReport;
@@ -133,8 +134,15 @@ export default function InsightReportDetail({ report, isOpen, onClose }: Insight
       // 设置加载状态
       setRenderingState(prev => ({ ...prev, [String(pageNum)]: 'loading' }));
 
-      const loadingTask = getDocument({ url });
-      const pdf = await loadingTask.promise;
+      let pdf: any;
+      try {
+        const t1 = getDocument({ url });
+        pdf = await t1.promise;
+      } catch {
+        const direct = report.pdfUrl as string;
+        const t2 = getDocument({ url: direct });
+        pdf = await t2.promise;
+      }
       const page = await pdf.getPage(pageNum);
       // 提升渲染清晰度：按设备像素比放大
       const dpr = (typeof window !== 'undefined' ? window.devicePixelRatio : 1) || 1;

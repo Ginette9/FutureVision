@@ -10,8 +10,10 @@ import graphSme from '../images/graph-sme.png';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { convertToTraditional } from '@/locales/zh-HK';
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/build/pdf';
-import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min?url";
-GlobalWorkerOptions.workerSrc = pdfWorkerUrl as string;
+import pdfWorkerRaw from "pdfjs-dist/build/pdf.worker.min?raw";
+const __pdfBlob = new Blob([pdfWorkerRaw], { type: 'text/javascript' });
+const __pdfWorkerUrl = URL.createObjectURL(__pdfBlob);
+GlobalWorkerOptions.workerSrc = __pdfWorkerUrl as string;
 
 export default function NewHome() {
   const [isVisible, setIsVisible] = useState(false);

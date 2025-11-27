@@ -6,8 +6,10 @@ import InsightReportDetail from '../components/InsightReportDetail';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { convertToTraditional } from '@/locales/zh-HK';
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/build/pdf';
-import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min?url";
-GlobalWorkerOptions.workerSrc = pdfWorkerUrl as string;
+import pdfWorkerRaw from "pdfjs-dist/build/pdf.worker.min?raw";
+const __pdfBlob = new Blob([pdfWorkerRaw], { type: 'text/javascript' });
+const __pdfWorkerUrl = URL.createObjectURL(__pdfBlob);
+GlobalWorkerOptions.workerSrc = __pdfWorkerUrl as string;
 import { getBackendBase } from '@/lib/utils';
 
 export default function Insights() {
@@ -72,8 +74,15 @@ export default function Insights() {
       // 设置加载状态
       setRenderingState(prev => ({ ...prev, [cacheKey]: 'loading' }));
       
-      const loadingTask = getDocument({ url });
-      const pdf = await loadingTask.promise;
+      let pdf: any;
+      try {
+        const t1 = getDocument({ url });
+        pdf = await t1.promise;
+      } catch {
+        const direct = report.pdfUrl as string;
+        const t2 = getDocument({ url: direct });
+        pdf = await t2.promise;
+      }
       const page = await pdf.getPage(coverPage);
       
       const dpr = (typeof window !== 'undefined' ? window.devicePixelRatio : 1) || 1;
@@ -117,8 +126,15 @@ export default function Insights() {
           url = u.toString();
         }
       } catch {}
-      const loadingTask = getDocument({ url });
-      const pdf = await loadingTask.promise;
+      let pdf: any;
+      try {
+        const t1 = getDocument({ url });
+        pdf = await t1.promise;
+      } catch {
+        const direct = report.pdfUrl as string;
+        const t2 = getDocument({ url: direct });
+        pdf = await t2.promise;
+      }
       const page = await pdf.getPage(pageNum);
       // 提升渲染清晰度：按设备像素比放大
       const dpr = (typeof window !== 'undefined' ? window.devicePixelRatio : 1) || 1;
@@ -311,7 +327,8 @@ export default function Insights() {
                   if (!emailOk) { toast('请输入有效邮箱地址'); return; }
                   const category = 'insights';
                   const envEp = (typeof import.meta !== 'undefined' && (import.meta as any).env && (import.meta as any).env.VITE_SUBSCRIBE_ENDPOINT) ? String((import.meta as any).env.VITE_SUBSCRIBE_ENDPOINT) : null;
-                  const endpoints = [envEp, '/api/subscribe', 'http://localhost:3001/api/subscribe', 'http://localhost:3002/api/subscribe'].filter(Boolean) as string[];
+                  const devLocal = (typeof window !== 'undefined') && /localhost|127\.0\.0\.1/.test(window.location.hostname);
+                  const endpoints = [envEp, '/api/subscribe', devLocal ? 'http://localhost:3001/api/subscribe' : null, devLocal ? 'http://localhost:3002/api/subscribe' : null].filter(Boolean) as string[];
                   let ok = false;
                   for (const ep of endpoints) {
                     try {
