@@ -34,13 +34,29 @@ export function getApiBaseUrl(): string {
 export async function apiPost<T>(path: string, body?: any): Promise<T> {
   const base = getApiBaseUrl();
   const url = `${base}${path}`;
-  const resp = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  if (resp.ok) return resp.json();
-  if (resp.status === 405) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 15000);
+  try {
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: body ? JSON.stringify(body) : undefined,
+      signal: controller.signal,
+    });
+    clearTimeout(timer);
+    if (resp.ok) return resp.json();
+    if (resp.status === 405) {
+      const u = new URL(url, window.location.origin);
+      if (body && typeof body === 'object') {
+        Object.entries(body).forEach(([k, v]) => u.searchParams.set(k, String(v ?? '')));
+      }
+      const r2 = await fetch(u.toString(), { method: 'GET' });
+      if (!r2.ok) throw new Error(`HTTP ${r2.status}`);
+      return r2.json();
+    }
+    throw new Error(`HTTP ${resp.status}`);
+  } catch (e) {
+    clearTimeout(timer);
     const u = new URL(url, window.location.origin);
     if (body && typeof body === 'object') {
       Object.entries(body).forEach(([k, v]) => u.searchParams.set(k, String(v ?? '')));
@@ -49,13 +65,15 @@ export async function apiPost<T>(path: string, body?: any): Promise<T> {
     if (!r2.ok) throw new Error(`HTTP ${r2.status}`);
     return r2.json();
   }
-  throw new Error(`HTTP ${resp.status}`);
 }
 
 export async function apiGet<T>(path: string, params?: Record<string, string>): Promise<T> {
   const u = new URL(`${getApiBaseUrl()}${path}`, window.location.origin);
   if (params) Object.entries(params).forEach(([k, v]) => u.searchParams.set(k, v));
-  const resp = await fetch(u.toString(), { method: 'GET' });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 15000);
+  const resp = await fetch(u.toString(), { method: 'GET', signal: controller.signal });
+  clearTimeout(timer);
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
   return resp.json();
 }

@@ -87,7 +87,15 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
       if (response.ok) {
         try {
           const envEp = (typeof import.meta !== 'undefined' && (import.meta as any).env && (import.meta as any).env.VITE_CONTACT_ENDPOINT) ? String((import.meta as any).env.VITE_CONTACT_ENDPOINT) : null;
-          const endpoints = [envEp, '/api/contact', 'http://localhost:3001/api/contact', 'http://localhost:3002/api/contact'].filter(Boolean) as string[];
+          const devLocal = (typeof window !== 'undefined') && /localhost|127\.0\.0\.1|^\d+\.\d+\.\d+\.\d+$/.test(window.location.hostname);
+          const base = (await import('@/lib/utils')).getApiBaseUrl();
+          const endpoints = [
+            envEp,
+            base ? `${base}/api/contact` : null,
+            '/api/contact',
+            devLocal ? 'http://localhost:3001/api/contact' : null,
+            devLocal ? 'http://localhost:3002/api/contact' : null
+          ].filter(Boolean) as string[];
           for (const ep of endpoints) {
             try {
               const resp2 = await fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });

@@ -327,8 +327,15 @@ export default function Insights() {
                   if (!emailOk) { toast('请输入有效邮箱地址'); return; }
                   const category = 'insights';
                   const envEp = (typeof import.meta !== 'undefined' && (import.meta as any).env && (import.meta as any).env.VITE_SUBSCRIBE_ENDPOINT) ? String((import.meta as any).env.VITE_SUBSCRIBE_ENDPOINT) : null;
-                  const devLocal = (typeof window !== 'undefined') && /localhost|127\.0\.0\.1/.test(window.location.hostname);
-                  const endpoints = [envEp, '/api/subscribe', devLocal ? 'http://localhost:3001/api/subscribe' : null, devLocal ? 'http://localhost:3002/api/subscribe' : null].filter(Boolean) as string[];
+                  const devLocal = (typeof window !== 'undefined') && /localhost|127\.0\.0\.1|^\d+\.\d+\.\d+\.\d+$/.test(window.location.hostname);
+                  const base = getApiBaseUrl();
+                  const endpoints = [
+                    envEp,
+                    base ? `${base}/api/subscribe` : null,
+                    '/api/subscribe',
+                    devLocal ? 'http://localhost:3001/api/subscribe' : null,
+                    devLocal ? 'http://localhost:3002/api/subscribe' : null
+                  ].filter(Boolean) as string[];
                   let ok = false;
                   for (const ep of endpoints) {
                     try {
