@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import RiskForm from './RiskForm';
 import LogoCarousel from '@/components/LogoCarousel';
-import { getCountryId, getProductId } from '@/lib/utils';
+import { apiGet, getCountryId, getProductId } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
 import zhCNTranslations from '@/locales/zh-CN';
 import { convertToTraditional } from '@/locales/zh-HK';
@@ -189,50 +189,20 @@ export default function ESGRiskAnalysis() {
      return;
    }
    
-   setIsLoading(true);
-   
+  setIsLoading(true);
+  
   try {
-    const payload = {
+    await apiGet('/api/esg-form', {
       name: formData.name,
       email: formData.email,
       position: formData.position,
       organization: formData.organization,
       phone: formData.phone,
-      industry: formData.industry,
-      country: formData.country
-    } as any;
-    const devLocal = (typeof window !== 'undefined') && /localhost|127\.0\.0\.1|^\d+\.\d+\.\d+\.\d+$/.test(window.location.hostname);
-    const base = (await import('@/lib/utils')).getApiBaseUrl();
-    const endpoints = [
-      base ? `${base}/api/esg-form` : null,
-      '/api/esg-form',
-      devLocal ? 'http://localhost:3001/api/esg-form' : null,
-      devLocal ? 'http://localhost:3002/api/esg-form' : null
-    ].filter(Boolean) as string[];
-    let saved = false;
-    for (const ep of endpoints) {
-      try {
-        const resp = await fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-        if (resp.ok) { saved = true; break; }
-        if (resp.status === 405) {
-          const u = new URL(ep, window.location.origin);
-          u.searchParams.set('name', String(payload.name || ''));
-          u.searchParams.set('email', String(payload.email || ''));
-          u.searchParams.set('position', String(payload.position || ''));
-          u.searchParams.set('organization', String(payload.organization || ''));
-          u.searchParams.set('phone', String(payload.phone || ''));
-          u.searchParams.set('industryId', String(payload.industry?.id || ''));
-          u.searchParams.set('industryName', String(payload.industry?.name || ''));
-          u.searchParams.set('countryId', String(payload.country?.id || ''));
-          u.searchParams.set('countryName', String(payload.country?.name || ''));
-          const r2 = await fetch(u.toString(), { method: 'GET' });
-          if (r2.ok) { saved = true; break; }
-        }
-      } catch {}
-    }
-    if (!saved) {
-      //toast.error('信息保存失败');
-    }
+      industryId: formData.industry.id,
+      industryName: formData.industry.name,
+      countryId: formData.country.id,
+      countryName: formData.country.name,
+    });
      
      // 清除之前的报告生成记录，确保新的报告会显示loading动画
      const reportGeneratedKey = `reportGenerated_${formData.industry.id}_${formData.country.id}`;
@@ -246,12 +216,12 @@ export default function ESGRiskAnalysis() {
      
      // 导航到结果页面
      navigate('/esg-voyant/report');
-   } catch (error) {
-     toast.error('生成报告失败，请重试');
-   } finally {
-     setIsLoading(false);
-   }
- };
+  } catch (error) {
+    toast.error('生成报告失败，请重试');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
  return (
    <div className="min-h-screen bg-white pt-24 pb-16">
