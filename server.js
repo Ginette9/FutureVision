@@ -899,6 +899,49 @@ app.get('/api/visitors/summary', (req, res) => {
   }
 });
 
+// 按 IP 汇总访客
+app.get('/api/visitors/summary-by-ip', (req, res) => {
+  try {
+    const { from, to } = req.query || {};
+    const items = readVisitors();
+    let filtered = items;
+    if (from || to) {
+      filtered = items.filter(x => {
+        const t = new Date(String(x.ts || '')).getTime();
+        if (!isFinite(t)) return false;
+        const f = from ? new Date(String(from)).getTime() : -Infinity;
+        const tt = to ? new Date(String(to)).getTime() : Infinity;
+        return t >= f && t <= tt;
+      });
+    }
+    const byIp = new Map();
+    for (const it of filtered) {
+      const ip = String(it.ip || '');
+      if (!byIp.has(ip)) {
+        byIp.set(ip, { count: 0, paths: new Map(), lastTs: '' });
+      }
+      const rec = byIp.get(ip);
+      rec.count += 1;
+      const p = String(it.path || '');
+      rec.paths.set(p, (rec.paths.get(p) || 0) + 1);
+      const tsStr = String(it.ts || '');
+      if (!rec.lastTs || (new Date(tsStr).getTime() > new Date(rec.lastTs).getTime())) {
+        rec.lastTs = tsStr;
+      }
+    }
+    const itemsOut = Array.from(byIp.entries()).map(([ip, info]) => ({
+      ip,
+      count: info.count,
+      lastTs: info.lastTs,
+      paths: Array.from(info.paths.entries()).map(([path, count]) => ({ path, count })).sort((a, b) => b.count - a.count)
+    })).sort((a, b) => b.count - a.count);
+    res.json({ items: itemsOut, totalIps: itemsOut.length, totalVisits: filtered.length });
+  } catch (e) {
+    console.error('[visitors/summary-by-ip] failed:', e.message);
+    res.status(500).json({ error: 'internal_error' });
+  }
+});
+
 app.get('/api/must-reads', (req, res) => {
   const data = readMustReads();
   res.json({ items: data, count: data.length });

@@ -4,6 +4,7 @@ import { apiGet } from '@/lib/utils';
 
 type VisitorItem = { path: string; referrer: string; lang: string; ua: string; ip: string; ts: string };
 type SummaryItem = { path: string; count: number };
+type IpSummaryItem = { ip: string; count: number; lastTs: string; paths: { path: string; count: number }[] };
 type ContactItem = { name: string; email: string; company: string; position: string; phone: string; message: string; ts: string };
 type SubscriptionItem = { email: string; category: string; ts: string };
 type LeadItem = { name: string; email: string; position: string; organization: string; phone: string; industryId: string; industryName: string; countryId: string; countryName: string; ts: string };
@@ -12,6 +13,7 @@ export default function AdminAnalytics() {
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
   const [visitors, setVisitors] = useState<VisitorItem[]>([]);
   const [summary, setSummary] = useState<SummaryItem[]>([]);
+  const [ipSummary, setIpSummary] = useState<IpSummaryItem[]>([]);
   const [contacts, setContacts] = useState<ContactItem[]>([]);
   const [subs, setSubs] = useState<SubscriptionItem[]>([]);
   const [leads, setLeads] = useState<LeadItem[]>([]);
@@ -43,6 +45,13 @@ export default function AdminAnalytics() {
       if (to) params.to = to;
       const s = await apiGet<{ items: SummaryItem[]; total: number }>(`/api/visitors/summary`, params);
       setSummary(Array.isArray(s?.items) ? s.items : []);
+    } catch {}
+    try {
+      const params: Record<string, string> = {};
+      if (from) params.from = from;
+      if (to) params.to = to;
+      const ip = await apiGet<{ items: IpSummaryItem[]; totalIps: number; totalVisits: number }>(`/api/visitors/summary-by-ip`, params);
+      setIpSummary(Array.isArray(ip?.items) ? ip.items : []);
     } catch {}
     try {
       const c = await apiGet<{ items: ContactItem[]; count: number }>(`/api/contacts`);
@@ -118,6 +127,38 @@ export default function AdminAnalytics() {
                 <tr key={s.path} className="border-t">
                   <td className="px-2 py-1 font-medium">{s.path || '/'}</td>
                   <td className="px-2 py-1">{s.count}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="border rounded p-4 space-y-4">
+        <h3 className="text-lg font-semibold">按 IP 汇总</h3>
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead>
+              <tr className="text-left">
+                <th className="px-2 py-1">IP</th>
+                <th className="px-2 py-1">访问次数</th>
+                <th className="px-2 py-1">最近时间</th>
+                <th className="px-2 py-1">Top 路径</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ipSummary.map((ip) => (
+                <tr key={ip.ip} className="border-t">
+                  <td className="px-2 py-1">{ip.ip || '-'}</td>
+                  <td className="px-2 py-1">{ip.count}</td>
+                  <td className="px-2 py-1 whitespace-nowrap">{ip.lastTs}</td>
+                  <td className="px-2 py-1">
+                    {ip.paths.slice(0, 3).map((p, idx) => (
+                      <span key={p.path + idx} className="inline-block mr-2 text-gray-700">
+                        {(p.path || '/')}: {p.count}
+                      </span>
+                    ))}
+                  </td>
                 </tr>
               ))}
             </tbody>
