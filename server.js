@@ -69,9 +69,9 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile('dist/static/csr_database_HK.db', { root: '.' });
   });
   
-  // 所有非 API 路由都返回 index.html（排除 /api 与 /proxy 与 /health，允许可选的结尾或斜杠）
-  // 排除规则： /^\/(api|proxy)(\/|$)|^\/health(\/|$)/
-  app.get(/^(?!\/(api|proxy)(\/|$)|\/health(\/|$)).*/, (req, res) => {
+  // 所有非 API 路由都返回 index.html（排除 /api 与 /proxy 与 /health 与 /assets，允许可选的结尾或斜杠）
+  // 排除规则： /^\/(api|proxy|assets)(\/|$)|^\/health(\/|$)/
+  app.get(/^(?!\/(api|proxy|assets)(\/|$)|\/health(\/|$)).*/, (req, res) => {
     res.sendFile('dist/static/index.html', { root: '.' });
   });
 } else {
