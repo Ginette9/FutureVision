@@ -8,7 +8,8 @@ import initSqlJs from 'sql.js';
 dotenv.config();
 const app = express();
 const PORT = Number(process.env.PORT || 3001);
-const ADMIN_TOKEN = process.env.ADMIN_TOKEN;
+// 使用ADMIN_PASSWORD环境变量作为默认的ADMIN_TOKEN，保持与前端一致
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN || process.env.ADMIN_PASSWORD || 'admin123456';
 const BLOCKED_EMAILS = new Set(['xuchenyi@mscfv.com']);
 function isBlockedEmail(e) {
   return BLOCKED_EMAILS.has(String(e || '').toLowerCase());

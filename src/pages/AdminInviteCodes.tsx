@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../contexts/authContext';
 import { InviteCodeItem } from '../data/inviteCodes';
+import { getApiBaseUrl } from '../lib/utils';
 
 const AdminInviteCodes = () => {
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
@@ -12,7 +13,8 @@ const AdminInviteCodes = () => {
   // 从后端API获取邀请码
   const fetchInviteCodes = async () => {
     try {
-      const response = await fetch('/api/admin/invite-codes', {
+      const apiBaseUrl = getApiBaseUrl();
+      const response = await fetch(`${apiBaseUrl}/api/admin/invite-codes`, {
         headers: {
           'Authorization': `Bearer ${import.meta?.env?.VITE_ADMIN_PASSWORD || 'admin123456'}`
         }
@@ -74,7 +76,8 @@ const AdminInviteCodes = () => {
     }
 
     try {
-      const response = await fetch('/api/admin/invite-codes', {
+      const apiBaseUrl = getApiBaseUrl();
+      const response = await fetch(`${apiBaseUrl}/api/admin/invite-codes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -121,7 +124,8 @@ const AdminInviteCodes = () => {
         const codeToDelete = existingCodes.find(item => item.id === id)?.code;
         if (!codeToDelete) return;
 
-        const response = await fetch(`/api/admin/invite-codes/${encodeURIComponent(codeToDelete)}`, {
+        const apiBaseUrl = getApiBaseUrl();
+        const response = await fetch(`${apiBaseUrl}/api/admin/invite-codes/${encodeURIComponent(codeToDelete)}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${import.meta?.env?.VITE_ADMIN_PASSWORD || 'admin123456'}`
