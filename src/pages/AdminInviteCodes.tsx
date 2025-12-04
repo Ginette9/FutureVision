@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../contexts/authContext';
-import { InviteCodeItem, getAllInviteCodes, addInviteCode, updateInviteCode, deleteInviteCode } from '../data/inviteCodes';
+import { InviteCodeItem } from '../data/inviteCodes';
 
 const AdminInviteCodes = () => {
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
@@ -9,10 +9,37 @@ const AdminInviteCodes = () => {
   const [newName, setNewName] = useState('');
   const [newDescription, setNewDescription] = useState('');
 
+  // 从后端API获取邀请码
+  const fetchInviteCodes = async () => {
+    try {
+      const response = await fetch('/api/admin/invite-codes', {
+        headers: {
+          'Authorization': `Bearer ${import.meta?.env?.VITE_ADMIN_PASSWORD || 'admin123456'}`
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        // 将后端返回的字符串数组转换为InviteCodeItem格式
+        const formattedCodes = data.codes.map((code: string, index: number) => ({
+          id: `invite-${index + 1}`,
+          code,
+          name: `${code} 邀请码`,
+          description: `${code} 邀请码描述`,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          active: true
+        }));
+        setExistingCodes(formattedCodes);
+      }
+    } catch (error) {
+      console.error('获取邀请码失败:', error);
+    }
+  };
+
   // 加载邀请码数据
   useEffect(() => {
     if (isAuthenticated) {
-      setExistingCodes(getAllInviteCodes());
+      fetchInviteCodes();
     }
   }, [isAuthenticated]);
 
@@ -37,45 +64,88 @@ const AdminInviteCodes = () => {
   }, [setIsAuthenticated]);
 
   // 添加新邀请码
-  const handleAddCode = () => {
+  const handleAddCode = async () => {
     if (!newCode.trim()) return;
 
     const code = newCode.trim().toUpperCase();
-    if (getAllInviteCodes().some(item => item.code.toUpperCase() === code)) {
+    if (existingCodes.some(item => item.code.toUpperCase() === code)) {
       alert('邀请码已存在');
       return;
     }
 
-    addInviteCode({
-      code,
-      name: newName.trim() || code,
-      description: newDescription.trim(),
-      active: true
-    });
+    try {
+      const response = await fetch('/api/admin/invite-codes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta?.env?.VITE_ADMIN_PASSWORD || 'admin123456'}`
+        },
+        body: JSON.stringify({ code })
+      });
 
-    setExistingCodes(getAllInviteCodes());
-    setNewCode('');
-    setNewName('');
-    setNewDescription('');
+      if (response.ok) {
+        // 重新获取最新的邀请码列表
+        fetchInviteCodes();
+        // 清空表单
+        setNewCode('');
+        setNewName('');
+        setNewDescription('');
+        alert('邀请码添加成功');
+      } else {
+        const errorData = await response.json();
+        alert('添加失败: ' + (errorData.message || '未知错误'));
+      }
+    } catch (error) {
+      console.error('添加邀请码失败:', error);
+      alert('添加失败: 网络错误');
+    }
   };
 
   // 更新邀请码
   const handleUpdateCode = (id: string, field: keyof Omit<InviteCodeItem, 'id' | 'createdAt' | 'updatedAt'>, value: any) => {
-    updateInviteCode(id, { [field]: value });
-    setExistingCodes(getAllInviteCodes());
+    // 注意：后端API目前不支持更新邀请码名称和描述，只能更新激活状态
+    // 这里只更新本地状态，实际业务中可能需要后端API支持
+    const updatedCodes = existingCodes.map(codeItem => {
+      if (codeItem.id === id) {
+        return { ...codeItem, [field]: value };
+      }
+      return codeItem;
+    });
+    setExistingCodes(updatedCodes);
   };
 
   // 删除邀请码
-  const handleDeleteCode = (id: string) => {
+  const handleDeleteCode = async (id: string) => {
     if (window.confirm('确定要删除此邀请码吗？')) {
-      deleteInviteCode(id);
-      setExistingCodes(getAllInviteCodes());
+      try {
+        const codeToDelete = existingCodes.find(item => item.id === id)?.code;
+        if (!codeToDelete) return;
+
+        const response = await fetch(`/api/admin/invite-codes/${encodeURIComponent(codeToDelete)}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${import.meta?.env?.VITE_ADMIN_PASSWORD || 'admin123456'}`
+          }
+        });
+
+        if (response.ok) {
+          // 重新获取最新的邀请码列表
+          fetchInviteCodes();
+          alert('邀请码删除成功');
+        } else {
+          const errorData = await response.json();
+          alert('删除失败: ' + (errorData.message || '未知错误'));
+        }
+      } catch (error) {
+        console.error('删除邀请码失败:', error);
+        alert('删除失败: 网络错误');
+      }
     }
   };
 
   // 导出邀请码为JSON
   const exportInviteCodes = () => {
-    const blob = new Blob([JSON.stringify(getAllInviteCodes(), null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(existingCodes.map(code => code.code), null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;

@@ -253,11 +253,7 @@ app.get('/proxy/pdf', async (req, res) => {
 });
 
 // 已移除订单数据库，仅保留邀请码白名单
-
-const VALID_CODES = new Set((process.env.PAY_INVITE_CODES || 'FREE2025,TESTVIP,MSCFV')
-  .split(',')
-  .map(s => s.trim().toLowerCase())
-  .filter(Boolean));
+// 邀请码初始化将在DEFAULT_DATA_DIR定义后进行
 
 // 简易订单存储（内存）
 const ORDERS = new Map(); // orderId -> { status, paypalOrderId }
@@ -317,6 +313,52 @@ app.post('/api/pay/paypal/capture', async (req, res) => {
 // 支持通过环境变量覆盖存储路径（适配 Render 持久盘）
 const ENV_INSIGHTS_PATH = process.env.INSIGHTS_PATH;
 const DEFAULT_DATA_DIR = path.join(process.cwd(), 'data');
+
+// 邀请码文件路径
+const DEFAULT_INVITE_CODES_JSON = path.join(DEFAULT_DATA_DIR, 'invite-codes.json');
+const INVITE_CODES_JSON = process.env.INVITE_CODES_PATH || DEFAULT_INVITE_CODES_JSON;
+
+// 确保邀请码文件存在
+function ensureInviteCodesFile() {
+  if (!fs.existsSync(DEFAULT_DATA_DIR)) {
+    fs.mkdirSync(DEFAULT_DATA_DIR, { recursive: true });
+  }
+  if (!fs.existsSync(INVITE_CODES_JSON)) {
+    const defaultCodes = process.env.PAY_INVITE_CODES || 'FREE2025,TESTVIP,MSCFV';
+    fs.writeFileSync(INVITE_CODES_JSON, JSON.stringify(defaultCodes.split(',').map(s => s.trim().toLowerCase()).filter(Boolean), null, 2));
+  }
+}
+
+// 保存邀请码到文件
+function saveInviteCodes(codes) {
+  try {
+    ensureInviteCodesFile();
+    fs.writeFileSync(INVITE_CODES_JSON, JSON.stringify(Array.from(codes), null, 2));
+    return true;
+  } catch (error) {
+    console.error('保存邀请码失败:', error);
+    return false;
+  }
+}
+
+// 初始化邀请码集合（从持久化文件中读取）
+ensureInviteCodesFile();
+let VALID_CODES = new Set();
+try {
+  const inviteCodesJson = fs.readFileSync(INVITE_CODES_JSON, 'utf8');
+  const inviteCodesArray = JSON.parse(inviteCodesJson);
+  VALID_CODES = new Set(inviteCodesArray);
+} catch (error) {
+  console.error('读取邀请码文件失败:', error);
+  // 如果读取失败，使用环境变量中的默认值
+  VALID_CODES = new Set((process.env.PAY_INVITE_CODES || 'FREE2025,TESTVIP,MSCFV')
+    .split(',')
+    .map(s => s.trim().toLowerCase())
+    .filter(Boolean));
+  // 保存默认值到文件
+  saveInviteCodes(VALID_CODES);
+}
+
 const DEFAULT_INSIGHTS_JSON = path.join(DEFAULT_DATA_DIR, 'insights.json');
 const INSIGHTS_JSON = ENV_INSIGHTS_PATH || DEFAULT_INSIGHTS_JSON;
 const DEFAULT_NEWS_JSON = path.join(DEFAULT_DATA_DIR, 'global-news.json');
@@ -1396,8 +1438,11 @@ app.post('/api/admin/invite-codes', async (req, res) => {
     if (!code || !code.trim()) {
       return res.status(400).json({ error: 'invalid_code', message: '邀请码不能为空' });
     }
-    VALID_CODES.add(code.trim());
-    res.json({ success: true, code: code.trim(), message: '邀请码添加成功' });
+    const normalizedCode = code.trim().toLowerCase();
+    VALID_CODES.add(normalizedCode);
+    // 保存到文件
+    const saved = saveInviteCodes(VALID_CODES);
+    res.json({ success: saved, code: normalizedCode, message: '邀请码添加成功' });
   } catch (error) {
     console.error('添加邀请码失败:', error);
     res.status(500).json({ error: 'internal_server_error', message: '服务器内部错误' });
@@ -1419,10 +1464,13 @@ app.delete('/api/admin/invite-codes/:code', async (req, res) => {
       return res.status(400).json({ error: 'invalid_code', message: '邀请码不能为空' });
     }
     
-    const wasRemoved = VALID_CODES.delete(code);
+    const normalizedCode = code.toLowerCase();
+    const wasRemoved = VALID_CODES.delete(normalizedCode);
     
     if (wasRemoved) {
-      res.json({ success: true, message: '邀请码删除成功' });
+      // 保存到文件
+      const saved = saveInviteCodes(VALID_CODES);
+      res.json({ success: saved, message: '邀请码删除成功' });
     } else {
       res.status(404).json({ error: 'code_not_found', message: '邀请码不存在' });
     }
