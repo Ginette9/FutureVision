@@ -72,34 +72,27 @@ export default function InviteCodeModal({ isOpen, onClose, onSuccess, onCodeChan
       let verifySuccess = false;
       const trimmedCode = inviteCode.trim().toLowerCase();
       
-      // 先尝试本地验证（不依赖网络）
-      const { getInviteCodeByCode } = await import('@/data/inviteCodes');
-      const localCode = getInviteCodeByCode(trimmedCode);
-      if (localCode) {
-        verifySuccess = true;
-      } else {
-        // 如果本地验证失败，再尝试API验证
-        for (const ep of endpoints) {
-          try {
-            const response = await fetch(ep, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                code: trimmedCode,
-                ip: userIp
-              })
-            });
+      // 直接尝试API验证（统一使用后端邀请码系统）
+      for (const ep of endpoints) {
+        try {
+          const response = await fetch(ep, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              code: trimmedCode,
+              ip: userIp
+            })
+          });
 
-            if (response.ok) {
-              const data = await response.json();
-              if (data.valid) {
-                verifySuccess = true;
-                break;
-              }
+          if (response.ok) {
+            const data = await response.json();
+            if (data.valid) {
+              verifySuccess = true;
+              break;
             }
-          } catch (error) {
-            console.error('Error verifying invite code via API:', error);
           }
+        } catch (error) {
+          console.error('Error verifying invite code via API:', error);
         }
       }
 

@@ -24,15 +24,7 @@ const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
       const trimmedCode = inviteCode.trim().toLowerCase();
 
       try {
-        // 1. 先检查本地数据（快速验证）
-        const localValid = getInviteCodeByCode(trimmedCode);
-        if (localValid) {
-          setIsValid(true);
-          setIsLoading(false);
-          return;
-        }
-
-        // 2. 如果本地数据没有，再通过API验证
+        // 直接通过API验证邀请码（统一使用后端邀请码系统）
         const base = getApiBaseUrl();
         const endpoints = [
           base ? `${base}/api/verify-invite-code` : null,
