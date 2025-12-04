@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -102,6 +102,8 @@ type FormData = z.infer<typeof contactSchema> & {
 
 export default function ESGRiskAnalysis() {
  const navigate = useNavigate();
+ const [searchParams] = useSearchParams();
+ const inviteCode = searchParams.get('invite-code');
  const { t, language } = useLanguage();
  const [isLoading, setIsLoading] = useState(false);
  const [industries, setIndustries] = useState<Array<{ id: string; name: string }>>([]);
@@ -202,6 +204,7 @@ export default function ESGRiskAnalysis() {
       industryName: formData.industry.name,
       countryId: formData.country.id,
       countryName: formData.country.name,
+      inviteCode: inviteCode || '',
     });
      
      // 清除之前的报告生成记录，确保新的报告会显示loading动画
@@ -214,8 +217,12 @@ export default function ESGRiskAnalysis() {
      // 设置标记表示从首页跳转，用于控制AI加载器显示
      sessionStorage.setItem('showAILoader', 'true');
      
-     // 导航到结果页面
-     navigate('/esg-voyant/report');
+     // 导航到结果页面，保留邀请码参数
+     if (inviteCode) {
+       navigate(`/esg-voyant/report?invite-code=${encodeURIComponent(inviteCode)}`);
+     } else {
+       navigate('/esg-voyant/report');
+     }
   } catch (error) {
     toast.error('生成报告失败，请重试');
   } finally {

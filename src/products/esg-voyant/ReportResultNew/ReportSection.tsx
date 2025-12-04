@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { getRiskIdsByCountryAndIndustry, getRisksByIds, getAdviceIdsByCountryAndIndustry, getAdviceByIds } from '../../../lib/database';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { convertToTraditional } from '@/locales/zh-HK';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
 // 处理 TBD 标签替换的工具函数
 const replaceTBDTags = (html: string, classification: string, countryName: string, industryName: string): string => {
@@ -89,9 +90,22 @@ interface Props {
 
 const ReportSection: React.FC<Props> = ({ countryName, industryName }) => {
   const { language } = useLanguage();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [categories, setCategories] = useState<RiskCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // 获取当前邀请码参数
+  const inviteCode = searchParams.get('invite-code');
+  
+  // 构建带邀请码的表单页面URL
+  const getFormUrlWithInviteCode = () => {
+    if (inviteCode) {
+      return `/esg-voyant/form?invite-code=${encodeURIComponent(inviteCode)}`;
+    }
+    return '/esg-voyant';
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -240,15 +254,15 @@ const ReportSection: React.FC<Props> = ({ countryName, industryName }) => {
               ? '以下为基于您提交的答案生成的风险分析结果。需要重新选择产品或国家吗？'
               : 'Below you will find the results of the risk analysis based on your submitted answers. Would you like to switch your product or country?'}
           </p>
-          <a 
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium text-sm sm:text-base" 
-            href="/esg-voyant/form"
+          <button 
+            className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium text-sm sm:text-base bg-transparent border-none p-0 cursor-pointer" 
+            onClick={() => navigate(getFormUrlWithInviteCode())}
           >
             <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
             {(language === 'zh-CN' || language === 'zh-HK') ? '再次填写 ESG 风险评估表' : 'Fill out the ESG Risk Form again'}
-          </a>
+          </button>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-gradient-to-r from-red-50 to-orange-50 rounded-lg p-4 sm:p-6 gap-4">

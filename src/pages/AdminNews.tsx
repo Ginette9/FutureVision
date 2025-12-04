@@ -142,7 +142,9 @@ export default function AdminNews() {
   }, []);
 
   const handleLogin = (code: string) => {
-    if (code && code.trim().length > 0) {
+    // 获取环境变量中的管理员密码
+    const adminPassword = import.meta?.env?.VITE_ADMIN_PASSWORD || import.meta?.env?.ADMIN_PASSWORD || 'admin123456';
+    if (code && code.trim() === adminPassword) {
       setIsAuthenticated(true);
       sessionStorage.setItem('adminLogin', '1');
       try { localStorage.setItem('adminToken', code.trim()); } catch {}
@@ -291,7 +293,7 @@ export default function AdminNews() {
                     onChange={e => {
                       const val = e.target.value;
                       setCoverInputs(s => ({ ...s, [idx]: { type: 'url', value: val } }));
-                      setItems(prev => prev.map((p, i) => i === idx ? { ...p, coverImage: val } : p));
+                      setNewItems(prev => prev.map((p: GlobalNewsItem, i: number) => i === idx ? { ...p, coverImage: val } : p));
                     }}
                   />
                 ) : (
@@ -304,10 +306,10 @@ export default function AdminNews() {
                       const file = e.target.files?.[0];
                       if (!file) return;
                       const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-                      const dateStr = (items[idx]?.date || today).replace(/-/g, '');
+                      const dateStr = (newItems[idx]?.date || today).replace(/-/g, '');
                       const fname = `${dateStr}_${idx + 1}.${ext}`;
                       const url = await uploadImageToServer(file, fname);
-                      setItems(prev => prev.map((p, i) => i === idx ? { ...p, coverImage: url } : p));
+                      setNewItems(prev => prev.map((p: GlobalNewsItem, i: number) => i === idx ? { ...p, coverImage: url } : p));
                     }}
                   />
                 )}

@@ -11,13 +11,15 @@ import Knowledge from "./pages/Knowledge";
 import Cases from "./pages/Cases";
 import About from "./pages/About";
 import AdminInsights from "./pages/AdminInsights";
-import AdminNews from "./pages/AdminNews";
+import AdminNews from "./pages/AdminKnowledge";
 import AdminKnowledge from "./pages/AdminKnowledge";
 import AdminAnalytics from "./pages/AdminAnalytics";
+import AdminInviteCodes from "./pages/AdminInviteCodes";
 import ReportResult from "./products/esg-voyant/ReportResult";
 import ReportResultNew from "./products/esg-voyant/ReportResultNew";
 import Pay from "./products/esg-voyant/Pay";
 import Navigation from './components/Navigation';
+import RouteGuard from './components/RouteGuard';
 import { AuthContext } from './contexts/authContext';
 import { useLanguage } from './contexts/LanguageContext';
 import { convertToTraditional } from './locales/zh-HK';
@@ -179,18 +181,19 @@ export default function App() {
               <Route path="/" element={<Home />} />
               <Route path="/services" element={<Services />} />
               <Route path="/products" element={<Products />} />
-              <Route path="/esg-voyant/form" element={<ESGRiskAnalysis />} />
+              <Route path="/esg-voyant/form" element={<RouteGuard><ESGRiskAnalysis /></RouteGuard>} />
               <Route path="/esg-voyant" element={<ESGRiskAnalysisNew />} />
               <Route path="/insights" element={<Insights />} />
               <Route path="/admin/insights" element={<AdminInsights />} />
               <Route path="/admin/news" element={<AdminKnowledge />} />
               <Route path="/admin/knowledge" element={<AdminKnowledge />} />
               <Route path="/admin/analytics" element={<AdminAnalytics />} />
+              <Route path="/admin/invite-codes" element={<AdminInviteCodes />} />
               <Route path="/knowledge" element={<Knowledge />} />
               <Route path="/cases" element={<Cases />} />
               <Route path="/about" element={<About />} />
-              <Route path="/report/api" element={<ReportResult />} />
-              <Route path="/esg-voyant/report" element={<ReportResultNew />} />
+              <Route path="/report/api" element={<RouteGuard><ReportResult /></RouteGuard>} />
+              <Route path="/esg-voyant/report" element={<RouteGuard><ReportResultNew /></RouteGuard>} />
               <Route path="/pay" element={<Pay />} />
             </Routes>
       </main>

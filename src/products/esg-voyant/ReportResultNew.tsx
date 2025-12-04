@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import AIGenerationLoader from '@/components/AIGenerationLoader';
 
 import { ReportSection } from './ReportResultNew/parseReportHtml';
@@ -69,7 +69,19 @@ function ReportResultNew() {
   const [formData, setFormData] = useState<any>(null);
   const [shouldShowLoader, setShouldShowLoader] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { language, t } = useLanguage();
+  
+  // 获取当前邀请码参数
+  const inviteCode = searchParams.get('invite-code');
+  
+  // 构建带邀请码的表单页面URL
+  const getFormUrlWithInviteCode = () => {
+    if (inviteCode) {
+      return `/esg-voyant/form?invite-code=${encodeURIComponent(inviteCode)}`;
+    }
+    return '/esg-voyant';
+  };
 
   useEffect(() => {
     const savedData = localStorage.getItem('riskAnalysisData');
@@ -384,7 +396,7 @@ function ReportResultNew() {
                     Below you will find the results of the risk analysis based on your submitted answers.
                     Would you like to switch your product or country?
                   </p>
-                  <a className="text-blue-700 underline hover:no-underline text-sm" target="_blank" href="/esg-voyant/form">
+                  <a className="text-blue-700 underline hover:no-underline text-sm" target="_blank" href={getFormUrlWithInviteCode()}>
                     Fill out the ESG Risk Form again
                   </a>
                 </div>
@@ -601,7 +613,7 @@ function ReportResultNew() {
                   />
                 )}
                 <button 
-                  onClick={() => navigate('/esg-voyant/form')}
+                  onClick={() => navigate(getFormUrlWithInviteCode())}
                   className="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

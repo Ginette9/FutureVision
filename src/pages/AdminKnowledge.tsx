@@ -204,7 +204,9 @@ export default function AdminKnowledge() {
   }, []);
 
   const handleLogin = (code: string) => {
-    if (code && code.trim().length > 0) {
+    // 获取环境变量中的管理员密码
+    const adminPassword = import.meta?.env?.VITE_ADMIN_PASSWORD || import.meta?.env?.ADMIN_PASSWORD || 'admin123456';
+    if (code && code.trim() === adminPassword) {
       setIsAuthenticated(true);
       sessionStorage.setItem('adminLogin', '1');
       try { localStorage.setItem('adminToken', code.trim()); } catch {}

@@ -18,6 +18,35 @@ function ck(name, params) { return name + '|' + JSON.stringify(params || {}); }
 function cget(k) { const v = CACHE.get(k); if (!v) return null; if (v.exp && v.exp < Date.now()) { CACHE.delete(k); return null; } return v.data; }
 function cset(k, data, ttlMs) { CACHE.set(k, { data, exp: Date.now() + (ttlMs || 3600000) }); }
 
+// ====== 邀请码相关配置扩展 ======
+// 邀请码使用记录
+const INVITE_CODE_USAGE = [];
+
+// 分析记录文件路径
+const ANALYTICS_FILE_PATH = path.join(process.cwd(), 'analytics.json');
+
+// 确保分析记录文件存在
+function ensureAnalyticsFile() {
+  if (!fs.existsSync(ANALYTICS_FILE_PATH)) {
+    fs.writeFileSync(ANALYTICS_FILE_PATH, JSON.stringify([], null, 2));
+  }
+}
+
+// 保存分析记录
+function saveAnalyticsRecord(record) {
+  try {
+    ensureAnalyticsFile();
+    const existingData = JSON.parse(fs.readFileSync(ANALYTICS_FILE_PATH, 'utf8'));
+    existingData.push({
+      ...record,
+      timestamp: new Date().toISOString()
+    });
+    fs.writeFileSync(ANALYTICS_FILE_PATH, JSON.stringify(existingData, null, 2));
+  } catch (error) {
+    console.error('保存分析记录失败:', error);
+  }
+}
+
 async function prepareDbFiles() {
   try {
     const isProd = process.env.NODE_ENV === 'production';
@@ -769,7 +798,7 @@ app.get('/api/esg-forms', (req, res) => {
 
 app.post('/api/esg-form', (req, res) => {
   try {
-    const { name, email, position, organization, phone, industry, country } = req.body || {};
+    const { name, email, position, organization, phone, industry, country, industryId, industryName, countryId, countryName, inviteCode } = req.body || {};
     const e = String(email || '').trim();
     if (!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
       return res.status(400).json({ error: 'invalid_email' });
@@ -783,10 +812,11 @@ app.post('/api/esg-form', (req, res) => {
       position: String(position || ''),
       organization: String(organization || ''),
       phone: String(phone || ''),
-      industryId: String(industry?.id || ''),
-      industryName: String(industry?.name || ''),
-      countryId: String(country?.id || ''),
-      countryName: String(country?.name || ''),
+      industryId: String(industry?.id || industryId || ''),
+      industryName: String(industry?.name || industryName || ''),
+      countryId: String(country?.id || countryId || ''),
+      countryName: String(country?.name || countryName || ''),
+      inviteCode: String(inviteCode || ''),
       ts: new Date().toISOString()
     };
     const items = readLeads();
@@ -802,7 +832,7 @@ app.post('/api/esg-form', (req, res) => {
 
 app.get('/api/esg-form', (req, res) => {
   try {
-    const { name, email, position, organization, phone, industryId, industryName, countryId, countryName } = req.query || {};
+    const { name, email, position, organization, phone, industryId, industryName, countryId, countryName, inviteCode } = req.query || {};
     const e = String(email || '').trim();
     if (!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
       return res.status(400).json({ error: 'invalid_email' });
@@ -820,6 +850,7 @@ app.get('/api/esg-form', (req, res) => {
       industryName: String(industryName || ''),
       countryId: String(countryId || ''),
       countryName: String(countryName || ''),
+      inviteCode: String(inviteCode || ''),
       ts: new Date().toISOString()
     };
     const items = readLeads();
@@ -1315,19 +1346,133 @@ app.get('/api/db/considerations', async (req, res) => {
 
 // 健康检查路由
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    timestamp: new Date().toISOString(),
-    inviteCodesConfigured: VALID_CODES.size > 0
-  });
+  res.json({ status: 'OK', timestamp: new Date().toISOString(), inviteCodesConfigured: VALID_CODES.size > 0 });
 });
 
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    timestamp: new Date().toISOString(),
-    inviteCodesConfigured: VALID_CODES.size > 0
-  });
+  res.json({ status: 'OK', timestamp: new Date().toISOString(), inviteCodesConfigured: VALID_CODES.size > 0 });
+});
+
+// ====== 邀请码验证 API ======
+app.post('/api/verify-invite-code', async (req, res) => {
+  try {
+    const { code, ip } = req.body;
+    if (!code || !ip) {
+      return res.status(400).json({ error: 'invite_code_missing', message: '邀请码和IP地址不能为空' });
+    }
+    const isValid = VALID_CODES.has(code.trim().toLowerCase());
+    const usageRecord = { code, ip, isValid, timestamp: new Date().toISOString() };
+    INVITE_CODE_USAGE.push(usageRecord);
+    res.json({ valid: isValid });
+  } catch (error) {
+    console.error('验证邀请码失败:', error);
+    res.status(500).json({ error: 'internal_server_error', message: '服务器内部错误' });
+  }
+});
+
+// ====== 邀请码管理 API（需要管理员权限） ======
+// 获取所有邀请码
+app.get('/api/admin/invite-codes', async (req, res) => {
+  try {
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (token !== ADMIN_TOKEN) {
+      return res.status(401).json({ error: 'unauthorized', message: '未经授权的访问' });
+    }
+    res.json({ codes: Array.from(VALID_CODES) });
+  } catch (error) {
+    console.error('获取邀请码列表失败:', error);
+    res.status(500).json({ error: 'internal_server_error', message: '服务器内部错误' });
+  }
+});
+
+// 添加邀请码
+app.post('/api/admin/invite-codes', async (req, res) => {
+  try {
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (token !== ADMIN_TOKEN) {
+      return res.status(401).json({ error: 'unauthorized', message: '未经授权的访问' });
+    }
+    const { code } = req.body;
+    if (!code || !code.trim()) {
+      return res.status(400).json({ error: 'invalid_code', message: '邀请码不能为空' });
+    }
+    VALID_CODES.add(code.trim());
+    res.json({ success: true, code: code.trim(), message: '邀请码添加成功' });
+  } catch (error) {
+    console.error('添加邀请码失败:', error);
+    res.status(500).json({ error: 'internal_server_error', message: '服务器内部错误' });
+  }
+});
+
+// 删除邀请码
+app.delete('/api/admin/invite-codes/:code', async (req, res) => {
+  try {
+    const token = req.headers['authorization']?.split(' ')[1];
+    
+    if (token !== ADMIN_TOKEN) {
+      return res.status(401).json({ error: 'unauthorized', message: '未经授权的访问' });
+    }
+    
+    const { code } = req.params;
+    
+    if (!code) {
+      return res.status(400).json({ error: 'invalid_code', message: '邀请码不能为空' });
+    }
+    
+    const wasRemoved = VALID_CODES.delete(code);
+    
+    if (wasRemoved) {
+      res.json({ success: true, message: '邀请码删除成功' });
+    } else {
+      res.status(404).json({ error: 'code_not_found', message: '邀请码不存在' });
+    }
+  } catch (error) {
+    console.error('删除邀请码失败:', error);
+    res.status(500).json({ error: 'internal_server_error', message: '服务器内部错误' });
+  }
+});
+
+// ====== 分析记录 API（需要管理员权限） ======
+app.get('/api/admin/analytics', async (req, res) => {
+  try {
+    const token = req.headers['authorization']?.split(' ')[1];
+    
+    if (token !== ADMIN_TOKEN) {
+      return res.status(401).json({ error: 'unauthorized', message: '未经授权的访问' });
+    }
+    
+    ensureAnalyticsFile();
+    const analyticsData = JSON.parse(fs.readFileSync(ANALYTICS_FILE_PATH, 'utf8'));
+    
+    res.json({ analytics: analyticsData });
+  } catch (error) {
+    console.error('获取分析记录失败:', error);
+    res.status(500).json({ error: 'internal_server_error', message: '服务器内部错误' });
+  }
+});
+
+// 添加分析记录
+app.post('/api/admin/analytics', async (req, res) => {
+  try {
+    const token = req.headers['authorization']?.split(' ')[1];
+    
+    if (token !== ADMIN_TOKEN) {
+      return res.status(401).json({ error: 'unauthorized', message: '未经授权的访问' });
+    }
+    
+    const record = req.body;
+    
+    if (!record.action) {
+      return res.status(400).json({ error: 'invalid_record', message: '分析记录必须包含action字段' });
+    }
+    
+    saveAnalyticsRecord(record);
+    
+    res.json({ success: true, message: '分析记录添加成功' });
+  } catch (error) {
+    console.error('添加分析记录失败:', error);
+    res.status(500).json({ error: 'internal_server_error', message: '服务器内部错误' });
+  }
 });
 
 await prepareDbFiles();

@@ -82,5 +82,54 @@
     "countryId": "89",
     "countryName": "萨尔瓦多",
     "ts": "2025-11-24T07:46:16.397Z"
+  },
+  {
+    "name": "xcy",
+    "email": "contact@mscfv.com",
+    "position": "pd",
+    "organization": "msc",
+    "phone": "18067879798",
+    "industryId": "19",
+    "industryName": "塑料管、管件和软管",
+    "countryId": "82",
+    "countryName": "卢旺达",
+    "ts": "2025-12-04T07:02:27.737Z"
+  },
+  {
+    "name": "Test User",
+    "email": "test@example.com",
+    "position": "Test Position",
+    "organization": "Test Org",
+    "phone": "123456789",
+    "industryId": "",
+    "industryName": "",
+    "countryId": "",
+    "countryName": "",
+    "ts": "2025-12-04T07:10:32.224Z"
+  },
+  {
+    "name": "Test User",
+    "email": "test@example.com",
+    "position": "Test Position",
+    "organization": "Test Org",
+    "phone": "123456789",
+    "industryId": "1",
+    "industryName": "Test Industry",
+    "countryId": "1",
+    "countryName": "Test Country",
+    "ts": "2025-12-04T07:14:55.919Z"
+  },
+  {
+    "name": "xcy",
+    "email": "contact@mscfv.com",
+    "position": "pd",
+    "organization": "msc",
+    "phone": "18067879798",
+    "industryId": "426",
+    "industryName": "林业与伐木",
+    "countryId": "2",
+    "countryName": "阿富汗",
+    "inviteCode": "TESTVIP",
+    "ts": "2025-12-04T08:08:10.984Z"
   }
 ]

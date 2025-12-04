@@ -1,14 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import LogoCarousel from '@/components/LogoCarousel';
+import NewDemoPlayer from './NewDemoPlayer';
 import ContactModal from '@/components/ContactModal';
+import InviteCodeModal from '@/components/InviteCodeModal';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { convertToTraditional } from '@/locales/zh-HK';
+import { apiPost } from '@/lib/utils';
 
 export default function ESGRiskAnalysisNew() {
   const navigate = useNavigate();
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [showInviteCodeModal, setShowInviteCodeModal] = useState(false);
+  const [inviteCode, setInviteCode] = useState('');
   const { language } = useLanguage();
 
   const L = {
@@ -44,11 +49,13 @@ export default function ESGRiskAnalysisNew() {
     step1: language === 'en-US' ? 'Step 1' : 'Step 1',
     step1t: language === 'en-US' ? 'Choose your industry' : language === 'zh-HK' ? '選擇你的行業' : '选择你的行业',
     step2: language === 'en-US' ? 'Step 2' : 'Step 2',
-    step2t: language === 'en-US' ? 'Choose target region' : language === 'zh-HK' ? '選擇目標地區' : '选择目标地区',
+    step2t: language === 'en-US' ? 'Generate report' : language === 'zh-HK' ? '生成報告' : '生成报告',
     step3: language === 'en-US' ? 'Step 3' : 'Step 3',
-    step3t: language === 'en-US' ? 'Get general report' : language === 'zh-HK' ? '獲取通用報告' : '获取通用报告',
+    step3t: language === 'en-US' ? 'AI Analysis' : language === 'zh-HK' ? 'AI分析' : 'AI分析',
     step4: language === 'en-US' ? 'Step 4' : 'Step 4',
-    step4t: language === 'en-US' ? 'Customize dedicated report' : language === 'zh-HK' ? '定制專屬報告' : '定制专属报告',
+    step4t: language === 'en-US' ? 'View full report' : language === 'zh-HK' ? '查看完整報告' : '查看完整报告',
+    step5: language === 'en-US' ? 'Step 5' : 'Step 5',
+    step5t: language === 'en-US' ? 'Customize report' : language === 'zh-HK' ? '定制報告' : '定制报告',
     ctaUse: language === 'en-US' ? 'Use ESGVoyant to get full report' : language === 'zh-HK' ? '使用ESGVoyant，獲取完整報告' : '使用ESGVoyant，获取完整报告',
     nexusTitle: 'ESGNexus',
     nexusDesc: language === 'en-US' ? 'Global localized ESG risk management consulting suite, ensuring your business is secure, resilient and sustainable worldwide' : language === 'zh-HK' ? '全球在地化ESG風險管理諮詢服務套件，確保您的業務在全球安全、穩健、可持續' : '全球在地化ESG风险管理咨询服务套件，确保您的业务在全球安全、稳健、可持续',
@@ -83,7 +90,13 @@ export default function ESGRiskAnalysisNew() {
   };
 
   const handleGetStarted = () => {
-    navigate('/esg-voyant/form');
+    // 显示邀请码模态框
+    setShowInviteCodeModal(true);
+  };
+
+  const handleInviteCodeSuccess = () => {
+    // 邀请码验证成功后跳转到本地表单页面，并传递邀请码参数（确保去除空格）
+    navigate(`/esg-voyant/form?invite-code=${encodeURIComponent(inviteCode.trim())}`);
   };
 
   const handleGetUnlimitedPlan = () => {
@@ -249,32 +262,11 @@ export default function ESGRiskAnalysisNew() {
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">{L.flowSub}</p>
           </motion.div>
 
-          <div className="grid md:grid-cols-4 gap-8 mb-16">
-            {[
-              { step: 'Step 1', title: '选择你的行业', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4' },
-              { step: 'Step 2', title: '选择目标地区', icon: 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
-              { step: 'Step 3', title: '获取通用报告', icon: 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' },
-              { step: 'Step 4', title: '定制专属报告', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' }
-            ].map((item, index) => (
-              <motion.div
-                key={item.step}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
-                className="text-center"
-              >
-                <div className="bg-slate-50 rounded-2xl p-8 mb-4 hover:bg-slate-100 transition-colors">
-                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
-                    <svg className="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
-                    </svg>
-                  </div>
-                  <h4 className="text-base font-medium text-slate-900 mb-3">{[L.step1, L.step2, L.step3, L.step4][index]}</h4>
-                  <p className="text-sm text-slate-600">{[L.step1t, L.step2t, L.step3t, L.step4t][index]}</p>
-                </div>
-              </motion.div>
-            ))}
+          <div className="mb-16">
+            <NewDemoPlayer />
           </div>
+
+          {/* 注意：步骤卡片现在由NewDemoPlayer组件内部管理，这里不再需要显示 */}
           <div className="text-center">
             <button
               onClick={handleGetStarted}
@@ -346,6 +338,12 @@ export default function ESGRiskAnalysisNew() {
       </section>
 
       <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
+      <InviteCodeModal 
+        isOpen={showInviteCodeModal} 
+        onClose={() => setShowInviteCodeModal(false)}
+        onSuccess={handleInviteCodeSuccess}
+        onCodeChange={setInviteCode}
+      />
 
       {/* Pricing Plans Section */}
       <section className="py-24 bg-slate-50 hidden">

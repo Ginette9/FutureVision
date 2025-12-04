@@ -7,7 +7,7 @@ type SummaryItem = { path: string; count: number };
 type IpSummaryItem = { ip: string; count: number; lastTs: string; paths: { path: string; count: number }[] };
 type ContactItem = { name: string; email: string; company: string; position: string; phone: string; message: string; ts: string };
 type SubscriptionItem = { email: string; category: string; ts: string };
-type LeadItem = { name: string; email: string; position: string; organization: string; phone: string; industryId: string; industryName: string; countryId: string; countryName: string; ts: string };
+type LeadItem = { name: string; email: string; position: string; organization: string; phone: string; industryId: string; industryName: string; countryId: string; countryName: string; inviteCode?: string; ts: string };
 
 export default function AdminAnalytics() {
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
@@ -21,13 +21,17 @@ export default function AdminAnalytics() {
   const [to, setTo] = useState('');
   const [filterPath, setFilterPath] = useState('');
   const [filterEmail, setFilterEmail] = useState('');
+  const [visitorsPage, setVisitorsPage] = useState(1);
+  const [visitorsPageSize, setVisitorsPageSize] = useState(20);
 
   useEffect(() => {
     if (sessionStorage.getItem('adminLogin') === '1') setIsAuthenticated(true);
   }, [setIsAuthenticated]);
 
   const handleLogin = (code: string) => {
-    if (code && code.trim()) {
+    // 获取环境变量中的管理员密码
+    const adminPassword = import.meta?.env?.VITE_ADMIN_PASSWORD || import.meta?.env?.ADMIN_PASSWORD || 'admin123456';
+    if (code && code.trim() === adminPassword) {
       setIsAuthenticated(true);
       sessionStorage.setItem('adminLogin', '1');
       try { localStorage.setItem('adminToken', code.trim()); } catch {}
@@ -71,8 +75,21 @@ export default function AdminAnalytics() {
 
   const filteredVisitors = useMemo(() => {
     const fp = filterPath.trim().toLowerCase();
-    return visitors.filter(v => (fp ? String(v.path || '').toLowerCase().includes(fp) : true));
+    const arr = visitors.filter(v => (fp ? String(v.path || '').toLowerCase().includes(fp) : true));
+    return arr;
   }, [visitors, filterPath]);
+
+  const visitorsPaged = useMemo(() => {
+    const ordered = filteredVisitors.slice().reverse();
+    const total = ordered.length;
+    const pages = Math.max(1, Math.ceil(total / visitorsPageSize));
+    const safePage = Math.min(Math.max(1, visitorsPage), pages);
+    const start = (safePage - 1) * visitorsPageSize;
+    const end = start + visitorsPageSize;
+    return { rows: ordered.slice(start, end), total, pages, page: safePage };
+  }, [filteredVisitors, visitorsPage, visitorsPageSize]);
+
+  useEffect(() => { setVisitorsPage(1); }, [filterPath, from, to]);
 
   const filteredContacts = useMemo(() => {
     const fe = filterEmail.trim().toLowerCase();
@@ -171,6 +188,22 @@ export default function AdminAnalytics() {
           <input className="border px-2 py-1 flex-1" placeholder="按页面过滤，如 /esg-voyant" value={filterPath} onChange={e => setFilterPath(e.target.value)} />
           <button className="px-3 py-1.5 bg-gray-100" onClick={() => setFilterPath('')}>清空</button>
         </div>
+        <div className="flex items-center gap-2 text-sm">
+          <span className="text-gray-600">每页</span>
+          <select className="border px-2 py-1" value={visitorsPageSize} onChange={e => setVisitorsPageSize(Number(e.target.value))}>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+          <span className="ml-2 text-gray-600">共 {visitorsPaged.total} 条，页 {visitorsPaged.page}/{visitorsPaged.pages}</span>
+          <div className="ml-auto flex items-center gap-1">
+            <button className="px-2 py-1 border" onClick={() => setVisitorsPage(1)} disabled={visitorsPaged.page === 1}>首页</button>
+            <button className="px-2 py-1 border" onClick={() => setVisitorsPage(Math.max(1, visitorsPaged.page - 1))} disabled={visitorsPaged.page === 1}>上一页</button>
+            <button className="px-2 py-1 border" onClick={() => setVisitorsPage(Math.min(visitorsPaged.pages, visitorsPaged.page + 1))} disabled={visitorsPaged.page === visitorsPaged.pages}>下一页</button>
+            <button className="px-2 py-1 border" onClick={() => setVisitorsPage(visitorsPaged.pages)} disabled={visitorsPaged.page === visitorsPaged.pages}>末页</button>
+          </div>
+        </div>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead>
@@ -183,7 +216,7 @@ export default function AdminAnalytics() {
               </tr>
             </thead>
             <tbody>
-              {filteredVisitors.slice().reverse().map((v, idx) => (
+              {visitorsPaged.rows.map((v, idx) => (
                 <tr key={idx} className="border-t">
                   <td className="px-2 py-1 whitespace-nowrap">{v.ts}</td>
                   <td className="px-2 py-1">{v.path}</td>
@@ -271,6 +304,7 @@ export default function AdminAnalytics() {
                 <th className="px-2 py-1">电话</th>
                 <th className="px-2 py-1">行业</th>
                 <th className="px-2 py-1">国家/地区</th>
+                <th className="px-2 py-1">邀请码</th>
               </tr>
             </thead>
             <tbody>
@@ -284,6 +318,7 @@ export default function AdminAnalytics() {
                   <td className="px-2 py-1">{l.phone}</td>
                   <td className="px-2 py-1">{l.industryName}</td>
                   <td className="px-2 py-1">{l.countryName}</td>
+                  <td className="px-2 py-1">{l.inviteCode || '-'}</td>
                 </tr>
               ))}
             </tbody>
