@@ -96,7 +96,7 @@ const NewDemoPlayer = () => {
         <div className="flex-1 relative">
           <video
             ref={videoRef}
-            className="w-full h-full aspect-video object-cover"
+            className="w-full h-full aspect-video object-contain"
             src="/mock_demo_video.mov"
             loop
             muted

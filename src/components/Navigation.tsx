@@ -41,7 +41,7 @@ const Navigation = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center h-16 md:h-20">
           {/* Logo - 左侧 */}
-          <Link to="/" className="flex items-center space-x-3 mr-6 md:mr-8">
+          <Link to="/" className="flex items-center space-x-3 mr-4 md:mr-8">
             <img
               src="/images/future-vision-logo-graph.png"
               alt="Future Vision Logo"
@@ -94,14 +94,14 @@ const Navigation = () => {
           </div>
 
           {/* Right side items */}
-          <div className="flex items-center space-x-6 ml-auto">
+          <div className="flex items-center space-x-4 ml-auto">
             <LanguageSelector />
         
 
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden inline-flex items-center justify-center p-2 text-gray-600 hover:text-gray-900 transition-colors duration-300"
+              className="md:hidden inline-flex items-center justify-center p-2 text-gray-600 hover:text-gray-900 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {isMenuOpen ? (
@@ -122,10 +122,10 @@ const Navigation = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="md:hidden bg-white border-t border-gray-100"
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="md:hidden bg-white border-t border-gray-100 shadow-md"
           >
-            <div className="px-4 pt-4 pb-6 space-y-4">
+            <div className="px-4 pt-4 pb-6 space-y-3">
               {navItems.map((item) => {
                 if (item.href) {
                   return (
@@ -133,7 +133,7 @@ const Navigation = () => {
                       key={item.href}
                       href={item.href}
                       onClick={() => setIsMenuOpen(false)}
-                      className="block py-2 text-base font-medium transition-colors duration-300 text-gray-600 hover:text-gray-900"
+                      className="block py-3 px-4 text-base font-medium transition-colors duration-300 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md"
                     >
                       {item.name}
                     </a>
@@ -144,11 +144,7 @@ const Navigation = () => {
                     key={item.path}
                     to={item.path!}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`block py-2 text-base font-medium transition-colors duration-300 ${
-                      isActive(item.path!)
-                        ? 'text-gray-900'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
+                    className={`block py-3 px-4 text-base font-medium transition-colors duration-300 rounded-md ${isActive(item.path!) ? 'text-gray-900 bg-gray-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'}`}
                   >
                     {item.name}
                   </Link>
@@ -159,7 +155,7 @@ const Navigation = () => {
               <Link
                 to="/esg-voyant"
                 onClick={() => setIsMenuOpen(false)}
-                className="block py-3 px-6 text-base font-medium text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300 text-center mt-6"
+                className="block py-4 px-6 text-lg font-medium text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-300 text-center mt-6 rounded-md shadow-sm"
               >
                 {labels.mobileCta}
               </Link>

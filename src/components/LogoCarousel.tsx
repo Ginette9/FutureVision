@@ -43,18 +43,7 @@ interface LogoCarouselProps {
   syncRows?: boolean;
 }
 
-const LogoCarousel: React.FC<LogoCarouselProps> = ({
-  logos,
-  directions = ['right', 'left'],
-  variant = 'card',
-  itemWidth = 100,
-  itemHeight = 64,
-  gapClassName = 'gap-5 md:gap-6',
-  imageClassName = 'max-w-full max-h-full object-contain',
-  speed = 1.2,
-  boxed = false,
-  syncRows = false,
-}) => {
+const LogoCarousel: React.FC<LogoCarouselProps> = ({  logos,  directions = ['right', 'left'],  variant = 'card',  itemWidth = 80,  itemHeight = 50,  gapClassName = 'gap-3 sm:gap-4 md:gap-5',  imageClassName = 'max-w-full max-h-full object-contain',  speed = 1.0,  boxed = false,  syncRows = false,}) => {
   const firstRowRef = useRef<HTMLDivElement>(null);
   const secondRowRef = useRef<HTMLDivElement>(null);
   
@@ -152,11 +141,7 @@ const LogoCarousel: React.FC<LogoCarouselProps> = ({
               ? `flex-shrink-0 bg-white ${boxed ? 'border border-gray-200' : ''} rounded-lg shadow-sm p-3 flex items-center justify-center`
               : 'flex-shrink-0 flex items-center justify-center'
           }
-          style={
-            variant === 'card'
-              ? { minWidth: `${itemWidth}px`, width: `${itemWidth}px`, height: `${itemHeight}px` }
-              : { minWidth: `${itemWidth}px`, height: `${itemHeight}px` }
-          }
+          style={            variant === 'card'              ? { minWidth: `${itemWidth}px`, width: `${itemWidth}px`, height: `${itemHeight}px` }              : { minWidth: `${itemWidth}px`, height: `${itemHeight}px` }          }
         >
           <img
             src={logo.src}
@@ -169,12 +154,7 @@ const LogoCarousel: React.FC<LogoCarouselProps> = ({
     </div>
   );
   
-  return (
-    <div className="w-full space-y-4">
-      <LogoRow logos={doubleFirstRow} scrollRef={firstRowRef} />
-      <LogoRow logos={doubleSecondRow} scrollRef={secondRowRef} />
-    </div>
-  );
+  return (    <div className="w-full space-y-3 px-2 sm:px-4">      <LogoRow logos={doubleFirstRow} scrollRef={firstRowRef} />      <LogoRow logos={doubleSecondRow} scrollRef={secondRowRef} />    </div>  );
 };
 
 export default LogoCarousel;

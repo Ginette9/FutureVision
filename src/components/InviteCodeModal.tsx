@@ -7,9 +7,10 @@ interface InviteCodeModalProps {
   onClose: () => void;
   onSuccess: () => void;
   onCodeChange: (code: string) => void;
+  onContactAdvisor?: () => void;
 }
 
-export default function InviteCodeModal({ isOpen, onClose, onSuccess, onCodeChange }: InviteCodeModalProps) {
+export default function InviteCodeModal({ isOpen, onClose, onSuccess, onCodeChange, onContactAdvisor }: InviteCodeModalProps) {
   const [inviteCode, setInviteCode] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [verifyStatus, setVerifyStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -132,8 +133,10 @@ export default function InviteCodeModal({ isOpen, onClose, onSuccess, onCodeChan
 
   const handleContactAdvisor = () => {
     onClose();
-    // 这里可以触发联系顾问的逻辑，比如打开联系模态框
-    // 假设ContactModal的打开状态可以通过props或context控制
+    // 触发联系顾问的回调函数，打开联系模态框
+    if (onContactAdvisor) {
+      onContactAdvisor();
+    }
   };
 
   return (

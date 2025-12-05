@@ -199,21 +199,21 @@ export default function App() {
       </main>
 
       {/* 页脚 */}
-        <footer className="no-print bg-slate-900 text-white py-16">
+        <footer className="no-print bg-slate-900 text-white py-12 md:py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="md:w-[29.17%]" style={{letterSpacing: '-0.03em'}}>
-                <div className="flex items-center mb-10"></div>
-                <h3 className="font-semibold mb-4" style={{fontSize: '13px', letterSpacing: '-0.01em'}}>
+            <div className="flex flex-col md:flex-row gap-8 md:gap-6">
+              <div className="w-full md:w-[29.17%]" style={{letterSpacing: '-0.03em'}}>
+                <div className="flex items-center mb-6 md:mb-10"></div>
+                <h3 className="font-semibold mb-4" style={{fontSize: '14px', letterSpacing: '-0.01em'}}>
                   {language === 'en-US' ? 'About Future Vision' : language === 'zh-HK' ? '關於 Future Vision' : '关于 Future Vision'}
                 </h3>
-                <p className="text-slate-400 mb-3" style={{fontSize: '12px', letterSpacing: '-0.01em'}}>
+                <p className="text-slate-400 mb-3" style={{fontSize: '13px', letterSpacing: '-0.01em'}}>
                   {language === 'en-US' ? 'Your 1st Intelligent Consultant' : language === 'zh-HK' ? '您的第一位智能顧問' : '您的第一位智能顾问'}
                 </p>
-                <p className="text-slate-400 mb-4" style={{fontSize: '12px', letterSpacing: '-0.01em'}}>
+                <p className="text-slate-400 mb-4" style={{fontSize: '13px', letterSpacing: '-0.01em'}}>
                   {language === 'en-US' ? 'For Global Business Sustainable Growth' : language === 'zh-HK' ? '助力全球業務的可持續增長' : '助力全球业务的可持续增长'}
                 </p>
-                <ul className="space-y-2 text-slate-400" style={{fontSize: '12px', letterSpacing: '-0.01em'}}>
+                <ul className="space-y-2 text-slate-400" style={{fontSize: '13px', letterSpacing: '-0.01em'}}>
                   <li>- {language === 'en-US' ? 'International Market Expansion' : language === 'zh-HK' ? '國際市場拓展' : '国际市场拓展'}</li>
                   <li>- {language === 'en-US' ? 'Global ESG Risk Management' : language === 'zh-HK' ? '全球ESG風險管理' : '全球ESG风险管理'}</li>
                   <li>- {language === 'en-US' ? 'Sustainable Development Strategy' : language === 'zh-HK' ? '可持續發展戰略' : '可持续发展战略'}</li>
@@ -221,9 +221,9 @@ export default function App() {
                 </ul>
               </div>
 
-              <div className="md:w-[58.97%]" style={{fontSize: '1px', letterSpacing: '-0.03em'}}>
-                <div className="flex items-center mb-10"></div>
-                <h3 className="font-semibold mb-4" style={{fontSize: '13px', letterSpacing: '-0.01em'}}>
+              <div className="w-full md:w-[58.97%]" style={{fontSize: '1px', letterSpacing: '-0.03em'}}>
+                <div className="flex items-center mb-6 md:mb-10"></div>
+                <h3 className="font-semibold mb-4" style={{fontSize: '14px', letterSpacing: '-0.01em'}}>
                   {language === 'en-US' ? 'Locations' : language === 'zh-HK' ? '辦公地點' : '办公地点'}
                 </h3>
                 {(() => {
@@ -255,21 +255,21 @@ export default function App() {
                     }
                   ];
                   return (
-                    <ul className="space-y-3 text-slate-400 leading-tight" style={{fontSize: '12px', letterSpacing: '-0.02em'}}>
+                    <ul className="space-y-4 text-slate-400 leading-tight" style={{fontSize: '13px', letterSpacing: '-0.02em'}}>
                       {items.map((it, idx) => (
-                        <li key={idx}>
+                        <li key={idx} className="py-1">
                           {language === 'en-US' ? (
-                            <>
-                              <strong className="text-slate-300" style={{fontSize: '12px'}}>{it.cityEn}</strong><br />
-                              {it.en}
-                            </>
+                            <div className="space-y-1">
+                              <strong className="text-slate-300 block" style={{fontSize: '13px'}}>{it.cityEn}</strong>
+                              <span className="block">{it.en}</span>
+                            </div>
                           ) : (
-                            <>
-                              <strong className="text-slate-300" style={{fontSize: '12px'}}>
+                            <div className="space-y-1">
+                              <strong className="text-slate-300" style={{fontSize: '13px'}}>
                                 {language === 'zh-HK' ? convertToTraditional(it.cityZh) + '：' : it.cityZh + '：'}
                               </strong>
-                              {language === 'zh-HK' ? convertToTraditional(it.zh) : it.zh}
-                            </>
+                              <span className="block">{language === 'zh-HK' ? convertToTraditional(it.zh) : it.zh}</span>
+                            </div>
                           )}
                         </li>
                       ))}
@@ -278,45 +278,45 @@ export default function App() {
                 })()}
               </div>
 
-              <div className="md:w-[16.67%]">
-                <div className="flex items-center mb-10"></div>
-                <h3 className="font-semibold mb-4" style={{fontSize: '13px', letterSpacing: '-0.01em'}}>
+              <div className="w-full md:w-[16.67%]">
+                <div className="flex items-center mb-6 md:mb-10"></div>
+                <h3 className="font-semibold mb-4" style={{fontSize: '14px', letterSpacing: '-0.01em'}}>
                   {language === 'en-US' ? 'Contacts' : language === 'zh-HK' ? '聯繫方式' : '联系方式'}
                 </h3>
-                <ul className="space-y-2 text-slate-400" style={{fontSize: '12px', letterSpacing: '-0.01em'}}>
-                  <li className="flex items-center">
-                    <i className="fa-solid fa-envelope mr-2 text-blue-400"></i>
-                    jinxia@mscfv.com
+                <ul className="space-y-3 text-slate-400" style={{fontSize: '13px', letterSpacing: '-0.01em'}}>
+                  <li className="flex items-start pt-1">
+                    <i className="fa-solid fa-envelope mr-2 text-blue-400 mt-1 flex-shrink-0"></i>
+                    <span>jinxia@mscfv.com</span>
                   </li>
-                  <li className="flex items-center">
-                    <i className="fa-solid fa-phone mr-2 text-blue-400"></i>
-                    +86 189 8948 5442
+                  <li className="flex items-start pt-1">
+                    <i className="fa-solid fa-phone mr-2 text-blue-400 mt-1 flex-shrink-0"></i>
+                    <span>+86 189 8948 5442</span>
                   </li>
-                  <li className="flex items-center">
-                    <i className="fa-brands fa-whatsapp mr-2 text-blue-400"></i>
-                    +852 4609 1687
+                  <li className="flex items-start pt-1">
+                    <i className="fa-brands fa-whatsapp mr-2 text-blue-400 mt-1 flex-shrink-0"></i>
+                    <span>+852 4609 1687</span>
                   </li>
-                  <li className="flex items-center">
-                    <i className="fa-brands fa-weixin mr-2 text-blue-400"></i>
-                    kickufo
+                  <li className="flex items-start pt-1">
+                    <i className="fa-brands fa-weixin mr-2 text-blue-400 mt-1 flex-shrink-0"></i>
+                    <span>kickufo</span>
                   </li>
                 </ul>
-                <div className="flex space-x-4 mt-4">
-                <a href="https://www.linkedin.com/in/xia-jin-25267620" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
+                <div className="flex space-x-5 mt-6">
+                <a href="https://www.linkedin.com/in/xia-jin-25267620" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors text-lg">
                   <i className="fa-brands fa-linkedin"></i>
                 </a>
-                <a href="https://www.facebook.com/jin.xia.452318" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
+                <a href="https://www.facebook.com/jin.xia.452318" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors text-lg">
                   <i className="fa-brands fa-facebook"></i>
                 </a>
-                <a href="https://x.com/kickufo" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
+                <a href="https://x.com/kickufo" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors text-lg">
                   <i className="fa-brands fa-x-twitter"></i>
                 </a>
               </div>
             </div>
           </div>
 
-          <div className="border-t border-slate-800 mt-8 pt-8 text-center">
-            <p className="text-slate-500 text-sm">MSC HK © 2024</p>
+          <div className="border-t border-slate-800 mt-8 pt-6 text-center">
+            <p className="text-slate-500 text-sm md:text-sm">MSC HK © 2024</p>
           </div>
         </div>
       </footer>
