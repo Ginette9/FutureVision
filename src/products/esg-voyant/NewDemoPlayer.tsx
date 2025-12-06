@@ -8,7 +8,19 @@ interface Step {
   endTime: number
 }
 
-const NewDemoPlayer = () => {
+interface NewDemoPlayerProps {
+  step1Title?: string
+  step2Title?: string
+  step3Title?: string
+  onStep1Click?: () => void
+}
+
+const NewDemoPlayer: React.FC<NewDemoPlayerProps> = ({ 
+  step1Title = '选择行业和地区', 
+  step2Title = '输入信息生成报告', 
+  step3Title = 'AI智能分析',
+  onStep1Click 
+}) => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [currentTime, setCurrentTime] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -17,9 +29,9 @@ const NewDemoPlayer = () => {
   
   // 定义分步播放的步骤
   const steps: Step[] = [
-    { id: 1, title: '选择行业和地区', startTime: 0, endTime: 6 },
-    { id: 2, title: '输入信息生成报告', startTime: 6, endTime: 26 },
-    { id: 3, title: 'AI智能分析中', startTime: 26, endTime: 46 },
+    { id: 1, title: step1Title, startTime: 0, endTime: 6 },
+    { id: 2, title: step2Title, startTime: 6, endTime: 26 },
+    { id: 3, title: step3Title, startTime: 26, endTime: 46 },
     { id: 4, title: '查看完整报告', startTime: 46, endTime: 80 } // 假设视频总时长80秒
   ]
 
@@ -82,9 +94,15 @@ const NewDemoPlayer = () => {
 
   // 点击步骤卡片跳转到对应时间
   const handleStepClick = (step: Step) => {
-    const video = videoRef.current
-    if (video) {
-      video.currentTime = step.startTime
+    // 如果是Step1且有onStep1Click回调，则调用它
+    if (step.id === 1 && onStep1Click) {
+      onStep1Click()
+    } else {
+      // 否则跳转到对应时间
+      const video = videoRef.current
+      if (video) {
+        video.currentTime = step.startTime
+      }
     }
   }
 

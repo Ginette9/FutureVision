@@ -15,7 +15,7 @@ export default function Services() {
       title: 'ESG Risk Management for Global Operations',
       description: 'Identify, prevent and resolve ESG risks across global markets; build secure, resilient and sustainable supply chains and operations to ensure regulatory safety and long-term growth.',
       services: [
-        'Localized ESG risk assessment (cross-border compliance + hidden risks)',
+        'Localized ESG risk assessment',
         'ESG risk monitoring and alerts',
         'Sustainability strategy execution and ESG governance building',
         'Stakeholder engagement and relationship building',
@@ -109,7 +109,7 @@ export default function Services() {
       title: "全球化运营ESG风险管理",
       description: "帮助出海企业识别、预防和解决全球市场的环境、社会与治理风险，构建安全、稳健、可持续的供应链与运营体系，获得监管安全与长期增长的确定性",
       services: [
-        "全球在地化ESG风险评估（跨国合规+隐性风险）",
+        "全球在地化ESG风险评估",
         "ESG风险监控与告警",
         "可持续发展战略落地与ESG治理体系建设",
         "在地化利益相关方沟通与关系搭建",

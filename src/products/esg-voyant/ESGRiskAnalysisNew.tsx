@@ -30,8 +30,8 @@ export default function ESGRiskAnalysisNew() {
     coverage: language === 'en-US' ? 'Comprehensive Coverage' : language === 'zh-HK' ? '全面覆蓋' : '全面覆盖',
     chip1: language === 'en-US' ? 'ESG Compliance Assessment' : language === 'zh-HK' ? 'ESG合規評估' : 'ESG合规评估',
     chip2: language === 'en-US' ? 'Major Social & Environmental Risk Identification' : language === 'zh-HK' ? '重大社會與環境風險識別' : '重大社会与环境风险识别',
-    chip3: language === 'en-US' ? 'Pre-investment Risk Control for Factory Establishment/Mergers & Acquisitions/Supply Chain Layout' : language === 'zh-HK' ? '投資建廠/併購/供應鏈佈局前置風控' : '投资建厂/并购/供应链布局前置风控',
-    chip4: language === 'en-US' ? 'Continuous Monitoring/Alert/Disposal of Compliance & Hidden Risks' : language === 'zh-HK' ? '合規及隱性風險\n持續監控/預警/處置' : '合规及隐性风险\n持续监控/预警/处置',
+    chip3: language === 'en-US' ? 'Upfront Risk Control for Investments, M&A, and Supply Chain Deployment' : language === 'zh-HK' ? '投資建廠/併購/供應鏈佈局\n前置風控' : '投资建厂/并购/供应链布局\n前置风控',
+    chip4: language === 'en-US' ? 'Monitor/Alert/Disposal of Compliance & Hidden Risks' : language === 'zh-HK' ? '合規及隱性風險\n持續監控/預警/處置' : '合规及隐性风险\n持续监控/预警/处置',
     stat1: language === 'en-US' ? 'Countries & Regions' : language === 'zh-HK' ? '國家與地區' : '国家与地区',
     stat2: language === 'en-US' ? 'GICS Industries' : language === 'zh-HK' ? 'GICS行業' : 'GICS行业',
     stat3: language === 'en-US' ? 'Trusted Data Sources' : language === 'zh-HK' ? '可靠數據來源' : '可靠数据来源',
@@ -51,7 +51,7 @@ export default function ESGRiskAnalysisNew() {
     step2: language === 'en-US' ? 'Step 2' : 'Step 2',
     step2t: language === 'en-US' ? 'Enter Industry & Country' : language === 'zh-HK' ? '輸入所屬行業與國家' : '输入所属行业与国家',
     step3: language === 'en-US' ? 'Step 3' : 'Step 3',
-    step3t: language === 'en-US' ? 'AI Intelligent Analysis' : language === 'zh-HK' ? 'AI智能分析' : 'AI智能分析',
+    step3t: language === 'en-US' ? 'AI Analysis' : language === 'zh-HK' ? 'AI智能分析' : 'AI智能分析',
     step4: language === 'en-US' ? 'Step 4' : 'Step 4',
     step4t: language === 'en-US' ? 'View full report' : language === 'zh-HK' ? '查看完整報告' : '查看完整报告',
     step5: language === 'en-US' ? 'Step 5' : 'Step 5',
@@ -61,7 +61,7 @@ export default function ESGRiskAnalysisNew() {
     nexusDesc: language === 'en-US' ? 'Global localized ESG risk management consulting suite, ensuring your business is secure, resilient and sustainable worldwide' : language === 'zh-HK' ? '全球在地化ESG風險管理諮詢服務套件，確保您的業務在全球安全、穩健、可持續' : '全球在地化ESG风险管理咨询服务套件，确保您的业务在全球安全、稳健、可持续',
     nexusList: (language === 'en-US'
       ? [
-          'Localized ESG risk assessment (cross-border compliance + hidden risks)',
+          'Localized ESG risk assessment',
           'ESG risk monitoring and alerts',
           'Sustainability strategy execution and ESG governance building',
           'Stakeholder engagement and relationship building',
@@ -70,7 +70,7 @@ export default function ESGRiskAnalysisNew() {
         ]
       : language === 'zh-HK'
         ? [
-            '全球在地化ESG風險評估（跨國合規+隱性風險）',
+            '全球在地化ESG風險評估',
             'ESG風險監控與告警',
             '可持續發展戰略落地與ESG治理體系建設',
             '在地化利害關係人溝通與關係搭建',
@@ -78,7 +78,7 @@ export default function ESGRiskAnalysisNew() {
             'ESG持續披露與溝通'
           ]
         : [
-            '全球在地化ESG风险评估（跨国合规+隐性风险）',
+            '全球在地化ESG风险评估',
             'ESG风险监控与告警',
             '可持续发展战略落地与ESG治理体系建设',
             '在地化利益相关方沟通与关系搭建',
@@ -211,8 +211,8 @@ export default function ESGRiskAnalysisNew() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="text-center"
             >
-              <h4 className="text-lg sm:text-xl text-slate-600 mb-3">{L.vp1t}</h4>
-              <p className="font-medium text-slate-900 leading-relaxed text-base sm:text-lg">{L.vp1d}</p>
+              <p className="text-base sm:text-lg text-slate-600 mb-3">{L.vp1d}</p>
+              <h4 className="text-lg sm:text-xl font-medium text-slate-900 leading-relaxed">{L.vp1t}</h4>
             </motion.div>
 
             <motion.div
@@ -221,8 +221,8 @@ export default function ESGRiskAnalysisNew() {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="text-center"
             >
-              <h4 className="text-lg sm:text-xl text-slate-600 mb-3">{L.vp2t}</h4>
-              <p className="font-medium text-slate-900 leading-relaxed text-base sm:text-lg">{L.vp2d}</p>
+              <p className="text-base sm:text-lg text-slate-600 mb-3">{L.vp2d}</p>
+              <h4 className="text-lg sm:text-xl font-medium text-slate-900 leading-relaxed">{L.vp2t}</h4>
             </motion.div>
 
             <motion.div
@@ -231,8 +231,8 @@ export default function ESGRiskAnalysisNew() {
               transition={{ duration: 0.6, delay: 0.5 }}
               className="text-center"
             >
-              <h4 className="text-lg sm:text-xl text-slate-600 mb-3">{L.vp3t}</h4>
-              <p className="font-medium text-slate-900 leading-relaxed text-base sm:text-lg">{L.vp3d}</p>
+              <p className="text-base sm:text-lg text-slate-600 mb-3">{L.vp3d}</p>
+              <h4 className="text-lg sm:text-xl font-medium text-slate-900 leading-relaxed">{L.vp3t}</h4>
             </motion.div>
           </div>
 
@@ -254,14 +254,7 @@ export default function ESGRiskAnalysisNew() {
                   </div>
                 ))}
               </div>
-              <div className="text-center mt-8">
-                <button
-                  onClick={handleContactAdvisor}
-                  className="bg-slate-900 text-white px-6 sm:px-8 py-3 rounded-lg hover:bg-slate-800 transition-colors font-medium text-base"
-                >
-                  {L.contactAdvisor}
-                </button>
-              </div>
+
             </div>
           </motion.div>
         </div>
@@ -373,32 +366,34 @@ export default function ESGRiskAnalysisNew() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 1.7 }}
-              className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col"
+              className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col border border-slate-100"
             >
-              <div className="text-center mb-6">
-                <h4 className="text-lg font-medium text-slate-900 mb-2">{L.basicPlan}</h4>
-                <div className="text-3xl font-light text-slate-900">¥19,800</div>
-                <div className="text-sm text-slate-500 mt-1">{L.annualBilling}</div>
+              <div className="text-center mb-8">
+                <h4 className="text-lg font-semibold text-slate-900 mb-3">{L.basicPlan}</h4>
+                <div className="text-4xl font-light text-slate-900">¥19,800</div>
+                <div className="text-sm text-slate-500 mt-2">{L.annualBilling}</div>
               </div>
               <div className="mb-8 flex-1">
-                <div className="border-t border-slate-200 pt-4 mb-4">
-                  <div className="text-sm font-semibold text-slate-600 mb-2 uppercase tracking-wide">{L.perfectFor}</div>
-                  <div className="text-sm text-slate-700">{renderWithLineBreaks(L.basicPerfectFor)}</div>
+                <div className="border-t border-slate-200 pt-6 mb-6">
+                  <div className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">{L.perfectFor}</div>
+                  <div className="text-sm text-slate-700 leading-relaxed">{renderWithLineBreaks(L.basicPerfectFor)}</div>
                 </div>
-                <div className="border-t border-slate-200 pt-4">
-                  <div className="text-sm font-semibold text-slate-600 mb-2 uppercase tracking-wide">{L.memberBenefits}</div>
-                  <div className="text-sm text-slate-700 space-y-2">
-                    <div>{L.basicBenefit1}</div>
-                    <div>{L.basicBenefit2}</div>
-                    <div>{L.basicBenefit3}</div>
-                    <div>{L.basicBenefit4}</div>
-                    <div>{L.basicBenefit5}</div>
+                <div className="border-t border-slate-200 pt-6">
+                  <div className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">{L.memberBenefits}</div>
+                  <div className="text-sm text-slate-700 space-y-3">
+                    {[L.basicBenefit1, L.basicBenefit2, L.basicBenefit3, L.basicBenefit4, L.basicBenefit5].map((benefit, index) => (
+                      <div key={index} className="flex items-start">
+                        <span className="inline-block w-2 h-2 rounded-full bg-slate-400 mt-2 mr-2"></span>
+                        <span>{benefit}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
+              {/* 暂时隐藏选择套餐按钮 */}
               <button 
                 onClick={handleGetStarted}
-                className="w-full bg-slate-100 text-slate-900 py-3 px-4 rounded-lg hover:bg-slate-200 transition-colors text-sm font-medium mt-4"
+                className="hidden w-full bg-slate-100 text-slate-900 py-3 px-4 rounded-lg hover:bg-slate-200 transition-colors text-sm font-medium mt-4"
               >
                 {L.selectPlan}
               </button>
@@ -409,34 +404,35 @@ export default function ESGRiskAnalysisNew() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 1.8 }}
-              className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 shadow-md border border-blue-200 flex flex-col relative"
+              className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 shadow-lg border border-blue-200 flex flex-col relative transform hover:-translate-y-1 transition-all duration-300"
             >
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-xs px-4 py-1 rounded-full">{L.mostPopular}</div>
-              <div className="text-center mb-6">
-                <h4 className="text-lg font-medium text-slate-900 mb-2">{L.professionalPlan}</h4>
-                <div className="text-3xl font-light text-blue-700">¥69,800</div>
-                <div className="text-sm text-slate-500 mt-1">{L.annualBilling}</div>
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-xs px-5 py-1.5 rounded-full font-medium">{L.mostPopular}</div>
+              <div className="text-center mb-8">
+                <h4 className="text-lg font-semibold text-slate-900 mb-3">{L.professionalPlan}</h4>
+                <div className="text-4xl font-light text-blue-700">¥69,800</div>
+                <div className="text-sm text-slate-500 mt-2">{L.annualBilling}</div>
               </div>
               <div className="mb-8 flex-1">
-                <div className="border-t border-slate-200 pt-4 mb-4">
-                  <div className="text-sm font-semibold text-slate-600 mb-2 uppercase tracking-wide">{L.perfectFor}</div>
-                  <div className="text-sm text-slate-700">{renderWithLineBreaks(L.professionalPerfectFor)}</div>
+                <div className="border-t border-blue-200 pt-6 mb-6">
+                  <div className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">{L.perfectFor}</div>
+                  <div className="text-sm text-slate-700 leading-relaxed">{renderWithLineBreaks(L.professionalPerfectFor)}</div>
                 </div>
-                <div className="border-t border-slate-200 pt-4">
-                  <div className="text-sm font-semibold text-slate-600 mb-2 uppercase tracking-wide">{L.memberBenefits}</div>
-                  <div className="text-sm text-slate-700 space-y-2">
-                    <div>{L.professionalBenefit1}</div>
-                    <div>{L.professionalBenefit2}</div>
-                    <div>{L.professionalBenefit3}</div>
-                    <div>{L.professionalBenefit4}</div>
-                    <div>{L.professionalBenefit5}</div>
-                    <div>{L.professionalBenefit6}</div>
+                <div className="border-t border-blue-200 pt-6">
+                  <div className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">{L.memberBenefits}</div>
+                  <div className="text-sm text-slate-700 space-y-3">
+                    {[L.professionalBenefit1, L.professionalBenefit2, L.professionalBenefit3, L.professionalBenefit4, L.professionalBenefit5, L.professionalBenefit6].map((benefit, index) => (
+                      <div key={index} className="flex items-start">
+                        <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mt-2 mr-2"></span>
+                        <span>{benefit}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
+              {/* 暂时隐藏选择套餐按钮 */}
               <button 
                 onClick={handleGetStarted}
-                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium mt-4"
+                className="hidden w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium mt-4"
               >
                 {L.selectPlan}
               </button>
@@ -447,35 +443,34 @@ export default function ESGRiskAnalysisNew() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 1.9 }}
-              className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col"
+              className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col border border-slate-100"
             >
-              <div className="text-center mb-6">
-                <h4 className="text-lg font-medium text-slate-900 mb-2">{L.enterprisePlan}</h4>
-                <div className="text-3xl font-light text-slate-900">¥188,000</div>
-                <div className="text-sm text-slate-500 mt-1">{L.annualBilling}</div>
+              <div className="text-center mb-8">
+                <h4 className="text-lg font-semibold text-slate-900 mb-3">{L.enterprisePlan}</h4>
+                <div className="text-4xl font-light text-slate-900">¥188,000</div>
+                <div className="text-sm text-slate-500 mt-2">{L.annualBilling}</div>
               </div>
               <div className="mb-8 flex-1">
-                <div className="border-t border-slate-200 pt-4 mb-4">
-                  <div className="text-sm font-semibold text-slate-600 mb-2 uppercase tracking-wide">{L.perfectFor}</div>
-                  <div className="text-sm text-slate-700">{renderWithLineBreaks(L.enterprisePerfectFor)}</div>
+                <div className="border-t border-slate-200 pt-6 mb-6">
+                  <div className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">{L.perfectFor}</div>
+                  <div className="text-sm text-slate-700 leading-relaxed">{renderWithLineBreaks(L.enterprisePerfectFor)}</div>
                 </div>
-                <div className="border-t border-slate-200 pt-4">
-                  <div className="text-sm font-semibold text-slate-600 mb-2 uppercase tracking-wide">{L.memberBenefits}</div>
-                  <div className="text-sm text-slate-700 space-y-2">
-                    <div>{L.enterpriseBenefit1}</div>
-                    <div>{L.enterpriseBenefit2}</div>
-                    <div>{L.enterpriseBenefit3}</div>
-                    <div>{L.enterpriseBenefit4}</div>
-                    <div>{L.enterpriseBenefit5}</div>
-                    <div>{L.enterpriseBenefit6}</div>
-                    <div>{L.enterpriseBenefit7}</div>
-                    <div>{L.enterpriseBenefit8}</div>
+                <div className="border-t border-slate-200 pt-6">
+                  <div className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">{L.memberBenefits}</div>
+                  <div className="text-sm text-slate-700 space-y-3">
+                    {[L.enterpriseBenefit1, L.enterpriseBenefit2, L.enterpriseBenefit3, L.enterpriseBenefit4, L.enterpriseBenefit5, L.enterpriseBenefit6, L.enterpriseBenefit7, L.enterpriseBenefit8].map((benefit, index) => (
+                      <div key={index} className="flex items-start">
+                        <span className="inline-block w-2 h-2 rounded-full bg-slate-400 mt-2 mr-2"></span>
+                        <span>{benefit}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
+              {/* 暂时隐藏选择套餐按钮 */}
               <button 
                 onClick={handleGetStarted}
-                className="w-full bg-slate-100 text-slate-900 py-3 px-4 rounded-lg hover:bg-slate-200 transition-colors text-sm font-medium mt-4"
+                className="hidden w-full bg-slate-100 text-slate-900 py-3 px-4 rounded-lg hover:bg-slate-200 transition-colors text-sm font-medium mt-4"
               >
                 {L.selectPlan}
               </button>
@@ -486,35 +481,34 @@ export default function ESGRiskAnalysisNew() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 2.0 }}
-              className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col"
+              className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col border border-slate-100"
             >
-              <div className="text-center mb-6">
-                <h4 className="text-lg font-medium text-slate-900 mb-2">{L.customPlan}</h4>
-                <div className="text-2xl font-light text-slate-900">{L.onDemand}</div>
-                <div className="text-sm text-slate-500 mt-1">{L.projectBased}</div>
+              <div className="text-center mb-8">
+                <h4 className="text-lg font-semibold text-slate-900 mb-3">{L.customPlan}</h4>
+                <div className="text-3xl font-light text-slate-900">{L.onDemand}</div>
+                <div className="text-sm text-slate-500 mt-2">{L.projectBased}</div>
               </div>
               <div className="mb-8 flex-1">
-                <div className="border-t border-slate-200 pt-4 mb-4">
-                  <div className="text-sm font-semibold text-slate-600 mb-2 uppercase tracking-wide">{L.perfectFor}</div>
-                  <div className="text-sm text-slate-700">{renderWithLineBreaks(L.customPerfectFor)}</div>
+                <div className="border-t border-slate-200 pt-6 mb-6">
+                  <div className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">{L.perfectFor}</div>
+                  <div className="text-sm text-slate-700 leading-relaxed">{renderWithLineBreaks(L.customPerfectFor)}</div>
                 </div>
-                <div className="border-t border-slate-200 pt-4">
-                  <div className="text-sm font-semibold text-slate-600 mb-2 uppercase tracking-wide">{L.serviceScope}</div>
-                  <div className="text-sm text-slate-700 space-y-2">
-                    <div>{L.customBenefit1}</div>
-                    <div>{L.customBenefit2}</div>
-                    <div>{L.customBenefit3}</div>
-                    <div>{L.customBenefit4}</div>
-                    <div>{L.customBenefit5}</div>
-                    <div>{L.customBenefit6}</div>
-                    <div>{L.customBenefit7}</div>
-                    <div>{L.customBenefit8}</div>
+                <div className="border-t border-slate-200 pt-6">
+                  <div className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">{L.serviceScope}</div>
+                  <div className="text-sm text-slate-700 space-y-3">
+                    {[L.customBenefit1, L.customBenefit2, L.customBenefit3, L.customBenefit4, L.customBenefit5, L.customBenefit6, L.customBenefit7, L.customBenefit8].map((benefit, index) => (
+                      <div key={index} className="flex items-start">
+                        <span className="inline-block w-2 h-2 rounded-full bg-slate-400 mt-2 mr-2"></span>
+                        <span>{benefit}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
+              {/* 暂时隐藏联系我们按钮 */}
               <button 
                 onClick={handleGetStarted}
-                className="w-full bg-slate-100 text-slate-900 py-3 px-4 rounded-lg hover:bg-slate-200 transition-colors text-sm font-medium mt-4"
+                className="hidden w-full bg-slate-100 text-slate-900 py-3 px-4 rounded-lg hover:bg-slate-200 transition-colors text-sm font-medium mt-4"
               >
                 {L.contactUs}
               </button>
@@ -537,7 +531,12 @@ export default function ESGRiskAnalysisNew() {
           </motion.div>
 
           <div className="mb-16">
-            <NewDemoPlayer />
+            <NewDemoPlayer 
+              step1Title={L.step1t}
+              step2Title={L.step2t}
+              step3Title={L.step3t}
+              onStep1Click={() => setIsContactOpen(true)}
+            />
           </div>
 
           {/* 注意：步骤卡片现在由NewDemoPlayer组件内部管理，这里不再需要显示 */}
