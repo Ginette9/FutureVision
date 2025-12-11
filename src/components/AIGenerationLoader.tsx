@@ -115,42 +115,48 @@ const AIGenerationLoader: React.FC<AIGenerationLoaderProps> = ({
     onCompleteRef.current = onComplete;
   }, [onComplete]);
 
+  // 辅助函数：安全获取翻译字符串
+  const getTranslation = (key: string): string => {
+    const value = t(key);
+    return typeof value === 'string' ? value : value[0] || '';
+  };
+
   // 步骤文案：不把 formData 作为依赖触发重跑，而是每次"渲染"读取最新值
   const steps = useMemo(
     () => [
       { 
-        title: t('aiLoader.step1.title'), 
-        description: t('aiLoader.step1.desc'), 
+        title: getTranslation('aiLoader.step1.title'), 
+        description: getTranslation('aiLoader.step1.desc'), 
         icon: '🤖' 
       },
       { 
-        title: t('aiLoader.step2.title'), 
-        description: t('aiLoader.step2.desc').replace('{country}', formData?.country?.name || t('aiLoader.targetCountry')), 
+        title: getTranslation('aiLoader.step2.title'), 
+        description: getTranslation('aiLoader.step2.desc').replace('{country}', formData?.country?.name || getTranslation('aiLoader.targetCountry')), 
         icon: '📋' 
       },
       { 
-        title: t('aiLoader.step3.title'), 
-        description: t('aiLoader.step3.desc'), 
+        title: getTranslation('aiLoader.step3.title'), 
+        description: getTranslation('aiLoader.step3.desc'), 
         icon: '🌍' 
       },
       { 
-        title: t('aiLoader.step4.title'), 
-        description: t('aiLoader.step4.desc').replace('{industry}', formData?.industry?.name || t('aiLoader.targetIndustry')), 
+        title: getTranslation('aiLoader.step4.title'), 
+        description: getTranslation('aiLoader.step4.desc').replace('{industry}', formData?.industry?.name || getTranslation('aiLoader.targetIndustry')), 
         icon: '🔗' 
       },
       { 
-        title: t('aiLoader.step5.title'), 
-        description: t('aiLoader.step5.desc'), 
+        title: getTranslation('aiLoader.step5.title'), 
+        description: getTranslation('aiLoader.step5.desc'), 
         icon: '📊' 
       },
       { 
-        title: t('aiLoader.step6.title'), 
-        description: t('aiLoader.step6.desc'), 
+        title: getTranslation('aiLoader.step6.title'), 
+        description: getTranslation('aiLoader.step6.desc'), 
         icon: '📄' 
       },
       { 
-        title: t('aiLoader.step7.title'), 
-        description: t('aiLoader.step7.desc'), 
+        title: getTranslation('aiLoader.step7.title'), 
+        description: getTranslation('aiLoader.step7.desc'), 
         icon: '✅' 
       },
     ],
@@ -160,16 +166,16 @@ const AIGenerationLoader: React.FC<AIGenerationLoaderProps> = ({
 
   const processingMessages = useMemo(
     () => [
-      t('aiLoader.analyzingRegulations') || '正在分析环境法规变化...',
-      t('aiLoader.evaluatingSocialImpact') || '评估社会影响指标...',
-      t('aiLoader.calculatingGovernanceRisk') || '计算治理风险系数...',
-      t('aiLoader.integratingSupplyChain') || '整合供应链数据...',
-      t('aiLoader.generatingRiskMatrix') || '生成风险评估矩阵...',
-      t('aiLoader.optimizingReport') || '优化报告结构...',
-      t('aiLoader.validatingData') || '验证数据准确性...',
-      t('aiLoader.applyingML') || '应用机器学习算法...',
-      t('aiLoader.generatingCharts') || '生成可视化图表...',
-      t('aiLoader.refiningRecommendations') || '完善风险建议...',
+      getTranslation('aiLoader.analyzingRegulations') || '正在分析环境法规变化...',
+      getTranslation('aiLoader.evaluatingSocialImpact') || '评估社会影响指标...',
+      getTranslation('aiLoader.calculatingGovernanceRisk') || '计算治理风险系数...',
+      getTranslation('aiLoader.integratingSupplyChain') || '整合供应链数据...',
+      getTranslation('aiLoader.generatingRiskMatrix') || '生成风险评估矩阵...',
+      getTranslation('aiLoader.optimizingReport') || '优化报告结构...',
+      getTranslation('aiLoader.validatingData') || '验证数据准确性...',
+      getTranslation('aiLoader.applyingML') || '应用机器学习算法...',
+      getTranslation('aiLoader.generatingCharts') || '生成可视化图表...',
+      getTranslation('aiLoader.refiningRecommendations') || '完善风险建议...',
     ],
     [t]
   );
@@ -248,7 +254,7 @@ const AIGenerationLoader: React.FC<AIGenerationLoaderProps> = ({
 
     const msgTimer = setInterval(() => {
       const msg = processingMessages[(Math.random() * processingMessages.length) | 0];
-      setCurrentMessage(msg);
+      setCurrentMessage(typeof msg === 'string' ? msg : msg[0]);
     }, 1100);
 
     // 初始触发一次打字
@@ -335,9 +341,9 @@ const AIGenerationLoader: React.FC<AIGenerationLoaderProps> = ({
   return (
     <div
       ref={containerRef}
-      className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8"
+      className="min-h-screen bg-gray-50 flex items-center justify-center px-4 sm:px-6 py-10 max-w-full overflow-x-hidden"
     >
-      <div className="w-[480px]">
+      <div className="w-full max-w-md mx-auto">
         {/* 头部 */}
         <div className="text-center mb-12">
           <div className="w-16 h-16 bg-white border border-gray-200 flex items-center justify-center mx-auto mb-8">
@@ -345,24 +351,24 @@ const AIGenerationLoader: React.FC<AIGenerationLoaderProps> = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
           </div>
-          <h1 className="text-3xl font-light text-gray-900 mb-4">{t('aiLoader.title')}</h1>
-          <p className="text-lg text-gray-600 mb-8">{t('aiLoader.subtitle')}</p>
+          <h1 className="text-2xl sm:text-3xl font-light text-gray-900 mb-4">{getTranslation('aiLoader.title')}</h1>
+          <p className="text-base sm:text-lg text-gray-600 mb-8">{getTranslation('aiLoader.subtitle')}</p>
 
           {formData && (
-            <div className="bg-white border border-gray-200 p-6 w-full break-words">
+            <div className="bg-white border border-gray-200 p-4 sm:p-6 w-full break-words">
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-500">{t('aiLoader.targetIndustry')}</span>
-                  <span className="text-gray-900 font-medium break-words break-all">{formData?.industry?.name || t('aiLoader.notSelected')}</span>
+                  <span className="text-gray-500">{getTranslation('aiLoader.targetIndustry')}</span>
+                  <span className="text-gray-900 font-medium break-words break-all">{formData?.industry?.name || getTranslation('aiLoader.notSelected')}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-500">{t('aiLoader.targetCountry')}</span>
-                  <span className="text-gray-900 font-medium break-words break-all">{formData?.country?.name || t('aiLoader.notSelected')}</span>
+                  <span className="text-gray-500">{getTranslation('aiLoader.targetCountry')}</span>
+                  <span className="text-gray-900 font-medium break-words break-all">{formData?.country?.name || getTranslation('aiLoader.notSelected')}</span>
                 </div>
                 {formData?.name && (
                   <div className="pt-3 border-t border-gray-100">
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-500">{t('aiLoader.clientInfo')}</span>
+                      <span className="text-gray-500">{getTranslation('aiLoader.clientInfo')}</span>
                       <span className="text-gray-900 font-medium break-words break-all">
                         {formData.name} - {formData.email}
                       </span>
@@ -375,9 +381,9 @@ const AIGenerationLoader: React.FC<AIGenerationLoaderProps> = ({
         </div>
 
         {/* 进度条 */}
-        <div className="mb-12">
+        <div className="mb-16">
           <div className="flex justify-between text-sm text-gray-600 mb-3">
-            <span className="font-medium">{t('aiLoader.progress')}</span>
+            <span className="font-medium">{getTranslation('aiLoader.progress')}</span>
             <span className="font-medium text-gray-900 tabular-nums" ref={percentElRef}>{percentText}%</span>
           </div>
           <div className="w-full bg-gray-200 h-2 overflow-hidden" ref={progressContainerRef}>
@@ -394,15 +400,15 @@ const AIGenerationLoader: React.FC<AIGenerationLoaderProps> = ({
 
         {/* 当前步骤 */}
         {currentStep < steps.length && (
-          <div className="mb-12">
-            <div className="bg-white border border-gray-200 p-8 w-full break-words">
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-gray-900 text-white flex items-center justify-center flex-shrink-0">
-                  <span className="text-xl">{steps[currentStep].icon}</span>
+          <div className="mb-8">
+            <div className="bg-white border border-gray-200 p-4 sm:p-6 w-full break-words min-h-[80px]">
+              <div className="flex items-start space-x-3">
+                <div className="w-10 h-10 bg-gray-900 text-white flex items-center justify-center flex-shrink-0">
+                  <span className="text-lg">{steps[currentStep].icon}</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-medium text-gray-900 mb-3">{steps[currentStep].title}</h3>
-                  <p className="text-gray-600 leading-relaxed break-words break-all">
+                  <h3 className="text-base font-medium text-gray-900 mb-2">{steps[currentStep].title}</h3>
+                  <p className="text-gray-600 leading-relaxed break-words break-all min-h-[40px]">
                     {typedText}
                     {isTyping && <span className="animate-pulse text-gray-900 ml-1">|</span>}
                   </p>
@@ -426,17 +432,17 @@ const AIGenerationLoader: React.FC<AIGenerationLoaderProps> = ({
         {/* 完成状态 */}
         {isCompleted && (
           <div className="mb-12">
-            <div className="bg-white border border-gray-200 p-8">
+            <div className="bg-white border border-gray-200 p-4 sm:p-8">
               <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-gray-900 text-white flex items-center justify-center flex-shrink-0">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-10 h-10 bg-gray-900 text-white flex items-center justify-center flex-shrink-0">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">{t('aiLoader.reportComplete')}</h3>
-                  <p className="text-gray-600">{t('aiLoader.presentingReport')}</p>
-                  <p className="text-sm text-gray-500 mt-2">{t('aiLoader.redirecting')}</p>
+                  <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">{getTranslation('aiLoader.reportComplete')}</h3>
+                  <p className="text-sm text-gray-600">{getTranslation('aiLoader.presentingReport')}</p>
+                  <p className="text-xs text-gray-500 mt-2">{getTranslation('aiLoader.redirecting')}</p>
                 </div>
               </div>
             </div>
@@ -448,21 +454,21 @@ const AIGenerationLoader: React.FC<AIGenerationLoaderProps> = ({
           {steps.map((step, index) => (
             <div
               key={index}
-              className={`flex items-center space-x-3 p-4 border transition-all duration-300 ${
+              className={`flex items-center space-x-3 p-3 border transition-all duration-300 ${
                 index < currentStep
                   ? 'bg-gray-50 border-gray-200'
                   : index === currentStep
-                  ? 'bg-white border-gray-300'
-                  : 'bg-white border-gray-100'
+                  ? 'bg-white border-gray-300 shadow-sm'
+                  : 'bg-white border-gray-200 opacity-50'
               }`}
             >
               <div
-                className={`w-6 h-6 flex items-center justify-center text-xs font-medium ${
+                className={`flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full border-2 ${
                   index < currentStep
-                    ? 'bg-gray-900 text-white'
+                    ? 'bg-gray-900 text-white border-gray-900'
                     : index === currentStep
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-gray-200 text-gray-500'
+                    ? 'bg-white text-gray-900 border-gray-900'
+                    : 'bg-white text-gray-400 border-gray-200'
                 }`}
               >
                 {index < currentStep ? (
@@ -473,12 +479,13 @@ const AIGenerationLoader: React.FC<AIGenerationLoaderProps> = ({
                   index + 1
                 )}
               </div>
-              <div className="flex-1">
-                <h4 className={`text-sm font-medium ${
+              <div className="flex-1 min-w-0">
+                <h4 className={`text-xs sm:text-sm font-medium ${
                   index === currentStep ? 'text-gray-900' : 'text-gray-600'
                 }`}>
                   {step.title}
                 </h4>
+                <p className="text-xs sm:text-sm text-gray-600 truncate">{step.description}</p>
               </div>
             </div>
           ))}
@@ -489,24 +496,24 @@ const AIGenerationLoader: React.FC<AIGenerationLoaderProps> = ({
           <div className="mb-8 p-4 bg-gray-100 border border-gray-200">
             <div className="flex items-center space-x-3">
               <div className="w-2 h-2 bg-gray-600 rounded-full animate-pulse"></div>
-              <p className="text-sm text-gray-700 font-medium">{currentMessage || t('aiLoader.processing')}</p>
+              <p className="text-sm text-gray-700 font-medium">{currentMessage || getTranslation('aiLoader.processing')}</p>
             </div>
           </div>
         )}
 
         {/* 底部信息 */}
         <div className="text-center">
-          <p className="text-sm text-gray-500 mb-6">{t('aiLoader.pleaseWait')}</p>
+          <p className="text-sm text-gray-500 mb-6">{getTranslation('aiLoader.pleaseWait')}</p>
 
           <div className="bg-white border border-gray-200 p-6 mb-4">
-            <h4 className="text-sm font-medium text-gray-900 mb-4 text-center">{t('aiLoader.processing')}</h4>
+            <h4 className="text-sm font-medium text-gray-900 mb-4 text-center">{getTranslation('aiLoader.processing')}</h4>
             <div className="grid grid-cols-2 gap-6 text-sm">
               <div className="text-center">
-                <p className="text-gray-500 mb-1">{t('aiLoader.analyzedDataPoints')}</p>
+                <p className="text-gray-500 mb-1">{getTranslation('aiLoader.analyzedDataPoints')}</p>
                 <p className="text-gray-900 font-light text-2xl">{dataPoints.toLocaleString()}</p>
               </div>
               <div className="text-center">
-                <p className="text-gray-500 mb-1">{t('aiLoader.processedItems')}</p>
+                <p className="text-gray-500 mb-1">{getTranslation('aiLoader.processedItems')}</p>
                 <p className="text-gray-900 font-light text-2xl">{processedItems.toLocaleString()}</p>
               </div>
             </div>
@@ -515,20 +522,20 @@ const AIGenerationLoader: React.FC<AIGenerationLoaderProps> = ({
           <div className="bg-gray-50 border border-gray-200 p-4">
             <div className="grid grid-cols-2 gap-4 text-xs">
               <div className="text-left">
-                <p className="font-medium text-gray-700">{t('aiLoader.analysisEngine')}</p>
-                <p className="text-gray-500">{t('aiLoader.gpt4Model')}</p>
+                <p className="font-medium text-gray-700">{getTranslation('aiLoader.analysisEngine')}</p>
+                <p className="text-gray-500">{getTranslation('aiLoader.gpt4Model')}</p>
               </div>
               <div className="text-left">
-                <p className="font-medium text-gray-700">{t('aiLoader.dataSource')}</p>
-                <p className="text-gray-500">{t('aiLoader.globalESGDatabase')}</p>
+                <p className="font-medium text-gray-700">{getTranslation('aiLoader.dataSource')}</p>
+                <p className="text-gray-500">{getTranslation('aiLoader.globalESGDatabase')}</p>
               </div>
               <div className="text-left">
-                <p className="font-medium text-gray-700">{t('aiLoader.updateTime')}</p>
+                <p className="font-medium text-gray-700">{getTranslation('aiLoader.updateTime')}</p>
                 <p className="text-gray-500">{new Date().toLocaleDateString()}</p>
               </div>
               <div className="text-left">
-                <p className="font-medium text-gray-700">{t('aiLoader.reportVersion')}</p>
-                <p className="text-gray-500">{t('aiLoader.v2.1.0')}</p>
+                <p className="font-medium text-gray-700">{getTranslation('aiLoader.reportVersion')}</p>
+                <p className="text-gray-500">{getTranslation('aiLoader.v2.1.0')}</p>
               </div>
             </div>
           </div>

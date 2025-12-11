@@ -18,7 +18,7 @@ export default function ESGRiskAnalysisNew() {
 
   const L = {
     hero1: language === 'en-US' ? 'Stop Paying Tuition Overseas' : language === 'zh-HK' ? '停止在海外交學費' : '停止在海外交学费',
-    hero2: language === 'en-US' ? 'Avoid failing beyond compliance on ESG risks' : language === 'zh-HK' ? '避免ESG風險層面合規卻失守' : '避免ESG风险层面合规却失守',
+    hero2: language === 'en-US' ? 'Avoid failing beyond compliance on ESG risks' : language === 'zh-HK' ? '避免海外工廠出現下一個「比亞迪巴西人權事件」\n避免營銷活動出現下一個「始祖鳥炸山事件」' : '避免海外工厂出现下一个「比亚迪巴西人权事件」\n避免营销活动出现下一个「始祖鸟炸山事件」',
     productSubtitle: language === 'en-US' ? 'AI-driven global ESG risk decision support system' : language === 'zh-HK' ? '人工智能驅動的全球ESG風險決策支持系統' : '人工智能驱动的全球ESG风险决策支持系统',
     vp1t: language === 'en-US' ? 'expensive local due diligence' : language === 'zh-HK' ? '高額在地化背調成本' : '高额在地化背调成本',
     vp1d: language === 'en-US' ? 'No more paying for' : language === 'zh-HK' ? '不再需要支付' : '不再需要支付',
@@ -61,27 +61,27 @@ export default function ESGRiskAnalysisNew() {
     nexusDesc: language === 'en-US' ? 'Global localized ESG risk management consulting suite, ensuring your business is secure, resilient and sustainable worldwide' : language === 'zh-HK' ? '全球在地化ESG風險管理諮詢服務套件，確保您的業務在全球安全、穩健、可持續' : '全球在地化ESG风险管理咨询服务套件，确保您的业务在全球安全、稳健、可持续',
     nexusList: (language === 'en-US'
       ? [
-          'Localized ESG risk assessment',
-          'ESG risk monitoring and alerts',
-          'Sustainability strategy execution and ESG governance building',
-          'Stakeholder engagement and relationship building',
+          'Global Country ESG Risk Radar',
+          'Human Rights & Social Risks, Supply Chain Due Diligence',
+          'Localized Stakeholder Communication and Relationship Building',
+          'Dispute, Crisis and Reputation Management',
           'ESG crisis planning and conflict response',
           'Ongoing ESG disclosure and communication'
         ]
       : language === 'zh-HK'
         ? [
-            '全球在地化ESG風險評估',
-            'ESG風險監控與告警',
-            '可持續發展戰略落地與ESG治理體系建設',
-            '在地化利害關係人溝通與關係搭建',
+            '全球國家ESG風險雷達',
+            '人權與社會風險、供應鏈盡職調查',
+            '在地化利益相關方溝通與關係搭建',
+            '爭議、危機與聲譽管理',
             'ESG危機預案與衝突應對',
             'ESG持續披露與溝通'
           ]
         : [
-            '全球在地化ESG风险评估',
-            'ESG风险监控与告警',
-            '可持续发展战略落地与ESG治理体系建设',
+            '全球国家ESG风险雷达',
+            '人权与社会风险、供应链尽职调查',
             '在地化利益相关方沟通与关系搭建',
+            '争议、危机与声誉管理',
             'ESG危机预案与冲突应对',
             'ESG持续披露与沟通'
           ]),
@@ -89,11 +89,12 @@ export default function ESGRiskAnalysisNew() {
     trustTitle: language === 'en-US' ? 'Trusted by These Leading Companies' : language === 'zh-HK' ? '已獲得這些知名企業信任' : '已获得这些知名企业信任',
     // 定价相关翻译
     priceTitle: language === 'en-US' ? 'Only 1% of the investment required' : language === 'zh-HK' ? '只需1%的投入' : '只需1%的投入',
+    singlePlan: language === 'en-US' ? 'Single Plan' : language === 'zh-HK' ? '單次版' : '单次版',
     basicPlan: language === 'en-US' ? 'Basic Plan' : language === 'zh-HK' ? '基礎版' : '基础版',
-    professionalPlan: language === 'en-US' ? 'Professional Plan' : language === 'zh-HK' ? '專業版' : '专业版',
-    enterprisePlan: language === 'en-US' ? 'Enterprise Plan' : language === 'zh-HK' ? '旗艦版' : '旗舰版',
+    professionalPlan: language === 'en-US' ? 'Flagship Plan' : language === 'zh-HK' ? '旗艦版' : '旗舰版', // 专业版改为旗舰版
     customPlan: language === 'en-US' ? 'Custom Plan' : language === 'zh-HK' ? '定制版' : '定制版',
     annualBilling: language === 'en-US' ? 'Billed Annually' : language === 'zh-HK' ? '按年計費' : '按年计费',
+    perUseBilling: language === 'en-US' ? 'Billed Per Use' : language === 'zh-HK' ? '按次計費' : '按次计费',
     projectBased: language === 'en-US' ? 'Project-based' : language === 'zh-HK' ? '項目制' : '项目制',
     onDemand: language === 'en-US' ? 'On-demand Billing' : language === 'zh-HK' ? '按需計費' : '按需计费',
     mostPopular: language === 'en-US' ? 'Most Popular' : language === 'zh-HK' ? '最受歡迎' : '最受欢迎',
@@ -102,33 +103,28 @@ export default function ESGRiskAnalysisNew() {
     serviceScope: language === 'en-US' ? 'Service Scope' : language === 'zh-HK' ? '服務範圍' : '服务范围',
     selectPlan: language === 'en-US' ? 'Select Plan' : language === 'zh-HK' ? '選擇套餐' : '选择套餐',
     contactUs: language === 'en-US' ? 'Contact Us' : language === 'zh-HK' ? '聯繫我們' : '联系我们',
+    // 单次版内容
+    singlePerfectFor: language === 'en-US' ? 'First-time overseas expansion/point investigation\nCross-border e-commerce/luxury manufacturing/foreign trade enterprises/pre-investment' : language === 'zh-HK' ? '首次出海/點狀盡調\n跨境電商/輕奢製造/外貿企業/投前' : '首次出海/点状尽调\n跨境电商/轻奢制造/外贸企业/投前',
+    singleBenefit1: language === 'en-US' ? 'Countries & Regions Covered: 1' : language === 'zh-HK' ? '覆蓋國家和地區 1個' : '覆盖国家和地区 1个',
+    singleBenefit2: language === 'en-US' ? 'Industries Covered: 1' : language === 'zh-HK' ? '覆蓋行業 1個' : '覆盖行业 1个',
+    singleBenefit3: language === 'en-US' ? 'PDF Export Support' : language === 'zh-HK' ? '支持導出PDF' : '支持导出PDF',
     // 基础版内容
-    basicPerfectFor: language === 'en-US' ? 'First-time overseas expansion\nCross-border e-commerce/luxury manufacturing/foreign trade enterprises' : language === 'zh-HK' ? '首次出海\n跨境電商/輕奢製造/外貿企業' : '首次出海\n跨境电商/轻奢制造/外贸企业',
+    basicPerfectFor: language === 'en-US' ? 'Multi-country layout listed companies/planned listed companies\nOverseas factories/offices' : language === 'zh-HK' ? '多國佈局上市/擬上市企業\n海外設廠/分支機構' : '多国布局上市/拟上市企业\n海外设厂/分支机构',
     basicBenefit1: language === 'en-US' ? 'Countries & Regions Covered: 20' : language === 'zh-HK' ? '覆蓋國家和地區 20個' : '覆盖国家和地区 20个',
     basicBenefit2: language === 'en-US' ? 'Industries Covered: 5' : language === 'zh-HK' ? '覆蓋行業 5個' : '覆盖行业 5个',
     basicBenefit3: language === 'en-US' ? 'Annual Reports Generated: 100' : language === 'zh-HK' ? '年度生成報告 100份' : '年度生成报告 100份',
     basicBenefit4: language === 'en-US' ? 'Quarterly Data Updates' : language === 'zh-HK' ? '按季度更新數據' : '按季度更新数据',
     basicBenefit5: language === 'en-US' ? 'PDF Export Support' : language === 'zh-HK' ? '支持導出PDF' : '支持导出PDF',
-    // 专业版内容
-    professionalPerfectFor: language === 'en-US' ? 'Multi-country layout listed companies/planned listed companies\nOverseas factories/offices' : language === 'zh-HK' ? '多國家佈局上市企業/擬上市企業\n海外設廠/辦事處' : '多国家布局上市企业/拟上市企业\n海外设厂/办事处',
+    // 旗舰版内容 (原专业版)
+    professionalPerfectFor: language === 'en-US' ? 'High compliance assets/high ESG regulatory pressure\nManufacturing/energy/\nmining/infrastructure enterprises\nOverseas M&A/park investment' : language === 'zh-HK' ? '高合規資產/高ESG監管壓力\n製造業/能源/礦業/基建企業\n海外並購/園區投資' : '高合规资产/高ESG监管压力\n制造/能源/矿业/基建企业\n海外并购/园区投资',
     professionalBenefit1: language === 'en-US' ? 'Countries & Regions Covered: 50' : language === 'zh-HK' ? '覆蓋國家和地區 50個' : '覆盖国家和地区 50个',
     professionalBenefit2: language === 'en-US' ? 'Industries Covered: 10' : language === 'zh-HK' ? '覆蓋行業 10個' : '覆盖行业 10个',
     professionalBenefit3: language === 'en-US' ? 'Annual Reports Generated: 500' : language === 'zh-HK' ? '年度生成報告 500份' : '年度生成报告 500份',
     professionalBenefit4: language === 'en-US' ? 'Monthly Data Updates' : language === 'zh-HK' ? '按月度更新數據' : '按月度更新数据',
     professionalBenefit5: language === 'en-US' ? 'PDF/Word Export Support' : language === 'zh-HK' ? '支持導出PDF/Word' : '支持导出PDF/Word',
     professionalBenefit6: language === 'en-US' ? 'Country Comparison Support' : language === 'zh-HK' ? '支持國家間對比' : '支持国家间对比',
-    // 旗舰版内容
-    enterprisePerfectFor: language === 'en-US' ? 'High-compliance assets/high ESG regulatory pressure\nManufacturing/energy/mining/infrastructure enterprises\nOverseas mergers & acquisitions/park investments' : language === 'zh-HK' ? '高合規資產/高ESG監管壓力\n製造業/能源/礦業/基建類企業\n海外並購/園區投資' : '高合规资产/高ESG监管压力\n制造业/能源/矿业/基建类企业\n海外并购/园区投资',
-    enterpriseBenefit1: language === 'en-US' ? 'Countries & Regions Covered: 252' : language === 'zh-HK' ? '覆蓋國家和地區 252個' : '覆盖国家和地区 252个',
-    enterpriseBenefit2: language === 'en-US' ? 'Industries Covered: 471' : language === 'zh-HK' ? '覆蓋行業 471個' : '覆盖行业 471个',
-    enterpriseBenefit3: language === 'en-US' ? 'Annual Reports Generated: Unlimited' : language === 'zh-HK' ? '年度生成報告 不限' : '年度生成报告 不限',
-    enterpriseBenefit4: language === 'en-US' ? 'Weekly Data Updates' : language === 'zh-HK' ? '按周更新數據' : '按周更新数据',
-    enterpriseBenefit5: language === 'en-US' ? 'PDF/Word Export Support' : language === 'zh-HK' ? '支持導出PDF/Word' : '支持导出PDF/Word',
-    enterpriseBenefit6: language === 'en-US' ? 'Country/Industry Comparison Support' : language === 'zh-HK' ? '支持國家/行業間對比' : '支持国家/行业间对比',
-    enterpriseBenefit7: language === 'en-US' ? 'API Interface Support' : language === 'zh-HK' ? '支持API接口' : '支持API接口',
-    enterpriseBenefit8: language === 'en-US' ? '4 Major Risk Alerts Annually' : language === 'zh-HK' ? '每年4次重大風險預警' : '每年4次重大风险预警',
     // 定制版内容
-    customPerfectFor: language === 'en-US' ? 'Fortune 500 enterprises\nFinancial institutions/investment banks/funds\nCentral enterprises/overseas M&A institutions' : language === 'zh-HK' ? '世界500強企業\n金融機構/投行/基金\n央企/海外並購機構' : '世界500强企业\n金融机构/投行/基金\n央企/海外并购机构',
+    customPerfectFor: language === 'en-US' ? 'Fortune 500 enterprises\nFinancial institutions/banks/funds\nCentral enterprises/overseas M&A institutions' : language === 'zh-HK' ? '世界500強企業\n金融機構/銀行/基金\n央企/海外並購機構' : '世界500强企业\n金融机构/银行/基金\n央企/海外并购机构',
     customBenefit1: language === 'en-US' ? 'Basic Plan Member Benefits Included' : language === 'zh-HK' ? '贈送基礎版會員權益' : '赠送基础版会员权益',
     customBenefit2: language === 'en-US' ? 'National-level Deep Customization' : language === 'zh-HK' ? '國家級深度定制' : '国家级深度定制',
     customBenefit3: language === 'en-US' ? 'Regional White Papers/Research Reports' : language === 'zh-HK' ? '區域白皮書/調研報告' : '区域白皮书/调研报告',
@@ -136,7 +132,9 @@ export default function ESGRiskAnalysisNew() {
     customBenefit5: language === 'en-US' ? 'ESG Monitoring and Audit System' : language === 'zh-HK' ? 'ESG監控與審核系統' : 'ESG监控与审核系统',
     customBenefit6: language === 'en-US' ? 'Unconventional ESG Risk Identification and Assessment' : language === 'zh-HK' ? '非傳統ESG風險識別與評估' : '非常规ESG风险识别与评估',
     customBenefit7: language === 'en-US' ? 'Supply Chain ESG Risk Control' : language === 'zh-HK' ? '供應鏈ESG風控' : '供应链ESG风控',
-    customBenefit8: language === 'en-US' ? 'Crisis Preparedness and Localized Disposal' : language === 'zh-HK' ? '危機預案與在地化處置' : '危机预案与在地化处置'
+    customBenefit8: language === 'en-US' ? 'Multi-language Support' : language === 'zh-HK' ? '多語言支持' : '多语言支持',
+    customBenefit9: language === 'en-US' ? '7x24-hour Exclusive Consultant' : language === 'zh-HK' ? '7x24小時專屬顧問' : '7x24小时专属顾问',
+    customBenefit10: language === 'en-US' ? 'In-depth Coverage' : language === 'zh-HK' ? '深度覆蓋' : '深度陪跑'
   };
 
   const handleGetStarted = () => {
@@ -182,8 +180,8 @@ export default function ESGRiskAnalysisNew() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-light text-slate-900 mb-6 sm:mb-8 tracking-tight leading-tight">{L.hero1}</h1>
-            <h2 className="text-lg sm:text-xl md:text-2xl font-light text-slate-600 mb-6">{L.hero2}</h2>
+            <h1 className={`${language === 'en-US' ? 'text-3xl sm:text-4xl md:text-5xl' : 'text-2xl sm:text-3xl md:text-4xl'} font-light text-slate-900 mb-6 sm:mb-8 tracking-tight leading-tight`}>{L.hero1}</h1>
+            <h2 className="text-base sm:text-lg md:text-xl font-light text-slate-600 mb-6">{renderWithLineBreaks(L.hero2)}</h2>
           </motion.div>
         </div>
       </section>
@@ -243,18 +241,70 @@ export default function ESGRiskAnalysisNew() {
             transition={{ duration: 0.6, delay: 0.6 }}
           >
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 sm:p-8 md:p-12">
-                <p className="text-lg sm:text-xl text-slate-600 text-center max-w-3xl mx-auto mb-6 md:mb-8 leading-relaxed">{language === 'en-US' ? 'One-stop solution to ensure your business is secure, resilient, and sustainable worldwide' : language === 'zh-HK' ? '一站式解決方案，確保您的業務在全球安全、穩健、可持續' : '一站式解决方案，确保您的业务在全球安全、稳健、可持续'}</p>
+                <p className={`${language === 'en-US' ? 'text-xl sm:text-2xl md:text-3xl' : 'text-lg sm:text-xl md:text-2xl'} font-light text-slate-900 text-center max-w-3xl mx-auto mb-6 md:mb-8 leading-relaxed`}>{language === 'en-US' ? 'One-stop solution to ensure your business is secure, resilient, and sustainable worldwide' : language === 'zh-HK' ? '一站式解決方案，確保您的業務在全球安全、穩健、可持續' : '一站式解决方案，确保您的业务在全球安全、稳健、可持续'}</p>
               <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
-                {L.nexusList.map((item, idx) => (
+                {L.nexusList.slice(0, 4).map((item, idx) => (
                   <div key={idx} className="flex items-start gap-2 bg-slate-50 rounded-lg p-3 sm:p-4">
                     <div className="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-slate-900 text-white text-xs sm:text-sm flex items-center justify-center">
                       {idx + 1}
                     </div>
-                    <p className="text-base sm:text-lg text-slate-700">{item}</p>
+                    <p className={`${language === 'en-US' ? 'text-sm sm:text-base' : 'text-base sm:text-lg'} text-slate-700`}>{item}</p>
                   </div>
                 ))}
               </div>
 
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Value Metrics Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1.5 }}
+            className="text-center mb-8"
+          >
+            <div className="inline-block px-8 py-4 rounded-full mb-8">
+              <h3 className={`${language === 'en-US' ? 'text-2xl sm:text-3xl md:text-4xl' : 'text-xl sm:text-2xl md:text-3xl'} font-light text-slate-900`}>{L.priceTitle}</h3>
+            </div>
+            <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-100 p-6 sm:p-8 md:p-10">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 md:gap-8">
+                <div className="text-center">
+                  <p className="text-sm text-slate-600 mb-2">{language === 'en-US' ? 'ESG Risk Assessment Time Reduction' : language === 'zh-HK' ? 'ESG風險評估時間減少' : 'ESG风险评估时间减少'}</p>
+                  <div className="text-2xl md:text-3xl font-light text-blue-600">92%</div>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm text-slate-600 mb-2">{language === 'en-US' ? 'Consultation & Labor Cost Reduction' : language === 'zh-HK' ? '諮詢與人力成本降低' : '咨询与人力成本降低'}</p>
+                  <div className="text-2xl md:text-3xl font-light text-blue-600">80%</div>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm text-slate-600 mb-2">{language === 'en-US' ? 'Due Diligence Efficiency Improvement' : language === 'zh-HK' ? '盡職調查效率提升' : '尽职调查效率提升'}</p>
+                  <div className="text-2xl md:text-3xl font-light text-blue-600">70%</div>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm text-slate-600 mb-2">{language === 'en-US' ? 'Compliance Response Speed Improvement' : language === 'zh-HK' ? '合規響應速度提升' : '合规响应速度提升'}</p>
+                  <div className="text-2xl md:text-3xl font-light text-blue-600">66%</div>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm text-slate-600 mb-2">{language === 'en-US' ? 'Risk Identification Leading Peers' : language === 'zh-HK' ? '風險識別領先同行' : '风险识别领先同行'}</p>
+                  <div className="text-2xl md:text-3xl font-light text-blue-600">9.6 {language === 'en-US' ? 'months' : '個月'}</div>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm text-slate-600 mb-2">{language === 'en-US' ? 'Supply Chain Disruption Risk Reduction' : language === 'zh-HK' ? '供應鏈中斷風險下降' : '供应链中断风险下降'}</p>
+                  <div className="text-2xl md:text-3xl font-light text-blue-600">45%</div>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm text-slate-600 mb-2">{language === 'en-US' ? 'ESG Conflict Incidents Reduction' : language === 'zh-HK' ? 'ESG衝突事件減少' : 'ESG冲突事件减少'}</p>
+                  <div className="text-2xl md:text-3xl font-light text-blue-600">76%</div>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm text-slate-600 mb-2">{language === 'en-US' ? 'Financial & Reputational Crisis Loss Reduction' : language === 'zh-HK' ? '財務與聲譽危機損失降低' : '财务与声誉危机损失降低'}</p>
+                  <div className="text-2xl md:text-3xl font-light text-blue-600">93%</div>
+                </div>
+              </div>
             </div>
           </motion.div>
         </div>
@@ -269,7 +319,7 @@ export default function ESGRiskAnalysisNew() {
             transition={{ duration: 0.6, delay: 0.6 }}
             className="text-center mb-16"
           >
-            <h3 className="text-xl sm:text-2xl md:text-3xl font-light text-slate-900 mb-6 sm:mb-8 md:mb-10 leading-relaxed">{L.coreStmt}</h3>
+            <h3 className={`${language === 'en-US' ? 'text-2xl sm:text-3xl md:text-4xl' : 'text-xl sm:text-2xl md:text-3xl'} font-light text-slate-900 mb-6 sm:mb-8 md:mb-10 leading-relaxed`}>{L.coreStmt}</h3>
             <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-100 p-6 sm:p-8 md:p-10">
               <div className="mb-4 md:mb-6">
                 <span className="inline-block text-xl sm:text-2xl md:text-2xl font-medium text-slate-900 tracking-tight">{L.coverage}</span>
@@ -347,6 +397,8 @@ export default function ESGRiskAnalysisNew() {
         </div>
       </section>
 
+
+
       {/* Pricing Plans Section */}
       <section className="py-24 bg-slate-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -356,17 +408,55 @@ export default function ESGRiskAnalysisNew() {
             transition={{ duration: 0.6, delay: 1.6 }}
             className="text-center mb-20"
           >
-            <h3 className="text-3xl md:text-4xl font-light text-slate-900 mb-8">{L.priceTitle}</h3>
+            <h3 className="text-3xl md:text-4xl font-light text-slate-900 mb-8">{language === 'en-US' ? 'Multiple Service Combinations, Support On-demand Configuration' : language === 'zh-HK' ? '多種服務組合，支持按需配置' : '多种服务组合，支持按需配置'}</h3>
           </motion.div>
 
           {/* Four Pricing Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* First Card - 基础版 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* First Card - 单次版 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.6 }}
+              className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col border border-slate-100"
+            >
+              <div className="text-center mb-8">
+                <h4 className="text-lg font-semibold text-slate-900 mb-3">{L.singlePlan}</h4>
+                <div className="text-4xl font-light text-slate-900">¥3,980</div>
+                <div className="text-sm text-slate-500 mt-2">{L.perUseBilling}</div>
+              </div>
+              <div className="mb-8 flex-1">
+                <div className="border-t border-slate-200 pt-6 mb-6">
+                  <div className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">{L.perfectFor}</div>
+                  <div className="text-sm text-slate-700 leading-relaxed">{renderWithLineBreaks(L.singlePerfectFor)}</div>
+                </div>
+                <div className="border-t border-slate-200 pt-6">
+                  <div className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">{L.memberBenefits}</div>
+                  <div className="text-sm text-slate-700 space-y-3">
+                    {[L.singleBenefit1, L.singleBenefit2, L.singleBenefit3].map((benefit, index) => (
+                      <div key={index} className="flex items-start">
+                        <span className="inline-block w-2 h-2 rounded-full bg-slate-400 mt-2 mr-2"></span>
+                        <span>{benefit}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              {/* 暂时隐藏选择套餐按钮 */}
+              <button 
+                onClick={handleGetStarted}
+                className="hidden w-full bg-slate-100 text-slate-900 py-3 px-4 rounded-lg hover:bg-slate-200 transition-colors text-sm font-medium mt-4"
+              >
+                {L.selectPlan}
+              </button>
+            </motion.div>
+
+            {/* Second Card - 基础版 */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 1.7 }}
-              className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col border border-slate-100"
+              className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col border border-slate-100"
             >
               <div className="text-center mb-8">
                 <h4 className="text-lg font-semibold text-slate-900 mb-3">{L.basicPlan}</h4>
@@ -399,12 +489,12 @@ export default function ESGRiskAnalysisNew() {
               </button>
             </motion.div>
 
-            {/* Second Card - 专业版 */}
+            {/* Third Card - 旗舰版 (原专业版) */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 1.8 }}
-              className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 shadow-lg border border-blue-200 flex flex-col relative transform hover:-translate-y-1 transition-all duration-300"
+              className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 shadow-lg border border-blue-200 flex flex-col relative transform hover:-translate-y-1 transition-all duration-300"
             >
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-xs px-5 py-1.5 rounded-full font-medium">{L.mostPopular}</div>
               <div className="text-center mb-8">
@@ -438,50 +528,12 @@ export default function ESGRiskAnalysisNew() {
               </button>
             </motion.div>
 
-            {/* Third Card - 旗舰版 */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.9 }}
-              className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col border border-slate-100"
-            >
-              <div className="text-center mb-8">
-                <h4 className="text-lg font-semibold text-slate-900 mb-3">{L.enterprisePlan}</h4>
-                <div className="text-4xl font-light text-slate-900">¥188,000</div>
-                <div className="text-sm text-slate-500 mt-2">{L.annualBilling}</div>
-              </div>
-              <div className="mb-8 flex-1">
-                <div className="border-t border-slate-200 pt-6 mb-6">
-                  <div className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">{L.perfectFor}</div>
-                  <div className="text-sm text-slate-700 leading-relaxed">{renderWithLineBreaks(L.enterprisePerfectFor)}</div>
-                </div>
-                <div className="border-t border-slate-200 pt-6">
-                  <div className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">{L.memberBenefits}</div>
-                  <div className="text-sm text-slate-700 space-y-3">
-                    {[L.enterpriseBenefit1, L.enterpriseBenefit2, L.enterpriseBenefit3, L.enterpriseBenefit4, L.enterpriseBenefit5, L.enterpriseBenefit6, L.enterpriseBenefit7, L.enterpriseBenefit8].map((benefit, index) => (
-                      <div key={index} className="flex items-start">
-                        <span className="inline-block w-2 h-2 rounded-full bg-slate-400 mt-2 mr-2"></span>
-                        <span>{benefit}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              {/* 暂时隐藏选择套餐按钮 */}
-              <button 
-                onClick={handleGetStarted}
-                className="hidden w-full bg-slate-100 text-slate-900 py-3 px-4 rounded-lg hover:bg-slate-200 transition-colors text-sm font-medium mt-4"
-              >
-                {L.selectPlan}
-              </button>
-            </motion.div>
-
             {/* Fourth Card - 定制版 */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 2.0 }}
-              className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col border border-slate-100"
+              transition={{ duration: 0.6, delay: 1.9 }}
+              className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col border border-slate-100"
             >
               <div className="text-center mb-8">
                 <h4 className="text-lg font-semibold text-slate-900 mb-3">{L.customPlan}</h4>
@@ -496,7 +548,7 @@ export default function ESGRiskAnalysisNew() {
                 <div className="border-t border-slate-200 pt-6">
                   <div className="text-xs font-semibold text-slate-600 mb-3 uppercase tracking-wider">{L.serviceScope}</div>
                   <div className="text-sm text-slate-700 space-y-3">
-                    {[L.customBenefit1, L.customBenefit2, L.customBenefit3, L.customBenefit4, L.customBenefit5, L.customBenefit6, L.customBenefit7, L.customBenefit8].map((benefit, index) => (
+                    {[L.customBenefit1, L.customBenefit2, L.customBenefit3, L.customBenefit4, L.customBenefit5, L.customBenefit6, L.customBenefit7, L.customBenefit8, L.customBenefit9, L.customBenefit10].map((benefit, index) => (
                       <div key={index} className="flex items-start">
                         <span className="inline-block w-2 h-2 rounded-full bg-slate-400 mt-2 mr-2"></span>
                         <span>{benefit}</span>

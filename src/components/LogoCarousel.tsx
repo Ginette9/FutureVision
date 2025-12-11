@@ -47,6 +47,10 @@ const LogoCarousel: React.FC<LogoCarouselProps> = ({  logos,  directions = ['rig
   const firstRowRef = useRef<HTMLDivElement>(null);
   const secondRowRef = useRef<HTMLDivElement>(null);
   
+  const resolvedLogos = (logos && logos.length > 0 ? logos : defaultLogos).map(l =>
+    typeof l === 'string' ? { src: l, alt: '' } : { src: l.src, alt: l.alt ?? '' }
+  );
+  
   useEffect(() => {
     let animationId: number;
     let firstRowPosition = 0;
@@ -100,20 +104,31 @@ const LogoCarousel: React.FC<LogoCarouselProps> = ({  logos,  directions = ['rig
       animationId = requestAnimationFrame(animate);
     };
     
-    // 延迟启动，确保DOM完全渲染
-    const timer = setTimeout(() => {
-      animationId = requestAnimationFrame(animate);
-    }, 100);
+    // 确保DOM完全渲染后再启动动画
+    const checkAndStartAnimation = () => {
+      const firstRow = firstRowRef.current;
+      const secondRow = secondRowRef.current;
+      
+      // 检查是否有足够的内容来滚动
+      const firstRowCanScroll = firstRow && (firstRow.scrollWidth - firstRow.clientWidth) > 10;
+      const secondRowCanScroll = secondRow && (secondRow.scrollWidth - secondRow.clientWidth) > 10;
+      
+      if ((firstRowCanScroll || secondRowCanScroll) || Date.now() - startTime > 2000) {
+        // 启动动画
+        animate();
+      } else {
+        // 继续检查
+        setTimeout(checkAndStartAnimation, 100);
+      }
+    };
+    
+    const startTime = Date.now();
+    checkAndStartAnimation();
     
     return () => {
-      clearTimeout(timer);
       cancelAnimationFrame(animationId);
     };
-  }, []);
-  
-  const resolvedLogos = (logos && logos.length > 0 ? logos : defaultLogos).map(l =>
-    typeof l === 'string' ? { src: l, alt: '' } : { src: l.src, alt: l.alt ?? '' }
-  );
+  }, [directions, itemWidth, itemHeight, gapClassName, speed, syncRows, resolvedLogos]);
   const firstRowLogos = resolvedLogos.slice(0, Math.ceil(resolvedLogos.length / 2));
   const secondRowLogos = resolvedLogos.slice(Math.ceil(resolvedLogos.length / 2));
   
