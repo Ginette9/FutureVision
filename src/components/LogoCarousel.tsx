@@ -129,6 +129,7 @@ const LogoCarousel: React.FC<LogoCarouselProps> = ({  logos,  directions = ['rig
       cancelAnimationFrame(animationId);
     };
   }, [directions, itemWidth, itemHeight, gapClassName, speed, syncRows, resolvedLogos]);
+  // 将logo分为两行
   const firstRowLogos = resolvedLogos.slice(0, Math.ceil(resolvedLogos.length / 2));
   const secondRowLogos = resolvedLogos.slice(Math.ceil(resolvedLogos.length / 2));
   

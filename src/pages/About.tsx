@@ -163,25 +163,25 @@ export default function About() {
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20"
       >
         <div className="bg-gray-50 p-12">
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
+          <div className="grid lg:grid-cols-2 gap-12">
             {/* 左侧：上下两个块 */}
-            <div className="space-y-8">
-              <div className="bg-white p-8 border border-gray-200">
-                <h3 className="text-xl font-medium text-gray-900 mb-4">{labels.mission}</h3>
-                <p className="text-lg text-gray-700 leading-relaxed">{labels.missionDesc}</p>
+            <div className="space-y-6">
+              <div className="bg-white p-6 border border-gray-200 flex flex-col">
+                <h3 className="text-lg font-medium text-gray-900 mb-3">{labels.mission}</h3>
+                <p className="text-gray-700 text-base leading-relaxed flex-1">{labels.missionDesc}</p>
               </div>
-              <div className="bg-white p-8 border border-gray-200">
-                <h3 className="text-xl font-medium text-gray-900 mb-4">{labels.believe}</h3>
-                <div className="space-y-3">
+              <div className="bg-white p-6 border border-gray-200 flex flex-col">
+                <h3 className="text-lg font-medium text-gray-900 mb-3">{labels.believe}</h3>
+                <div className="space-y-2 flex-1">
                   <p className="text-gray-700 text-base leading-relaxed">{labels.believe1}</p>
                   <p className="text-gray-700 text-base leading-relaxed">{labels.believe2}</p>
                 </div>
               </div>
             </div>
             {/* 右侧：一个块 */}
-            <div className="bg-white p-8 border border-gray-200">
-              <h3 className="text-xl font-medium text-gray-900 mb-4">{labels.commit}</h3>
-              <div className="space-y-3">
+            <div className="bg-white p-6 border border-gray-200 flex flex-col justify-around">
+              <h3 className="text-lg font-medium text-gray-900">{labels.commit}</h3>
+              <div className="space-y-4">
                 <p className="text-gray-700 text-base leading-relaxed">{labels.commit1}</p>
                 <p className="text-gray-700 text-base leading-relaxed">{labels.commit2}</p>
               </div>
@@ -236,37 +236,41 @@ export default function About() {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">{labels.teamDesc}</p>
         </div>
         {/* 顾问毕业院校 */}
-        <div className="bg-white p-6 md:p-8 mb-12">
-          <h3 className="text-lg md:text-xl font-medium text-gray-900 mb-4 md:mb-6">{labels.gradTitle}</h3>
-          <LogoCarousel
-            logos={universityLogos}
-            directions={["right", "right"]}
-            variant="card"
-            boxed
-            syncRows
-            itemWidth={120}
-            itemHeight={72}
-            gapClassName="gap-6 md:gap-8"
-            imageClassName="max-w-full max-h-full object-contain"
-            speed={1.2}
-          />
+        <div className="bg-white p-6 md:p-8 mb-8">
+          <h3 className="text-lg md:text-xl font-medium text-gray-900 mb-2 md:mb-3">{labels.gradTitle}</h3>
+          <div className="mt-4 md:mt-6">
+            <LogoCarousel
+              logos={universityLogos}
+              directions={["right", "right"]}
+              variant="card"
+              boxed
+              syncRows
+              itemWidth={90}
+              itemHeight={54}
+              gapClassName="gap-4 md:gap-6"
+              imageClassName="max-w-full max-h-full object-contain"
+              speed={1.2}
+            />
+          </div>
         </div>
 
         {/* 顾问职业经历 */}
         <div className="bg-white p-6 md:p-8 mb-12">
-          <h3 className="text-lg md:text-xl font-medium text-gray-900 mb-4 md:mb-6">{labels.expTitle}</h3>
-          <LogoCarousel
-            logos={companyLogos}
-            directions={["right", "right"]}
-            variant="card"
-            boxed
-            syncRows
-            itemWidth={120}
-            itemHeight={72}
-            gapClassName="gap-6 md:gap-8"
-            imageClassName="max-w-full max-h-full object-contain"
-            speed={1.2}
-          />
+          <h3 className="text-lg md:text-xl font-medium text-gray-900 mb-2 md:mb-3">{labels.expTitle}</h3>
+          <div className="mt-4 md:mt-6">
+            <LogoCarousel
+              logos={companyLogos}
+              directions={["right", "right"]}
+              variant="card"
+              boxed
+              syncRows
+              itemWidth={90}
+              itemHeight={54}
+              gapClassName="gap-4 md:gap-6"
+              imageClassName="max-w-full max-h-full object-contain"
+              speed={1.2}
+            />
+          </div>
         </div>
 
         {/* 团队荣誉（白底黑字自定义排版） */}

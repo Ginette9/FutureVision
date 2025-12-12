@@ -18,7 +18,7 @@ export default function ESGRiskAnalysisNew() {
 
   const L = {
     hero1: language === 'en-US' ? 'Stop Paying Tuition Overseas' : language === 'zh-HK' ? '停止在海外交學費' : '停止在海外交学费',
-    hero2: language === 'en-US' ? 'Avoid failing beyond compliance on ESG risks' : language === 'zh-HK' ? '避免海外工廠出現下一個「比亞迪巴西人權事件」\n避免營銷活動出現下一個「始祖鳥炸山事件」' : '避免海外工厂出现下一个「比亚迪巴西人权事件」\n避免营销活动出现下一个「始祖鸟炸山事件」',
+    hero2: language === 'en-US' ? 'Avoid the next BYD Brazil Human Rights Incident at overseas factories\nAvoid the next Arc\'teryx Mountain Bombing Incident in marketing campaigns' : language === 'zh-HK' ? '避免海外工廠出現下一個「比亞迪巴西人權事件」\n避免營銷活動出現下一個「始祖鳥炸山事件」' : '避免海外工厂出现下一个「比亚迪巴西人权事件」\n避免营销活动出现下一个「始祖鸟炸山事件」',
     productSubtitle: language === 'en-US' ? 'AI-driven global ESG risk decision support system' : language === 'zh-HK' ? '人工智能驅動的全球ESG風險決策支持系統' : '人工智能驱动的全球ESG风险决策支持系统',
     vp1t: language === 'en-US' ? 'expensive local due diligence' : language === 'zh-HK' ? '高額在地化背調成本' : '高额在地化背调成本',
     vp1d: language === 'en-US' ? 'No more paying for' : language === 'zh-HK' ? '不再需要支付' : '不再需要支付',
