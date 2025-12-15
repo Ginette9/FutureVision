@@ -13,13 +13,15 @@ interface NewDemoPlayerProps {
   step2Title?: string
   step3Title?: string
   onStep1Click?: () => void
+  language?: string
 }
 
 const NewDemoPlayer: React.FC<NewDemoPlayerProps> = ({ 
   step1Title = '选择行业和地区', 
   step2Title = '输入信息生成报告', 
   step3Title = 'AI智能分析',
-  onStep1Click 
+  onStep1Click,
+  language = 'zh-CN'
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [currentTime, setCurrentTime] = useState(0)
@@ -28,7 +30,12 @@ const NewDemoPlayer: React.FC<NewDemoPlayerProps> = ({
   const [showCustomizeAd, setShowCustomizeAd] = useState(false)
   
   // 定义分步播放的步骤
-  const steps: Step[] = [
+  const steps: Step[] = language === 'en-US' ? [
+    { id: 1, title: step1Title, startTime: 0, endTime: 0.1 }, // 极短时间，避免显示
+    { id: 2, title: step2Title, startTime: 0, endTime: 23 },
+    { id: 3, title: step3Title, startTime: 23, endTime: 43 },
+    { id: 4, title: 'View Full Report', startTime: 43, endTime: 3600 } // 使用足够大的数字表示视频结束
+  ] : [
     { id: 1, title: step1Title, startTime: 0, endTime: 6 },
     { id: 2, title: step2Title, startTime: 6, endTime: 26 },
     { id: 3, title: step3Title, startTime: 26, endTime: 46 },
@@ -115,7 +122,7 @@ const NewDemoPlayer: React.FC<NewDemoPlayerProps> = ({
           <video
             ref={videoRef}
             className="w-full h-full aspect-video object-contain"
-            src="/mock_demo_video.mov"
+            src={language === 'en-US' ? '/mock_demo_video_EN.mov' : '/mock_demo_video.mov'}
             loop
             muted
             playsInline

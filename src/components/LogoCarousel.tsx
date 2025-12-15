@@ -41,9 +41,10 @@ interface LogoCarouselProps {
   speed?: number;
   boxed?: boolean;
   syncRows?: boolean;
+  singleRow?: boolean;
 }
 
-const LogoCarousel: React.FC<LogoCarouselProps> = ({  logos,  directions = ['right', 'left'],  variant = 'card',  itemWidth = 80,  itemHeight = 50,  gapClassName = 'gap-3 sm:gap-4 md:gap-5',  imageClassName = 'max-w-full max-h-full object-contain',  speed = 1.0,  boxed = false,  syncRows = false,}) => {
+const LogoCarousel: React.FC<LogoCarouselProps> = ({  logos,  directions = ['right', 'left'],  variant = 'card',  itemWidth = 80,  itemHeight = 50,  gapClassName = 'gap-3 sm:gap-4 md:gap-5',  imageClassName = 'max-w-full max-h-full object-contain',  speed = 1.0,  boxed = false,  syncRows = false,  singleRow = false,}) => {
   const firstRowRef = useRef<HTMLDivElement>(null);
   const secondRowRef = useRef<HTMLDivElement>(null);
   
@@ -129,9 +130,9 @@ const LogoCarousel: React.FC<LogoCarouselProps> = ({  logos,  directions = ['rig
       cancelAnimationFrame(animationId);
     };
   }, [directions, itemWidth, itemHeight, gapClassName, speed, syncRows, resolvedLogos]);
-  // 将logo分为两行
-  const firstRowLogos = resolvedLogos.slice(0, Math.ceil(resolvedLogos.length / 2));
-  const secondRowLogos = resolvedLogos.slice(Math.ceil(resolvedLogos.length / 2));
+  // 根据singleRow属性决定是否只显示一行
+  const firstRowLogos = singleRow ? resolvedLogos : resolvedLogos.slice(0, Math.ceil(resolvedLogos.length / 2));
+  const secondRowLogos = singleRow ? [] : resolvedLogos.slice(Math.ceil(resolvedLogos.length / 2));
   
   // 创建双倍数组以实现无缝滚动
   const doubleFirstRow = [...firstRowLogos, ...firstRowLogos];
@@ -170,7 +171,7 @@ const LogoCarousel: React.FC<LogoCarouselProps> = ({  logos,  directions = ['rig
     </div>
   );
   
-  return (    <div className="w-full space-y-3 px-2 sm:px-4">      <LogoRow logos={doubleFirstRow} scrollRef={firstRowRef} />      <LogoRow logos={doubleSecondRow} scrollRef={secondRowRef} />    </div>  );
+  return (    <div className="w-full space-y-3 px-2 sm:px-4">      <LogoRow logos={doubleFirstRow} scrollRef={firstRowRef} />      {!singleRow && <LogoRow logos={doubleSecondRow} scrollRef={secondRowRef} />}    </div>  );
 };
 
 export default LogoCarousel;

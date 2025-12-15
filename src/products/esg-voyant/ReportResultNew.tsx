@@ -226,7 +226,11 @@ function ReportResultNew() {
   if (shouldShowLoader && (!dataLoaded || isLoading)) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <AIGenerationLoader formData={formData} onComplete={() => setIsLoading(false)} />
+        <AIGenerationLoader formData={formData} onComplete={() => {
+          setIsLoading(false);
+          // 滚动到页面顶部
+          window.scrollTo(0, 0);
+        }} />
       </div>
     );
   }

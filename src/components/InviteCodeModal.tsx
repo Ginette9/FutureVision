@@ -15,11 +15,12 @@ export default function InviteCodeModal({ isOpen, onClose, onSuccess, onCodeChan
   const [isVerifying, setIsVerifying] = useState(false);
   const [verifyStatus, setVerifyStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [showRedemptionModal, setShowRedemptionModal] = useState(false);
   const { language } = useLanguage();
 
   const labels = {
     title: language === 'en-US' ? 'Enter Invitation Code' : language === 'zh-HK' ? '輸入邀請碼' : '输入邀请码',
-    description: language === 'en-US' ? 'Please enter your invitation code to access the full ESG report generation feature.' : language === 'zh-HK' ? '請輸入您的邀請碼以訪問完整的ESG報告生成功能。' : '请输入您的邀请码以访问完整的ESG报告生成功能。',
+    description: language === 'en-US' ? 'Please enter your invitation code to access the full ESG report generation feature.' : language === 'zh-HK' ? '請輸入您的邀請碼以訪問完整的ESG報告。' : '请输入您的邀请码以访问完整的ESG报告。',
     noCode: language === 'en-US' ? 'Don\'t have an invitation code?' : language === 'zh-HK' ? '沒有邀請碼？' : '没有邀请码？',
     contactAdvisor: language === 'en-US' ? 'Contact Advisor' : language === 'zh-HK' ? '聯繫顧問' : '联系顾问',
     codeLabel: language === 'en-US' ? 'Invitation Code *' : language === 'zh-HK' ? '邀請碼 *' : '邀请码 *',
@@ -113,10 +114,9 @@ export default function InviteCodeModal({ isOpen, onClose, onSuccess, onCodeChan
           console.error('Error in analytics recording:', error);
         }
 
-        // 3秒后自动关闭弹窗并跳转到表单
+        // 显示核销弹窗
         setTimeout(() => {
-          onSuccess();
-          onClose();
+          setShowRedemptionModal(true);
         }, 1500);
       } else {
         setVerifyStatus('error');
@@ -237,6 +237,110 @@ export default function InviteCodeModal({ isOpen, onClose, onSuccess, onCodeChan
               </div>
             </motion.div>
           </div>
+
+          {/* 核销弹窗 */}
+          <AnimatePresence>
+            {showRedemptionModal && (
+              <div className="fixed inset-0 z-50 overflow-y-auto">
+                {/* 背景遮罩 */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
+                  onClick={() => setShowRedemptionModal(false)}
+                />
+                
+                {/* 弹窗内容 */}
+                <div className="flex min-h-full items-center justify-center p-4">
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    className="relative w-full max-w-md bg-white border border-gray-200 rounded-lg shadow-lg"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {/* 关闭按钮 */}
+                    <button
+                      onClick={() => setShowRedemptionModal(false)}
+                      className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+
+                    {/* 核销内容 */}
+                    <div className="p-8">
+                      {/* 成功图标 */}
+                      <motion.div
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.1, duration: 0.3 }}
+                        className="flex justify-center mb-6"
+                      >
+                        <div className="bg-white border-2 border-gray-300 p-3 rounded-full">
+                          <svg className="h-8 w-8 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                      </motion.div>
+
+                      <h2 className="text-xl font-light text-gray-900 mb-2 text-center">
+                        {language === 'en-US' ? 'Invitation Code Redemption' : language === 'zh-HK' ? '邀請碼核銷' : '邀请码核销'}
+                      </h2>
+                      <p className="text-gray-600 text-center mb-8 text-sm">
+                        {language === 'en-US' ? 'Your invitation code has been successfully verified' : language === 'zh-HK' ? '您的邀請碼已成功驗證' : '您的邀请码已成功验证'}
+                      </p>
+
+                      {/* 价值信息卡片 */}
+                      <motion.div
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.2, duration: 0.3 }}
+                        className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-8"
+                      >
+                        <div className="flex flex-col items-center text-center">
+                          <p className="text-gray-500 text-sm font-medium mb-2">
+                            {language === 'en-US' ? 'VALUE' : language === 'zh-HK' ? '價值' : '价值'}
+                          </p>
+                          <div className="flex items-baseline justify-center space-x-1">
+                            <span className="text-3xl font-bold text-gray-900">
+                              {language === 'en-US' ? '$' : ''}3,980
+                            </span>
+                            <span className="text-gray-600 font-medium">
+                              {language === 'en-US' ? '' : language === 'zh-HK' ? '元' : '元'}
+                            </span>
+                          </div>
+                          <p className="text-gray-700 mt-4 leading-relaxed">
+                            {language === 'en-US' ? 'You can redeem this code for one free ESG report generation.' : language === 'zh-HK' ? '您可使用此邀請碼免費獲得一份ESG報告。' : '您可使用此邀请码免费获得一份ESG报告。'}
+                          </p>
+                        </div>
+                      </motion.div>
+
+                      {/* 确认按钮 */}
+                      <motion.button
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.3, duration: 0.3 }}
+                        whileHover={{ backgroundColor: '#1f2937' }}
+                        whileTap={{ scale: 0.99 }}
+                        onClick={() => {
+                          setShowRedemptionModal(false);
+                          onSuccess();
+                          onClose();
+                        }}
+                        className="w-full bg-gray-900 text-white py-3 px-4 font-medium rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-700 transition-colors duration-300"
+                      >
+                        {language === 'en-US' ? 'Confirm & Access' : language === 'zh-HK' ? '確認並訪問' : '确认并访问'}
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
+            )}
+          </AnimatePresence>
         </div>
       )}
     </AnimatePresence>

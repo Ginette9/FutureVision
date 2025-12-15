@@ -18,7 +18,8 @@ export default function ESGRiskAnalysisNew() {
 
   const L = {
     hero1: language === 'en-US' ? 'Stop Paying Tuition Overseas' : language === 'zh-HK' ? '停止在海外交學費' : '停止在海外交学费',
-    hero2: language === 'en-US' ? 'Avoid the next BYD Brazil Human Rights Incident at overseas factories\nAvoid the next Arc\'teryx Mountain Bombing Incident in marketing campaigns' : language === 'zh-HK' ? '避免海外工廠出現下一個「比亞迪巴西人權事件」\n避免營銷活動出現下一個「始祖鳥炸山事件」' : '避免海外工厂出现下一个「比亚迪巴西人权事件」\n避免营销活动出现下一个「始祖鸟炸山事件」',
+    hero3: language === 'en-US' ? 'Save 99% of time and costs in just 5 minutes' : language === 'zh-HK' ? '只要5分鐘，就可以節省99%的時間與費用' : '只要5分钟，就可以节省99%的时间与费用',
+    hero2: language === 'en-US' ? 'Avoid the next BYD Brazil Human Rights Incident\nAvoid the next Arc\'teryx Mountain Bombing Incident' : language === 'zh-HK' ? '避免下一個「比亞迪巴西人權事件」\n避免下一個「始祖鳥炸山事件」' : '避免下一个「比亚迪巴西人权事件」\n避免下一个「始祖鸟炸山事件」',
     productSubtitle: language === 'en-US' ? 'AI-driven global ESG risk decision support system' : language === 'zh-HK' ? '人工智能驅動的全球ESG風險決策支持系統' : '人工智能驱动的全球ESG风险决策支持系统',
     vp1t: language === 'en-US' ? 'expensive local due diligence' : language === 'zh-HK' ? '高額在地化背調成本' : '高额在地化背调成本',
     vp1d: language === 'en-US' ? 'No more paying for' : language === 'zh-HK' ? '不再需要支付' : '不再需要支付',
@@ -104,7 +105,7 @@ export default function ESGRiskAnalysisNew() {
     selectPlan: language === 'en-US' ? 'Select Plan' : language === 'zh-HK' ? '選擇套餐' : '选择套餐',
     contactUs: language === 'en-US' ? 'Contact Us' : language === 'zh-HK' ? '聯繫我們' : '联系我们',
     // 单次版内容
-    singlePerfectFor: language === 'en-US' ? 'First-time overseas expansion/point investigation\nCross-border e-commerce/luxury manufacturing/foreign trade enterprises/pre-investment' : language === 'zh-HK' ? '首次出海/點狀盡調\n跨境電商/輕奢製造/外貿企業/投前' : '首次出海/点状尽调\n跨境电商/轻奢制造/外贸企业/投前',
+    singlePerfectFor: language === 'en-US' ? 'First-time overseas expansion/point investigation\nCross-border e-commerce/light industry/foreign trade/pre-investment' : language === 'zh-HK' ? '首次出海/點狀盡調\n跨境電商/輕工業/外貿/投前' : '首次出海/点状尽调\n跨境电商/轻工业/外贸/投前',
     singleBenefit1: language === 'en-US' ? 'Countries & Regions Covered: 1' : language === 'zh-HK' ? '覆蓋國家和地區 1個' : '覆盖国家和地区 1个',
     singleBenefit2: language === 'en-US' ? 'Industries Covered: 1' : language === 'zh-HK' ? '覆蓋行業 1個' : '覆盖行业 1个',
     singleBenefit3: language === 'en-US' ? 'PDF Export Support' : language === 'zh-HK' ? '支持導出PDF' : '支持导出PDF',
@@ -180,8 +181,9 @@ export default function ESGRiskAnalysisNew() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className={`${language === 'en-US' ? 'text-3xl sm:text-4xl md:text-5xl' : 'text-2xl sm:text-3xl md:text-4xl'} font-light text-slate-900 mb-6 sm:mb-8 tracking-tight leading-tight`}>{L.hero1}</h1>
-            <h2 className="text-base sm:text-lg md:text-xl font-light text-slate-600 mb-6">{renderWithLineBreaks(L.hero2)}</h2>
+            <h1 className={`${language === 'en-US' ? 'text-3xl sm:text-4xl md:text-5xl' : 'text-xl sm:text-3xl md:text-4xl'} font-light text-slate-900 mb-3 sm:mb-4 tracking-tight leading-tight`}>{L.hero1}</h1>
+            <h3 className="text-base sm:text-lg md:text-xl font-medium text-slate-700 mb-5 sm:mb-6">{L.hero3}</h3>
+            <h2 className="text-sm sm:text-base md:text-lg font-light text-slate-600 mb-6 sm:mb-8">{renderWithLineBreaks(L.hero2)}</h2>
           </motion.div>
         </div>
       </section>
@@ -195,9 +197,15 @@ export default function ESGRiskAnalysisNew() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-center mb-16"
           >
-            <h3 className="text-3xl sm:text-4xl md:text-5xl font-light text-slate-900 mb-4">
-              ESGVoyant
-            </h3>
+            <div className="logo-container mb-6">
+              <h3 className="text-3xl sm:text-4xl md:text-5xl font-elegant text-gradient-gold">
+                ESGVoyant
+              </h3>
+              <div className="logo-divider"></div>
+              <div className="text-sm sm:text-base font-subtitle text-gradient-subtitle">
+                AI-Powered Insights
+              </div>
+            </div>
             <p className="text-lg sm:text-xl text-slate-600 mb-3 leading-relaxed">{L.productSubtitle}</p>
           </motion.div>
 
@@ -588,6 +596,7 @@ export default function ESGRiskAnalysisNew() {
               step2Title={L.step2t}
               step3Title={L.step3t}
               onStep1Click={() => setIsContactOpen(true)}
+              language={language}
             />
           </div>
 
@@ -622,7 +631,7 @@ export default function ESGRiskAnalysisNew() {
           >
             <h3 className="text-xl sm:text-2xl font-light text-slate-900 mb-4">{L.trustTitle}</h3>
           </motion.div>
-          <LogoCarousel />
+          <LogoCarousel singleRow />
         </div>
       </section>
 

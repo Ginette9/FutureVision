@@ -2,6 +2,92 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 引入花体字体 */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
+/* ESGVoyant Logo型花体文字标题 */
+@layer utilities {
+  /* 主标题花体 */
+  .font-elegant {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-style: italic;
+    line-height: 1.1;
+  }
+  
+  /* 副标题字体 */
+  .font-subtitle {
+    font-family: 'Inter var', system-ui, sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    line-height: 1.2;
+  }
+  
+  /* 主标题渐变效果 - 金色/黑色渐变 */
+  .text-gradient-gold {
+    background: linear-gradient(135deg, 
+      #000000 0%, 
+      #1a1a1a 30%, 
+      #8b5a2b 50%, 
+      #d4af37 60%, 
+      #3a3a3a 80%, 
+      #000000 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  /* 副标题渐变效果 - 深灰色系 */
+  .text-gradient-subtitle {
+    background: linear-gradient(135deg, 
+      #666666 0%, 
+      #333333 50%, 
+      #666666 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  /* Logo容器样式 */
+  .logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* 装饰性线条 */
+  .logo-divider {
+    width: 70px;
+    height: 2px;
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      #d4af37 50%, 
+      transparent 100%
+    );
+    margin: 12px 0;
+  }
+  
+  /* 响应式调整 */
+  @media (max-width: 640px) {
+    .logo-divider {
+      width: 50px;
+      margin: 8px 0;
+    }
+    
+    .font-subtitle {
+      letter-spacing: 0.12em;
+    }
+  }
+}
+
 /* 强制重置封面和封底的所有可能影响 */
 [data-print-page="cover"], [data-print-page="back"] {
   margin: 0 !important;

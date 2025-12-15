@@ -239,9 +239,15 @@ export default function ESGRiskAnalysis() {
        transition={{ duration: 0.8 }}
        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16"
      >
-       <h1 className="text-4xl lg:text-5xl font-light text-gray-900 mb-6">
-         ESGVoyant
-       </h1>
+       <div className="logo-container mb-8">
+         <h1 className="text-4xl lg:text-5xl font-elegant text-gradient-gold">
+           ESGVoyant
+         </h1>
+         <div className="logo-divider"></div>
+         <div className="text-sm sm:text-base font-subtitle text-gradient-subtitle">
+           AI-Powered Insights
+         </div>
+       </div>
       <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8">
         {language === 'en-US' ? (
           <>

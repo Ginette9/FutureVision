@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import AIGenerationLoader from '@/components/AIGenerationLoader';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 import { parseReportHtml, ReportSection } from './ReportResult/parseReportHtml';
 import Toc from './ReportResult/Toc';
@@ -67,6 +68,8 @@ function ReportResult() {
   const [formData, setFormData] = useState<any>(null);
   const [shouldShowLoader, setShouldShowLoader] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { language } = useLanguage();
 
   useEffect(() => {
     const savedData = localStorage.getItem('riskAnalysisData');
@@ -118,7 +121,11 @@ function ReportResult() {
   if (shouldShowLoader && (!dataLoaded || isLoading)) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <AIGenerationLoader formData={formData} onComplete={() => setIsLoading(false)} />
+        <AIGenerationLoader formData={formData} onComplete={() => {
+          setIsLoading(false);
+          // 滚动到页面顶部
+          window.scrollTo(0, 0);
+        }} />
       </div>
     );
   }
