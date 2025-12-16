@@ -78,13 +78,14 @@ export default function InviteCodeModal({ isOpen, onClose, onSuccess, onCodeChan
       for (const ep of endpoints) {
         try {
           const response = await fetch(ep, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              code: trimmedCode,
-              ip: userIp
-            })
-          });
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                code: trimmedCode,
+                ip: userIp,
+                isRouteGuard: false
+              })
+            });
 
           if (response.ok) {
             const data = await response.json();

@@ -46,7 +46,8 @@ const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 code: trimmedCode,
-                ip: userIp
+                ip: userIp,
+                isRouteGuard: true
               })
             });
 

@@ -262,11 +262,62 @@ function randomOrderId() {
   return 'ord_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 }
 
+// 验证邀请码是否有效
+function validateInviteCode(code) {
+  if (!code || typeof code !== 'string') return false;
+  
+  const normalizedCode = code.trim().toLowerCase();
+  const codeObj = VALID_CODES.find(c => c.code === normalizedCode);
+  
+  if (!codeObj) return false;
+  
+  // 检查是否已过期或已用完
+  const now = new Date();
+  
+  if (codeObj.type === 'count') {
+    // 按次数管理
+    return codeObj.currentUses < codeObj.maxUses;
+  } else if (codeObj.type === 'time') {
+    // 按时间管理
+    const startDate = new Date(codeObj.startDate);
+    const endDate = new Date(codeObj.endDate);
+    return now >= startDate && now <= endDate;
+  }
+  
+  return false;
+}
+
+// 使用邀请码（更新使用次数）
+function useInviteCode(code) {
+  if (!code || typeof code !== 'string') return false;
+  
+  const normalizedCode = code.trim().toLowerCase();
+  const codeIndex = VALID_CODES.findIndex(c => c.code === normalizedCode);
+  
+  if (codeIndex === -1) return false;
+  
+  const codeObj = VALID_CODES[codeIndex];
+  
+  if (codeObj.type === 'count') {
+    // 按次数管理，增加使用次数
+    codeObj.currentUses++;
+    // 保存更新
+    saveInviteCodes(VALID_CODES);
+    return true;
+  } else if (codeObj.type === 'time') {
+    // 按时间管理，无需更新使用次数
+    return true;
+  }
+  
+  return false;
+}
+
 // 创建支付或邀请码校验
 app.post('/api/pay/create', async (req, res) => {
   try {
     const { inviteCode, method = 'paypal', amount = 5000, subject = 'ESG Report', currency = 'HKD' } = req.body || {};
-    if (typeof inviteCode === 'string' && VALID_CODES.has(inviteCode.trim().toLowerCase())) {
+    if (typeof inviteCode === 'string' && validateInviteCode(inviteCode)) {
+      useInviteCode(inviteCode);
       return res.json({ paid: true });
     }
     if (method === 'paypal') {
@@ -326,7 +377,15 @@ function ensureInviteCodesFile() {
   }
   if (!fs.existsSync(INVITE_CODES_JSON)) {
     const defaultCodes = process.env.PAY_INVITE_CODES || 'FREE2025,TESTVIP,MSCFV';
-    fs.writeFileSync(INVITE_CODES_JSON, JSON.stringify(defaultCodes.split(',').map(s => s.trim().toLowerCase()).filter(Boolean), null, 2));
+    const codesArray = defaultCodes.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+    const structuredCodes = codesArray.map(code => ({
+      code,
+      type: 'count',
+      maxUses: 1,
+      currentUses: 0,
+      createdAt: new Date().toISOString()
+    }));
+    fs.writeFileSync(INVITE_CODES_JSON, JSON.stringify(structuredCodes, null, 2));
   }
 }
 
@@ -334,7 +393,7 @@ function ensureInviteCodesFile() {
 function saveInviteCodes(codes) {
   try {
     ensureInviteCodesFile();
-    fs.writeFileSync(INVITE_CODES_JSON, JSON.stringify(Array.from(codes), null, 2));
+    fs.writeFileSync(INVITE_CODES_JSON, JSON.stringify(codes, null, 2));
     return true;
   } catch (error) {
     console.error('保存邀请码失败:', error);
@@ -344,18 +403,38 @@ function saveInviteCodes(codes) {
 
 // 初始化邀请码集合（从持久化文件中读取）
 ensureInviteCodesFile();
-let VALID_CODES = new Set();
+let VALID_CODES = [];
 try {
   const inviteCodesJson = fs.readFileSync(INVITE_CODES_JSON, 'utf8');
   const inviteCodesArray = JSON.parse(inviteCodesJson);
-  VALID_CODES = new Set(inviteCodesArray);
+  
+  // 检查是否是旧格式（简单字符串数组）
+  if (inviteCodesArray.length > 0 && typeof inviteCodesArray[0] === 'string') {
+    // 转换为新格式
+    VALID_CODES = inviteCodesArray.map(code => ({
+      code: code.trim().toLowerCase(),
+      type: 'count',
+      maxUses: 1,
+      currentUses: 0,
+      createdAt: new Date().toISOString()
+    }));
+    // 保存新格式
+    saveInviteCodes(VALID_CODES);
+  } else {
+    // 已经是新格式
+    VALID_CODES = inviteCodesArray;
+  }
 } catch (error) {
   console.error('读取邀请码文件失败:', error);
   // 如果读取失败，使用环境变量中的默认值
-  VALID_CODES = new Set((process.env.PAY_INVITE_CODES || 'FREE2025,TESTVIP,MSCFV')
-    .split(',')
-    .map(s => s.trim().toLowerCase())
-    .filter(Boolean));
+  const defaultCodes = process.env.PAY_INVITE_CODES || 'FREE2025,TESTVIP,MSCFV';
+  VALID_CODES = defaultCodes.split(',').map(s => ({
+    code: s.trim().toLowerCase(),
+    type: 'count',
+    maxUses: 1,
+    currentUses: 0,
+    createdAt: new Date().toISOString()
+  }));
   // 保存默认值到文件
   saveInviteCodes(VALID_CODES);
 }
@@ -1389,22 +1468,50 @@ app.get('/api/db/considerations', async (req, res) => {
 
 // 健康检查路由
 app.get('/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString(), inviteCodesConfigured: VALID_CODES.size > 0 });
+  res.json({ status: 'OK', timestamp: new Date().toISOString(), inviteCodesConfigured: VALID_CODES.length > 0 });
 });
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString(), inviteCodesConfigured: VALID_CODES.size > 0 });
+  res.json({ status: 'OK', timestamp: new Date().toISOString(), inviteCodesConfigured: VALID_CODES.length > 0 });
 });
 
 // ====== 邀请码验证 API ======
 app.post('/api/verify-invite-code', async (req, res) => {
   try {
-    const { code, ip } = req.body;
+    const { code, ip, isRouteGuard = false } = req.body;
     if (!code || !ip) {
       return res.status(400).json({ error: 'invite_code_missing', message: '邀请码和IP地址不能为空' });
     }
-    const isValid = VALID_CODES.has(code.trim().toLowerCase());
-    const usageRecord = { code, ip, isValid, timestamp: new Date().toISOString() };
+    
+    let isValid = false;
+    const normalizedCode = code.trim().toLowerCase();
+    const codeObj = VALID_CODES.find(c => c.code === normalizedCode);
+    
+    if (codeObj) {
+      if (codeObj.type === 'count') {
+        // 按次数管理
+        if (isRouteGuard) {
+          // RouteGuard验证：只要邀请码存在且曾经被使用过就允许访问
+          isValid = codeObj.currentUses > 0;
+        } else {
+          // 普通验证：检查是否还有剩余使用次数
+          isValid = codeObj.currentUses < codeObj.maxUses;
+          if (isValid) {
+            // 更新使用次数
+            codeObj.currentUses++;
+            saveInviteCodes(VALID_CODES);
+          }
+        }
+      } else if (codeObj.type === 'time') {
+        // 按时间管理
+        const now = new Date();
+        const startDate = new Date(codeObj.startDate);
+        const endDate = new Date(codeObj.endDate);
+        isValid = now >= startDate && now <= endDate;
+      }
+    }
+    
+    const usageRecord = { code: normalizedCode, ip, isValid, isRouteGuard, timestamp: new Date().toISOString() };
     INVITE_CODE_USAGE.push(usageRecord);
     res.json({ valid: isValid });
   } catch (error) {
@@ -1421,29 +1528,132 @@ app.get('/api/admin/invite-codes', async (req, res) => {
     if (token !== ADMIN_TOKEN) {
       return res.status(401).json({ error: 'unauthorized', message: '未经授权的访问' });
     }
-    res.json({ codes: Array.from(VALID_CODES) });
+    res.json({ codes: VALID_CODES });
   } catch (error) {
     console.error('获取邀请码列表失败:', error);
     res.status(500).json({ error: 'internal_server_error', message: '服务器内部错误' });
   }
 });
 
-// 添加邀请码
+// 生成随机邀请码
+function generateRandomCode(length = 8) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result.toLowerCase();
+}
+
+// 添加或批量生成邀请码
 app.post('/api/admin/invite-codes', async (req, res) => {
   try {
     const token = req.headers['authorization']?.split(' ')[1];
     if (token !== ADMIN_TOKEN) {
       return res.status(401).json({ error: 'unauthorized', message: '未经授权的访问' });
     }
-    const { code } = req.body;
-    if (!code || !code.trim()) {
-      return res.status(400).json({ error: 'invalid_code', message: '邀请码不能为空' });
+    
+    const { 
+      type = 'count', 
+      code, 
+      maxUses = 1, 
+      startDate, 
+      endDate, 
+      batchSize = 1 
+    } = req.body;
+    
+    const newCodes = [];
+    
+    if (code && batchSize === 1) {
+      // 手动输入单个邀请码
+      const normalizedCode = code.trim().toLowerCase();
+      
+      // 检查是否已存在
+      if (VALID_CODES.some(c => c.code === normalizedCode)) {
+        return res.status(400).json({ error: 'code_exists', message: '邀请码已存在' });
+      }
+      
+      let codeObj;
+      
+      if (type === 'count') {
+        // 按次数管理
+        codeObj = {
+          code: normalizedCode,
+          type: 'count',
+          maxUses,
+          currentUses: 0,
+          createdAt: new Date().toISOString()
+        };
+      } else if (type === 'time') {
+        // 按时间管理
+        if (!startDate || !endDate) {
+          return res.status(400).json({ error: 'missing_dates', message: '时间类型邀请码需要指定开始和结束时间' });
+        }
+        
+        codeObj = {
+          code: normalizedCode,
+          type: 'time',
+          startDate,
+          endDate,
+          createdAt: new Date().toISOString()
+        };
+      } else {
+        return res.status(400).json({ error: 'invalid_type', message: '邀请码类型无效' });
+      }
+      
+      VALID_CODES.push(codeObj);
+      newCodes.push(codeObj);
+    } else {
+      // 批量生成邀请码
+      for (let i = 0; i < batchSize; i++) {
+        let generatedCode;
+        
+        // 确保生成的邀请码唯一
+        do {
+          generatedCode = generateRandomCode();
+        } while (VALID_CODES.some(c => c.code === generatedCode));
+        
+        let codeObj;
+        
+        if (type === 'count') {
+          // 按次数管理
+          codeObj = {
+            code: generatedCode,
+            type: 'count',
+            maxUses,
+            currentUses: 0,
+            createdAt: new Date().toISOString()
+          };
+        } else if (type === 'time') {
+          // 按时间管理
+          if (!startDate || !endDate) {
+            return res.status(400).json({ error: 'missing_dates', message: '时间类型邀请码需要指定开始和结束时间' });
+          }
+          
+          codeObj = {
+            code: generatedCode,
+            type: 'time',
+            startDate,
+            endDate,
+            createdAt: new Date().toISOString()
+          };
+        } else {
+          return res.status(400).json({ error: 'invalid_type', message: '邀请码类型无效' });
+        }
+        
+        VALID_CODES.push(codeObj);
+        newCodes.push(codeObj);
+      }
     }
-    const normalizedCode = code.trim().toLowerCase();
-    VALID_CODES.add(normalizedCode);
+    
     // 保存到文件
     const saved = saveInviteCodes(VALID_CODES);
-    res.json({ success: saved, code: normalizedCode, message: '邀请码添加成功' });
+    
+    res.json({ 
+      success: saved, 
+      codes: newCodes, 
+      message: batchSize > 1 ? `成功生成${batchSize}个邀请码` : '邀请码添加成功' 
+    });
   } catch (error) {
     console.error('添加邀请码失败:', error);
     res.status(500).json({ error: 'internal_server_error', message: '服务器内部错误' });
@@ -1466,9 +1676,11 @@ app.delete('/api/admin/invite-codes/:code', async (req, res) => {
     }
     
     const normalizedCode = code.toLowerCase();
-    const wasRemoved = VALID_CODES.delete(normalizedCode);
+    const codeIndex = VALID_CODES.findIndex(c => c.code === normalizedCode);
     
-    if (wasRemoved) {
+    if (codeIndex !== -1) {
+      // 删除邀请码
+      VALID_CODES.splice(codeIndex, 1);
       // 保存到文件
       const saved = saveInviteCodes(VALID_CODES);
       res.json({ success: saved, message: '邀请码删除成功' });

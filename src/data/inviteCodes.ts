@@ -4,11 +4,18 @@
 export interface InviteCodeItem {
   id: string;
   code: string;              // 邀请码
+  type: 'count' | 'time';    // 邀请码类型：按次数或按时间
   name: string;              // 邀请码名称
   description?: string;      // 邀请码描述
   createdAt: string;         // 创建时间
   updatedAt: string;         // 更新时间
   active: boolean;           // 是否激活
+  // 按次数管理的字段
+  maxUses?: number;          // 最大使用次数
+  currentUses?: number;      // 当前使用次数
+  // 按时间管理的字段
+  startDate?: string;        // 开始时间
+  endDate?: string;          // 结束时间
 }
 
 // 邀请码数据存储
