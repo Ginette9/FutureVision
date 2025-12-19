@@ -10,6 +10,9 @@ export interface InviteCodeItem {
   createdAt: string;         // 创建时间
   updatedAt: string;         // 更新时间
   active: boolean;           // 是否激活
+  // 功能权限字段
+  allowDownload: boolean;    // 是否允许下载报告
+  allowNewAnalysis: boolean; // 是否允许新建分析
   // 按次数管理的字段
   maxUses?: number;          // 最大使用次数
   currentUses?: number;      // 当前使用次数
@@ -23,15 +26,22 @@ export interface InviteCodeItem {
 const envInviteCodes = import.meta?.env?.VITE_INVITE_CODES || 'TESTCODE123,FREE2025,TESTVIP,MSCFV';
 
 // 解析环境变量中的邀请码
-let inviteCodes: InviteCodeItem[] = envInviteCodes.split(',').map((code: string, index: number) => ({
-  id: `invite-${index + 1}`,
-  code: code.trim(),
-  name: `${code.trim()} 邀请码`,
-  description: `${code.trim()} 邀请码描述`,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  active: true
-}));
+let inviteCodes: InviteCodeItem[] = envInviteCodes.split(',').map((code: string, index: number) => {
+  const trimmedCode = code.trim();
+  const isMscfv = trimmedCode.toLowerCase() === 'mscfv';
+  return {
+    id: `invite-${index + 1}`,
+    code: trimmedCode,
+    type: 'count', // 默认使用次数类型
+    name: `${trimmedCode} 邀请码`,
+    description: `${trimmedCode} 邀请码描述`,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    active: true,
+    allowDownload: isMscfv,
+    allowNewAnalysis: isMscfv
+  };
+});
 
 // 获取所有邀请码
 export function getAllInviteCodes(): InviteCodeItem[] {

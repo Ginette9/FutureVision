@@ -1,26 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import AIGenerationLoader from '@/components/AIGenerationLoader';
-
-import { ReportSection } from './ReportResultNew/parseReportHtml';
-import Toc from './ReportResultNew/Toc';
-import PrintToc from './ReportResultNew/PrintToc';
-import PrintReportSection from './ReportResultNew/PrintReportSection';
-import ReportSectionBlock from './ReportResultNew/ReportSection';
-import ReportSectionPrint from './ReportResultNew/ReportSectionPrint';
-import { getCountryNameById, getProductNameById } from '@/lib/utils';
-import { getRiskIdsByCountryAndIndustry, getRisksByIds, getAdviceIdsByCountryAndIndustry, getAdviceByIds } from '@/lib/database';
-import { getSectionsContent } from './ReportResultNew/sectionsContent';
-import { useLanguage } from '@/contexts/LanguageContext';
-
-import { IntroductionSection } from './ReportResultNew/IntroductionSection';
-import { PayAttentionSection } from './ReportResultNew/PayAttentionSection';
-import { CSRSection } from './ReportResultNew/CsrSection';
-import { CsrLabelsSection } from './ReportResultNew/CsrLabelsSection';
-import { DueDiligenceSection } from './ReportResultNew/DueDiligenceSection';
-import { AboutMvoSection } from './ReportResultNew/AboutMvoSection';
-import { ContactSection } from './ReportResultNew/ContactSection';
-import { DisclaimerSection } from './ReportResultNew/DisclaimerSection';
+import Modal from '@/components/Modal';
 import PDFReportGenerator from '@/components/PDFReportGenerator';
 
 // 打印封面/尾页所需静态资源（通过打包器处理路径）
@@ -32,6 +13,50 @@ import QrAssistant from '@/images/fv_assistant_qr.png';
 import QrMiniApp from '@/images/app-qr.jpg';
 import PdfCover from '@/images/pdf-cover-new.png';
 import PdfBack from '@/images/pdf-back-new.png';
+
+import { ReportSection } from './ReportResultNew/parseReportHtml';
+import Toc from './ReportResultNew/Toc';
+import PrintToc from './ReportResultNew/PrintToc';
+import PrintReportSection from './ReportResultNew/PrintReportSection';
+import ReportSectionBlock from './ReportResultNew/ReportSection';
+import ReportSectionPrint from './ReportResultNew/ReportSectionPrint';
+import { IntroductionSection } from './ReportResultNew/IntroductionSection';
+import { PayAttentionSection } from './ReportResultNew/PayAttentionSection';
+import { CSRSection } from './ReportResultNew/CsrSection';
+import { CsrLabelsSection } from './ReportResultNew/CsrLabelsSection';
+import { DueDiligenceSection } from './ReportResultNew/DueDiligenceSection';
+import { AboutMvoSection } from './ReportResultNew/AboutMvoSection';
+import { ContactSection } from './ReportResultNew/ContactSection';
+import { DisclaimerSection } from './ReportResultNew/DisclaimerSection';
+
+import { getCountryNameById, getProductNameById } from '@/lib/utils';
+import { getRiskIdsByCountryAndIndustry, getRisksByIds, getAdviceIdsByCountryAndIndustry, getAdviceByIds } from '@/lib/database';
+import { getSectionsContent } from './ReportResultNew/sectionsContent';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { getInviteCodeByCode } from '@/data/inviteCodes';
+
+// 弹窗提醒组件
+const PermissionDeniedModal: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+  message: string;
+}> = ({ isOpen, onClose, message }) => {
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="权限受限">
+      <div className="p-4">
+        <p className="text-gray-700">{message}</p>
+      </div>
+      <div className="flex justify-end p-4 bg-gray-50">
+        <button
+          onClick={onClose}
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+        >
+          确定
+        </button>
+      </div>
+    </Modal>
+  );
+};
 
 declare global {
   interface Window {
@@ -75,12 +100,51 @@ function ReportResultNew() {
   // 获取当前邀请码参数
   const inviteCode = searchParams.get('invite-code');
   
+  // 邀请码权限状态
+  const [allowDownload, setAllowDownload] = useState(true);
+  const [allowNewAnalysis, setAllowNewAnalysis] = useState(true);
+  
+  // 弹窗状态
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  
   // 构建带邀请码的表单页面URL
   const getFormUrlWithInviteCode = () => {
     if (inviteCode) {
       return `/esg-voyant/form?invite-code=${encodeURIComponent(inviteCode)}`;
     }
     return '/esg-voyant';
+  };
+  
+  // 检查邀请码权限
+  useEffect(() => {
+    if (inviteCode) {
+      const codeInfo = getInviteCodeByCode(inviteCode);
+      if (codeInfo) {
+        setAllowDownload(codeInfo.allowDownload);
+        setAllowNewAnalysis(codeInfo.allowNewAnalysis);
+      } else {
+        // 如果没有找到邀请码，默认禁用权限
+        setAllowDownload(false);
+        setAllowNewAnalysis(false);
+      }
+    } else {
+      // 如果没有邀请码，默认允许权限
+      setAllowDownload(true);
+      setAllowNewAnalysis(true);
+    }
+  }, [inviteCode]);
+  
+  // 显示权限受限弹窗
+  const showPermissionDeniedModal = (message: string) => {
+    setModalMessage(message);
+    setShowModal(true);
+  };
+  
+  // 关闭弹窗
+  const closeModal = () => {
+    setShowModal(false);
+    setModalMessage('');
   };
 
   useEffect(() => {
@@ -400,9 +464,19 @@ function ReportResultNew() {
                     Below you will find the results of the risk analysis based on your submitted answers.
                     Would you like to switch your product or country?
                   </p>
-                  <a className="text-blue-700 underline hover:no-underline text-sm" target="_blank" href={getFormUrlWithInviteCode()}>
+                  <button
+                    onClick={() => {
+                      if (allowNewAnalysis) {
+                        window.open(getFormUrlWithInviteCode(), '_blank');
+                      } else {
+                        showPermissionDeniedModal('您目前的邀请码不支持此功能');
+                      }
+                    }}
+                    className={`text-sm font-medium ${allowNewAnalysis ? 'text-blue-700 underline hover:no-underline cursor-pointer' : 'text-gray-400 cursor-not-allowed'}`}
+                    disabled={!allowNewAnalysis}
+                  >
                     Fill out the ESG Risk Form again
-                  </a>
+                  </button>
                 </div>
 
                 <div className="bg-red-50 rounded-lg p-4 mb-4">
@@ -614,11 +688,24 @@ function ReportResultNew() {
                     industryId={formData.industry.id}
                     countryName={englishCountryName}
                     industryName={englishIndustryName}
+                    disabled={!allowDownload}
+                    onDisabledClick={() => showPermissionDeniedModal('您目前的邀请码不支持此功能')}
                   />
                 )}
                 <button 
-                  onClick={() => navigate(getFormUrlWithInviteCode())}
-                  className="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  onClick={() => {
+                    if (allowNewAnalysis) {
+                      navigate(getFormUrlWithInviteCode());
+                    } else {
+                      showPermissionDeniedModal('您目前的邀请码不支持此功能');
+                    }
+                  }}
+                  disabled={!allowNewAnalysis}
+                  className={`inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+                    allowNewAnalysis 
+                      ? 'bg-indigo-600 hover:bg-indigo-700' 
+                      : 'bg-gray-400 cursor-not-allowed'
+                  }`}
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -747,6 +834,13 @@ function ReportResultNew() {
           </div>
         </div>
       </div>
+
+      {/* 权限受限弹窗 */}
+      <PermissionDeniedModal
+        isOpen={showModal}
+        onClose={closeModal}
+        message={modalMessage}
+      />
     </>
   );
 }

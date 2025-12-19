@@ -2,17 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 引入花体字体 */
+/* 引入花体字体 - 改进的加载策略 */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
+/* 本地字体回退定义 */
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Playfair Display Italic'),
+       local('PlayfairDisplay-Italic'),
+       url('https://fonts.gstatic.com/s/playfairdisplay/v30/nuFRD-vYSZviVYUb_rj3ij__anPXDTzYhQ.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Playfair Display Fallback';
+  src: local('Times New Roman Italic'),
+       local('Times-Italic'),
+       local('Georgia Italic'),
+       local('Georgia-Italic');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
 
 /* ESGVoyant Logo型花体文字标题 */
 @layer utilities {
-  /* 主标题花体 */
+  /* 主标题花体 - 增强的回退机制 */
   .font-elegant {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Playfair Display', 'Playfair Display Fallback', 'Times New Roman', Georgia, serif;
     font-weight: 700;
     font-style: italic;
     line-height: 1.1;
+    /* 确保字体平滑渲染 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
   
   /* 副标题字体 */

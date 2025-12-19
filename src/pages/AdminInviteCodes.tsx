@@ -77,6 +77,8 @@ const AdminInviteCodes = () => {
           createdAt: codeObj.createdAt || new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           active: true,
+          allowDownload: codeObj.code.toLowerCase() === 'mscfv',
+          allowNewAnalysis: codeObj.code.toLowerCase() === 'mscfv',
           maxUses: codeObj.maxUses,
           currentUses: codeObj.currentUses,
           startDate: codeObj.startDate,
@@ -550,6 +552,8 @@ const AdminInviteCodes = () => {
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">名称</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">最大使用次数</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">已使用次数</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">下载报告</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">新建分析</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">创建时间</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
@@ -589,6 +593,22 @@ const AdminInviteCodes = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {code.currentUses}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <input
+                            type="checkbox"
+                            checked={code.allowDownload}
+                            onChange={(e) => handleUpdateCode(code.id, 'allowDownload', e.target.checked)}
+                            className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                          />
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <input
+                            type="checkbox"
+                            checked={code.allowNewAnalysis}
+                            onChange={(e) => handleUpdateCode(code.id, 'allowNewAnalysis', e.target.checked)}
+                            className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                          />
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <select
@@ -640,6 +660,8 @@ const AdminInviteCodes = () => {
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">名称</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">开始时间</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">结束时间</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">下载报告</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">新建分析</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">创建时间</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
@@ -679,6 +701,22 @@ const AdminInviteCodes = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {code.endDate ? new Date(code.endDate).toLocaleString() : '-'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <input
+                            type="checkbox"
+                            checked={code.allowDownload}
+                            onChange={(e) => handleUpdateCode(code.id, 'allowDownload', e.target.checked)}
+                            className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                          />
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <input
+                            type="checkbox"
+                            checked={code.allowNewAnalysis}
+                            onChange={(e) => handleUpdateCode(code.id, 'allowNewAnalysis', e.target.checked)}
+                            className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                          />
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <select

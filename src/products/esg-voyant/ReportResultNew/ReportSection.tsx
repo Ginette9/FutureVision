@@ -3,6 +3,31 @@ import { getRiskIdsByCountryAndIndustry, getRisksByIds, getAdviceIdsByCountryAnd
 import { useLanguage } from '@/contexts/LanguageContext';
 import { convertToTraditional } from '@/locales/zh-HK';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { getInviteCodeByCode } from '@/data/inviteCodes';
+import Modal from '@/components/Modal';
+
+// 弹窗提醒组件
+const PermissionDeniedModal: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+  message: string;
+}> = ({ isOpen, onClose, message }) => {
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="权限受限">
+      <div className="p-4">
+        <p className="text-gray-700">{message}</p>
+      </div>
+      <div className="flex justify-end p-4 bg-gray-50">
+        <button
+          onClick={onClose}
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+        >
+          确定
+        </button>
+      </div>
+    </Modal>
+  );
+};
 
 // 处理 TBD 标签替换的工具函数
 const replaceTBDTags = (html: string, classification: string, countryName: string, industryName: string): string => {
@@ -98,6 +123,41 @@ const ReportSection: React.FC<Props> = ({ countryName, industryName }) => {
   
   // 获取当前邀请码参数
   const inviteCode = searchParams.get('invite-code');
+  
+  // 邀请码权限状态
+  const [allowNewAnalysis, setAllowNewAnalysis] = useState(true);
+  
+  // 弹窗状态
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  
+  // 检查邀请码权限
+  useEffect(() => {
+    if (inviteCode) {
+      const codeInfo = getInviteCodeByCode(inviteCode);
+      if (codeInfo) {
+        setAllowNewAnalysis(codeInfo.allowNewAnalysis);
+      } else {
+        // 如果没有找到邀请码，默认禁用权限
+        setAllowNewAnalysis(false);
+      }
+    } else {
+      // 如果没有邀请码，默认允许权限
+      setAllowNewAnalysis(true);
+    }
+  }, [inviteCode]);
+  
+  // 显示权限受限弹窗
+  const showPermissionDeniedModal = (message: string) => {
+    setModalMessage(message);
+    setShowModal(true);
+  };
+  
+  // 关闭弹窗
+  const closeModal = () => {
+    setShowModal(false);
+    setModalMessage('');
+  };
   
   // 构建带邀请码的表单页面URL
   const getFormUrlWithInviteCode = () => {
@@ -249,21 +309,31 @@ const ReportSection: React.FC<Props> = ({ countryName, industryName }) => {
       {/* 返回链接和风险统计部分 */}
       <div className="space-y-4">
         <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
-          <p className="text-gray-700 mb-4 text-sm sm:text-base">
-            {(language === 'zh-CN' || language === 'zh-HK')
-              ? '以下为基于您提交的答案生成的风险分析结果。需要重新选择产品或国家吗？'
-              : 'Below you will find the results of the risk analysis based on your submitted answers. Would you like to switch your product or country?'}
-          </p>
-          <button 
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium text-sm sm:text-base bg-transparent border-none p-0 cursor-pointer" 
-            onClick={() => navigate(getFormUrlWithInviteCode())}
-          >
-            <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            {(language === 'zh-CN' || language === 'zh-HK') ? '再次填写 ESG 风险评估表' : 'Fill out the ESG Risk Form again'}
-          </button>
-        </div>
+            <p className="text-gray-700 mb-4 text-sm sm:text-base">
+              {(language === 'zh-CN' || language === 'zh-HK')
+                ? '以下为基于您提交的答案生成的风险分析结果。需要重新选择产品或国家吗？'
+                : 'Below you will find the results of the risk analysis based on your submitted answers. Would you like to switch your product or country?'}
+            </p>
+            <button 
+              className={`inline-flex items-center font-medium text-sm sm:text-base bg-transparent border-none p-0 cursor-pointer ${
+                allowNewAnalysis 
+                  ? 'text-blue-600 hover:text-blue-800' 
+                  : 'text-gray-400 cursor-not-allowed'
+              }`} 
+              onClick={() => {
+                if (allowNewAnalysis) {
+                  navigate(getFormUrlWithInviteCode());
+                } else {
+                  showPermissionDeniedModal('您目前的邀请码不支持此功能');
+                }
+              }}
+            >
+              <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              {(language === 'zh-CN' || language === 'zh-HK') ? '再次填写 ESG 风险评估表' : 'Fill out the ESG Risk Form again'}
+            </button>
+          </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-gradient-to-r from-red-50 to-orange-50 rounded-lg p-4 sm:p-6 gap-4">
           <div className="min-w-0">
