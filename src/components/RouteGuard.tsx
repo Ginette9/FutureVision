@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useSearchParams, Navigate } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react';
+import { useSearchParams, Navigate, useLocation } from 'react-router-dom';
 import { getInviteCodeByCode } from '@/data/inviteCodes';
 import { getApiBaseUrl } from '@/lib/utils';
+import { AuthContext } from '../contexts/authContext';
 
 interface RouteGuardProps {
   children: React.ReactNode;
@@ -10,8 +11,10 @@ interface RouteGuardProps {
 const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
   const [searchParams] = useSearchParams();
   const inviteCode = searchParams.get('invite-code');
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [isValid, setIsValid] = useState(false);
+  const [isCodeUsed, setIsCodeUsed] = useState(false);
 
   useEffect(() => {
     const verifyInviteCode = async () => {
@@ -22,6 +25,12 @@ const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
       }
 
       const trimmedCode = inviteCode.trim().toLowerCase();
+      
+      // 检查邀请码是否已经被使用过
+      const usedCodes = JSON.parse(localStorage.getItem('usedInviteCodes') || '{}');
+      if (usedCodes[trimmedCode] && (usedCodes[trimmedCode] === true || usedCodes[trimmedCode].used)) {
+        setIsCodeUsed(true);
+      }
 
       try {
         // 直接通过API验证邀请码（统一使用后端邀请码系统）
@@ -83,8 +92,18 @@ const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
     return <div>Loading...</div>;
   }
 
-  // 如果有邀请码且有效，允许访问页面
-  if (inviteCode && isValid) {
+  // 检查是否在ESG风险评估表页面且邀请码已被使用
+  // 注意：应用使用HashRouter，所以路径在location.hash中
+  const isOnESGFormPage = location.hash === '#/esg-voyant' || location.hash === '#/form' || location.hash === '#/esg-voyant/form';
+  
+  // 如果在表单页面且邀请码已被使用，直接重定向到首页
+  if (isOnESGFormPage && inviteCode && isCodeUsed) {
+    return <Navigate to="/" replace />;
+  }
+
+  // 如果有邀请码且有效，并且不在表单页面，允许访问页面
+  // 对于表单页面，还需要确保邀请码未被使用
+  if (inviteCode && isValid && (!isOnESGFormPage || !isCodeUsed)) {
     return <>{children}</>;
   }
 

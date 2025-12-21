@@ -3681,8 +3681,8 @@ const PDFReportGenerator: React.FC<PDFReportGeneratorProps> = ({
           generatePDF();
         }
       }}
-      disabled={isGenerating || disabled}
-      className={`inline-flex items-center justify-center w-full sm:w-auto px-4 py-2 ${disabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white rounded-lg disabled:opacity-50 transition-colors ${className}`}
+      disabled={isGenerating}
+      className={`inline-flex items-center justify-center w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50 transition-colors ${className}`}
     >
       {isGenerating ? (
         <>

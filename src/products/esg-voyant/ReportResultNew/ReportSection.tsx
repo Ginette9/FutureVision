@@ -315,11 +315,7 @@ const ReportSection: React.FC<Props> = ({ countryName, industryName }) => {
                 : 'Below you will find the results of the risk analysis based on your submitted answers. Would you like to switch your product or country?'}
             </p>
             <button 
-              className={`inline-flex items-center font-medium text-sm sm:text-base bg-transparent border-none p-0 cursor-pointer ${
-                allowNewAnalysis 
-                  ? 'text-blue-600 hover:text-blue-800' 
-                  : 'text-gray-400 cursor-not-allowed'
-              }`} 
+              className="inline-flex items-center font-medium text-sm sm:text-base bg-transparent border-none p-0 cursor-pointer text-blue-600 hover:text-blue-800"
               onClick={() => {
                 if (allowNewAnalysis) {
                   navigate(getFormUrlWithInviteCode());
@@ -334,6 +330,13 @@ const ReportSection: React.FC<Props> = ({ countryName, industryName }) => {
               {(language === 'zh-CN' || language === 'zh-HK') ? '再次填写 ESG 风险评估表' : 'Fill out the ESG Risk Form again'}
             </button>
           </div>
+      
+      {/* 权限受限弹窗 */}
+      <PermissionDeniedModal
+        isOpen={showModal}
+        onClose={closeModal}
+        message={modalMessage}
+      />
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-gradient-to-r from-red-50 to-orange-50 rounded-lg p-4 sm:p-6 gap-4">
           <div className="min-w-0">

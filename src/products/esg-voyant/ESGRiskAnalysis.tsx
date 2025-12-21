@@ -187,11 +187,30 @@ export default function ESGRiskAnalysis() {
    }
    
    if (!formData.industry || !formData.country) {
-     toast.error(t("error.selectIndustryCountry"));
-     return;
-   }
-   
-  setIsLoading(true);
+    toast.error(t("error.selectIndustryCountry"));
+    return;
+  }
+  
+  // 检查邀请码是否已被使用且当前选择的行业/地区与之前不同
+  if (inviteCode) {
+    const trimmedCode = inviteCode.trim().toLowerCase();
+    const usedCodes = JSON.parse(localStorage.getItem('usedInviteCodes') || '{}');
+    const usedCodeInfo = usedCodes[trimmedCode];
+    
+    if (usedCodeInfo && usedCodeInfo.used) {
+      // 如果邀请码已被使用，检查当前选择的行业和地区是否与之前相同
+      const isSameIndustry = formData.industry.id === usedCodeInfo.industry.id;
+      const isSameCountry = formData.country.id === usedCodeInfo.country.id;
+      
+      if (!isSameIndustry || !isSameCountry) {
+        // 如果行业或地区不同，显示弹窗提醒
+        toast.error('该邀请码已被用于其他行业或地区的分析，请使用新的邀请码');
+        return;
+      }
+    }
+  }
+  
+ setIsLoading(true);
   
   try {
     await apiGet('/api/esg-form', {
@@ -218,11 +237,24 @@ export default function ESGRiskAnalysis() {
      sessionStorage.setItem('showAILoader', 'true');
      
      // 导航到结果页面，保留邀请码参数
-     if (inviteCode) {
-       navigate(`/esg-voyant/report?invite-code=${encodeURIComponent(inviteCode)}`);
-     } else {
-       navigate('/esg-voyant/report');
-     }
+    if (inviteCode) {
+      // 标记邀请码为已使用，防止二次使用
+      const trimmedCode = inviteCode.trim().toLowerCase();
+      const usedCodes = JSON.parse(localStorage.getItem('usedInviteCodes') || '{}');
+      // 记录邀请码使用时的详细信息
+      usedCodes[trimmedCode] = {
+        used: true,
+        industry: formData.industry,
+        country: formData.country,
+        contact: formData.contact || { name: '', email: '', phone: '' },
+        usedAt: new Date().toISOString()
+      };
+      localStorage.setItem('usedInviteCodes', JSON.stringify(usedCodes));
+      
+      navigate(`/esg-voyant/report?invite-code=${encodeURIComponent(inviteCode)}`);
+    } else {
+      navigate('/esg-voyant/report');
+    }
   } catch (error) {
     toast.error('生成报告失败，请重试');
   } finally {
