@@ -1,5 +1,71 @@
 [
   {
+    "id": "must-1763112429300-14",
+    "coverImage": "https://hostingjournalist.com/uploads/news-pictures/2057-zutphen-blog-post-image-20251215131159.jpeg",
+    "titleZh": "报告预测2035年全球数据中心基础设施市场将达4968亿美元",
+    "titleEn": "Report Forecasts Global Data Center Infrastructure Market to Reach USD 496.8 Billion by 2035",
+    "summaryZh": "DC Market Insights于2025年12月10日发布市场研究报告，预测全球数据中心基础设施市场规模将从2025年的约2000亿美元增长至2035年的4968亿美元，年复合增长率约9.5%。报告指出，驱动增长的主要因素包括人工智能、云计算、物联网等数字技术发展带来的需求激增，以及数据中心在能效、冷却技术、模块化设计等方面的技术创新。",
+    "summaryEn": "DC Market Insights forecasts the global data center infrastructure market to reach $496.8 billion by 2035, driven by AI, cloud computing demand and energy efficiency innovations.",
+    "linkZh": "https://www.prnewswire.com/news-releases/data-center-infrastructure-market-worth-usd-496-8-billion-by-2035--dc-market-insights-302638704.html",
+    "linkEn": "https://www.prnewswire.com/news-releases/data-center-infrastructure-market-worth-usd-496-8-billion-by-2035--dc-market-insights-302638704.html",
+    "date": "2025-12-10"
+  },
+  {
+    "id": "must-1763112429300-15",
+    "coverImage": "https://www.todayesg.com/wp-content/uploads/2025/12/WEF-1-657x375.jpg?v=1765377702",
+    "titleZh": "世界经济论坛发布全球绿色经济报告，揭示万亿美元市场机遇",
+    "titleEn": "World Economic Forum Releases Global Green Economy Report, Revealing Trillion-Dollar Market Opportunities",
+    "summaryZh": "世界经济论坛于2025年12月11日发布了《全球绿色经济报告》。报告指出，2024年全球绿色经济市场规模已超5万亿美元，预计2030年将达7万亿美元，年均增长率6%。报告分析了绿色经济的增长机会，强调其已成为数万亿美元的市场和全球最大的增长机遇之一。报告特别指出，中国在绿色经济的资金投资、技术创新和建设规模方面处于全球领先地位，并揭示了能源自主、深度脱碳技术增长以及气候适应市场扩大等关键趋势。",
+    "summaryEn": "WEF's Dec 2025 report reveals the global green economy surpassed $5 trillion in 2024, with China leading investment and innovation, and growth expected to reach $7 trillion by 2030.",
+    "linkZh": "https://www.weforum.org/publications/already-a-multi-trillion-dollar-market-ceo-guide-to-growth-in-the-green-economy/",
+    "linkEn": "https://www.weforum.org/publications/already-a-multi-trillion-dollar-market-ceo-guide-to-growth-in-the-green-economy/",
+    "date": "2025-12-11"
+  },
+  {
+    "id": "must-1763112429300-16",
+    "coverImage": "https://assets.weforum.org/article/image/responsive_large_fH59JoDxVwWf0czBy69Ooxh7_jxlAk23Pf-6vNXHIxU.jpeg",
+    "titleZh": "世界经济论坛发布高排放行业供应链脱碳机遇报告",
+    "titleEn": "World Economic Forum Releases Report on Decarbonization Opportunities in Supply Chains of High-Emitting Sectors",
+    "summaryZh": "世界经济论坛于2025年12月12日发布了一份题为《将挑战转化为机遇：来自高排放行业供应商的声音》的报告。该报告聚焦于建筑、钢铁、水泥等高排放行业的供应链脱碳挑战与机遇，汇集了主要供应商的观点，探讨了如何通过技术创新、合作模式和政策支持，将减排压力转化为商业机会，推动整个价值链的绿色转型。",
+    "summaryEn": "WEF's Dec 2025 report explores decarbonization opportunities in supply chains of high-emitting sectors like construction and steel, turning climate challenges into business opportunities.",
+    "linkZh": "https://www.weforum.org/publications/turning-challenge-into-opportunity-supplier-voices-from-heavy-emitting-sectors/",
+    "linkEn": "https://www.weforum.org/publications/turning-challenge-into-opportunity-supplier-voices-from-heavy-emitting-sectors/",
+    "date": "2025-12-12"
+  },
+  {
+    "id": "must-1763112429300-17",
+    "coverImage": "https://www.esgtoday.com/wp-content/uploads/2025/12/Linkedin.jpg",
+    "titleZh": "领英报告：2025年绿色技能人才需求增速远超供给",
+    "titleEn": "LinkedIn Report: Demand Growth for Green-Skilled Workers Far Outpaces Supply in 2025",
+    "summaryZh": "领英于2025年12月8日发布了《2025年绿色技能报告》。报告基于其全球10亿会员的匿名聚合数据（2021年1月至2025年7月）分析发现，2025年企业对具备绿色技能人才的需求持续增长，但供应增速滞后，导致绿色技能缺口扩大。具体数据显示，2024年至2025年，绿色岗位招聘增长率（7.7%）几乎是全球劳动力绿色技能增长率（4.3%）的两倍。报告指出，若不大幅加速绿色技能培养，将影响气候行动和经济机遇。",
+    "summaryEn": "LinkedIn's Dec 2025 report shows green job postings grew 7.7% in 2025, nearly double the 4.3% growth in green-skilled workers, highlighting a widening skills gap threatening climate action.",
+    "linkZh": "https://economicgraph.linkedin.com/content/dam/me/economicgraph/en-us/PDF/2180-global-green-skills-report-v04.pdf",
+    "linkEn": "https://economicgraph.linkedin.com/content/dam/me/economicgraph/en-us/PDF/2180-global-green-skills-report-v04.pdf",
+    "date": "2025-12-08"
+  },
+  {
+    "id": "must-1763112429300-18",
+    "coverImage": "https://assets.weforum.org/report/image/UMDaeiyBDH3KMwMIsLioNOTUHCo6Qo82TFFoa05MqjA.jpg",
+    "titleZh": "世界经济论坛发布新经济技能报告，聚焦可持续发展与转型",
+    "titleEn": "World Economic Forum Releases Report on New Economy Skills, Focusing on Sustainability and Transition",
+    "summaryZh": "世界经济论坛于2025年12月3日发布了一份题为《新经济技能：解锁人类优势》的报告。该报告探讨了在向新经济转型的背景下，劳动力所需的关键技能，特别是与可持续发展、绿色技术和数字化相关的技能。报告旨在为企业和政策制定者提供关于未来技能需求的洞察，以应对经济和社会挑战，并抓住新兴机遇。",
+    "summaryEn": "WEF's Dec 2025 report highlights key skills needed for the sustainability transition, focusing on green tech and digital competencies for the new economy workforce.",
+    "linkZh": "https://www.weforum.org/publications/new-economy-skills-unlocking-the-human-advantage/",
+    "linkEn": "https://www.weforum.org/publications/new-economy-skills-unlocking-the-human-advantage/",
+    "date": "2025-12-03"
+  },
+  {
+    "id": "must-1763112429300-19",
+    "coverImage": "https://assets.weforum.org/article/image/XL6HFVrJdALTBRA074e8klEZZSCQysPyXNLJ5450e_U.JPG",
+    "titleZh": "世界经济论坛发布绿色经济CEO增长指南报告",
+    "titleEn": "World Economic Forum Releases CEO Guide to Growth in the Green Economy",
+    "summaryZh": "世界经济论坛于2025年12月2日发布了一份题为《已是万亿美元市场：CEO在绿色经济中的增长指南》的报告。该报告旨在为全球企业领导者提供在绿色经济中识别增长机会、制定战略并采取行动的框架。报告强调了绿色经济已是一个规模达数万亿美元的市场，并探讨了企业如何通过创新、合作和可持续商业模式来把握这一机遇，实现增长与转型。",
+    "summaryEn": "WEF's Dec 2025 report provides CEOs with a framework to identify growth opportunities in the multi-trillion dollar green economy through innovation and sustainable business models.",
+    "linkZh": "https://www.weforum.org/publications/already-a-multi-trillion-dollar-market-ceo-guide-to-growth-in-the-green-economy/",
+    "linkEn": "https://www.weforum.org/publications/already-a-multi-trillion-dollar-market-ceo-guide-to-growth-in-the-green-economy/",
+    "date": "2025-12-02"
+  },
+  {
     "id": "news-1762924372661-17",
     "coverImage": "https://iea.imgix.net/148b0cd7-386a-4566-b41f-661082252fea/CoverPhotoEEMR25.jpg?auto=compress%2Cformat&fit=min&q=80&rect=0%2C0%2C6000%2C3377&w=2120&fit=crop&fm=jpg&q=70&auto=format&h=1193",
     "titleZh": "2025全球能源效率改善加速，中国等经济体进展更强",

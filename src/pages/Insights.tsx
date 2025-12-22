@@ -10,7 +10,7 @@ import pdfWorkerRaw from "pdfjs-dist/build/pdf.worker.min?raw";
 const __pdfBlob = new Blob([pdfWorkerRaw], { type: 'text/javascript' });
 const __pdfWorkerUrl = URL.createObjectURL(__pdfBlob);
 GlobalWorkerOptions.workerSrc = __pdfWorkerUrl as string;
-import { getBackendBase } from '@/lib/utils';
+import { getBackendBase, getApiBaseUrl } from '@/lib/utils';
 
 export default function Insights() {
   const [selectedReport, setSelectedReport] = useState<InsightReport | null>(null);

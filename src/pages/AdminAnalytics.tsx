@@ -101,7 +101,7 @@ export default function AdminAnalytics() {
       <div className="max-w-md mx-auto pt-24 pb-16 px-4">
         <h2 className="text-2xl font-semibold mb-4">管理员登录</h2>
         <input className="border px-3 py-2 w-full mb-4" placeholder="邀请码" onKeyDown={(e) => { if ((e as any).key === 'Enter') handleLogin((e.target as HTMLInputElement).value); }} />
-        <button className="px-4 py-2 bg-gray-900 text-white" onClick={() => handleLogin('ok')}>登录</button>
+        <button className="px-4 py-2 bg-gray-900 text-white" onClick={() => { const input = document.querySelector('input[placeholder="邀请码"]') as HTMLInputElement; handleLogin(input?.value || ''); }}>登录</button>
       </div>
     );
   }
