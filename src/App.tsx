@@ -235,8 +235,8 @@ export default function App() {
                     },
                     {
                       cityZh: '北京', cityEn: 'Beijing:',
-                      zh: '北京市朝阳区新源南路6号京城大厦 1805 室',
-                      en: 'Room 1805, Capital Mansion 6 Xinyuan South Road, Chaoyang District'
+                      zh: '北京市海淀区上地信息路12号中关村发展大厦 511 室',
+                      en: 'Room 511, Zhongguancun Building, No. 12 Shangdi Information Road, Haidian District, Beijing'
                     },
                     {
                       cityZh: '上海', cityEn: 'Shanghai:',

@@ -107,37 +107,37 @@ export default function About() {
     { title: '全球视野', description: '具备全球化视野和跨文化理解能力，助力企业国际化发展' }
   ]);
 
-  // 办公室中英地址（按中文顺序：杭州、上海、北京、沈阳、香港）
+  // 办公室中英地址（按中文顺序：香港、北京、上海、杭州、沈阳）
   const offices = [
     {
-      cityZh: '杭州',
-      cityEn: 'Hangzhou',
-      addressZh: '杭州市萧山区鸿宁路广孚联合国际中心2402室',
-      addressEn: 'Room 2402, Guangfu International Center Hongning Road, Xiaoshan District'
+      cityZh: '香港',
+      cityEn: 'Hong Kong',
+      addressZh: '香港新界沙田安耀街3号汇达大厦2605室',
+      addressEn: 'Room 2605, Winnerway Building, 3 On Yiu Street, Sha Tin, New Territories, Hong Kong'
+    },
+    {
+      cityZh: '北京',
+      cityEn: 'Beijing',
+      addressZh: '北京市海淀区上地信息路12号中关村发展大厦 511 室',
+      addressEn: 'Room 511, Zhongguancun Building, No. 12 Shangdi Information Road, Haidian District, Beijing'
     },
     {
       cityZh: '上海',
       cityEn: 'Shanghai',
       addressZh: '上海市虹口区东大名路501号白玉兰广场42层',
-      addressEn: '42/F, Magnolia Plaza, 501 East Da Ming Road, Hongkou District'
+      addressEn: '42/F, Magnolia Plaza, 501 East Da Ming Road, Hongkou District, Shanghai'
     },
     {
-      cityZh: '北京',
-      cityEn: 'Beijing',
-      addressZh: '北京市朝阳区新源南路6号京城大厦 1805 室',
-      addressEn: 'Room 1805, Capital Mansion 6 Xinyuan South Road, Chaoyang District'
+      cityZh: '杭州',
+      cityEn: 'Hangzhou',
+      addressZh: '杭州市萧山区鸿宁路广孚联合国际中心2402室',
+      addressEn: 'Room 2402, Guangfu International Center, Hongning Road, Xiaoshan District, Hangzhou'
     },
     {
       cityZh: '沈阳',
       cityEn: 'Shenyang',
       addressZh: '沈阳市沈抚新区彰武路李石经济区管委会大楼3层',
-      addressEn: '3/F, Li Shi Economic Zone Committee Bldg Zhangwu Road, Shenfu New District'
-    },
-    {
-      cityZh: '香港',
-      cityEn: 'Hong Kong',
-      addressZh: '香港新界沙田安耀街3号汇达大厦2605室',
-      addressEn: 'Room 1318-19, Hollywood Plaza 610 Nathan Road, Mong Kok, Kowloon'
+      addressEn: '3/F, Li Shi Economic Zone Committee Building, Zhangwu Road, Shenfu New District, Shenyang'
     }
   ];
 
