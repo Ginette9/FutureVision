@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useRef } from 'react';
 import { AuthContext } from '../contexts/authContext';
 import { InviteCodeItem } from '../data/inviteCodes';
 import { getApiBaseUrl } from '../lib/utils';
@@ -72,11 +72,11 @@ const AdminInviteCodes = () => {
           id: `invite-${index + 1}`,
           code: codeObj.code,
           type: codeObj.type,
-          name: `${codeObj.code} 邀请码`,
-          description: codeObj.type === 'count' ? `使用次数: ${codeObj.currentUses}/${codeObj.maxUses}` : `有效期: ${new Date(codeObj.startDate).toLocaleString()} - ${new Date(codeObj.endDate).toLocaleString()}`,
+          name: codeObj.name || `${codeObj.code} 邀请码`,
+          description: codeObj.description || (codeObj.type === 'count' ? `使用次数: ${codeObj.currentUses}/${codeObj.maxUses}` : `有效期: ${new Date(codeObj.startDate).toLocaleString()} - ${new Date(codeObj.endDate).toLocaleString()}`),
           createdAt: codeObj.createdAt || new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          active: true,
+          active: codeObj.active !== undefined ? codeObj.active : true,
           allowDownload: codeObj.code.toLowerCase() === 'mscfv',
           allowNewAnalysis: codeObj.code.toLowerCase() === 'mscfv',
           maxUses: codeObj.maxUses,
@@ -333,6 +333,46 @@ const AdminInviteCodes = () => {
     URL.revokeObjectURL(url);
   };
 
+  // 导入功能的文件引用
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 处理导入邀请码
+  const handleImportInviteCodes = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const formData = new FormData();
+      formData.append('inviteCodesFile', file);
+
+      const apiBaseUrl = getApiBaseUrl();
+      const response = await fetch(`${apiBaseUrl}/api/admin/invite-codes/import`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta?.env?.VITE_ADMIN_PASSWORD || 'admin123456'}`
+        },
+        body: formData
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        await fetchInviteCodes();
+        alert(`成功导入 ${result.successCount} 个邀请码，跳过 ${result.skipCount} 个重复邀请码`);
+      } else {
+        const errorData = await response.json();
+        alert('导入失败: ' + (errorData.message || '未知错误'));
+      }
+    } catch (error) {
+      console.error('导入邀请码失败:', error);
+      alert('导入失败: 网络错误');
+    } finally {
+      // 重置文件输入
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
   // 未登录状态显示登录界面
   if (!isAuthenticated) {
     return (
@@ -525,6 +565,22 @@ const AdminInviteCodes = () => {
             >
               导出选中 ({selectedCodes.size})
             </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept=".csv"
+              onChange={handleImportInviteCodes}
+              className="hidden"
+              id="import-csv"
+            />
+            <label
+              htmlFor="import-csv"
+              className="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            >
+              批量导入
+            </label>
           </div>
         </div>
 

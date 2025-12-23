@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 import initSqlJs from 'sql.js';
+import fileUpload from 'express-fileupload';
 dotenv.config();
 const app = express();
 const PORT = Number(process.env.PORT || 3001);
@@ -78,6 +79,8 @@ async function prepareDbFiles() {
 
 // 启用CORS
 app.use(cors());
+// 配置文件上传中间件
+app.use(fileUpload());
 app.use(express.json({ limit: '50mb' }));
 
 // 静态文件服务
@@ -1689,6 +1692,228 @@ app.delete('/api/admin/invite-codes/:code', async (req, res) => {
     }
   } catch (error) {
     console.error('删除邀请码失败:', error);
+    res.status(500).json({ error: 'internal_server_error', message: '服务器内部错误' });
+  }
+});
+
+// 解析本地化时间格式（支持中文"上午"/"下午"）
+function parseLocalizedDate(dateStr) {
+  if (typeof dateStr !== 'string') return null;
+  
+  let normalizedStr = dateStr;
+  
+  // 处理下午时间
+  if (normalizedStr.includes('下午')) {
+    normalizedStr = normalizedStr.replace('下午', '');
+    // 将12小时制转换为24小时制
+    const parts = normalizedStr.split(' ');
+    if (parts.length >= 2) {
+      const timeParts = parts[1].split(':');
+      if (timeParts.length >= 2) {
+        let hour = parseInt(timeParts[0]);
+        if (hour < 12) {
+          hour += 12;
+          timeParts[0] = hour.toString();
+          parts[1] = timeParts.join(':');
+          normalizedStr = parts.join(' ');
+        }
+      }
+    }
+  } 
+  // 处理上午时间
+  else if (normalizedStr.includes('上午')) {
+    normalizedStr = normalizedStr.replace('上午', '');
+    // 处理上午12点的特殊情况
+    const parts = normalizedStr.split(' ');
+    if (parts.length >= 2 && parts[1].startsWith('12:')) {
+      parts[1] = parts[1].replace('12:', '00:');
+      normalizedStr = parts.join(' ');
+    }
+  }
+  
+  // 尝试解析标准化后的字符串
+  const date = new Date(normalizedStr);
+  return isNaN(date.getTime()) ? null : date;
+}
+
+// 批量导入邀请码
+app.post('/api/admin/invite-codes/import', async (req, res) => {
+  try {
+    const token = req.headers['authorization']?.split(' ')[1];
+    
+    if (token !== ADMIN_TOKEN) {
+      return res.status(401).json({ error: 'unauthorized', message: '未经授权的访问' });
+    }
+    
+    // 检查是否有上传的文件
+    if (!req.files || !req.files.inviteCodesFile) {
+      return res.status(400).json({ error: 'no_file', message: '请上传邀请码文件' });
+    }
+    
+    const uploadedFile = req.files.inviteCodesFile;
+    
+    // 读取文件内容
+    let fileContent;
+    if (uploadedFile.mimetype === 'text/csv' || uploadedFile.name.endsWith('.csv')) {
+      // 读取CSV文件
+      fileContent = uploadedFile.data.toString('utf8');
+      
+      // 解析CSV内容
+      // 使用更可靠的CSV解析方法，处理包含逗号的引号字段
+      const lines = fileContent.split('\n').filter(line => line.trim());
+      
+      // 解析CSV行的辅助函数
+      function parseCSVLine(line) {
+        const columns = [];
+        let current = '';
+        let inQuotes = false;
+        let escaped = false;
+        
+        for (let char of line) {
+          if (escaped) {
+            current += char;
+            escaped = false;
+          } else if (char === '\\') {
+            escaped = true;
+          } else if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            columns.push(current);
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+        
+        columns.push(current);
+        return columns.map(col => col.replace(/^"|"$/g, '').trim());
+      }
+      
+      // 跳过标题行
+      const headerLine = lines[0];
+      const headerMap = {};
+      const headers = parseCSVLine(headerLine);
+      headers.forEach((header, index) => {
+        // 清理标题（移除引号和空白）
+        const cleanedHeader = header;
+        headerMap[cleanedHeader] = index;
+      });
+      
+      // 解析数据行
+      const importedCodes = [];
+      const errors = [];
+      let successCount = 0;
+      
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        const columns = parseCSVLine(line);
+        
+        try {
+          // 从CSV列中提取数据
+          const code = columns[headerMap['邀请码']]?.toLowerCase();
+          const rawType = columns[headerMap['类型']];
+          const name = columns[headerMap['名称']];
+          const description = columns[headerMap['描述']];
+          const statusStr = columns[headerMap['状态']];
+          const maxUsesStr = columns[headerMap['最大使用次数']];
+          const currentUsesStr = columns[headerMap['已使用次数']];
+          const startDateStr = columns[headerMap['开始时间']];
+          const endDateStr = columns[headerMap['结束时间']];
+          
+          // 更严格的类型判断逻辑
+          let type = 'count'; // 默认类型为count，更安全
+          console.log(`Line ${i+1} - Before type check: rawType='${rawType}'`); // 添加更多调试信息
+          if (rawType) {
+            const trimmedType = rawType.trim().toLowerCase();
+            console.log(`Line ${i+1} - Trimmed type: '${trimmedType}'`); // 调试信息
+            if (trimmedType === 'count' || trimmedType.includes('次数')) {
+              type = 'count';
+            } else if (trimmedType === 'time' || trimmedType.includes('时间')) {
+              type = 'time';
+            }
+          }
+          
+          console.log(`Line ${i+1}: code=${code}, rawType=${rawType}, type=${type}`); // 调试信息
+          
+          // 验证必填字段
+          if (!code) {
+            errors.push({ line: i + 1, message: '邀请码不能为空' });
+            continue;
+          }
+          
+          // 检查是否已存在
+          if (VALID_CODES.some(c => c.code === code)) {
+            errors.push({ line: i + 1, message: `邀请码 ${code} 已存在` });
+            continue;
+          }
+          
+          const newCode = {
+            code,
+            type,
+            name: name || '',
+            description: description || '',
+            active: statusStr === '激活',
+            createdAt: new Date().toISOString()
+          };
+          
+          // 根据类型添加相应字段
+          if (type === 'count') {
+            newCode.maxUses = parseInt(maxUsesStr) || 1;
+            newCode.currentUses = parseInt(currentUsesStr) || 0;
+          } else if (type === 'time') {
+            // 解析开始时间和结束时间（支持本地化时间格式）
+            const startDate = parseLocalizedDate(startDateStr);
+            const endDate = parseLocalizedDate(endDateStr);
+            
+            if (!startDate || !endDate) {
+              errors.push({ line: i + 1, message: '时间格式不正确' });
+              continue;
+            }
+            
+            newCode.startDate = startDate.toISOString();
+            newCode.endDate = endDate.toISOString();
+            newCode.currentUses = 0;
+          }
+          
+          // 添加到导入列表
+          importedCodes.push(newCode);
+          successCount++;
+          
+        } catch (e) {
+          errors.push({ line: i + 1, message: `解析错误: ${e.message}` });
+        }
+      }
+      
+      // 如果有成功导入的邀请码，保存到文件
+      if (importedCodes.length > 0) {
+        VALID_CODES.push(...importedCodes);
+        const saved = saveInviteCodes(VALID_CODES);
+        
+        if (!saved) {
+          res.status(500).json({ 
+            error: 'save_failed', 
+            message: '保存邀请码失败',
+            successCount, 
+            totalCount: importedCodes.length + errors.length,
+            errors
+          });
+          return;
+        }
+      }
+      
+      res.json({ 
+        success: true, 
+        successCount, 
+        totalCount: importedCodes.length + errors.length,
+        errors 
+      });
+      
+    } else {
+      res.status(400).json({ error: 'invalid_file_type', message: '只支持CSV格式的文件' });
+    }
+    
+  } catch (error) {
+    console.error('批量导入邀请码失败:', error);
     res.status(500).json({ error: 'internal_server_error', message: '服务器内部错误' });
   }
 });
