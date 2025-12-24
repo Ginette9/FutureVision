@@ -9,6 +9,7 @@ import { apiGet, getCountryId, getProductId } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
 import zhCNTranslations from '@/locales/zh-CN';
 import { convertToTraditional } from '@/locales/zh-HK';
+import { getInviteCodeByCode } from '@/data/inviteCodes';
 
 // 定义表单验证模式
 const contactSchema = z.object({
@@ -194,10 +195,12 @@ export default function ESGRiskAnalysis() {
   // 检查邀请码是否已被使用且当前选择的行业/地区与之前不同
   if (inviteCode) {
     const trimmedCode = inviteCode.trim().toLowerCase();
+    const codeInfo = getInviteCodeByCode(trimmedCode);
     const usedCodes = JSON.parse(localStorage.getItem('usedInviteCodes') || '{}');
     const usedCodeInfo = usedCodes[trimmedCode];
     
-    if (usedCodeInfo && usedCodeInfo.used) {
+    // 仅对次数型邀请码应用行业/地区限制，时间型邀请码不受此限制
+    if (codeInfo?.type === 'count' && usedCodeInfo && usedCodeInfo.used) {
       // 如果邀请码已被使用，检查当前选择的行业和地区是否与之前相同
       const isSameIndustry = formData.industry.id === usedCodeInfo.industry.id;
       const isSameCountry = formData.country.id === usedCodeInfo.country.id;
@@ -238,17 +241,31 @@ export default function ESGRiskAnalysis() {
      
      // 导航到结果页面，保留邀请码参数
     if (inviteCode) {
-      // 标记邀请码为已使用，防止二次使用
+      // 记录邀请码使用信息
       const trimmedCode = inviteCode.trim().toLowerCase();
+      const codeInfo = getInviteCodeByCode(trimmedCode);
       const usedCodes = JSON.parse(localStorage.getItem('usedInviteCodes') || '{}');
-      // 记录邀请码使用时的详细信息
-      usedCodes[trimmedCode] = {
-        used: true,
-        industry: formData.industry,
-        country: formData.country,
-        contact: formData.contact || { name: '', email: '', phone: '' },
-        usedAt: new Date().toISOString()
-      };
+      
+      if (codeInfo?.type === 'count') {
+        // 次数型邀请码：标记为已使用，防止二次使用
+        usedCodes[trimmedCode] = {
+          used: true,
+          industry: formData.industry,
+          country: formData.country,
+          contact: formData.contact || { name: '', email: '', phone: '' },
+          usedAt: new Date().toISOString()
+        };
+      } else if (codeInfo?.type === 'time') {
+        // 时间型邀请码：记录使用信息但不限制行业/地区
+        // 只记录最后一次使用的信息，不影响后续使用
+        usedCodes[trimmedCode] = {
+          used: false, // 时间型邀请码不标记为已使用
+          lastUsedIndustry: formData.industry,
+          lastUsedCountry: formData.country,
+          contact: formData.contact || { name: '', email: '', phone: '' },
+          lastUsedAt: new Date().toISOString()
+        };
+      }
       localStorage.setItem('usedInviteCodes', JSON.stringify(usedCodes));
       
       navigate(`/esg-voyant/report?invite-code=${encodeURIComponent(inviteCode)}`);

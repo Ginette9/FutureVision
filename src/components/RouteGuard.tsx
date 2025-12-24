@@ -26,10 +26,14 @@ const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
 
       const trimmedCode = inviteCode.trim().toLowerCase();
       
-      // 检查邀请码是否已经被使用过
-      const usedCodes = JSON.parse(localStorage.getItem('usedInviteCodes') || '{}');
-      if (usedCodes[trimmedCode] && (usedCodes[trimmedCode] === true || usedCodes[trimmedCode].used)) {
-        setIsCodeUsed(true);
+      // 检查邀请码类型，仅对次数型邀请码应用使用限制
+      const codeInfo = getInviteCodeByCode(trimmedCode);
+      if (codeInfo?.type === 'count') {
+        // 仅对次数型邀请码检查是否已经被使用过
+        const usedCodes = JSON.parse(localStorage.getItem('usedInviteCodes') || '{}');
+        if (usedCodes[trimmedCode] && (usedCodes[trimmedCode] === true || usedCodes[trimmedCode].used)) {
+          setIsCodeUsed(true);
+        }
       }
 
       try {

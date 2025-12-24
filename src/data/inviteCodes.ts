@@ -32,14 +32,17 @@ let inviteCodes: InviteCodeItem[] = envInviteCodes.split(',').map((code: string,
   return {
     id: `invite-${index + 1}`,
     code: trimmedCode,
-    type: 'count', // 默认使用次数类型
+    type: isMscfv ? 'time' : 'count', // mscfv使用时间类型，其他使用次数类型
     name: `${trimmedCode} 邀请码`,
     description: `${trimmedCode} 邀请码描述`,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     active: true,
     allowDownload: isMscfv,
-    allowNewAnalysis: isMscfv
+    allowNewAnalysis: isMscfv,
+    // 为mscfv添加时间范围（当前时间前后10年）
+    startDate: isMscfv ? new Date(Date.now() - 10 * 365 * 24 * 60 * 60 * 1000).toISOString() : undefined,
+    endDate: isMscfv ? new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000).toISOString() : undefined
   };
 });
 

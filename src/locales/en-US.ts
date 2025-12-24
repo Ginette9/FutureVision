@@ -889,7 +889,7 @@ export default {
     "Uganda",
     "Ukraine",
     "United Arab Emirates",
-    "United Kingdom",
+    "United Kingdom (Great Britain and Northern Ireland)",
     "United States of America",
     "Uzbekistan",
     "Vatican City State (Holy See)",

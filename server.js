@@ -381,13 +381,18 @@ function ensureInviteCodesFile() {
   if (!fs.existsSync(INVITE_CODES_JSON)) {
     const defaultCodes = process.env.PAY_INVITE_CODES || 'FREE2025,TESTVIP,MSCFV';
     const codesArray = defaultCodes.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-    const structuredCodes = codesArray.map(code => ({
-      code,
-      type: 'count',
-      maxUses: 1,
-      currentUses: 0,
-      createdAt: new Date().toISOString()
-    }));
+    const structuredCodes = codesArray.map(code => {
+      const isMscfv = code === 'mscfv';
+      return {
+        code,
+        type: isMscfv ? 'time' : 'count',
+        maxUses: isMscfv ? undefined : 1,
+        currentUses: isMscfv ? 0 : 0,
+        createdAt: new Date().toISOString(),
+        startDate: isMscfv ? new Date(Date.now() - 10 * 365 * 24 * 60 * 60 * 1000).toISOString() : undefined,
+        endDate: isMscfv ? new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000).toISOString() : undefined
+      };
+    });
     fs.writeFileSync(INVITE_CODES_JSON, JSON.stringify(structuredCodes, null, 2));
   }
 }
@@ -412,18 +417,24 @@ try {
   const inviteCodesArray = JSON.parse(inviteCodesJson);
   
   // 检查是否是旧格式（简单字符串数组）
-  if (inviteCodesArray.length > 0 && typeof inviteCodesArray[0] === 'string') {
-    // 转换为新格式
-    VALID_CODES = inviteCodesArray.map(code => ({
-      code: code.trim().toLowerCase(),
-      type: 'count',
-      maxUses: 1,
-      currentUses: 0,
-      createdAt: new Date().toISOString()
-    }));
-    // 保存新格式
-    saveInviteCodes(VALID_CODES);
-  } else {
+    if (inviteCodesArray.length > 0 && typeof inviteCodesArray[0] === 'string') {
+      // 转换为新格式
+      VALID_CODES = inviteCodesArray.map(code => {
+        const trimmedCode = code.trim().toLowerCase();
+        const isMscfv = trimmedCode === 'mscfv';
+        return {
+          code: trimmedCode,
+          type: isMscfv ? 'time' : 'count',
+          maxUses: isMscfv ? undefined : 1,
+          currentUses: isMscfv ? 0 : 0,
+          createdAt: new Date().toISOString(),
+          startDate: isMscfv ? new Date(Date.now() - 10 * 365 * 24 * 60 * 60 * 1000).toISOString() : undefined,
+          endDate: isMscfv ? new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000).toISOString() : undefined
+        };
+      });
+      // 保存新格式
+      saveInviteCodes(VALID_CODES);
+    } else {
     // 已经是新格式
     VALID_CODES = inviteCodesArray;
   }
@@ -431,13 +442,19 @@ try {
   console.error('读取邀请码文件失败:', error);
   // 如果读取失败，使用环境变量中的默认值
   const defaultCodes = process.env.PAY_INVITE_CODES || 'FREE2025,TESTVIP,MSCFV';
-  VALID_CODES = defaultCodes.split(',').map(s => ({
-    code: s.trim().toLowerCase(),
-    type: 'count',
-    maxUses: 1,
-    currentUses: 0,
-    createdAt: new Date().toISOString()
-  }));
+  VALID_CODES = defaultCodes.split(',').map(s => {
+    const trimmedCode = s.trim().toLowerCase();
+    const isMscfv = trimmedCode === 'mscfv';
+    return {
+      code: trimmedCode,
+      type: isMscfv ? 'time' : 'count',
+      maxUses: isMscfv ? undefined : 1,
+      currentUses: isMscfv ? 0 : 0,
+      createdAt: new Date().toISOString(),
+      startDate: isMscfv ? new Date(Date.now() - 10 * 365 * 24 * 60 * 60 * 1000).toISOString() : undefined,
+      endDate: isMscfv ? new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000).toISOString() : undefined
+    };
+  });
   // 保存默认值到文件
   saveInviteCodes(VALID_CODES);
 }

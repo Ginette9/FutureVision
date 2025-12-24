@@ -331,7 +331,7 @@ export const countryIdData = [
   { country_id: "236", Country: "Uganda" },
   { country_id: "237", Country: "Ukraine" },
   { country_id: "238", Country: "United Arab Emirates" },
-  { country_id: "239", Country: "United Kingdom" },
+  { country_id: "239", Country: "United Kingdom (Great Britain and Northern Ireland)" },
   { country_id: "240", Country: "United States of America" },
   { country_id: "241", Country: "Uzbekistan" },
   { country_id: "242", Country: "Vatican City State (Holy See)" },
