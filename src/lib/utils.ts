@@ -28,7 +28,7 @@ export function getBackendBase(): { type: 'same-origin' | 'absolute', base: stri
 
 export function getApiBaseUrl(): string {
   const { type, base } = getBackendBase();
-  return type === 'same-origin' ? '' : `${base}`;
+  return type === 'same-origin' ? `${base}` : `${base}`;
 }
 
 export async function apiPost<T>(path: string, body?: any): Promise<T> {

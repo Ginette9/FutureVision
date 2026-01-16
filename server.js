@@ -1713,15 +1713,18 @@ app.delete('/api/admin/invite-codes/:code', async (req, res) => {
   }
 });
 
-// 解析本地化时间格式（支持中文"上午"/"下午"）
+// 解析本地化时间格式（支持中文"上午"/"下午"和英文AM/PM）
 function parseLocalizedDate(dateStr) {
   if (typeof dateStr !== 'string') return null;
   
   let normalizedStr = dateStr;
   
-  // 处理下午时间
-  if (normalizedStr.includes('下午')) {
-    normalizedStr = normalizedStr.replace('下午', '');
+  // 移除可能的引号（CSV导出时添加的）
+  normalizedStr = normalizedStr.replace(/^"|"$/g, '');
+  
+  // 处理下午时间（中文和英文）
+  if (normalizedStr.includes('下午') || normalizedStr.includes('PM')) {
+    normalizedStr = normalizedStr.replace('下午', '').replace('PM', '').trim();
     // 将12小时制转换为24小时制
     const parts = normalizedStr.split(' ');
     if (parts.length >= 2) {
@@ -1737,9 +1740,9 @@ function parseLocalizedDate(dateStr) {
       }
     }
   } 
-  // 处理上午时间
-  else if (normalizedStr.includes('上午')) {
-    normalizedStr = normalizedStr.replace('上午', '');
+  // 处理上午时间（中文和英文）
+  else if (normalizedStr.includes('上午') || normalizedStr.includes('AM')) {
+    normalizedStr = normalizedStr.replace('上午', '').replace('AM', '').trim();
     // 处理上午12点的特殊情况
     const parts = normalizedStr.split(' ');
     if (parts.length >= 2 && parts[1].startsWith('12:')) {
@@ -1859,51 +1862,81 @@ app.post('/api/admin/invite-codes/import', async (req, res) => {
           }
           
           // 检查是否已存在
-          if (VALID_CODES.some(c => c.code === code)) {
-            errors.push({ line: i + 1, message: `邀请码 ${code} 已存在` });
-            continue;
-          }
+          const existingCodeIndex = VALID_CODES.findIndex(c => c.code === code);
           
-          const newCode = {
-            code,
-            type,
-            name: name || '',
-            description: description || '',
-            active: statusStr === '激活',
-            createdAt: new Date().toISOString()
-          };
-          
-          // 根据类型添加相应字段
-          if (type === 'count') {
-            newCode.maxUses = parseInt(maxUsesStr) || 1;
-            newCode.currentUses = parseInt(currentUsesStr) || 0;
-          } else if (type === 'time') {
-            // 解析开始时间和结束时间（支持本地化时间格式）
-            const startDate = parseLocalizedDate(startDateStr);
-            const endDate = parseLocalizedDate(endDateStr);
+          if (existingCodeIndex !== -1) {
+            // 更新已存在的邀请码
+            const existingCode = VALID_CODES[existingCodeIndex];
+            existingCode.name = name || '';
+            existingCode.description = description || '';
+            existingCode.active = statusStr === '激活';
             
-            if (!startDate || !endDate) {
-              errors.push({ line: i + 1, message: '时间格式不正确' });
-              continue;
+            // 根据类型更新相应字段
+            if (type === 'count') {
+              existingCode.maxUses = parseInt(maxUsesStr) || 1;
+              existingCode.currentUses = parseInt(currentUsesStr) || 0;
+            } else if (type === 'time') {
+              // 解析开始时间和结束时间（支持本地化时间格式）
+              const startDate = parseLocalizedDate(startDateStr);
+              const endDate = parseLocalizedDate(endDateStr);
+              
+              if (!startDate || !endDate) {
+                errors.push({ line: i + 1, message: '时间格式不正确' });
+                continue;
+              }
+              
+              existingCode.startDate = startDate.toISOString();
+              existingCode.endDate = endDate.toISOString();
+              existingCode.currentUses = 0;
             }
             
-            newCode.startDate = startDate.toISOString();
-            newCode.endDate = endDate.toISOString();
-            newCode.currentUses = 0;
+            // 标记为成功更新
+            successCount++;
+          } else {
+            // 创建新邀请码
+            const newCode = {
+              code,
+              type,
+              name: name || '',
+              description: description || '',
+              active: statusStr === '激活',
+              createdAt: new Date().toISOString()
+            };
+            
+            // 根据类型添加相应字段
+            if (type === 'count') {
+              newCode.maxUses = parseInt(maxUsesStr) || 1;
+              newCode.currentUses = parseInt(currentUsesStr) || 0;
+            } else if (type === 'time') {
+              // 解析开始时间和结束时间（支持本地化时间格式）
+              const startDate = parseLocalizedDate(startDateStr);
+              const endDate = parseLocalizedDate(endDateStr);
+              
+              if (!startDate || !endDate) {
+                errors.push({ line: i + 1, message: '时间格式不正确' });
+                continue;
+              }
+              
+              newCode.startDate = startDate.toISOString();
+              newCode.endDate = endDate.toISOString();
+              newCode.currentUses = 0;
+            }
+            
+            // 添加到导入列表
+            importedCodes.push(newCode);
+            successCount++;
           }
-          
-          // 添加到导入列表
-          importedCodes.push(newCode);
-          successCount++;
           
         } catch (e) {
           errors.push({ line: i + 1, message: `解析错误: ${e.message}` });
         }
       }
       
-      // 如果有成功导入的邀请码，保存到文件
-      if (importedCodes.length > 0) {
-        VALID_CODES.push(...importedCodes);
+      // 保存邀请码（无论是否有新导入，只要有更新就保存）
+      if (importedCodes.length > 0 || successCount > 0) {
+        if (importedCodes.length > 0) {
+          VALID_CODES.push(...importedCodes);
+        }
         const saved = saveInviteCodes(VALID_CODES);
         
         if (!saved) {

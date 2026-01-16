@@ -36,9 +36,9 @@ const AdminInviteCodes = () => {
   const handleSelectAll = (codes: InviteCodeItem[]) => {
     if (codes.every(code => selectedCodes.has(code.id))) {
       // 取消全选
-      const codesToKeep = selectedCodes;
-      codes.forEach(code => codesToKeep.delete(code.id));
-      setSelectedCodes(codesToKeep);
+      const newSelected = new Set(selectedCodes);
+      codes.forEach(code => newSelected.delete(code.id));
+      setSelectedCodes(newSelected);
     } else {
       // 全选
       const newSelected = new Set(selectedCodes);
@@ -68,8 +68,8 @@ const AdminInviteCodes = () => {
       if (response.ok) {
         const data = await response.json();
         // 将后端返回的结构化邀请码转换为InviteCodeItem格式
-        const formattedCodes = data.codes.map((codeObj: any, index: number) => ({
-          id: `invite-${index + 1}`,
+        const formattedCodes = data.codes.map((codeObj: any) => ({
+          id: codeObj.code,
           code: codeObj.code,
           type: codeObj.type,
           name: codeObj.name || `${codeObj.code} 邀请码`,
@@ -241,25 +241,27 @@ const AdminInviteCodes = () => {
         if (codesToDelete.length === 0) return;
 
         const apiBaseUrl = getApiBaseUrl();
-        const response = await fetch(`${apiBaseUrl}/api/admin/invite-codes`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta?.env?.VITE_ADMIN_PASSWORD || 'admin123456'}`
-          },
-          body: JSON.stringify({ codes: codesToDelete })
-        });
-
-        if (response.ok) {
-          // 重新获取最新的邀请码列表
-          fetchInviteCodes();
-          // 清空选中列表
-          setSelectedCodes(new Set());
-          alert(`成功删除 ${selectedCodes.size} 个邀请码`);
-        } else {
-          const errorData = await response.json();
-          alert('批量删除失败: ' + (errorData.message || '未知错误'));
+        let successCount = 0;
+        
+        // 循环调用单个删除的API端点
+        for (const code of codesToDelete) {
+          const response = await fetch(`${apiBaseUrl}/api/admin/invite-codes/${encodeURIComponent(code)}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${import.meta?.env?.VITE_ADMIN_PASSWORD || 'admin123456'}`
+            }
+          });
+          
+          if (response.ok) {
+            successCount++;
+          }
         }
+
+        // 重新获取最新的邀请码列表
+        fetchInviteCodes();
+        // 清空选中列表
+        setSelectedCodes(new Set());
+        alert(`成功删除 ${successCount} 个邀请码`);
       } catch (error) {
         console.error('批量删除邀请码失败:', error);
         alert('批量删除失败: 网络错误');
@@ -280,10 +282,10 @@ const AdminInviteCodes = () => {
       `"${code.description || ''}"`, // 描述
       code.type === 'count' ? code.maxUses : '', // 最大使用次数
       code.type === 'count' ? code.currentUses : '', // 已使用次数
-      code.type === 'time' && code.startDate ? new Date(code.startDate).toLocaleString() : '', // 开始时间
-      code.type === 'time' && code.endDate ? new Date(code.endDate).toLocaleString() : '', // 结束时间
+      code.type === 'time' && code.startDate ? `"${new Date(code.startDate).toLocaleString()}"` : '', // 开始时间
+      code.type === 'time' && code.endDate ? `"${new Date(code.endDate).toLocaleString()}"` : '', // 结束时间
       code.active ? '激活' : '禁用', // 状态
-      new Date(code.createdAt).toLocaleString() // 创建时间
+      `"${new Date(code.createdAt).toLocaleString()}"` // 创建时间
     ]);
     
     // 组合CSV内容
