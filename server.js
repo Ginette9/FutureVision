@@ -733,13 +733,7 @@ function writeLeads(arr) {
   try {
     ensureLeadsFile();
     const list = Array.isArray(arr) ? arr : [];
-    const seen = new Set();
-    const uniq = [];
-    for (const it of list) {
-      const key = `${String(it?.email || '').toLowerCase()}__${String(it?.industryId || '')}__${String(it?.countryId || '')}`;
-      if (key && !seen.has(key)) { seen.add(key); uniq.push(it); }
-    }
-    fs.writeFileSync(LEADS_JSON, JSON.stringify(uniq, null, 2), 'utf8');
+    fs.writeFileSync(LEADS_JSON, JSON.stringify(list, null, 2), 'utf8');
     return true;
   } catch (e) {
     console.error('[leads] write failed:', e.message);
@@ -936,6 +930,243 @@ app.get('/api/contact', (req, res) => {
 app.get('/api/esg-forms', (req, res) => {
   const items = readLeads();
   res.json({ items, count: items.length });
+});
+
+// 管理员数据管理API
+app.post('/api/admin/analytics/clear/:type', (req, res) => {
+  try {
+    const token = req.headers['authorization']?.split(' ')[1];
+    
+    if (token !== ADMIN_TOKEN) {
+      return res.status(401).json({ error: 'unauthorized', message: '未经授权的访问' });
+    }
+    
+    const { type } = req.params || {};
+    let success = false;
+    
+    switch (type) {
+      case 'visitors':
+        success = writeVisitors([]);
+        break;
+      case 'contacts':
+        success = writeContacts([]);
+        break;
+      case 'subscriptions':
+        success = writeSubscriptions([]);
+        break;
+      case 'leads':
+        success = writeLeads([]);
+        break;
+      default:
+        return res.status(400).json({ error: 'invalid_type', message: '无效的数据类型' });
+    }
+    
+    if (!success) {
+      return res.status(500).json({ error: 'clear_failed', message: '清空数据失败' });
+    }
+    
+    res.json({ success: true, message: '数据清空成功' });
+  } catch (e) {
+    console.error('[admin] clear analytics failed:', e.message);
+    res.status(500).json({ error: 'clear_failed', message: '清空数据失败' });
+  }
+});
+
+app.post('/api/admin/analytics/import', (req, res) => {
+  try {
+    const token = req.headers['authorization']?.split(' ')[1];
+    
+    if (token !== ADMIN_TOKEN) {
+      return res.status(401).json({ error: 'unauthorized', message: '未经授权的访问' });
+    }
+    
+    // 检查是否有上传的文件
+    console.log('Request files:', req.files);
+    console.log('Request body:', req.body);
+    
+    if (!req.files || !req.files.file) {
+      return res.status(400).json({ error: 'no_file', message: '请上传CSV文件' });
+    }
+    
+    const uploadedFile = req.files.file;
+    const { type } = req.body || {};
+    
+    console.log('Uploaded file:', {
+      name: uploadedFile.name,
+      size: uploadedFile.size,
+      mimetype: uploadedFile.mimetype
+    });
+    
+    // 读取文件内容
+    let fileContent;
+    if (uploadedFile.mimetype === 'text/csv' || uploadedFile.mimetype === 'text/tab-separated-values' || uploadedFile.name.endsWith('.csv') || uploadedFile.name.endsWith('.tsv')) {
+      fileContent = uploadedFile.data.toString('utf8');
+    } else {
+      return res.status(400).json({ error: 'invalid_file', message: '请上传CSV或TSV文件' });
+    }
+    
+    // 解析CSV内容
+    const lines = fileContent.split('\n').filter(line => line.trim());
+    if (lines.length < 2) {
+      return res.status(400).json({ error: 'empty_file', message: 'CSV文件内容为空' });
+    }
+    
+    // 解析CSV行的辅助函数（支持逗号和制表符分隔）
+    function parseCSVLine(line) {
+      const columns = [];
+      let current = '';
+      let inQuotes = false;
+      let escaped = false;
+      
+      for (const char of line) {
+        if (escaped) {
+          current += char;
+          escaped = false;
+        } else if (char === '\\') {
+          escaped = true;
+        } else if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if ((char === ',' || char === '\t') && !inQuotes) {
+          columns.push(current.trim());
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      
+      columns.push(current.trim());
+      return columns;
+    }
+    
+    const headers = parseCSVLine(lines[0]);
+    console.log('Headers:', headers);
+    console.log('Number of headers:', headers.length);
+    
+    const dataLines = lines.slice(1);
+    const importedData = [];
+    
+    console.log('Processing', dataLines.length, 'data lines');
+    console.log('Data lines preview:', dataLines.slice(0, 3)); // 预览前3行数据
+    
+    for (let i = 0; i < dataLines.length; i++) {
+      const line = dataLines[i];
+      const columns = parseCSVLine(line);
+      console.log(`Line ${i+1} columns:`, columns);
+      console.log(`Line ${i+1} column count:`, columns.length);
+      
+      if (columns.length < headers.length) {
+        console.log(`Skipping line ${i+1} - insufficient columns`);
+        continue;
+      }
+      
+      switch (type) {
+        case 'visitors':
+          if (columns.length >= 5) {
+            importedData.push({
+              ts: columns[0],
+              path: columns[1],
+              referrer: columns[2],
+              lang: columns[3],
+              ip: columns[4],
+              ua: ''
+            });
+          }
+          break;
+        case 'contacts':
+          if (columns.length >= 7) {
+            importedData.push({
+              ts: columns[0],
+              name: columns[1],
+              email: columns[2],
+              company: columns[3],
+              position: columns[4],
+              phone: columns[5],
+              message: columns[6]
+            });
+          }
+          break;
+        case 'subscriptions':
+          if (columns.length >= 3) {
+            importedData.push({
+              ts: columns[0],
+              email: columns[1],
+              category: columns[2]
+            });
+          }
+          break;
+        case 'leads':
+          console.log(`Processing lead line ${i+1}, columns length:`, columns.length);
+          if (columns.length >= 9) {
+            importedData.push({
+              ts: columns[0],
+              name: columns[1],
+              email: columns[2],
+              position: columns[3],
+              organization: columns[4],
+              phone: columns[5],
+              industryName: columns[6],
+              countryName: columns[7],
+              inviteCode: columns[8] || '',
+              industryId: '',
+              countryId: ''
+            });
+            console.log(`Added lead ${i+1} to importedData`);
+          } else {
+            console.log(`Skipping lead line ${i+1} - insufficient columns (${columns.length} < 9)`);
+          }
+          break;
+      }
+    }
+    
+    console.log('Imported data count:', importedData.length);
+    
+    let success = false;
+    let existingData = [];
+    
+    switch (type) {
+      case 'visitors':
+        existingData = readVisitors();
+        success = writeVisitors([...existingData, ...importedData]);
+        break;
+      case 'contacts':
+        existingData = readContacts();
+        success = writeContacts([...existingData, ...importedData]);
+        break;
+      case 'subscriptions':
+        existingData = readSubscriptions();
+        // 去重处理
+        const combinedSubs = [...existingData, ...importedData];
+        const seenSubs = new Set();
+        const uniqueSubs = combinedSubs.filter(item => {
+          const key = `${String(item?.email || '').toLowerCase()}__${String(item?.category || '')}`;
+          if (seenSubs.has(key)) return false;
+          seenSubs.add(key);
+          return true;
+        });
+        success = writeSubscriptions(uniqueSubs);
+        break;
+      case 'leads':
+        existingData = readLeads();
+        success = writeLeads([...existingData, ...importedData]);
+        break;
+      default:
+        return res.status(400).json({ error: 'invalid_type', message: '无效的数据类型' });
+    }
+    
+    if (!success) {
+      return res.status(500).json({ error: 'import_failed', message: '导入数据失败' });
+    }
+    
+    res.json({ 
+      success: true, 
+      message: '数据导入成功',
+      successCount: importedData.length,
+      totalCount: existingData.length + importedData.length
+    });
+  } catch (e) {
+    console.error('[admin] import analytics failed:', e.message);
+    res.status(500).json({ error: 'import_failed', message: '导入数据失败' });
+  }
 });
 
 app.post('/api/esg-form', (req, res) => {

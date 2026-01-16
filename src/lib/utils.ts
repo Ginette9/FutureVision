@@ -37,31 +37,49 @@ export async function apiPost<T>(path: string, body?: any): Promise<T> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 15000);
   try {
+    const isFormData = body instanceof FormData;
+    const headers: HeadersInit = { 
+      'Authorization': 'Bearer admin123456'
+    };
+    if (!isFormData) {
+      headers['Content-Type'] = 'application/json';
+    }
+    
     const resp = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: body ? JSON.stringify(body) : undefined,
+      headers,
+      body: isFormData ? body : (body ? JSON.stringify(body) : undefined),
       signal: controller.signal,
     });
     clearTimeout(timer);
     if (resp.ok) return resp.json();
-    if (resp.status === 405) {
+    if (resp.status === 405 && !isFormData) {
       const u = new URL(url, window.location.origin);
       if (body && typeof body === 'object') {
         Object.entries(body).forEach(([k, v]) => u.searchParams.set(k, String(v ?? '')));
       }
-      const r2 = await fetch(u.toString(), { method: 'GET' });
+      const r2 = await fetch(u.toString(), { 
+        method: 'GET',
+        headers: { 'Authorization': 'Bearer admin123456' }
+      });
       if (!r2.ok) throw new Error(`HTTP ${r2.status}`);
       return r2.json();
     }
     throw new Error(`HTTP ${resp.status}`);
   } catch (e) {
     clearTimeout(timer);
+    const isFormData = body instanceof FormData;
+    if (isFormData) {
+      throw e;
+    }
     const u = new URL(url, window.location.origin);
     if (body && typeof body === 'object') {
       Object.entries(body).forEach(([k, v]) => u.searchParams.set(k, String(v ?? '')));
     }
-    const r2 = await fetch(u.toString(), { method: 'GET' });
+    const r2 = await fetch(u.toString(), { 
+      method: 'GET',
+      headers: { 'Authorization': 'Bearer admin123456' }
+    });
     if (!r2.ok) throw new Error(`HTTP ${r2.status}`);
     return r2.json();
   }
@@ -72,7 +90,11 @@ export async function apiGet<T>(path: string, params?: Record<string, string>): 
   if (params) Object.entries(params).forEach(([k, v]) => u.searchParams.set(k, v));
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 15000);
-  const resp = await fetch(u.toString(), { method: 'GET', signal: controller.signal });
+  const resp = await fetch(u.toString(), { 
+    method: 'GET', 
+    headers: { 'Authorization': 'Bearer admin123456' },
+    signal: controller.signal 
+  });
   clearTimeout(timer);
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
   return resp.json();

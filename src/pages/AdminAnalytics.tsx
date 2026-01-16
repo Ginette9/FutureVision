@@ -1,6 +1,6 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { AuthContext } from '@/contexts/authContext';
-import { apiGet } from '@/lib/utils';
+import { apiGet, apiPost } from '@/lib/utils';
 
 type VisitorItem = { path: string; referrer: string; lang: string; ua: string; ip: string; ts: string };
 type SummaryItem = { path: string; count: number };
@@ -23,6 +23,10 @@ export default function AdminAnalytics() {
   const [filterEmail, setFilterEmail] = useState('');
   const [visitorsPage, setVisitorsPage] = useState(1);
   const [visitorsPageSize, setVisitorsPageSize] = useState(20);
+  const [importFile, setImportFile] = useState<File | null>(null);
+  const [importType, setImportType] = useState<'visitors' | 'contacts' | 'subscriptions' | 'leads'>('visitors');
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     if (sessionStorage.getItem('adminLogin') === '1') setIsAuthenticated(true);
@@ -73,6 +77,115 @@ export default function AdminAnalytics() {
 
   useEffect(() => { if (isAuthenticated) loadAll(); }, [isAuthenticated]);
 
+  // 导出CSV功能
+  const handleExport = (type: 'visitors' | 'contacts' | 'subscriptions' | 'leads') => {
+    let data: any[] = [];
+    let headers: string[] = [];
+    let filename = '';
+
+    switch (type) {
+      case 'visitors':
+        data = visitors;
+        headers = ['时间', '路径', '来源', '语言', 'IP'];
+        filename = `visitors-${new Date().toISOString().slice(0, 10)}.csv`;
+        break;
+      case 'contacts':
+        data = contacts;
+        headers = ['时间', '姓名', '邮箱', '公司', '职位', '电话', '留言'];
+        filename = `contacts-${new Date().toISOString().slice(0, 10)}.csv`;
+        break;
+      case 'subscriptions':
+        data = subs;
+        headers = ['时间', '邮箱', '类别'];
+        filename = `subscriptions-${new Date().toISOString().slice(0, 10)}.csv`;
+        break;
+      case 'leads':
+        data = leads;
+        headers = ['时间', '姓名', '邮箱', '职位', '机构', '电话', '行业', '国家/地区', '邀请码'];
+        filename = `leads-${new Date().toISOString().slice(0, 10)}.csv`;
+        break;
+    }
+
+    const rows = data.map(item => {
+      switch (type) {
+        case 'visitors':
+          return [item.ts, item.path, item.referrer, item.lang, item.ip].map(field => `"${String(field || '').replace(/"/g, '""')}"`);
+        case 'contacts':
+          return [item.ts, item.name, item.email, item.company, item.position, item.phone, item.message].map(field => `"${String(field || '').replace(/"/g, '""')}"`);
+        case 'subscriptions':
+          return [item.ts, item.email, item.category].map(field => `"${String(field || '').replace(/"/g, '""')}"`);
+        case 'leads':
+          return [item.ts, item.name, item.email, item.position, item.organization, item.phone, item.industryName, item.countryName, item.inviteCode || ''].map(field => `"${String(field || '').replace(/"/g, '""')}"`);
+        default:
+          return [];
+      }
+    });
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.join(','))
+    ].join('\n');
+
+    // 添加UTF-8 BOM标记，确保Excel等应用程序能正确识别编码
+    const bom = '\ufeff';
+    const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // 清空数据功能
+  const handleClear = async (type: 'visitors' | 'contacts' | 'subscriptions' | 'leads') => {
+    if (!confirm(`确定要清空${type === 'visitors' ? '访客' : type === 'contacts' ? '联系' : type === 'subscriptions' ? '订阅' : 'ESG表单'}数据吗？`)) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setMessage('');
+      await apiPost(`/api/admin/analytics/clear/${type}`, {});
+      setMessage(`成功清空${type === 'visitors' ? '访客' : type === 'contacts' ? '联系' : type === 'subscriptions' ? '订阅' : 'ESG表单'}数据`);
+      loadAll();
+    } catch (error) {
+      setMessage('清空数据失败，请重试');
+      console.error('清空数据失败:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 导入数据功能
+  const handleImport = async () => {
+    if (!importFile) {
+      setMessage('请选择要导入的CSV文件');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setMessage('');
+      const formData = new FormData();
+      formData.append('file', importFile);
+      formData.append('type', importType);
+
+      const response = await apiPost(`/api/admin/analytics/import`, formData);
+
+      setMessage(`成功导入${response.successCount || 0}条数据`);
+      loadAll();
+      setImportFile(null);
+    } catch (error) {
+      setMessage('导入数据失败，请重试');
+      console.error('导入数据失败:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const filteredVisitors = useMemo(() => {
     const fp = filterPath.trim().toLowerCase();
     const arr = visitors.filter(v => (fp ? String(v.path || '').toLowerCase().includes(fp) : true));
@@ -109,6 +222,71 @@ export default function AdminAnalytics() {
   return (
     <div className="max-w-6xl mx-auto pt-24 pb-20 px-4 space-y-8">
       <h2 className="text-3xl font-semibold">站点数据概览</h2>
+      
+      {/* 数据管理功能区 */}
+      <div className="border rounded p-4 space-y-4">
+        <h3 className="text-lg font-semibold">数据管理</h3>
+        
+        {/* 导出功能 */}
+        <div className="space-y-2">
+          <div className="font-medium">导出数据</div>
+          <div className="flex flex-wrap gap-2">
+            <button className="px-3 py-1.5 bg-blue-500 text-white rounded" onClick={() => handleExport('visitors')}>导出访客数据</button>
+            <button className="px-3 py-1.5 bg-blue-500 text-white rounded" onClick={() => handleExport('contacts')}>导出联系数据</button>
+            <button className="px-3 py-1.5 bg-blue-500 text-white rounded" onClick={() => handleExport('subscriptions')}>导出订阅数据</button>
+            <button className="px-3 py-1.5 bg-blue-500 text-white rounded" onClick={() => handleExport('leads')}>导出ESG表单数据</button>
+          </div>
+        </div>
+        
+        {/* 清空功能 */}
+        <div className="space-y-2">
+          <div className="font-medium">清空数据</div>
+          <div className="flex flex-wrap gap-2">
+            <button className="px-3 py-1.5 bg-red-500 text-white rounded" onClick={() => handleClear('visitors')}>清空访客数据</button>
+            <button className="px-3 py-1.5 bg-red-500 text-white rounded" onClick={() => handleClear('contacts')}>清空联系数据</button>
+            <button className="px-3 py-1.5 bg-red-500 text-white rounded" onClick={() => handleClear('subscriptions')}>清空订阅数据</button>
+            <button className="px-3 py-1.5 bg-red-500 text-white rounded" onClick={() => handleClear('leads')}>清空ESG表单数据</button>
+          </div>
+        </div>
+        
+        {/* 导入功能 */}
+        <div className="space-y-2">
+          <div className="font-medium">导入数据</div>
+          <div className="flex flex-wrap gap-2 items-center">
+            <select 
+              className="border px-2 py-1" 
+              value={importType} 
+              onChange={e => setImportType(e.target.value as any)}
+            >
+              <option value="visitors">访客数据</option>
+              <option value="contacts">联系数据</option>
+              <option value="subscriptions">订阅数据</option>
+              <option value="leads">ESG表单数据</option>
+            </select>
+            <input 
+              type="file" 
+              className="border px-2 py-1" 
+              accept=".csv" 
+              onChange={e => setImportFile(e.target.files?.[0] || null)}
+            />
+            <button 
+              className="px-3 py-1.5 bg-green-500 text-white rounded" 
+              onClick={handleImport}
+              disabled={!importFile || isLoading}
+            >
+              {isLoading ? '导入中...' : '导入数据'}
+            </button>
+          </div>
+        </div>
+        
+        {/* 消息提示 */}
+        {message && (
+          <div className="p-2 bg-gray-100 rounded">
+            {message}
+          </div>
+        )}
+      </div>
+      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="border rounded p-4">
           <div className="text-sm text-gray-600">访客总数</div>
