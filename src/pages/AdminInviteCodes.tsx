@@ -300,7 +300,9 @@ const AdminInviteCodes = () => {
   // 导出邀请码为CSV
   const exportInviteCodes = () => {
     const csvContent = generateCSV(existingCodes);
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    // 添加UTF-8 BOM标记，确保Excel等应用程序能正确识别中文编码
+    const bom = '\ufeff';
+    const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -313,7 +315,9 @@ const AdminInviteCodes = () => {
   const exportInviteCodesByType = (type: 'count' | 'time') => {
     const filteredCodes = existingCodes.filter(code => code.type === type);
     const csvContent = generateCSV(filteredCodes);
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    // 添加UTF-8 BOM标记，确保Excel等应用程序能正确识别中文编码
+    const bom = '\ufeff';
+    const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -326,7 +330,9 @@ const AdminInviteCodes = () => {
   const exportSelectedInviteCodes = () => {
     const selectedCodesArray = existingCodes.filter(code => selectedCodes.has(code.id));
     const csvContent = generateCSV(selectedCodesArray);
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    // 添加UTF-8 BOM标记，确保Excel等应用程序能正确识别中文编码
+    const bom = '\ufeff';
+    const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
