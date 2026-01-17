@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { AuthContext } from '@/contexts/authContext';
 import { apiGet, apiPost } from '@/lib/utils';
 
@@ -23,10 +23,12 @@ export default function AdminAnalytics() {
   const [filterEmail, setFilterEmail] = useState('');
   const [visitorsPage, setVisitorsPage] = useState(1);
   const [visitorsPageSize, setVisitorsPageSize] = useState(20);
-  const [importFile, setImportFile] = useState<File | null>(null);
-  const [importType, setImportType] = useState<'visitors' | 'contacts' | 'subscriptions' | 'leads'>('visitors');
   const [isLoading, setIsLoading] = useState(false);
+  const [importType, setImportType] = useState<'visitors' | 'contacts' | 'subscriptions' | 'leads'>('visitors');
+  const [importFile, setImportFile] = useState<File | null>(null);
+  const [importAllFiles, setImportAllFiles] = useState<File[]>([]);
   const [message, setMessage] = useState('');
+  const importAllFilesRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (sessionStorage.getItem('adminLogin') === '1') setIsAuthenticated(true);
@@ -159,6 +161,109 @@ export default function AdminAnalytics() {
     }
   };
 
+  // 一键导出所有数据功能
+  const handleExportAll = () => {
+    // 依次导出所有数据类型
+    handleExport('visitors');
+    handleExport('contacts');
+    handleExport('subscriptions');
+    handleExport('leads');
+    setMessage('正在导出所有数据，请稍候...');
+  };
+
+  // 一键清空所有数据功能
+  const handleClearAll = async () => {
+    if (!confirm('确定要清空所有数据吗？此操作不可恢复。')) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setMessage('');
+      // 依次清空所有数据类型
+      await apiPost(`/api/admin/analytics/clear/visitors`, {});
+      await apiPost(`/api/admin/analytics/clear/contacts`, {});
+      await apiPost(`/api/admin/analytics/clear/subscriptions`, {});
+      await apiPost(`/api/admin/analytics/clear/leads`, {});
+      setMessage('成功清空所有数据');
+      loadAll();
+    } catch (error) {
+      setMessage('清空所有数据失败，请重试');
+      console.error('清空所有数据失败:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 一键导入所有数据功能
+  const handleImportAllClick = () => {
+    importAllFilesRef.current?.click();
+  };
+
+  const handleImportAllFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      setImportAllFiles(Array.from(files));
+      handleImportAll(Array.from(files));
+    }
+  };
+
+  const handleImportAll = async (files: File[]) => {
+    if (files.length === 0) {
+      setMessage('请选择要导入的文件');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setMessage('');
+      let totalSuccess = 0;
+
+      // 为每个文件尝试导入到最匹配的数据类型
+      for (const file of files) {
+        // 根据文件名和内容猜测数据类型
+        const fileName = file.name.toLowerCase();
+        let guessedType: 'visitors' | 'contacts' | 'subscriptions' | 'leads' = 'visitors';
+
+        // 根据文件名猜测类型
+        if (fileName.includes('visitor')) {
+          guessedType = 'visitors';
+        } else if (fileName.includes('contact')) {
+          guessedType = 'contacts';
+        } else if (fileName.includes('subscrib') || fileName.includes('subscription') || fileName.includes('subs') || fileName.includes('sub')) {
+          guessedType = 'subscriptions';
+        } else if (fileName.includes('lead') || fileName.includes('esg')) {
+          guessedType = 'leads';
+        }
+
+        // 尝试导入到猜测的类型
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('type', guessedType);
+
+          const response = await apiPost(`/api/admin/analytics/import`, formData);
+          totalSuccess += response.successCount || 0;
+        } catch (error) {
+          console.error(`导入文件 ${file.name} 失败:`, error);
+        }
+      }
+
+      setMessage(`成功导入 ${totalSuccess} 条数据`);
+      loadAll();
+    } catch (error) {
+      setMessage('导入所有数据失败，请重试');
+      console.error('导入所有数据失败:', error);
+    } finally {
+      setIsLoading(false);
+      setImportAllFiles([]);
+      // 重置文件输入，以便可以再次选择相同的文件
+      if (importAllFilesRef.current) {
+        importAllFilesRef.current.value = '';
+      }
+    }
+  };
+
   // 导入数据功能
   const handleImport = async () => {
     if (!importFile) {
@@ -227,6 +332,26 @@ export default function AdminAnalytics() {
       <div className="border rounded p-4 space-y-4">
         <h3 className="text-lg font-semibold">数据管理</h3>
         
+        {/* 总一键功能 */}
+        <div className="space-y-2">
+          <div className="font-medium">总一键操作</div>
+          <div className="flex flex-wrap gap-2">
+            <button className="px-3 py-1.5 bg-blue-600 text-white rounded" onClick={handleExportAll}>一键导出所有数据</button>
+            <button className="px-3 py-1.5 bg-red-600 text-white rounded" onClick={handleClearAll}>一键清空所有数据</button>
+            <button className="px-3 py-1.5 bg-green-600 text-white rounded" onClick={handleImportAllClick}>一键导入所有数据</button>
+          </div>
+          <input 
+            type="file" 
+            className="border px-2 py-1 hidden" 
+            accept=".csv,.tsv" 
+            multiple 
+            ref={importAllFilesRef} 
+            onChange={handleImportAllFilesChange}
+            id="import-all-files"
+          />
+          <label htmlFor="import-all-files" className="text-sm text-gray-600 cursor-pointer hover:underline">选择多个CSV/TSV文件（支持访客、联系、订阅、ESG表单数据）</label>
+        </div>
+        
         {/* 导出功能 */}
         <div className="space-y-2">
           <div className="font-medium">导出数据</div>
@@ -266,7 +391,7 @@ export default function AdminAnalytics() {
             <input 
               type="file" 
               className="border px-2 py-1" 
-              accept=".csv" 
+              accept=".csv,.tsv" 
               onChange={e => setImportFile(e.target.files?.[0] || null)}
             />
             <button 
