@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { getApiBaseUrl } from '@/lib/utils';
 
 const Search = () => {
   const navigate = useNavigate();
@@ -128,7 +129,8 @@ const Search = () => {
       await runLoadingSteps();
       
       // 然后才发送API请求
-      const response = await fetch('/api/market-entry-engine/process', {
+      const apiBaseUrl = getApiBaseUrl();
+      const response = await fetch(`${apiBaseUrl}/api/market-entry-engine/process`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -174,7 +176,8 @@ const Search = () => {
     
     if (value.length > 1) {
       try {
-        const response = await fetch(`/api/market-entry-engine/hs-codes/search?q=${encodeURIComponent(value)}`);
+        const apiBaseUrl = getApiBaseUrl();
+        const response = await fetch(`${apiBaseUrl}/api/market-entry-engine/hs-codes/search?q=${encodeURIComponent(value)}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

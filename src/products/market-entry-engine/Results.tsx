@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { getApiBaseUrl } from '@/lib/utils';
 
 // 国家名称中英对照映射
 const countryNames: { [key: string]: { en: string; zhCN: string; zhHK: string } } = {
@@ -324,7 +325,8 @@ const Results = () => {
   const fetchData = async (code: string, mode: string) => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/market-entry-engine/process', {
+      const apiBaseUrl = getApiBaseUrl();
+      const response = await fetch(`${apiBaseUrl}/api/market-entry-engine/process`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
