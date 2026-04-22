@@ -128,7 +128,7 @@ const Search = () => {
       await runLoadingSteps();
       
       // 然后才发送API请求
-      const response = await fetch('http://localhost:3001/api/market-entry-engine/process', {
+      const response = await fetch('/api/market-entry-engine/process', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -174,7 +174,7 @@ const Search = () => {
     
     if (value.length > 1) {
       try {
-        const response = await fetch(`http://localhost:3001/api/market-entry-engine/hs-codes/search?q=${encodeURIComponent(value)}`);
+        const response = await fetch(`/api/market-entry-engine/hs-codes/search?q=${encodeURIComponent(value)}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

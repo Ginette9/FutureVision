@@ -324,7 +324,7 @@ const Results = () => {
   const fetchData = async (code: string, mode: string) => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:3001/api/market-entry-engine/process', {
+      const response = await fetch('/api/market-entry-engine/process', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
