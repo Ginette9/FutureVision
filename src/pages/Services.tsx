@@ -52,9 +52,9 @@ export default function Services() {
         'Overseas channel rollout and agency sales',
         'Overseas compliance, risk management and localized operations support'
       ],
-      buttonText: 'Coming Soon',
-      action: null,
-      disabled: true
+      buttonText: 'Learn More',
+      action: () => navigate('/market-entry-engine/search'),
+      disabled: false
     }
   ] : language === 'zh-HK' ? [
     {
@@ -99,9 +99,9 @@ export default function Services() {
         '海外渠道落地與代理銷售',
         '海外合規、風險管理與在地化運營支持'
       ],
-      buttonText: '即將推出',
-      action: null,
-      disabled: true
+      buttonText: '了解更多',
+      action: () => navigate('/market-entry-engine/search'),
+      disabled: false
     }
   ] : [
     {
@@ -146,9 +146,9 @@ export default function Services() {
         "海外渠道落地与代理销售",
         "海外合规、风险管理与在地化运营支持"
       ],
-      buttonText: "即将推出",
-      action: null,
-      disabled: true
+      buttonText: "了解详情",
+      action: () => navigate('/market-entry-engine/search'),
+      disabled: false
     }
   ]);
 

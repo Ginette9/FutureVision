@@ -25,6 +25,9 @@ import { useLanguage } from './contexts/LanguageContext';
 import { convertToTraditional } from './locales/zh-HK';
 import { prefetchAllDatabases } from '@/lib/database';
 import { apiGet } from '@/lib/utils';
+import MarketEntryEngineIndex from './products/market-entry-engine/Index';
+import MarketEntryEngineSearch from './products/market-entry-engine/Search';
+import MarketEntryEngineResults from './products/market-entry-engine/Results';
 
 /* 使用 src/images 中的本地图，确保打包后地址正确 */
 // 已移除封面/尾页资源
@@ -183,6 +186,9 @@ export default function App() {
               <Route path="/products" element={<Products />} />
               <Route path="/esg-voyant/form" element={<RouteGuard><ESGRiskAnalysis /></RouteGuard>} />
               <Route path="/esg-voyant" element={<ESGRiskAnalysisNew />} />
+              <Route path="/market-entry-engine" element={<MarketEntryEngineIndex />} />
+              <Route path="/market-entry-engine/search" element={<MarketEntryEngineSearch />} />
+              <Route path="/market-entry-engine/results" element={<MarketEntryEngineResults />} />
               <Route path="/insights" element={<Insights />} />
               <Route path="/admin/insights" element={<AdminInsights />} />
               <Route path="/admin/news" element={<AdminKnowledge />} />

@@ -6,6 +6,11 @@ import fs from 'fs';
 import path from 'path';
 import initSqlJs from 'sql.js';
 import fileUpload from 'express-fileupload';
+import csv from 'csv-parser';
+
+// 在ES模块中定义__dirname
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
 dotenv.config();
 const app = express();
 const PORT = Number(process.env.PORT || 3001);
@@ -87,6 +92,191 @@ app.use(express.json({ limit: '50mb' }));
 app.use('/images', express.static('public/images'));
 app.use(express.static('public'));
 
+// 健康检查路由
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString(), inviteCodesConfigured: VALID_CODES.length > 0 });
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString(), inviteCodesConfigured: VALID_CODES.length > 0 });
+});
+
+// ============== Market Entry Engine API ==============
+
+// 处理 HS 编码分析
+app.post('/api/market-entry-engine/process', async (req, res) => {
+  try {
+    const { hs_code, mode = 'stable' } = req.body || {};
+    
+    if (!hs_code) {
+      return res.status(400).json({ error: '请提供HS编码' });
+    }
+    
+    // 检查数据文件是否存在
+    const resultFile = path.join(__dirname, 'src', 'data', 'market-entry-engine', `model_results_${hs_code}.csv`);
+    
+    if (fs.existsSync(resultFile)) {
+      // 读取CSV文件
+      const results = [];
+      await new Promise((resolve, reject) => {
+        fs.createReadStream(resultFile)
+          .pipe(csv())
+          .on('data', (data) => results.push(data))
+          .on('end', resolve)
+          .on('error', reject);
+      });
+      
+      // 根据模式选择相应的得分列
+      let scoreColumn;
+      if (mode === 'stable') {
+        scoreColumn = '稳健发展型_base_score';
+      } else if (mode === 'growth') {
+        scoreColumn = '潜力增长型_base_score';
+      } else {
+        scoreColumn = '国货蓝海型_base_score';
+      }
+      
+      // 按得分排序
+      results.sort((a, b) => parseFloat(b[scoreColumn]) - parseFloat(a[scoreColumn]));
+      
+      // 处理数据
+      const top10 = results.slice(0, 10).map(row => ({
+        '国家全称': row['国家全称'] || '',
+        '2024年世界进口额': parseFloat(row['2024年世界进口额']) || 0,
+        '可用年平均增长率（AAGR）': parseFloat(row['可用年平均增长率（AAGR）']) || 0,
+        '2024年向中国进口金额占总进口额比重': parseFloat(row['2024年向中国进口金额占总进口额比重']) || 0,
+        '2024年人均GDP': parseFloat(row['2024年人均GDP']) || 0,
+        '2024年治理水平': parseFloat(row['2024年治理水平']) || 0,
+        '2023 Average Tariff Raw（%）': parseFloat(row['2023 Average Tariff Raw（%）']) || 0,
+        '置信度': parseInt(row['置信度']) || 1,
+        '推荐指数': parseFloat(row[scoreColumn]) || 0,
+        '修正后总分': parseFloat(row['修正后总分']) || 0,
+        '稳健发展型_base_score': parseFloat(row['稳健发展型_base_score']) || 0,
+        '稳健发展型_final_score': parseFloat(row['稳健发展型_final_score']) || 0,
+        '潜力增长型_base_score': parseFloat(row['潜力增长型_base_score']) || 0,
+        '潜力增长型_final_score': parseFloat(row['潜力增长型_final_score']) || 0,
+        '国货蓝海型_base_score': parseFloat(row['国货蓝海型_base_score']) || 0,
+        '国货蓝海型_final_score': parseFloat(row['国货蓝海型_final_score']) || 0,
+        '市场规模-标准得分': parseFloat(row['市场规模-标准得分']) || 0,
+        '市场成长性-标准得分': parseFloat(row['市场成长性-标准得分']) || 0,
+        '市场成熟度-标准得分': parseFloat(row['市场成熟度-标准得分']) || 0,
+        '营商环境质量-标准得分': parseFloat(row['营商环境质量-标准得分']) || 0,
+        '中国供应链匹配度-标准得分': parseFloat(row['中国供应链匹配度-标准得分']) || 0,
+        '关税友好度-标准得分': parseFloat(row['关税友好度-标准得分']) || 0,
+        '市场质量-标准得分': parseFloat(row['市场质量-标准得分']) || 0
+      }));
+      
+      // 计算统计信息
+      const totalMarketSize = results.reduce((sum, row) => sum + (parseFloat(row['2024年世界进口额']) || 0), 0);
+      const avgGrowthRate = results.reduce((sum, row) => sum + (parseFloat(row['可用年平均增长率（AAGR）']) || 0), 0) / results.length;
+      const avgGdp = results.reduce((sum, row) => sum + (parseFloat(row['2024年人均GDP']) || 0), 0) / results.length;
+      
+      const summary = {
+        total_countries: results.length,
+        total_market_size: totalMarketSize,
+        avg_growth_rate: avgGrowthRate,
+        avg_gdp: avgGdp
+      };
+      
+      return res.json({
+        message: '已找到已计算结果',
+        hs_code,
+        mode,
+        top_10: top10,
+        all_countries: results.map(row => ({
+          '国家全称': row['国家全称'] || '',
+          '2024年世界进口额': parseFloat(row['2024年世界进口额']) || 0,
+          '可用年平均增长率（AAGR）': parseFloat(row['可用年平均增长率（AAGR）']) || 0,
+          '2024年向中国进口金额占总进口额比重': parseFloat(row['2024年向中国进口金额占总进口额比重']) || 0,
+          '2024年人均GDP': parseFloat(row['2024年人均GDP']) || 0,
+          '2024年治理水平': parseFloat(row['2024年治理水平']) || 0,
+          '2023 Average Tariff Raw（%）': parseFloat(row['2023 Average Tariff Raw（%）']) || 0,
+          '置信度': parseInt(row['置信度']) || 1,
+          '推荐指数': parseFloat(row[scoreColumn]) || 0,
+          '稳健发展型_base_score': parseFloat(row['稳健发展型_base_score']) || 0,
+          '稳健发展型_final_score': parseFloat(row['稳健发展型_final_score']) || 0,
+          '潜力增长型_base_score': parseFloat(row['潜力增长型_base_score']) || 0,
+          '潜力增长型_final_score': parseFloat(row['潜力增长型_final_score']) || 0,
+          '国货蓝海型_base_score': parseFloat(row['国货蓝海型_base_score']) || 0,
+          '国货蓝海型_final_score': parseFloat(row['国货蓝海型_final_score']) || 0,
+          '市场规模-标准得分': parseFloat(row['市场规模-标准得分']) || 0,
+          '市场成长性-标准得分': parseFloat(row['市场成长性-标准得分']) || 0,
+          '市场成熟度-标准得分': parseFloat(row['市场成熟度-标准得分']) || 0,
+          '营商环境质量-标准得分': parseFloat(row['营商环境质量-标准得分']) || 0,
+          '中国供应链匹配度-标准得分': parseFloat(row['中国供应链匹配度-标准得分']) || 0,
+          '关税友好度-标准得分': parseFloat(row['关税友好度-标准得分']) || 0,
+          '市场质量-标准得分': parseFloat(row['市场质量-标准得分']) || 0
+        })),
+        summary
+      });
+    } else {
+      return res.status(404).json({ error: '未找到该HS编码的分析结果' });
+    }
+  } catch (error) {
+    console.error('[market-entry-engine] process error:', error.message);
+    return res.status(500).json({ error: '处理过程中发生错误', message: error.message });
+  }
+});
+
+// 获取HS编码列表
+app.get('/api/market-entry-engine/hs-codes', async (req, res) => {
+  try {
+    // 读取数据目录中的所有CSV文件，提取HS编码
+    const dataDir = path.join(__dirname, 'src', 'data', 'market-entry-engine');
+    const files = fs.readdirSync(dataDir).filter(file => file.endsWith('.csv'));
+    
+    const hsCodes = files.map(file => {
+      const match = file.match(/model_results_(\d+).csv/);
+      return match ? match[1] : null;
+    }).filter(Boolean);
+    
+    // 为每个HS编码生成一个简单的名称
+    const hsCodeList = hsCodes.map(code => ({
+      code,
+      name: `产品编码 ${code}`
+    }));
+    
+    return res.json({ hs_codes: hsCodeList.slice(0, 100) });
+  } catch (error) {
+    console.error('[market-entry-engine] get hs codes error:', error.message);
+    return res.status(500).json({ error: '获取HS编码列表失败', message: error.message });
+  }
+});
+
+// 搜索HS编码
+app.get('/api/market-entry-engine/hs-codes/search', async (req, res) => {
+  try {
+    const query = req.query.q || '';
+    
+    if (!query) {
+      return res.json({ hs_codes: [] });
+    }
+    
+    // 读取数据目录中的所有CSV文件，提取HS编码
+    const dataDir = path.join(__dirname, 'src', 'data', 'market-entry-engine');
+    const files = fs.readdirSync(dataDir).filter(file => file.endsWith('.csv'));
+    
+    const hsCodes = files.map(file => {
+      const match = file.match(/model_results_(\d+).csv/);
+      return match ? match[1] : null;
+    }).filter(Boolean);
+    
+    // 过滤匹配的HS编码
+    const results = hsCodes
+      .filter(code => code.startsWith(query))
+      .map(code => ({
+        code,
+        name: `产品编码 ${code}`
+      }))
+      .slice(0, 10);
+    
+    return res.json({ hs_codes: results });
+  } catch (error) {
+    console.error('[market-entry-engine] search hs codes error:', error.message);
+    return res.status(500).json({ error: '搜索HS编码失败', message: error.message });
+  }
+});
+
 // 生产环境特殊处理
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('dist/static'));
@@ -101,10 +291,10 @@ if (process.env.NODE_ENV === 'production') {
   app.get('/csr_database_HK.db', (req, res) => {
     res.sendFile('dist/static/csr_database_HK.db', { root: '.' });
   });
-  
+
   // 所有非 API 路由都返回 index.html（排除 /api 与 /proxy 与 /health 与 /assets，允许可选的结尾或斜杠）
-  // 排除规则： /^\/(api|proxy|assets)(\/|$)|^\/health(\/|$)/
-  app.get(/^(?!\/(api|proxy|assets)(\/|$)|\/health(\/|$)).*/, (req, res) => {
+  // 排除规则： /^\/(api|proxy|assets|health)(\/|$)/
+  app.get(/^(?!\/(api|proxy|assets|health)(\/|$)).*/, (req, res) => {
     res.sendFile('dist/static/index.html', { root: '.' });
   });
 } else {
@@ -2242,6 +2432,15 @@ app.post('/api/admin/analytics', async (req, res) => {
   }
 });
 
+// 错误处理中间件
+app.use((err, req, res, next) => {
+  console.error('服务器错误:', err);
+  res.status(500).json({ 
+    error: 'internal_server_error', 
+    message: '服务器内部错误' 
+  });
+});
+
 await prepareDbFiles();
 async function preloadAllDbs() {
   try {
@@ -2257,13 +2456,4 @@ await preloadAllDbs();
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Payment server running on http://localhost:${PORT}`);
   console.log(`Health check: http://localhost:${PORT}/health`);
-});
-
-// 错误处理中间件
-app.use((err, req, res, next) => {
-  console.error('服务器错误:', err);
-  res.status(500).json({ 
-    error: 'internal_server_error', 
-    message: '服务器内部错误' 
-  });
 });
