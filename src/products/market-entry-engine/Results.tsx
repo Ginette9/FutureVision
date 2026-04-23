@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { getApiBaseUrl } from '@/lib/utils';
+import { apiPost } from '@/lib/utils';
 
 // 国家名称中英对照映射
 const countryNames: { [key: string]: { en: string; zhCN: string; zhHK: string } } = {
@@ -325,19 +325,10 @@ const Results = () => {
   const fetchData = async (code: string, mode: string) => {
     setIsLoading(true);
     try {
-      const apiBaseUrl = getApiBaseUrl();
-      const response = await fetch(`${apiBaseUrl}/api/market-entry-engine/process`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ 
-          hs_code: code, 
-          mode: mode 
-        })
+      const data = await apiPost('/api/market-entry-engine/process', { 
+        hs_code: code, 
+        mode: mode 
       });
-      
-      const data = await response.json();
       if (data.top_10) {
         setResults(data.top_10);
         setAllCountries(data.all_countries || []);

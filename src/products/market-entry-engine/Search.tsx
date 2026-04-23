@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { getApiBaseUrl } from '@/lib/utils';
+import { apiGet, apiPost } from '@/lib/utils';
 
 const Search = () => {
   const navigate = useNavigate();
@@ -129,19 +129,10 @@ const Search = () => {
       await runLoadingSteps();
       
       // 然后才发送API请求
-      const apiBaseUrl = getApiBaseUrl();
-      const response = await fetch(`${apiBaseUrl}/api/market-entry-engine/process`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ 
-          hs_code: hsCode, 
-          mode: 'stable' 
-        })
+      const data = await apiPost('/api/market-entry-engine/process', { 
+        hs_code: hsCode, 
+        mode: 'stable' 
       });
-      
-      const data = await response.json();
       
       setShowLoading(false);
       setIsLoading(false);
@@ -176,12 +167,7 @@ const Search = () => {
     
     if (value.length > 1) {
       try {
-        const apiBaseUrl = getApiBaseUrl();
-        const response = await fetch(`${apiBaseUrl}/api/market-entry-engine/hs-codes/search?q=${encodeURIComponent(value)}`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
+        const data = await apiGet('/api/market-entry-engine/hs-codes/search', { q: value });
         
         const suggestionsList = [];
         
