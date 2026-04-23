@@ -17,35 +17,48 @@ const Search = () => {
   const [selectedHsCode, setSelectedHsCode] = useState<string | null>(null);
 
   const productKeywords: { [key: string]: string } = {
-    '手机': '851762',
-    '智能手机': '851762',
-    '锂电池': '850760',
-    '电池': '850760',
-    'LED灯': '940510',
-    '灯具': '940510',
-    '太阳能电池': '854140',
-    '太阳能板': '854140',
-    '医疗器械': '901890',
-    '医疗': '901890',
-    '汽车零部件': '870899',
-    '汽车配件': '870899',
-    '服装': '610910',
-    '纺织品': '5407',
-    '家具': '940360',
-    '玩具': '950300',
-    '电子产品': '8517'
+    '香水': '330300',
+    '化妆品': '330499',
+    '洗发水': '330510',
+    '香皂': '340111',
+    '肥皂': '340120',
+    '染料': '320411',
+    '油漆': '320890',
+    '尿素': '310210',
+    '钾肥': '310420',
+    '卤素灯': '853921',
+    '荧光灯': '853931',
+    '密封灯': '853910',
+    '铜线': '854411',
+    '同轴电缆': '854420',
+    '光缆': '854470',
+    '报警器': '853110',
+    '聚乙烯': '390110',
+    '聚丙烯': '390210'
   };
 
   const getProductDesc = (code: string) => {
     const descs: { [key: string]: string } = {
-      '851762': language === 'en-US' ? 'Communication Equipment' : language === 'zh-HK' ? '通訊設備' : '通信设备',
-      '850760': language === 'en-US' ? 'Battery & Energy Storage' : language === 'zh-HK' ? '電池及儲能' : '电池及储能',
-      '940510': language === 'en-US' ? 'Lighting Equipment' : language === 'zh-HK' ? '照明設備' : '照明设备',
-      '854140': language === 'en-US' ? 'Solar Products' : language === 'zh-HK' ? '太陽能產品' : '太阳能产品',
-      '901890': language === 'en-US' ? 'Medical Devices' : language === 'zh-HK' ? '醫療器械' : '医疗器械',
-      '870899': language === 'en-US' ? 'Auto Parts' : language === 'zh-HK' ? '汽車配件' : '汽车配件'
+      '330300': language === 'en-US' ? 'Perfumes' : language === 'zh-HK' ? '香水' : '香水',
+      '330499': language === 'en-US' ? 'Cosmetics' : language === 'zh-HK' ? '化妝品' : '化妆品',
+      '330510': language === 'en-US' ? 'Shampoo' : language === 'zh-HK' ? '洗髮水' : '洗发水',
+      '340111': language === 'en-US' ? 'Toilet Soap' : language === 'zh-HK' ? '香皂' : '香皂',
+      '340120': language === 'en-US' ? 'Soap' : language === 'zh-HK' ? '肥皂' : '肥皂',
+      '320411': language === 'en-US' ? 'Dyes' : language === 'zh-HK' ? '染料' : '染料',
+      '320890': language === 'en-US' ? 'Paint' : language === 'zh-HK' ? '油漆' : '油漆',
+      '310210': language === 'en-US' ? 'Urea' : language === 'zh-HK' ? '尿素' : '尿素',
+      '310420': language === 'en-US' ? 'Potash' : language === 'zh-HK' ? '鉀肥' : '钾肥',
+      '853921': language === 'en-US' ? 'Halogen Lamp' : language === 'zh-HK' ? '鹵素燈' : '卤素灯',
+      '853931': language === 'en-US' ? 'Fluorescent Lamp' : language === 'zh-HK' ? '螢光燈' : '荧光灯',
+      '853910': language === 'en-US' ? 'Sealed Beam' : language === 'zh-HK' ? '密封燈' : '密封灯',
+      '854411': language === 'en-US' ? 'Copper Wire' : language === 'zh-HK' ? '銅線' : '铜线',
+      '854420': language === 'en-US' ? 'Coaxial Cable' : language === 'zh-HK' ? '同軸電纜' : '同轴电缆',
+      '854470': language === 'en-US' ? 'Optical Cable' : language === 'zh-HK' ? '光纜' : '光缆',
+      '853110': language === 'en-US' ? 'Alarm' : language === 'zh-HK' ? '報警器' : '报警器',
+      '390110': language === 'en-US' ? 'Polyethylene' : language === 'zh-HK' ? '聚乙烯' : '聚乙烯',
+      '390210': language === 'en-US' ? 'Polypropylene' : language === 'zh-HK' ? '聚丙烯' : '聚丙烯'
     };
-    return descs[code] || (language === 'en-US' ? 'Industrial Products' : language === 'zh-HK' ? '工業製品' : '工业制品');
+    return descs[code] || (language === 'en-US' ? 'Industrial Products' : language === 'zh-HK' ? '工業制品' : '工业制品');
   };
 
   const labels = {
@@ -70,10 +83,10 @@ const Search = () => {
   };
 
   const hotKeywords = language === 'en-US' 
-    ? ['Smartphone', 'Li Battery', 'LED Light', 'Solar Panel', 'Medical Device', 'Auto Parts', 'Garment', 'Textile', 'Furniture', 'Toy']
+    ? ['Perfumes', 'Cosmetics', 'Shampoo', 'Soap', 'Dyes', 'Paint', 'Urea', 'Potash', 'Halogen Lamp', 'Copper Wire']
     : language === 'zh-HK' 
-      ? ['手機', '鋰電池', 'LED燈', '太陽能電池', '醫療器械', '汽車零部件', '服裝', '紡織品', '家具', '玩具']
-      : ['手机', '锂电池', 'LED灯', '太阳能电池', '医疗器械', '汽车零部件', '服装', '纺织品', '家具', '玩具'];
+      ? ['香水', '化妝品', '洗髮水', '香皂', '染料', '油漆', '尿素', '鉀肥', '鹵素燈', '銅線']
+      : ['香水', '化妆品', '洗发水', '香皂', '染料', '油漆', '尿素', '钾肥', '卤素灯', '铜线'];
 
   const handleSearch = async () => {
     if (!searchTerm) return;
@@ -219,7 +232,7 @@ const Search = () => {
     if (code) {
       setSearchTerm(code);
       setSelectedHsCode(code);
-      handleSearch();
+      // 只填充HS code，不立即搜索
     }
   };
 
